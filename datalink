@@ -1,0 +1,105 @@
+1 解读pixhawk加速度计校准代码
+https://blog.csdn.net/qiuzhizhecsd/article/details/75093967
+2 PX4源码分析8_PX4的sensor校准
+https://blog.csdn.net/u010815257/article/details/77922880
+3 PX4开发指南(翻译官网，比较全）
+https://www.ncnynl.com/archives/201709/2049.html
+4 pixhawk的高度解算算法解读
+http://blog.sina.com.cn/s/blog_8fe4f2f40102wo50.html
+5 多旋翼定高模式PID控制算法详解
+http://blog.sina.com.cn/s/blog_8fe4f2f40102wm28.html
+6 捷联式惯性导航系统设计
+https://blog.csdn.net/fubin0000/article/details/71216423
+7 [算法]px4位置估计-inav （2017/10/26更新）
+https://blog.csdn.net/ZingHd/article/details/52333516
+8 [源码解读]commander 飞行模式，控制模式
+https://blog.csdn.net/zinghd/article/details/51720792
+9 PX4代码学习系列博客(7)——lpe代码分析
+https://blog.csdn.net/iamqianrenzhan/article/details/78577476
+10 PX4 Pixhawk程序研究笔记_百度文库 
+https://wenku.baidu.com/view/aee7ec1d8bd63186bcebbcfe.html
+11 网盘搜索
+http://www.daysou.com/s?q=%E6%8D%B7%E8%81%94%E6%83%AF%E6%80%A7%E5%AF%BC%E8%88%AA%E6%8A%80%E6%9C%AFPDF&start=0&isget=1&tp=baipan&cl=0&line=3
+
+
+12 Linux系统下搭建PX4/Pixhawk原生固件编译环境(很详细了，基本说了我遇到的）
+https://blog.csdn.net/pix_csdn/article/details/81913610
+
+13 使用qgroundcontro（QGC） 更新PIXHAWK 原生固件与简单设置（新手适用）
+http://bbs.5imx.com/forum.php?mod=viewthread&tid=1166714
+
+14 自制Pixhawk飞控板烧写BootLoader教程
+https://blog.csdn.net/oqqENvY12/article/details/52464788?locationNum=8
+
+15 qgroundcontrol 官网教程，下载，使用等
+https://docs.qgroundcontrol.com/en/getting_started/download_and_install.html
+
+16 使用 Gitbook 打造你的电子书
+https://blog.csdn.net/stu059074244/article/details/77767835
+
+17 Ubuntu环境下使用OpenOCD调试目标平台(stm32下载器，调试器)
+https://blog.csdn.net/tugouxp/article/details/54799924
+
+18 Ubuntu安装STLINK(下载stm32程序的命令行程序)
+https://blog.csdn.net/a13526758473/article/details/60468652
+
+19 STM32F429-Discovery 使用stlink-1.2.0 在Linux下烧写调试RTEMS
+https://www.linuxidc.com/Linux/2016-11/137469.htm
+20关于cannot open shared object file: No such file or directory 的解决
+https://blog.csdn.net/onlyellow/article/details/80633124
+21 福昕阅读器下载安装linux下
+https://www.foxitsoftware.cn/products/reader/
+22 构建Bootloader
+http://dev.px4.io/zh/software_update/stm32_bootloader.html
+23 树莓派 st-link master使用ST-LINK V2下载STM32程序 支持F0 F1 F2 等(安装stlink时，忘记了把49-stlinkv2.rules拷贝到/etc/udev/rules.d/，导致下载失败)
+https://blog.csdn.net/wang_shuai_ww/article/details/50325313
+24 ubuntu jlink 下载stm32程序
+https://blog.csdn.net/lc_cc/article/details/66982821
+https://blog.csdn.net/lc_cc/article/details/67671639
+
+25 进入px4的shell
+https://blog.csdn.net/lyonlui/article/details/53579133
+26 pixkawk 接口说明
+http://blog.sina.com.cn/s/blog_643af4310102wmov.html
+
+27 libopencm3 使用教程
+https://blog.csdn.net/zhengyangliu123/article/details/54925400
+28 pid详解有代码说的挺明白
+https://blog.csdn.net/gen_ye/article/details/52534609
+29 stm32 霍尔编码器
+https://blog.csdn.net/Susquehanna/article/details/77504066
+30 makfile 教程
+https://blog.csdn.net/linkcian/article/details/79152724
+31 px4 makefile详解
+https://blog.csdn.net/linkcian/article/details/79152724
+32  px4 makefile和cmakelists.txt
+https://blog.csdn.net/linux_kernel_fan/article/details/52993024
+33 cmake教程
+http://www.hahack.com/codes/cmake/#
+34 cmake教程
+https://www.ibm.com/developerworks/cn/linux/l-cn-cmake/
+
+35 雪松rtems教程
+https://blog.csdn.net/coolbacon/article/category/767505/2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
