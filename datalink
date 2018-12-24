@@ -107,12 +107,13 @@ https://blog.csdn.net/heyijia0327/article/details/17487467
 43 机器人无人机相关教程，包括飞控（特别全）
 https://www.ncnynl.com/archives/201608/393.html
 44 Px4源码框架结构图 (挺全的)
-https://blog.csdn.net/senlin16888/article/details/51A684274
+https://blog.csdn.net/senlin16888/article/details/51684274
 
 45 px4 ekf算法姿态估计（目前可以大概看懂公式了）
 https://blog.csdn.net/lizilpl/article/details/45542907
 
-
+46 IMU校正以及姿态融合(也是做imu传感器工作的)
+https://blog.csdn.net/shenshikexmu/article/details/80013444
 
 
 
