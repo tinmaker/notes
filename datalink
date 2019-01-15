@@ -130,7 +130,7 @@ https://www.cnblogs.com/dchipnau/p/5310088.html
 51 阿木实验室 
 http://www.amovauto.com/portal.php
 
-52 扩展卡尔曼滤波算法及仿真实例(很好，理论，状态表达式等各个组成都说的清楚)
+52 扩展卡尔曼滤波算法及仿真实例(很好，理论，状态表达式等各个组成都说的清楚)******
 https://blog.csdn.net/haxiongha/article/details/81707093
 
 53 收藏版超全机器学习资料合集
@@ -143,6 +143,44 @@ http://www.51hei.com/bbs/dpj-92911-1.html
 55 apm源码介绍/crazyflie源码介绍（两个开源飞控） 
 http://blog.sina.com.cn/s/blog_402c071e0102v59r.html
 
+56 python 绘图matplotlib
+https://www.cnblogs.com/chaoren399/p/5792168.html
+
+57 python 数据处理numpy 矩阵运算/随机数/高斯噪声
+http://www.cnblogs.com/chamie/p/4870078.html
+
+58 python matplotlib 颜色
+https://www.cnblogs.com/darkknightzh/p/6117528.html
+
+59 开源飞控--天穹飞控
+http://bbs.loveuav.com/thread-11422-1-1.html
+
+60 卡尔曼-姿态/速度（可以看懂）
+http://bbs.loveuav.com/thread-11173-1-1.html
+
+61 中国国家图书馆
+http://mylib.nlc.cn/web/guest/home
+
+
+<<<<<python>>>>>
+1 time模块
+https://www.cnblogs.com/renpingsheng/p/6965044.html
+2 matplotlib动态画图
+https://blog.csdn.net/u013468614/article/details/58689735
+https://blog.csdn.net/xtingjie/article/details/71156743
+3 struct模块解析字节流
+https://www.cnblogs.com/yezl/p/5861787.html
+4 map函数
+https://www.cnblogs.com/superxuezhazha/p/5714970.html
+5 串口
+
+6 多线程
+https://www.cnblogs.com/xiaobeibei26/p/6481707.html
+
+
+<<<<<linux c>>>>>
+1  Linux下gcc编译生成动态链接库*.so文件
+https://www.cnblogs.com/huangxinzhen/p/4047051.html
 
 
 
