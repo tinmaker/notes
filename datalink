@@ -161,6 +161,14 @@ http://bbs.loveuav.com/thread-11173-1-1.html
 61 中国国家图书馆
 http://mylib.nlc.cn/web/guest/home
 
+62 用四元数互补滤波姿态（看了后明白了） 
+https://blog.csdn.net/u013608300/article/details/52459515
+
+63 四元数、欧拉角及方向余弦矩阵的相互转换公式
+https://blog.csdn.net/u012763833/article/details/50650995
+
+64 姿态篇：一.初识姿态估计(包括磁罗盘，方向余弦，从机体到惯性，从惯性到机体)
+https://www.jianshu.com/p/efffeb1e20aa
 
 <<<<<python>>>>>
 1 time模块
@@ -176,7 +184,8 @@ https://www.cnblogs.com/superxuezhazha/p/5714970.html
 
 6 多线程
 https://www.cnblogs.com/xiaobeibei26/p/6481707.html
-
+7 调用c/c++函数
+https://www.cnblogs.com/mypsq/p/6114838.html
 
 <<<<<linux c>>>>>
 1  Linux下gcc编译生成动态链接库*.so文件
