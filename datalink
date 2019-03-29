@@ -170,26 +170,68 @@ https://blog.csdn.net/u012763833/article/details/50650995
 64 姿态篇：一.初识姿态估计(包括磁罗盘，方向余弦，从机体到惯性，从惯性到机体)
 https://www.jianshu.com/p/efffeb1e20aa
 
+<<<<<px4>>>>>
+1 Pixhawk-姿态解算-互补滤波,pid
+https://blog.csdn.net/csshuke/article/details/78952911
+
+2 px4 log分析软件安装
+https://blog.csdn.net/spurmoon/article/details/85305517
+
+3 PIXHAWK飞控最新控制部分源码详解与分析(v 1.8.0)
+https://blog.csdn.net/lookije/article/details/82891266
+
 <<<<<python>>>>>
 1 time模块
 https://www.cnblogs.com/renpingsheng/p/6965044.html
+
 2 matplotlib动态画图
 https://blog.csdn.net/u013468614/article/details/58689735
 https://blog.csdn.net/xtingjie/article/details/71156743
+
 3 struct模块解析字节流
 https://www.cnblogs.com/yezl/p/5861787.html
+
 4 map函数
 https://www.cnblogs.com/superxuezhazha/p/5714970.html
 5 串口
 
 6 多线程
 https://www.cnblogs.com/xiaobeibei26/p/6481707.html
+
 7 调用c/c++函数
 https://www.cnblogs.com/mypsq/p/6114838.html
+
+
 
 <<<<<linux c>>>>>
 1  Linux下gcc编译生成动态链接库*.so文件
 https://www.cnblogs.com/huangxinzhen/p/4047051.html
+
+<<<<<linux>>>>>
+1 安装sogo输入法
+https://jingyan.baidu.com/article/b7001fe1a7d2c60e7382dd7c.html
+2 sublime_text 3中文支持
+https://blog.csdn.net/qq_27278957/article/details/76781149
+https://blog.csdn.net/qq_33349750/article/details/81408430
+3 sublime_text 3安装
+https://jingyan.baidu.com/article/e5c39bf5c840d039d7603336.html
+
+<<<<<vins>>>>>
+1 安装并运行VINS-Mono(去ros版本，带注释版本)
+https://blog.csdn.net/learning_tortosie/article/details/83182258
+
+2 VINS-Mono代码解读——状态估计器流程 estimator 写在初始化和非线性优化前
+https://blog.csdn.net/qq_41839222/article/details/86293038
+
+3 vins代码解析
+https://blog.csdn.net/qq_41839222/article/details/86293038
+
+4 vins代码解析， VINS 估计器之结构初始化
+https://www.cnblogs.com/easonslam/p/8881266.html
+
+<<<<<robot>>>>>
+1 白菜菜白主页 
+https://www.cnblogs.com/lvchaoshun/p/7816288.html
 
 
 
