@@ -2,7 +2,6 @@
 https://blog.csdn.net/qiuzhizhecsd/article/details/75093967
 2 PX4源码分析8_PX4的sensor校准
 https://blog.csdn.net/u010815257/article/details/77922880
-3 PX4开发指南(翻译官网，比较全）
 https://www.ncnynl.com/archives/201709/2049.html
 4 pixhawk的高度解算算法解读
 http://blog.sina.com.cn/s/blog_8fe4f2f40102wo50.html
@@ -45,37 +44,50 @@ https://blog.csdn.net/a13526758473/article/details/60468652
 
 19 STM32F429-Discovery 使用stlink-1.2.0 在Linux下烧写调试RTEMS
 https://www.linuxidc.com/Linux/2016-11/137469.htm
+
 20关于cannot open shared object file: No such file or directory 的解决
 https://blog.csdn.net/onlyellow/article/details/80633124
+
 21 福昕阅读器下载安装linux下
 https://www.foxitsoftware.cn/products/reader/
+
 22 构建Bootloader
 http://dev.px4.io/zh/software_update/stm32_bootloader.html
+
 23 树莓派 st-link master使用ST-LINK V2下载STM32程序 支持F0 F1 F2 等(安装stlink时，忘记了把49-stlinkv2.rules拷贝到/etc/udev/rules.d/，导致下载失败)
 https://blog.csdn.net/wang_shuai_ww/article/details/50325313
+
 24 ubuntu jlink 下载stm32程序
 https://blog.csdn.net/lc_cc/article/details/66982821
 https://blog.csdn.net/lc_cc/article/details/67671639
 
 25 进入px4的shell
 https://blog.csdn.net/lyonlui/article/details/53579133
+
 26 pixkawk 接口说明
 http://blog.sina.com.cn/s/blog_643af4310102wmov.html
 
 27 libopencm3 使用教程
 https://blog.csdn.net/zhengyangliu123/article/details/54925400
+
 28 pid详解有代码说的挺明白
 https://blog.csdn.net/gen_ye/article/details/52534609
+
 29 stm32 霍尔编码器
 https://blog.csdn.net/Susquehanna/article/details/77504066
+
 30 makfile 教程
 https://blog.csdn.net/linkcian/article/details/79152724
+
 31 px4 makefile详解
 https://blog.csdn.net/linkcian/article/details/79152724
+
 32  px4 makefile和cmakelists.txt
 https://blog.csdn.net/linux_kernel_fan/article/details/52993024
+
 33 cmake教程
 http://www.hahack.com/codes/cmake/#
+
 34 cmake教程
 https://www.ibm.com/developerworks/cn/linux/l-cn-cmake/
 
@@ -106,6 +118,7 @@ https://blog.csdn.net/heyijia0327/article/details/17487467
 
 43 机器人无人机相关教程，包括飞控（特别全）
 https://www.ncnynl.com/archives/201608/393.html
+
 44 Px4源码框架结构图 (挺全的)
 https://blog.csdn.net/senlin16888/article/details/51684274
 
@@ -135,7 +148,6 @@ https://blog.csdn.net/haxiongha/article/details/81707093
 
 53 收藏版超全机器学习资料合集
 https://blog.csdn.net/r1unw1w/article/details/79020437
-
 
 54 AHRS姿态解算说明(加速度+陀螺仪+磁力计原理及原始数据分析
 http://www.51hei.com/bbs/dpj-92911-1.html
@@ -170,6 +182,8 @@ https://blog.csdn.net/u012763833/article/details/50650995
 64 姿态篇：一.初识姿态估计(包括磁罗盘，方向余弦，从机体到惯性，从惯性到机体)
 https://www.jianshu.com/p/efffeb1e20aa
 
+
+
 <<<<<px4>>>>>
 1 Pixhawk-姿态解算-互补滤波,pid
 https://blog.csdn.net/csshuke/article/details/78952911
@@ -179,6 +193,29 @@ https://blog.csdn.net/spurmoon/article/details/85305517
 
 3 PIXHAWK飞控最新控制部分源码详解与分析(v 1.8.0)
 https://blog.csdn.net/lookije/article/details/82891266
+
+4 px4 mavlink程序结构
+https://blog.csdn.net/zinnc/article/details/84964006
+
+5 PX4混控矩阵的移植
+https://blog.csdn.net/qq_27016651/article/details/81123204
+
+6 offboard模式
+https://blog.csdn.net/Gen_Ye/article/details/61921437
+
+7 px4官网调参指南 多旋翼无人机PID调参指南
+https://blog.csdn.net/chaipp0607/article/details/55056761
+
+8 创客智造（专注于开源硬件和软件的学习和应用.Arduino，Raspberry Pi，树莓派，ROS机器人系统， Turtlebot，UAV无人机） 
+https://www.ncnynl.com/archives/201608/394.html
+
+9 PX4飞行模式-多旋翼
+https://blog.csdn.net/xiaoshuai537/article/details/72888126
+
+10 pixhawk mc_pos_control.cpp源码解读
+https://blog.csdn.net/czyv587/article/details/51728079
+
+
 
 <<<<<python>>>>>
 1 time模块
@@ -210,11 +247,19 @@ https://www.cnblogs.com/huangxinzhen/p/4047051.html
 <<<<<linux>>>>>
 1 安装sogo输入法
 https://jingyan.baidu.com/article/b7001fe1a7d2c60e7382dd7c.html
+
 2 sublime_text 3中文支持
 https://blog.csdn.net/qq_27278957/article/details/76781149
 https://blog.csdn.net/qq_33349750/article/details/81408430
+
 3 sublime_text 3安装
 https://jingyan.baidu.com/article/e5c39bf5c840d039d7603336.html
+
+4 opencv不同版本共存（cmake知识）
+https://blog.csdn.net/u011092188/article/details/77842002
+
+
+
 
 <<<<<vins>>>>>
 1 安装并运行VINS-Mono(去ros版本，带注释版本)
@@ -232,6 +277,19 @@ https://www.cnblogs.com/easonslam/p/8881266.html
 5 编译Pangolin错误
 https://blog.csdn.net/qq_29230261/article/details/87875630
 
+6 数据集
+https://projects.asl.ethz.ch/datasets/doku.php?id=kmavvisualinertialdatasets#downloads
+
+7 VINS-Mono 论文公式推导与代码解析
+https://blog.csdn.net/u011178262/article/details/88769414#23_VisionOnly_SFM_449
+
+8 关于讲解SVO的博客
+https://blog.csdn.net/u011722133/article/details/53258860
+
+9 SVO详细分析解读(讲清了svo的由来)
+https://blog.csdn.net/MAX_Hope/article/details/80070469
+
+
 
 <<<<<robot>>>>>
 1 白菜菜白主页 
@@ -241,4 +299,271 @@ https://www.cnblogs.com/lvchaoshun/p/7816288.html
 https://blog.csdn.net/electech6/article/details/85106803
 
 
+
+<<<<<qt>>>>>
+1 《细说 QML》里面有资料大全
+https://blog.csdn.net/liang19890820/article/details/58064240
+
+2  QML官方系列教程
+https://www.cnblogs.com/zfyouxi/p/5275450.html
+
+
+
+<<<<<单目视觉定位>>>>>
+1 OpenCV学习笔记（二十一）——简单的单目视觉测距尝试
+https://blog.csdn.net/weixin_41695564/article/details/80454055
+
+2 OpenCV单目视觉定位（测量）系统（新增 含代码）[思虑可以]
+https://blog.csdn.net/chenmohousuiyue/article/details/56300915
+
+3 【计算机视觉】opencv姿态解算5 OpenGL与OpenCV实现增强现实
+https://blog.csdn.net/KYJL888/article/details/71305425
+
+4 opencv中文网站（文档）
+http://www.opencv.org.cn/opencvdoc/2.3.2/html/doc/tutorials/imgproc/shapedescriptors/find_contours/find_contours.html?highlight=findcontours
+
+5 PnP 单目相机位姿估计（二）：solvePnP利用二维码求解相机世界坐标
+https://blog.csdn.net/cocoaqin/article/details/77848588
+
+6 python+opencv2相机位姿估计
+http://www.cnblogs.com/subic/p/8296794.html
+
+7 相机标定原理(很不错)
+https://www.cnblogs.com/Jessica-jie/p/6596450.html
+
+8 相机标定代码Python
+https://blog.csdn.net/u010128736/article/details/52875137
+
+9 opencv的实用研究--分析轮廓并寻找边界点
+https://www.cnblogs.com/jsxyhelu/p/5106760.html
+
+10 OpenCV中findcontours函数hierarchy轮廓层级详解
+https://blog.csdn.net/qq_33810188/article/details/81285867
+
+11 几何图形识别（带颜色）
+https://blog.51cto.com/gloomyfish/2104134?lb
+
+12 图像像素提取
+https://blog.csdn.net/yangxueyangxue/article/details/80781343
+
+13 实用OpenCV》(六) 图像中的形状（1）
+https://www.2cto.com/kf/201401/270283.html
+
+14 OpenCV中几何形状识别与测量
+https://blog.51cto.com/gloomyfish/2104134?lb
+https://blog.csdn.net/traumland/article/details/51419963
+
+15 opencv中特征检测算法
+https://blog.csdn.net/zhuisaozhang1292/article/details/80820200
+
+16 OpenCV学习笔记（十三）——SURF特征检测
+https://blog.csdn.net/weixin_41695564/article/details/80010335
+
+17 Opencv学习笔记三：Surf特征检测，实现图像匹配
+http://blog.sina.com.cn/s/blog_b0935ba90102wyly.html
+
+18 要点初见：OpenCV3中ORB特征提取算法的实现与分析（sift和surf要专利付费，orb opencv自带不需要）
+https://blog.csdn.net/m0_37857300/article/details/79037988
+
+19 opencv中的SIFT,SURF,ORB,FAST 特征描叙算子比较
+https://www.cnblogs.com/adong7639/p/4940139.html
+
+20 OpenCV探索之路（二十三）：特征检测和特征匹配方法汇总
+https://www.cnblogs.com/skyfsm/p/7401523.html
+
+21 matchshapes 
+https://blog.csdn.net/tc1hen/article/details/7969317
+
+22 手势识别
+https://blog.csdn.net/luoyouren/article/details/65633170
+
+23 opencv3寻找最小包围矩形-minAreaRect函数
+https://blog.csdn.net/qq_23880193/article/details/49257529
+
+24 三角形的五心：内心、外心、重心、垂心、旁心，都在这了，全讲明白
+http://baijiahao.baidu.com/s?id=1603137927895039241&wfr=spider&for=pc
+
+25 图像的质心（重心）
+https://www.cnblogs.com/muffled/p/3344500.html
+
+26 OpenCv--形态学操作(膨胀,腐蚀,开操作,闭操作)
+https://blog.csdn.net/qq_39861376/article/details/82111292
+
+27 opencv 读取视频、打开摄像头、写入视频文件
+https://blog.csdn.net/hust_bochu_xuchao/article/details/52221865
+
+28 【OpenCV3】几何图形（直线、矩形、圆、椭圆、多边形等）绘制
+https://blog.csdn.net/guduruyu/article/details/68490206
+
+29 OpenCV基础——threshold函数的使用
+https://blog.csdn.net/u012566751/article/details/77046445
+
+30 opencv中3D点根据相机参数投影成2D点+solvePnP函数计算相机姿态+2D坐标到3D+相机参数calibration(标定与配准，求得深度彩色相机的内参与外参，再进行配准)
+https://blog.csdn.net/baidu_26408419/article/details/54381756
+
+31 【计算机视觉】opencv姿态解算6 理论算法调研 PNP问题 5种算法
+https://blog.csdn.net/KYJL888/article/details/71305451
+
+32 opencv靶标相机姿态解算3 根据两幅图像的位姿估计结果求某点的世界坐标 （三维重建）
+https://blog.csdn.net/KYJL888/article/details/71305271
+
+33 opencv 目录解析
+https://blog.csdn.net/wenhaopeter/article/details/82226423
+https://blog.csdn.net/zmdsjtu/article/details/54924727
+
+34 镜头畸变矫正
+https://blog.csdn.net/waeceo/article/details/50580808
+
+35 SLAM入门之视觉里程计(1)：特征点的匹配
+https://www.cnblogs.com/wangguchangqing/p/8076061.html
+
+36 相机位姿估计（5篇文章）
+http://www.cnblogs.com/singlex/p/pose_estimation_1.html
+
+37 OpenCV学习篇2：viz模块简单用法
+https://blog.csdn.net/robinhjwy/article/details/78570166
+https://www.cnblogs.com/shang-slam/p/6545578.html
+
+38 如何在Ubuntu16.04下在QT界面下调用ROS的librviz?
+https://blog.csdn.net/qq_30460905/article/details/79210300
+
+40 利用Opencv提供的imencode和imdecode进行图像视频传输
+https://blog.csdn.net/qq_37406130/article/details/78820176
+
+41 OpenCV开发]OpenCV图像编码和解码 imencode和imdecode使用，用于网络传输图片
+https://blog.csdn.net/LG1259156776/article/details/69789263
+
+42 《OpenCV支持的图片格式》
+https://blog.csdn.net/mars_xiaolei/article/details/78890971
+
+43 opencv设置曝光无效的解决办法
+https://blog.csdn.net/greenlight_74110/article/details/82798136
+
+44 opencv所有版本文档
+https://docs.opencv.org/
+https://docs.opencv.org/4.1.0/
+
+45 自动曝光
+https://blog.csdn.net/htjacky/article/details/78588953
+
+
+
+<<<<<vtk>>>>>
+1 从零开始学习VTK
+https://blog.csdn.net/www_doling_net/article/details/8532492
+
+
+
+<<<<<c++>>>>>
+1 C/C++类库大全（附github连接）
+https://blog.csdn.net/qq_39850605/article/details/84789611
+https://github.com/jobbole/awesome-cpp-cn
+
+
+
+<<<<<eigen>>>>>
+1 Eigen中四元数、欧拉角、旋转矩阵、旋转向量之间的转换
+https://blog.csdn.net/yang__jing/article/details/82316093
+
+
+<<<<<other>>>>>
+1 手机就是开发板
+https://blog.csdn.net/aggresss/article/details/53364324
+2 Android手机制作过程
+https://edu.51cto.com/center/course/lesson/index?id=12530
+
+3 嵌入式视觉厂商（有相关知识）
+https://www.baslerweb.com/cn/sales-support/downloads/document-downloads/fundamentals-of-image-processing/
+
+4 路由器开发
+http://forgotfun.org/2018/12/%E8%B7%9F%E7%9D%80%E4%BD%90%E5%A4%A7%E7%8E%A9%E8%B7%AF%E7%94%B1-%E8%B7%AF%E7%94%B1%E5%99%A8%E4%B8%BB%E6%9D%BF%E7%AF%87.html
+
+5 路由器就是开发板
+https://blog.csdn.net/aggresss/article/details/52753098
+
+6 百度网盘下载：大量网站开发视频、文档VIP资源
+https://www.douban.com/group/topic/93844790/
+
+7 开源
+https://blog.csdn.net/u012814946/article/details/53040048
+
+8 Q 语言初学者系列：(1)开门篇
+https://blog.csdn.net/kraussyin/article/details/47036333
+
+9 【深入浅出多旋翼飞控开发】系列教程
+https://blog.csdn.net/loveuav/article/details/81747211
+
+10 origin pro科学用途数据绘图与数据分析处理工具
+http://www.xue51.com/soft/4335.html
+
+
+
+
+<<<<<v4l2>>>>>
+1 v4l2 
+https://www.cnblogs.com/emouse/archive/2013/03/04/2943243.html
+https://www.cnblogs.com/edver/p/7749628.html
+
+2 V4L2应用程序框架
+https://www.cnblogs.com/hzhida/archive/2012/05/29/2524397.html
+https://my.oschina.net/u/1024767/blog/210801
+https://www.kernel.org/doc/html/latest/media/uapi/v4l/vidioc-g-crop.html
+https://blog.csdn.net/smilefyx/article/details/39555289
+
+
+3 v4l2 曝光档次
+https://blog.csdn.net/lihuajie1003/article/details/76174868
+
+4 V4L2下摄像头的详细参数调整
+https://blog.csdn.net/qq_41248872/article/details/87928783
+
+
+1 无人机——开源飞控简介
+https://blog.csdn.net/u012814946/article/details/53040048 
+
+
+1 旋转矩阵（Rotation Matrix）的推导及其应用
+https://www.cnblogs.com/meteoric_cry/p/7987548.html
+
+
+
+<<<<<算法>>>>>
+1 RANSAC随机抽样一致算法算法讲解(从一堆数据中挑出正确数据)
+https://blog.csdn.net/qq_32865355/article/details/79405921
+
+
+<<<<<<wifi广播>>>>>>>
+1 EZ-WifiBroadcast低成本远距离高清图传系统基础教程
+http://bbs.5imx.com/forum.php?mod=viewthread&tid=1446126
+
+2 Linux无线网络管理命令(ip/iw/iwconfig/iwlist/ifconfig/wpa_supplicant)
+https://blog.csdn.net/DXCyber409/article/details/80574111
+https://blog.csdn.net/a_tu_/article/details/51982976
+https://github.com/rodizio1/EZ-WifiBroadcast/wiki
+3 UDP sendto和recvfrom使用详解
+http://velep.com/archives/934.html
+
+4 libpcap使用
+https://blog.csdn.net/htttw/article/details/7521053
+
+5 libpcap官网
+http://www.tcpdump.org/#documentation
+
+6 libpcap 中文文档
+https://sqh.me/tech/man-pcap/
+
+7 linux man手册 
+https://linux.die.net/man/3/
+
+8 802.11协议
+https://baijiahao.baidu.com/s?id=1610824692711498765&wfr=spider&for=pc
+
+9 Linux 环境下开启wifi热点
+https://blog.csdn.net/weijinqian0/article/details/51812242
+
+10 查看ubuntu无线网卡是否支持AP(master )模式( 无线网卡的工作模式)
+https://blog.csdn.net/ccfeng2008/article/details/8239658
+
+11 ubuntu14.04开启wifi热点（有报错处理）
+https://www.cnblogs.com/fah936861121/articles/7501619.html
 
