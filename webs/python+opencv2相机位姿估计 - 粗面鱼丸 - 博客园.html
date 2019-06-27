@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="zh-cn"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="origin">
+    <title>python+opencv2相机位姿估计 - 粗面鱼丸 - 博客园</title>
+<meta property="og:description" content="最近在做基于图像的室内定位方面的研究，于是使用到了百度最新的室内数据库Image-based Localization (IBL) 。由于该数据库给出的数据是每幅图像和其对应相机的内外参数和光心投影方">
+    <link type="text/css" rel="stylesheet" href="python+opencv2%E7%9B%B8%E6%9C%BA%E4%BD%8D%E5%A7%BF%E4%BC%B0%E8%AE%A1%20-%20%E7%B2%97%E9%9D%A2%E9%B1%BC%E4%B8%B8%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/blog-common.css">
+<link id="MainCss" type="text/css" rel="stylesheet" href="python+opencv2%E7%9B%B8%E6%9C%BA%E4%BD%8D%E5%A7%BF%E4%BC%B0%E8%AE%A1%20-%20%E7%B2%97%E9%9D%A2%E9%B1%BC%E4%B8%B8%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/bundle-summerGarden.css">
+<link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="python+opencv2%E7%9B%B8%E6%9C%BA%E4%BD%8D%E5%A7%BF%E4%BC%B0%E8%AE%A1%20-%20%E7%B2%97%E9%9D%A2%E9%B1%BC%E4%B8%B8%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/bundle-summerGarden-mobile.css">
+    <link title="RSS" type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/subic/rss">
+    <link title="RSD" type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/subic/rsd.xml">
+<link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/subic/wlwmanifest.xml">
+    <script src="python+opencv2%E7%9B%B8%E6%9C%BA%E4%BD%8D%E5%A7%BF%E4%BC%B0%E8%AE%A1%20-%20%E7%B2%97%E9%9D%A2%E9%B1%BC%E4%B8%B8%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/osd.js"></script><script src="python+opencv2%E7%9B%B8%E6%9C%BA%E4%BD%8D%E5%A7%BF%E4%BC%B0%E8%AE%A1%20-%20%E7%B2%97%E9%9D%A2%E9%B1%BC%E4%B8%B8%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/pubads_impl_rendering_2019050901.js"></script><script async="" src="python+opencv2%E7%9B%B8%E6%9C%BA%E4%BD%8D%E5%A7%BF%E4%BC%B0%E8%AE%A1%20-%20%E7%B2%97%E9%9D%A2%E9%B1%BC%E4%B8%B8%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/analytics.js"></script><script type="text/javascript" src="python+opencv2%E7%9B%B8%E6%9C%BA%E4%BD%8D%E5%A7%BF%E4%BC%B0%E8%AE%A1%20-%20%E7%B2%97%E9%9D%A2%E9%B1%BC%E4%B8%B8%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/encoder.js"></script><script src="python+opencv2%E7%9B%B8%E6%9C%BA%E4%BD%8D%E5%A7%BF%E4%BC%B0%E8%AE%A1%20-%20%E7%B2%97%E9%9D%A2%E9%B1%BC%E4%B8%B8%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/jquery-2.js"></script>
+    <script>var currentBlogId=268811;var currentBlogApp='subic',cb_enable_mathjax=false;var isLogined=false;</script>
+    <script src="python+opencv2%E7%9B%B8%E6%9C%BA%E4%BD%8D%E5%A7%BF%E4%BC%B0%E8%AE%A1%20-%20%E7%B2%97%E9%9D%A2%E9%B1%BC%E4%B8%B8%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/blog-common.js" type="text/javascript"></script>
+<link rel="preload" href="python+opencv2%E7%9B%B8%E6%9C%BA%E4%BD%8D%E5%A7%BF%E4%BC%B0%E8%AE%A1%20-%20%E7%B2%97%E9%9D%A2%E9%B1%BC%E4%B8%B8%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/integrator.js" as="script"><script type="text/javascript" src="python+opencv2%E7%9B%B8%E6%9C%BA%E4%BD%8D%E5%A7%BF%E4%BC%B0%E8%AE%A1%20-%20%E7%B2%97%E9%9D%A2%E9%B1%BC%E4%B8%B8%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/integrator.js"></script><script src="python+opencv2%E7%9B%B8%E6%9C%BA%E4%BD%8D%E5%A7%BF%E4%BC%B0%E8%AE%A1%20-%20%E7%B2%97%E9%9D%A2%E9%B1%BC%E4%B8%B8%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/pubads_impl_2019050901.js" async=""></script></head>
+<body>
+<a name="top"></a>
+
+
+<!--done-->
+<div id="home">
+<div id="header">
+	<div id="blogTitle">
+	<a id="lnkBlogLogo" href="https://www.cnblogs.com/subic/"><img id="blogLogo" src="python+opencv2%E7%9B%B8%E6%9C%BA%E4%BD%8D%E5%A7%BF%E4%BC%B0%E8%AE%A1%20-%20%E7%B2%97%E9%9D%A2%E9%B1%BC%E4%B8%B8%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/logo.gif" alt="返回主页"></a>			
+		
+<!--done-->
+<h1><a id="Header1_HeaderTitle" class="headermaintitle" href="https://www.cnblogs.com/subic/">subic</a></h1>
+<h2></h2>
+
+
+
+		
+	</div><!--end: blogTitle 博客的标题和副标题 -->
+	<div id="navigator">
+		
+<ul id="navList">
+	<li><a id="blog_nav_sitehome" class="menu" href="https://www.cnblogs.com/">博客园</a></li>
+	<li><a id="blog_nav_myhome" class="menu" href="https://www.cnblogs.com/subic/">首页</a></li>
+	<li><a href="http://news.cnblogs.com/">新闻</a></li>
+	<li><a id="blog_nav_newpost" class="menu" rel="nofollow" href="https://i.cnblogs.com/EditPosts.aspx?opt=1">新随笔</a></li>
+	<li><a id="blog_nav_contact" accesskey="9" class="menu" rel="nofollow" href="https://msg.cnblogs.com/send/%E7%B2%97%E9%9D%A2%E9%B1%BC%E4%B8%B8">联系</a></li>
+	<li><a id="blog_nav_admin" class="menu" rel="nofollow" href="https://i.cnblogs.com/">管理</a></li>
+	<li><a id="blog_nav_rss" class="menu" href="https://www.cnblogs.com/subic/rss">订阅</a>
+	<a id="blog_nav_rss_image" class="aHeaderXML" href="https://www.cnblogs.com/subic/rss"><img src="python+opencv2%E7%9B%B8%E6%9C%BA%E4%BD%8D%E5%A7%BF%E4%BC%B0%E8%AE%A1%20-%20%E7%B2%97%E9%9D%A2%E9%B1%BC%E4%B8%B8%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/xml.gif" alt="订阅"></a></li>
+</ul>
+
+
+		<div class="blogStats">
+			
+			<div id="blog_stats">
+<!--done-->
+随笔- 18&nbsp;
+文章- 0&nbsp;
+评论- 35&nbsp;
+</div>
+			
+		</div><!--end: blogStats -->
+	</div><!--end: navigator 博客导航栏 -->
+</div><!--end: header 头部 -->
+
+<div id="main">
+	<div id="mainContent">
+	<div class="forFlow">
+		
+        <div id="post_detail">
+<!--done-->
+<div id="topics">
+	<div class="post">
+		<h1 class="postTitle">
+			<a id="cb_post_title_url" class="postTitle2" href="https://www.cnblogs.com/subic/p/8296794.html">python+opencv2相机位姿估计</a>
+		</h1>
+		<div class="clear"></div>
+		<div class="postBody">
+			<div id="cnblogs_post_body" class="blogpost-body"><p>最近在做基于图像的室内定位方面的研究，于是使用到了百度最新的室内数据库<span class="fontstyle0">Image-based Localization (IBL) 。由于该数据库给出的数据是每幅图像和其对应相机的内外参数和光心投影方向，所以我需要先求出其6DOF预估姿态。再利用PoseNet网络对其实现基于图像的定位估计。好了，问题就很明确了：</span></p>
+<p><span class="fontstyle0">(1)根据图像和激光雷达参数的3D点云实现2D-3D的匹配，找到每张图像上的至少四个特征点。即找到至少4个二维像素和3D点云点的对应点。<br></span></p>
+<p><span class="fontstyle0">(2)根据这四组对应点和相机内外参数估计相机6DOF，即相机姿态。</span></p>
+<p><span class="fontstyle0">今天先实现第二个问题。很幸运网上有这样几篇博客已经将相机位姿整个过程讲的比较清楚了http://www.cnblogs.com/singlex/p/pose_estimation_1.html。</span></p>
+<p><span class="fontstyle0">但这篇文章是由c++写的，我在python上简单的对其进行了验证。</span></p>
+<p><span class="fontstyle0"><img src="python+opencv2%E7%9B%B8%E6%9C%BA%E4%BD%8D%E5%A7%BF%E4%BC%B0%E8%AE%A1%20-%20%E7%B2%97%E9%9D%A2%E9%B1%BC%E4%B8%B8%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/899363-20180116145825803-670044949.jpg" alt="" width="554" height="312"></span></p>
+<p><span class="fontstyle0">这是这张图给出的数据。</span></p>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="python+opencv2%E7%9B%B8%E6%9C%BA%E4%BD%8D%E5%A7%BF%E4%BC%B0%E8%AE%A1%20-%20%E7%B2%97%E9%9D%A2%E9%B1%BC%E4%B8%B8%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/copycode.gif" alt="复制代码"></a></span></div>
+<pre><span style="color: #0000ff;">import</span><span style="color: #000000;"> cv2
+</span><span style="color: #0000ff;">import</span><span style="color: #000000;"> numpy as np
+</span><span style="color: #0000ff;">import</span><span style="color: #000000;"> math
+object_3d_points </span>=<span style="color: #000000;"> np.array(([0, 0, 0],
+                            [0, </span>200<span style="color: #000000;">, 0],
+                            [</span>150<span style="color: #000000;">, 0, 0],
+                            [</span>150, 200, 0]), dtype=<span style="color: #000000;">np.double)
+object_2d_point </span>= np.array(([2985, 1688<span style="color: #000000;">],
+                            [</span>5081, 1690<span style="color: #000000;">],
+                            [</span>2997, 2797<span style="color: #000000;">],
+                            [</span>5544, 2757]), dtype=<span style="color: #000000;">np.double)
+camera_matrix </span>= np.array(([6800.7, 0, 3065.8<span style="color: #000000;">],
+                         [0, </span>6798.1, 1667.6<span style="color: #000000;">],
+                         [0, 0, </span>1.0]), dtype=<span style="color: #000000;">np.double)
+dist_coefs </span>= np.array([-0.189314, 0.444657, -0.00116176, 0.00164877, -2.57547], dtype=<span style="color: #000000;">np.double)
+</span><span style="color: #008000;">#</span><span style="color: #008000;"> 求解相机位姿</span>
+found, rvec, tvec =<span style="color: #000000;"> cv2.solvePnP(object_3d_points, object_2d_point, camera_matrix, dist_coefs)
+rotM </span>=<span style="color: #000000;"> cv2.Rodrigues(rvec)[0]
+camera_postion </span>= -np.matrix(rotM).T *<span style="color: #000000;"> np.matrix(tvec)
+</span><span style="color: #0000ff;">print</span><span style="color: #000000;">(camera_postion.T)
+</span><span style="color: #008000;">#</span><span style="color: #008000;"> 验证根据博客http://www.cnblogs.com/singlex/p/pose_estimation_1.html提供方法求解相机位姿</span><span style="color: #008000;">
+#</span><span style="color: #008000;"> 计算相机坐标系的三轴旋转欧拉角，旋转后可以转出世界坐标系。旋转顺序z,y,x</span>
+thetaZ = math.atan2(rotM[1, 0], rotM[0, 0])*180.0/<span style="color: #000000;">math.pi
+thetaY </span>= math.atan2(-1.0*rotM[2, 0], math.sqrt(rotM[2, 1]**2 + rotM[2, 2]**2))*180.0/<span style="color: #000000;">math.pi
+thetaX </span>= math.atan2(rotM[2, 1], rotM[2, 2])*180.0/<span style="color: #000000;">math.pi
+</span><span style="color: #008000;">#</span><span style="color: #008000;"> 相机坐标系下值</span>
+x =<span style="color: #000000;"> tvec[0]
+y </span>= tvec[1<span style="color: #000000;">]
+z </span>= tvec[2<span style="color: #000000;">]
+</span><span style="color: #008000;">#</span><span style="color: #008000;"> 进行三次旋转</span>
+<span style="color: #0000ff;">def</span><span style="color: #000000;"> RotateByZ(Cx, Cy, thetaZ):
+    rz </span>= thetaZ*math.pi/180.0<span style="color: #000000;">
+    outX </span>= math.cos(rz)*Cx - math.sin(rz)*<span style="color: #000000;">Cy
+    outY </span>= math.sin(rz)*Cx + math.cos(rz)*<span style="color: #000000;">Cy
+    </span><span style="color: #0000ff;">return</span><span style="color: #000000;"> outX, outY
+</span><span style="color: #0000ff;">def</span><span style="color: #000000;"> RotateByY(Cx, Cz, thetaY):
+    ry </span>= thetaY*math.pi/180.0<span style="color: #000000;">
+    outZ </span>= math.cos(ry)*Cz - math.sin(ry)*<span style="color: #000000;">Cx
+    outX </span>= math.sin(ry)*Cz + math.cos(ry)*<span style="color: #000000;">Cx
+    </span><span style="color: #0000ff;">return</span><span style="color: #000000;"> outX, outZ
+</span><span style="color: #0000ff;">def</span><span style="color: #000000;"> RotateByX(Cy, Cz, thetaX):
+    rx </span>= thetaX*math.pi/180.0<span style="color: #000000;">
+    outY </span>= math.cos(rx)*Cy - math.sin(rx)*<span style="color: #000000;">Cz
+    outZ </span>= math.sin(rx)*Cy + math.cos(rx)*<span style="color: #000000;">Cz
+    </span><span style="color: #0000ff;">return</span><span style="color: #000000;"> outY, outZ
+(x, y) </span>= RotateByZ(x, y, -1.0*<span style="color: #000000;">thetaZ)
+(x, z) </span>= RotateByY(x, z, -1.0*<span style="color: #000000;">thetaY)
+(y, z) </span>= RotateByX(y, z, -1.0*<span style="color: #000000;">thetaX)
+Cx </span>= x*-1<span style="color: #000000;">
+Cy </span>= y*-1<span style="color: #000000;">
+Cz </span>= z*-1
+<span style="color: #008000;">#</span><span style="color: #008000;"> 输出相机位置</span>
+<span style="color: #0000ff;">print</span><span style="color: #000000;">(Cx, Cy, Cz)
+</span><span style="color: #008000;">#</span><span style="color: #008000;"> 输出相机旋转角</span>
+<span style="color: #0000ff;">print</span><span style="color: #000000;">(thetaX, thetaY, thetaZ)
+</span><span style="color: #008000;">#</span><span style="color: #008000;"> 对第五个点进行验证</span>
+Out_matrix = np.concatenate((rotM, tvec), axis=1<span style="color: #000000;">)
+pixel </span>=<span style="color: #000000;"> np.dot(camera_matrix, Out_matrix)
+pixel1 </span>= np.dot(pixel, np.array([0, 100, 105, 1], dtype=<span style="color: #000000;">np.double))
+pixel2 </span>= pixel1/pixel1[2<span style="color: #000000;">]
+</span><span style="color: #0000ff;">print</span>(pixel2)</pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="python+opencv2%E7%9B%B8%E6%9C%BA%E4%BD%8D%E5%A7%BF%E4%BC%B0%E8%AE%A1%20-%20%E7%B2%97%E9%9D%A2%E9%B1%BC%E4%B8%B8%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/copycode.gif" alt="复制代码"></a></span></div></div>
+<p>输出结果</p>
+<div class="cnblogs_code">
+<p>[[ 528.66321122 -2.88452091 358.60341802]]<br>[ 528.66321122] [-2.88452091] [ 358.60341802]<br>178.3558701005234 56.02221316618043 88.63218026484252<br>[  4.15960851e+03   6.73694373e+02   1.00000000e+00]</p>
+</div>
+<p>验证结果证明确实python代码6行就求解出了相机6DOF位姿估计，厉害！通过验证第5个点[0, 100, 105]对应像素点[4159.6, 673.69]和真实像素位置[4146, 673]相差不大。</p>
+<p>　　</p>
+<p>&nbsp;</p></div><div id="MySignature"></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+<div id="BlogPostCategory"></div>
+<div id="EntryTag">标签: <a href="https://www.cnblogs.com/subic/tag/python/">python</a>, <a href="https://www.cnblogs.com/subic/tag/opencv/">opencv</a>, <a href="https://www.cnblogs.com/subic/tag/%E7%9B%B8%E6%9C%BA%E4%BD%8D%E5%A7%BF%E4%BC%B0%E8%AE%A1/">相机位姿估计</a></div>
+<div id="blog_post_info"><div id="green_channel">
+        <a href="javascript:void(0);" id="green_channel_digg" onclick="DiggIt(8296794,cb_blogId,1);green_channel_success(this,'谢谢推荐！');">好文要顶</a>
+            <a id="green_channel_follow" onclick="follow('005e7a5e-65dd-e511-9fc1-ac853d9f53cc');" href="javascript:void(0);">关注我</a>
+    <a id="green_channel_favorite" onclick="AddToWz(cb_entryId);return false;" href="javascript:void(0);">收藏该文</a>
+    <a id="green_channel_weibo" href="javascript:void(0);" title="分享至新浪微博" onclick="ShareToTsina()"><img src="python+opencv2%E7%9B%B8%E6%9C%BA%E4%BD%8D%E5%A7%BF%E4%BC%B0%E8%AE%A1%20-%20%E7%B2%97%E9%9D%A2%E9%B1%BC%E4%B8%B8%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/icon_weibo_24.png" alt=""></a>
+    <a id="green_channel_wechat" href="javascript:void(0);" title="分享至微信" onclick="shareOnWechat()"><img src="python+opencv2%E7%9B%B8%E6%9C%BA%E4%BD%8D%E5%A7%BF%E4%BC%B0%E8%AE%A1%20-%20%E7%B2%97%E9%9D%A2%E9%B1%BC%E4%B8%B8%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/wechat.png" alt=""></a>
+</div>
+<div id="author_profile">
+    <div id="author_profile_info" class="author_profile_info">
+            <a href="http://home.cnblogs.com/u/subic/" target="_blank"><img src="python+opencv2%E7%9B%B8%E6%9C%BA%E4%BD%8D%E5%A7%BF%E4%BC%B0%E8%AE%A1%20-%20%E7%B2%97%E9%9D%A2%E9%B1%BC%E4%B8%B8%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/20170315112257.png" class="author_avatar" alt=""></a>
+        <div id="author_profile_detail" class="author_profile_info">
+            <a href="http://home.cnblogs.com/u/subic/">粗面鱼丸</a><br>
+            <a href="http://home.cnblogs.com/u/subic/followees">关注 - 4</a><br>
+            <a href="http://home.cnblogs.com/u/subic/followers">粉丝 - 15</a>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div id="author_profile_honor"></div>
+    <div id="author_profile_follow">
+                <a href="javascript:void(0);" onclick="follow('005e7a5e-65dd-e511-9fc1-ac853d9f53cc');return false;">+加关注</a>
+    </div>
+</div>
+<div id="div_digg">
+    <div class="diggit" onclick="votePost(8296794,'Digg')">
+        <span class="diggnum" id="digg_count">0</span>
+    </div>
+    <div class="buryit" onclick="votePost(8296794,'Bury')">
+        <span class="burynum" id="bury_count">0</span>
+    </div>
+    <div class="clear"></div>
+    <div class="diggword" id="digg_tips">
+    </div>
+</div>
+<script type="text/javascript">
+    currentDiggType = 0;
+</script></div>
+<div class="clear"></div>
+<div id="post_next_prev"><a href="https://www.cnblogs.com/subic/p/8110478.html" class="p_n_p_prefix">« </a> 上一篇：<a href="https://www.cnblogs.com/subic/p/8110478.html" title="发布于2017-12-25 17:51">Image Style Transfer：多风格 TensorFlow 实现</a><br><a href="https://www.cnblogs.com/subic/p/8454025.html" class="p_n_p_prefix">» </a> 下一篇：<a href="https://www.cnblogs.com/subic/p/8454025.html" title="发布于2018-02-19 17:59">怎么理解np.random.seed()?</a><br></div>
+</div>
+
+
+		</div>
+		<div class="postDesc">posted @ <span id="post-date">2018-01-16 15:16</span> <a href="https://www.cnblogs.com/subic/">粗面鱼丸</a> 阅读(<span id="post_view_count">1401</span>) 评论(<span id="post_comment_count">0</span>)  <a href="https://i.cnblogs.com/EditPosts.aspx?postid=8296794" rel="nofollow">编辑</a> <a href="#" onclick="AddToWz(8296794);return false;">收藏</a></div>
+	</div>
+	<script type="text/javascript">var allowComments=true,cb_blogId=268811,cb_entryId=8296794,cb_blogApp=currentBlogApp,cb_blogUserGuid='005e7a5e-65dd-e511-9fc1-ac853d9f53cc',cb_entryCreatedDate='2018/1/16 15:16:00';loadViewCount(cb_entryId);var cb_postType=1;var isMarkdown=false;</script>
+	
+</div><!--end: topics 文章、评论容器-->
+</div><a name="!comments"></a><div id="blog-comments-placeholder"></div><script type="text/javascript">var commentManager = new blogCommentManager();commentManager.renderComments(0);</script>
+<div id="comment_form" class="commentform">
+<a name="commentform"></a>
+<div id="divCommentShow"></div>
+<div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="#" onclick="return RefreshPage();">刷新页面</a><a href="#top">返回顶部</a></div>
+<div id="comment_form_container"><div class="login_tips">注册用户登录后才能发表评论，请 <a rel="nofollow" href="javascript:void(0);" class="underline" onclick="return login('commentform');">登录</a> 或 <a rel="nofollow" href="javascript:void(0);" class="underline" onclick="return register();">注册</a>，<a href="http://www.cnblogs.com/">访问</a>网站首页。</div></div>
+<div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+<div id="ad_t2"><a href="http://www.ucancode.com/index.htm" target="_blank" onclick="ga('send', 'event', 'Link', 'click', 'T2-工控')">【推荐】超50万C++/C#源码: 大型实时仿真组态图形源码</a><br><a href="https://www.bagevent.com/event/2195041?bag_track=13072958" target="_blank" onclick="ga('send', 'event', 'Link', 'click', 'T2-看雪')">【活动】看雪2019安全开发者峰会，共话安全领域焦点</a><br><a href="https://ke.qq.com/adActivity.html?name=xiangxueketang2" target="_blank" onclick="ga('send', 'event', 'Link', 'click', 'T2-享学')">【培训】Java程序员年薪40W，他1年走了别人5年的路</a><br></div>
+<div id="opt_under_post"></div>
+<script async="async" src="python+opencv2%E7%9B%B8%E6%9C%BA%E4%BD%8D%E5%A7%BF%E4%BC%B0%E8%AE%A1%20-%20%E7%B2%97%E9%9D%A2%E9%B1%BC%E4%B8%B8%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/gpt.js"></script>
+<script>
+  var googletag = googletag || {};
+  googletag.cmd = googletag.cmd || [];
+</script>
+<script>
+  googletag.cmd.push(function() {
+        googletag.defineSlot('/1090369/C1', [300, 250], 'div-gpt-ad-1546353474406-0').addService(googletag.pubads());
+        googletag.defineSlot('/1090369/C2', [468, 60], 'div-gpt-ad-1539008685004-0').addService(googletag.pubads());
+        googletag.pubads().enableSingleRequest();
+        googletag.enableServices();
+  });
+</script>
+<div id="cnblogs_c1" class="c_ad_block">
+    <div id="div-gpt-ad-1546353474406-0" style="height:250px; width:300px;" data-google-query-id="CMzEot-CneICFQVcvQodyIEAeg"><div id="google_ads_iframe_/1090369/C1_0__container__" style="border: 0pt none;"><iframe id="google_ads_iframe_/1090369/C1_0" title="3rd party ad content" name="google_ads_iframe_/1090369/C1_0" scrolling="no" marginwidth="0" marginheight="0" style="border: 0px none; vertical-align: bottom;" srcdoc="" data-google-container-id="1" data-load-complete="true" width="300" height="250" frameborder="0"></iframe></div></div>
+</div>
+<div id="under_post_news" style="display: none;"></div>
+<div id="cnblogs_c2" class="c_ad_block">
+    <div id="div-gpt-ad-1539008685004-0" style="height:60px; width:468px;" data-google-query-id="CM3Eot-CneICFQVcvQodyIEAeg"><div id="google_ads_iframe_/1090369/C2_0__container__" style="border: 0pt none;"><iframe id="google_ads_iframe_/1090369/C2_0" title="3rd party ad content" name="google_ads_iframe_/1090369/C2_0" scrolling="no" marginwidth="0" marginheight="0" style="border: 0px none; vertical-align: bottom;" srcdoc="" data-google-container-id="2" data-load-complete="true" width="468" height="60" frameborder="0"></iframe></div></div>
+</div>
+<div id="under_post_kb"><div class="itnews c_ad_block"><b>最新新闻</b>：<br> ·  <a href="https://news.cnblogs.com/n/625332/" target="_blank">日本显示器公司连续第五年亏损 宣布裁员1000人</a><br> ·  <a href="https://news.cnblogs.com/n/625331/" target="_blank">深网|万达百货更名苏宁易购广场 改造店5月底亮相</a><br> ·  <a href="https://news.cnblogs.com/n/625330/" target="_blank">圈重点！腾讯全球数字生态大会带来不一样的智慧医疗</a><br> ·  <a href="https://news.cnblogs.com/n/625329/" target="_blank">3岁娃成“社交万人迷”？别再被天价“情商培训班”忽悠了</a><br> ·  <a href="https://news.cnblogs.com/n/625328/" target="_blank">国产手机十年厮杀过后，为何只剩下华为带着米OV?</a><br>» <a href="http://news.cnblogs.com/" title="IT新闻" target="_blank">更多新闻...</a></div></div>
+<div id="HistoryToday" class="c_ad_block"></div>
+<script type="text/javascript">
+ if(enablePostBottom()) {
+    codeHighlight();
+    fixPostBody();
+    setTimeout(function () { incrementViewCount(cb_entryId); }, 50);
+    deliverT2();
+    deliverC1();
+    deliverC2();    
+    loadNewsAndKb();
+    loadBlogSignature();
+    LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+    GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+    loadOptUnderPost();
+    GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);  
+}
+</script>
+</div>
+
+    
+	</div><!--end: forFlow -->
+	</div><!--end: mainContent 主体内容容器-->
+
+	<div id="sideBar">
+		<div id="sideBarMain">
+			
+<!--done-->
+<div class="newsItem">
+<h3 class="catListTitle">公告</h3>
+	<div id="blog-news"><div id="profile_block">昵称：<a href="https://home.cnblogs.com/u/subic/">粗面鱼丸</a><br>园龄：<a href="https://home.cnblogs.com/u/subic/" title="入园时间：2016-02-27">3年2个月</a><br>粉丝：<a href="https://home.cnblogs.com/u/subic/followers/">15</a><br>关注：<a href="https://home.cnblogs.com/u/subic/followees/">4</a><div id="p_b_follow"><a href="javascript:void(0);" onclick="follow('005e7a5e-65dd-e511-9fc1-ac853d9f53cc')">+加关注</a></div><script>getFollowStatus('005e7a5e-65dd-e511-9fc1-ac853d9f53cc')</script></div></div><script type="text/javascript">loadBlogNews();</script>
+</div>
+
+			<div id="calendar"><div id="blog-calendar" style=""><table id="blogCalendar" class="Cal" title="Calendar" cellspacing="0" cellpadding="0">
+	<tbody><tr><td colspan="7"><table class="CalTitle" cellspacing="0">
+		<tbody><tr><td class="CalNextPrev"><a href="javascript:void(0);" onclick="loadBlogCalendar('2019/04/01');return false;">&lt;</a></td><td align="center">2019年5月</td><td class="CalNextPrev" align="right"><a href="javascript:void(0);" onclick="loadBlogCalendar('2019/06/01');return false;">&gt;</a></td></tr>
+	</tbody></table></td></tr><tr><th class="CalDayHeader" abbr="日" scope="col" align="center">日</th><th class="CalDayHeader" abbr="一" scope="col" align="center">一</th><th class="CalDayHeader" abbr="二" scope="col" align="center">二</th><th class="CalDayHeader" abbr="三" scope="col" align="center">三</th><th class="CalDayHeader" abbr="四" scope="col" align="center">四</th><th class="CalDayHeader" abbr="五" scope="col" align="center">五</th><th class="CalDayHeader" abbr="六" scope="col" align="center">六</th></tr><tr><td class="CalOtherMonthDay" align="center">28</td><td class="CalOtherMonthDay" align="center">29</td><td class="CalOtherMonthDay" align="center">30</td><td align="center">1</td><td align="center">2</td><td align="center">3</td><td class="CalWeekendDay" align="center">4</td></tr><tr><td class="CalWeekendDay" align="center">5</td><td align="center">6</td><td align="center">7</td><td align="center">8</td><td align="center">9</td><td align="center">10</td><td class="CalWeekendDay" align="center">11</td></tr><tr><td class="CalWeekendDay" align="center">12</td><td align="center">13</td><td align="center">14</td><td class="CalTodayDay" align="center">15</td><td align="center">16</td><td align="center">17</td><td class="CalWeekendDay" align="center">18</td></tr><tr><td class="CalWeekendDay" align="center">19</td><td align="center">20</td><td align="center">21</td><td align="center">22</td><td align="center">23</td><td align="center">24</td><td class="CalWeekendDay" align="center">25</td></tr><tr><td class="CalWeekendDay" align="center">26</td><td align="center">27</td><td align="center">28</td><td align="center">29</td><td align="center">30</td><td align="center">31</td><td class="CalOtherMonthDay" align="center">1</td></tr><tr><td class="CalOtherMonthDay" align="center">2</td><td class="CalOtherMonthDay" align="center">3</td><td class="CalOtherMonthDay" align="center">4</td><td class="CalOtherMonthDay" align="center">5</td><td class="CalOtherMonthDay" align="center">6</td><td class="CalOtherMonthDay" align="center">7</td><td class="CalOtherMonthDay" align="center">8</td></tr>
+</tbody></table></div><script type="text/javascript">loadBlogDefaultCalendar();</script></div>
+			
+			<div id="leftcontentcontainer">
+				<div id="blog-sidecolumn"><div id="sidebar_search" class="sidebar-block">
+<div id="sidebar_search" class="mySearch">
+<h3 class="catListTitle">搜索</h3>
+<div id="sidebar_search_box">
+<div id="widget_my_zzk" class="div_my_zzk"><input id="q" onkeydown="return zzk_go_enter(event);" class="input_my_zzk" type="text">&nbsp;<input onclick="zzk_go()" value="找找看" id="btnZzk" class="btn_my_zzk" type="button"></div>
+<div id="widget_my_google" class="div_my_zzk"><input name="google_q" id="google_q" onkeydown="return google_go_enter(event)" class="input_my_zzk" type="text">&nbsp;<input onclick="google_go()" value="谷歌搜索" class="btn_my_zzk" type="button"></div>
+</div>
+</div>
+
+</div><div id="sidebar_shortcut" class="sidebar-block">
+<div class="catListLink">
+<h3 class="catListTitle">常用链接</h3>
+<ul>
+<li><a href="https://www.cnblogs.com/subic/p/" title="我的博客的随笔列表">我的随笔</a></li><li><a href="https://www.cnblogs.com/subic/MyComments.html" title="我发表过的评论列表">我的评论</a></li><li><a href="https://www.cnblogs.com/subic/OtherPosts.html" title="我评论过的随笔列表">我的参与</a></li><li><a href="https://www.cnblogs.com/subic/RecentComments.html" title="我的博客的评论列表">最新评论</a></li><li><a href="https://www.cnblogs.com/subic/tag/" title="我的博客的标签列表">我的标签</a></li>
+<li><a id="itemListLink" onclick="this.blur();WarpClass('itemListLink', 'itemListLin_con');return false;" href="#">更多链接</a></li>
+</ul>
+<div id="itemListLin_con" style="display:none;">
+<ul>
+
+</ul>
+</div>
+</div></div><div id="sidebar_toptags" class="sidebar-block">
+<div class="catListTag">
+<h3 class="catListTitle">我的标签</h3>
+<ul>
+<li><a href="https://www.cnblogs.com/subic/tag/%EF%BC%B0%EF%BD%99%EF%BD%94%EF%BD%88%EF%BD%8F%EF%BD%8E%E5%B0%8F%E6%8A%80%E5%B7%A7/">Ｐｙｔｈｏｎ小技巧</a>(6)</li><li><a href="https://www.cnblogs.com/subic/tag/python/">python</a>(2)</li><li><a href="https://www.cnblogs.com/subic/tag/python%20matplotlib/">python matplotlib</a>(1)</li><li><a href="https://www.cnblogs.com/subic/tag/python%20%E5%9B%BE%E5%83%8F%E5%88%86%E7%B1%BB/">python 图像分类</a>(1)</li><li><a href="https://www.cnblogs.com/subic/tag/python%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/">python图像处理</a>(1)</li><li><a href="https://www.cnblogs.com/subic/tag/numpy/">numpy</a>(1)</li><li><a href="https://www.cnblogs.com/subic/tag/opencv/">opencv</a>(1)</li><li><a href="https://www.cnblogs.com/subic/tag/pandas%20%E6%97%B6%E9%97%B4%E5%A4%84%E7%90%86/">pandas 时间处理</a>(1)</li><li><a href="https://www.cnblogs.com/subic/tag/pycharm%20trikes/">pycharm trikes</a>(1)</li><li><a href="https://www.cnblogs.com/subic/tag/pyhton%E5%B0%8F%E6%8A%80%E5%B7%A7/">pyhton小技巧</a>(1)</li><li><a href="https://www.cnblogs.com/subic/tag/">更多</a></li>
+</ul>
+</div></div><div id="sidebar_categories">
+<div class="catListPostArchive">
+<h3 class="catListTitle">随笔档案</h3>
+
+<ul>
+
+<li><a id="CatList_LinkList_0_Link_0" href="https://www.cnblogs.com/subic/archive/2018/10.html">2018年10月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_1" href="https://www.cnblogs.com/subic/archive/2018/07.html">2018年7月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_2" href="https://www.cnblogs.com/subic/archive/2018/05.html">2018年5月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_3" href="https://www.cnblogs.com/subic/archive/2018/04.html">2018年4月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_4" href="https://www.cnblogs.com/subic/archive/2018/02.html">2018年2月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_5" href="https://www.cnblogs.com/subic/archive/2018/01.html">2018年1月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_6" href="https://www.cnblogs.com/subic/archive/2017/12.html">2017年12月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_7" href="https://www.cnblogs.com/subic/archive/2017/11.html">2017年11月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_8" href="https://www.cnblogs.com/subic/archive/2017/07.html">2017年7月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_9" href="https://www.cnblogs.com/subic/archive/2017/06.html">2017年6月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_10" href="https://www.cnblogs.com/subic/archive/2017/03.html">2017年3月 (7)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_11" href="https://www.cnblogs.com/subic/archive/2016/02.html">2016年2月 (1)</a> </li>
+
+</ul>
+
+</div>
+
+</div><div id="sidebar_recentcomments" class="sidebar-block"><div id="recent_comments_wrap">
+<div class="catListComment">
+<h3 class="catListTitle">最新评论</h3>
+
+	<div id="RecentCommentsBlock"><ul>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/subic/p/6628694.html#4154979">1. Re:python实现HOG+SVM对CIFAR-10数据集分类（上）</a></li>
+        <li class="recent_comment_body">@乐晨阳希第18-19行是为了将二三象限的梯度方向还原回90°-270°，第20行是将四象限的梯度方向转到270°-360°。至于为什么不是gy[i,j]&lt;0,加180。你可以自己画个图试试看这样行吗......</li>
+        <li class="recent_comment_author">--粗面鱼丸</li>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/subic/p/6628694.html#4154685">2. Re:python实现HOG+SVM对CIFAR-10数据集分类（上）</a></li>
+        <li class="recent_comment_body">@粗面鱼丸18行，那为什么，gx[i, j] &lt; 0时，加180，而不是gy[i, j] &lt; 0时，加180，有什么根据吗，还是单纯为了只是把一些角度映射到270-360。谢谢博主了，抽空回答我问题。......</li>
+        <li class="recent_comment_author">--乐晨阳希</li>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/subic/p/6628694.html#4154669">3. Re:python实现HOG+SVM对CIFAR-10数据集分类（上）</a></li>
+        <li class="recent_comment_body">@乐晨阳希17到20行是为了使角度转换到0-360°，第17行确实只能得到-90°-90°。因为需要将所有梯度大小按梯度方向区间加起来，也就是8个区间，也可以是9个区间。每个区间分别是【0-45，45......</li>
+        <li class="recent_comment_author">--粗面鱼丸</li>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/subic/p/6628694.html#4153558">4. Re:python实现HOG+SVM对CIFAR-10数据集分类（上）</a></li>
+        <li class="recent_comment_body">@粗面鱼丸楼主，不好意思，再问你一下，在HOG角度计算的过程中，17行arctan的范围不应该是(-π/2,π/2)吗，我查了一些博客什么的，也没弄清楚，他们讲的时候都直接说范围是(0,π)，原始论文......</li>
+        <li class="recent_comment_author">--乐晨阳希</li>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/subic/p/6628694.html#4150174">5. Re:python实现HOG+SVM对CIFAR-10数据集分类（上）</a></li>
+        <li class="recent_comment_body">谢谢楼主，学到了。感谢，没想到你这么快就回了。</li>
+        <li class="recent_comment_author">--乐晨阳希</li>
+</ul>
+</div>
+</div>
+</div></div><div id="sidebar_topviewedposts" class="sidebar-block"><div id="topview_posts_wrap">
+<div class="catListView">
+<h3 class="catListTitle">阅读排行榜</h3>
+	<div id="TopViewPostsBlock"><ul><li><a href="https://www.cnblogs.com/subic/p/6553187.html">1. Python中append和extend的区别(52022)</a></li><li><a href="https://www.cnblogs.com/subic/p/8454025.html">2. 怎么理解np.random.seed()?(20163)</a></li><li><a href="https://www.cnblogs.com/subic/p/6649067.html">3. python怎么实现数组增加一行或多行(18067)</a></li><li><a href="https://www.cnblogs.com/subic/p/6628694.html">4. python实现HOG+SVM对CIFAR-10数据集分类（上）(8703)</a></li><li><a href="https://www.cnblogs.com/subic/p/6552752.html">5. Python中Template使用的一个小技巧(4311)</a></li></ul></div>
+</div>
+</div></div><div id="sidebar_topcommentedposts" class="sidebar-block"><div id="topfeedback_posts_wrap">
+<div class="catListFeedback">
+<h3 class="catListTitle">评论排行榜</h3>
+	<div id="TopFeedbackPostsBlock"><ul><li><a href="https://www.cnblogs.com/subic/p/6628694.html">1. python实现HOG+SVM对CIFAR-10数据集分类（上）(29)</a></li><li><a href="https://www.cnblogs.com/subic/p/6553187.html">2. Python中append和extend的区别(4)</a></li><li><a href="https://www.cnblogs.com/subic/p/8454025.html">3. 怎么理解np.random.seed()?(1)</a></li><li><a href="https://www.cnblogs.com/subic/p/6552752.html">4. Python中Template使用的一个小技巧(1)</a></li></ul></div>
+</div>
+</div></div><div id="sidebar_topdiggedposts" class="sidebar-block"><div id="topdigg_posts_wrap">
+<h3 class="catListTitle">推荐排行榜</h3>
+<div class="RecentComment">
+	<div id="TopDiggPostsBlock"><ul><li><a href="https://www.cnblogs.com/subic/p/6553187.html">1. Python中append和extend的区别(9)</a></li><li><a href="https://www.cnblogs.com/subic/p/8454025.html">2. 怎么理解np.random.seed()?(5)</a></li><li><a href="https://www.cnblogs.com/subic/p/6628694.html">3. python实现HOG+SVM对CIFAR-10数据集分类（上）(3)</a></li><li><a href="https://www.cnblogs.com/subic/p/6937611.html">4. python+opencv选出视频中一帧再利用鼠标回调实现图像上画矩形框(1)</a></li></ul></div>
+</div></div></div></div><script type="text/javascript">loadBlogSideColumn();</script>
+			</div>
+			
+		</div><!--end: sideBarMain -->
+	</div><!--end: sideBar 侧边栏容器 -->
+	<div class="clear"></div>
+	</div><!--end: main -->
+	<div class="clear"></div>
+	<div id="footer">
+		
+<!--done-->
+Copyright ©2019 粗面鱼丸
+	</div><!--end: footer -->
+</div><!--end: home 自定义的最大容器 -->
+
+
+
+<iframe id="google_osd_static_frame_3215885474927" name="google_osd_static_frame" style="display: none; width: 0px; height: 0px;"></iframe></body></html>

@@ -1,0 +1,529 @@
+*{
+	margin:0;
+	padding:0;
+}
+h1, h2, h3 {
+	color: #000;
+	text-rendering: optimizelegibility;
+	font-family:georgia, arial;
+	font-weight:normal;
+}
+h1{font-size:28px; font-family:"Microsoft YaHei", georgia, helvetica, arial;}
+h2{font-size:26px; font-family:"Microsoft YaHei", helvetica, arial;}
+h3{font-size:24px; font-family:"Microsoft YaHei", helvetica, arial;}
+h4{font-size:22px; font-family:"Microsoft YaHei", helvetica, arial;}
+h5{font-size:18px; font-family:"Microsoft YaHei", helvetica, arial;}
+h6{font-size:16px; font-family:"Microsoft YaHei", helvetica, arial;}
+h1,h2,h3,h4,h5,h6 {
+	clear: both;
+}
+
+p {
+	padding:0 0 1em;
+	margin:0;
+}
+ol, ul, li {
+	list-style: none;list-style-type: none;
+}
+a {
+	color: #666;
+	text-decoration:none;
+}
+a:hover {
+	color: #D54E21;
+}
+hr {
+	background-color: #ccc;
+	border: 0;
+	height: 1px;
+	margin-bottom: 1.5em;
+}
+
+
+
+
+body
+{
+	background-color: #000000; background-image: url('//images.cnblogs.com/cnblogs_com/singlex/623833/o_bg.jpg'); 
+	background-repeat: no-repeat; 
+	background-position: top center; 
+	background-attachment: fixed; 
+}
+#navigator {
+	height: 35px;
+	width:100%;
+	color: #B85800;
+	
+	/*IE 7 8*/
+	background-image: url(//images.cnblogs.com/cnblogs_com/singlex/623833/o_access-bg.png);
+	background-repeat: repeat-x;
+	
+	/*IE 9 10 Firefox css3特效 */
+	border-top: solid rgba(255, 255, 255, 0.8) 1px;
+	-webkit-box-shadow: #F3F8DB 0 0 0 1px;
+	-moz-box-shadow: #3382a6 0 0 0 1px;
+	border: 1px solid rgba(197, 128, 25, .5);
+	box-shadow: inset rgba(255,255,255,.6) 0 -1px 0 0,rgba(0,0,0,.3) 0 1px 0;
+	text-shadow: #F3F8DB 0 1px 0;
+	
+	/*IE 9 10 Firefox css3*/
+	border-top: 0;
+	background: rgba(242, 232, 140, 0.85);
+	position:fixed;
+	z-index:100;
+	left:0px;
+	top:0px;
+	
+	font-family: Arial,STHeiti,'Microsoft YaHei';
+	font-size:1.2em;
+}
+#navigator #navList/*使得导航条宽度与内容一致*/
+{
+	margin: 0 auto;
+	width:1100px;
+}
+#navigator  #navList li{
+	float: left;
+	min-width:30px;
+	padding:0 1%;
+	height:36px;
+	line-height:36px;
+	text-align:left;
+	position:relative;
+}
+#navigator .blogStats/*随笔- 0  文章- 0  评论- 0 */
+{
+	height:36px;
+	line-height:36px;
+	position:relative;
+	margin: 0 auto;
+	float:right;
+	padding-right:20%
+}
+/*Header*/
+#header {
+	position: relative;
+	height: 200px;
+	overflow: hidden;
+}
+
+#header #blogTitle{
+	width: 1100px;
+	margin: 0 auto;
+}
+#header #blogTitle h1 a{
+	position:absolute;
+	top:120px;
+	font-size:30px;
+	text-shadow: 0 2px 0 #333;
+	line-height: 1em;
+	color:#2194D5;
+}
+#header #blogTitle h2{
+	position:absolute;
+	top:160px;
+	font-size:18px;
+	text-shadow: 0 2px 0 #333;
+	line-height: 1em;
+	color:#fff;
+}
+/*内容开始*/
+#main{
+/*	min-height: 100%;
+	min-width:900px;
+	padding: 0 100px;
+	max-width:90%;*/
+	margin: 0 auto;
+}
+
+/*左侧内容页*/
+#mainContent
+{
+	padding-top:20px;
+	padding-left:20px;
+	float:left;
+	width:830px;
+	padding-top: 1px;
+	padding-bottom: 1px;
+	min-height: 400px;
+	height:auto;
+	zoom: 1;
+	overflow: visible;
+}
+#mainContent  .day .dayTitle{/*标题旁的时间*/
+	float:right;
+}
+#mainContent  .day .dayTitle a{
+	font-weight:600;
+	font-size:1.2em;
+	border-left: 10px solid green;
+	padding-left:10px;
+	font-family: georgia;
+}
+#mainContent  .day .postTitle,.entrylistItem .entrylistPosttitle{/*标题*/
+	font-weight:900;
+	background: none repeat scroll 0 0 #A9E0FA;
+	border-top: 1px solid #BFBFBF;
+    border-bottom: 1px solid #BFBFBF;
+	box-shadow: 0 2px 2px rgba(100, 100, 100, 0.2), 0 1px 0 1px #E2EFFB inset;
+	border-radius: 5px 5px 0px 0px;
+}
+#mainContent  .day  .postTitle a,.entrylistItem .entrylistPosttitle a{
+	border-left: 10px solid red;
+	padding-left:10px
+}
+#mainContent  .day .postTitle,.day .dayTitle,.entrylistItem .entrylistPosttitle{/*标题与标题旁的时间*/
+	height: 35px;
+	line-height: 35px;
+	padding: 0 15px;
+	color: #000;
+	font-family: Arial,STHeiti,'Microsoft YaHei',sans-serif;
+	font-size: 16px;
+	font-style: normal;
+	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
+	top: -4px;
+}
+#mainContent  .day .postCon,.entrylistItem .entrylistPostSummary{/*正文*/
+	padding: 5px 10px;
+}
+#mainContent  .day .postDesc,.entrylistItem .entrylistItemPostDesc{/*发布信息*/
+	border-radius: 0px 0px 5px 5px;
+	display: block;
+	height: auto;
+	border-top: 1px solid #BFBFBF;
+	background: #F6FAFC;
+	padding: 5px;
+	font-family: georgia;
+}
+/*归档页面的大标题*/
+.entrylistTitle,#myposts .myposts_title
+{
+	margin-top:20px;
+	font-weight:900;
+	background: none repeat scroll 0 0 #FAA9C0;
+	border: 1px solid #BFBFBF;
+	border-radius: 5px 5px 5px 5px;
+	box-shadow: 0 2px 2px rgba(224, 155, 205, 0.6), 0 1px 0 1px #E0CBDA inset;
+	height: 45px;
+	line-height: 45px;
+	padding: 0 15px;
+	color: #000;
+	font-family: Arial,STHeiti,'Microsoft YaHei',sans-serif;
+	font-size: 30px;
+	font-style: normal;
+	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
+	top: -4px;
+}
+#myposts .PostList{/*标签归档页标题*/
+	font-weight:900;
+	background: none repeat scroll 0 0 #A9E0FA;
+	border: 1px solid #BFBFBF;
+	box-shadow: 0 2px 2px rgba(100, 100, 100, 0.2), 0 1px 0 1px #E2EFFB inset;
+	border-radius: 5px 5px 5px 5px;
+	height: 35px;
+	line-height: 35px;
+	padding: 0 15px;
+	color: #000;
+	font-family: Arial,STHeiti,'Microsoft YaHei',sans-serif;
+	font-size: 16px;
+	font-style: normal;
+	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
+	top: -4px;
+	margin: 20px 0;
+}
+#myposts .PostList a{/*标签归档页标题*/
+	border-left: 10px solid red;
+	padding-left:10px
+}
+#myposts .postDesc2{
+	font-family: georgia;
+	float:right;
+}
+/*右侧*/
+#sideBar{
+	float:right;
+    width: 20%;
+	min-height: 200px;
+	min-width: 200px;
+	padding-right: 20px;
+	display:inline;
+}
+#sideBar #sideBarMain h3{
+	font-weight:900;
+	background: none repeat scroll 0 0 #A9E0FA;
+	border-top: 1px solid #BFBFBF;
+    border-bottom: 1px solid #BFBFBF;
+	box-shadow: 0 2px 2px rgba(100, 100, 100, 0.2), 0 1px 0 1px #E2EFFB inset;
+	border-radius: 5px 5px 0px 0px;
+	height: 35px;
+	line-height: 35px;
+	padding: 0 15px;
+	color: #000;
+	font-family: Arial,STHeiti,'Microsoft YaHei',sans-serif;
+	font-size: 16px;
+	font-style: normal;
+	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
+	top: -4px;
+}
+#sideBar #sideBarMain ul,#sideBar #sideBarMain ul li,#widget_my_zzk,#widget_my_google,#blog-news{
+	padding:5px;
+}
+/**footer*/
+#footer{
+	margin: 20px auto;
+	padding: 20px 0;
+	text-align: center;
+	font-size:12px;
+	font-family:"Microsoft YaHei UI";
+	color:#999999;
+}
+
+
+/*contents  内容页*/
+#main #mainContent #topics .postTitle{/*正文标题*/
+	
+	background: none repeat scroll 0 0 #A9E0FA;
+	border-top: 1px solid #BFBFBF;
+    border-bottom: 1px solid #BFBFBF;
+	box-shadow: 0 2px 2px rgba(100, 100, 100, 0.2), 0 1px 0 1px #E2EFFB inset;
+	border-radius: 5px 5px 0px 0px;
+	height: 35px;
+	line-height: 35px;
+	padding: 0 15px;
+	color: #000;
+	font-family: Arial,STHeiti,'Microsoft YaHei',sans-serif;
+	font-weight:900;
+	font-size: 18px;
+	font-style: normal;
+	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
+	top: -4px;
+}
+#main #mainContent #topics .postTitle a{
+	border-left: 10px solid red;
+	padding-left:10px;
+}
+#main #mainContent #topics .postBody #cnblogs_post_body{
+	min-height: 145px;
+	height: auto;
+	padding: 1em;
+	padding-top: 1em;
+}
+
+#main #mainContent #topics .postBody #cnblogs_post_body .tiny{
+	font-size:1px !important;
+	margin:0 !important;
+	line-height:1px !important;
+}
+#main #mainContent #topics .postBody #cnblogs_post_body p{
+	margin:0.3em 0;
+    padding: 0;
+	line-height:1.7em;
+        font-family: "Microsoft YaHei", helvetica, arial;
+        font-size: 18px;
+}
+#main #mainContent #topics .postBody #cnblogs_post_body blockquote{/*引用部分CSS*/
+	border-radius: 15px 15px 15px 15px;
+	box-shadow: 0 3px 4px rgba(100, 100, 100, 0.2);
+	border: 5px dashed green;
+	background: url("//images.cnblogs.com/cnblogs_com/singlex/623833/o_quote.png") no-repeat -75px -20px #f0f0f0;
+	margin:25px auto;
+	padding: 20px 10px 10px 50px;
+}
+.cnblogs_code,.cnblogs_Highlighter{/*代码部分CSS*/
+	border-radius: 15px 15px 15px 15px;
+	box-shadow: 0 3px 4px rgba(100, 100, 100, 0.2);
+	border: 3px dotted #9BCADF;
+	background: #F8F8F8;
+	padding: 20px;
+}
+.cnblogs_code div{
+	background: #F8F8F8;
+}
+#cnblogs_post_body h1,#cnblogs_post_body h2,#cnblogs_post_body h3,#cnblogs_post_body h4,#cnblogs_post_body h5,#cnblogs_post_body h6{/*标题定义*/
+	background-color: green;
+	padding-bottom: 6px;
+	margin: 10px 0px;
+	padding-left: 6px;
+	padding-right: 6px;
+	color: #fff;
+	padding-top: 6px;
+	-moz-border-radius: 10%;
+	text-shadow: 1px 1px 2px #404040;
+	border-radius: 5px;
+        padding-left: 0.7em;
+}
+#cnblogs_post_body  h1{background-color: rgb(0, 128, 0);font-size:20px; font-family:"Microsoft YaHei", georgia, helvetica, arial;}
+#cnblogs_post_body  h2{background-color: rgb(0, 160, 40);font-size:18px; font-family:"Microsoft YaHei", helvetica, arial;margin: 0 0 0 1em;}
+#cnblogs_post_body h3 {
+background-color: rgb(185, 185, 185);
+font-size: 16px;
+font-family: "Microsoft YaHei", helvetica, arial;
+margin: 0 0 0 2em;
+}
+#cnblogs_post_body  h4{background-color: rgb(0, 210, 120);font-size:14px; font-family:"Microsoft YaHei", helvetica, arial;margin: 0 0 0 3em;}
+#cnblogs_post_body  h5{background-color: rgb(0, 240, 180);font-size:12px; font-family:"Microsoft YaHei", helvetica, arial;margin: 0 0 0 4em;}
+#cnblogs_post_body  h6{background-color: rgb(0, 255, 180);font-size:10px; font-family:"Microsoft YaHei", helvetica, arial;margin: 0 0 0 5em;}
+#cnblogs_post_body  h7{background-color: rgb(0, 255, 180);font-size:10px; font-family:"Microsoft YaHei", helvetica, arial;margin: 0 0 0 6em;}
+#cnblogs_post_body  ol{list-style: none;list-style-type: none;}
+#cnblogs_post_body  ul{list-style: none;list-style-type: none;}
+#cnblogs_post_body  ul li{list-style: none;list-style-type: none;}
+#cnblogs_post_body a {color: #FFAB17;text-decoration:underline;}
+#cnblogs_post_body a:hover {color: #D54E21;}
+#cnblogs_post_body hr {background-color: #ccc;border: 0;height: 1px;margin-bottom: 1.5em;}
+
+
+#BlogPostCategory{margin:0}
+#EntryTag{text-align: right;;padding:0 10px 10px 0}/*标签:*/
+#main #mainContent #topics .postBody #blog_post_info_block{/*作者，评价，分享*/
+	border-radius: 0px 0px 5px 5px;
+	display: block;
+	height: auto;
+	border-top: 1px solid #BFBFBF;
+	background: #F6FAFC;
+	padding: 5px;
+	font-family: georgia;
+}
+#main #mainContent #topics .postBody #blog_post_info_block #blog_post_info #green_channel{
+	float:right;
+}
+#main #mainContent #topics .postBody #blog_post_info_block #blog_post_info #author_profile{
+	float:left;
+	width: 120px;
+}
+#main #mainContent #topics .postBody #blog_post_info_block #blog_post_info #div_digg{
+	float:right;
+}
+#main #mainContent #topics .postBody #blog_post_info_block #blog_post_info #div_digg .diggword{/*隐藏(请您对文章做出评价)*/
+	display:none;
+}
+#main #mainContent #topics .postBody #blog_post_info_block{/*上一篇，下一篇*/
+	border-radius: 0px 0px 5px 5px;
+	display: block;
+	height: auto;
+	border-top: 1px solid #BFBFBF;
+	background: #F6FAFC;
+	padding: 5px;
+	font-family: georgia;
+}
+#main #mainContent #topics .postDesc{/*最后posted @ 2012-02-27 20:24 Shawn~ 阅读(2033) 评论(0) 编辑 收藏*/
+	border-radius: 0px 0px 5px 5px;
+	display: block;
+	height: auto;
+	border-top: 1px solid #BFBFBF;
+	background: #F6FAFC;
+	padding: 5px;
+	font-family: georgia;
+}
+#MySignature {
+	background: #eee;
+	border: dashed 3px #ccc;
+	margin: 0 100px;
+	font-size: 15px;
+	padding:10px;
+}
+#MySignature p{
+	padding: 0 0 .5em;
+	margin: 0;
+}
+/*评论列表*/
+#blog-comments-placeholder,#divCommentShow/*评论列表,评论预览*/
+{
+	padding:0 10px 10px 10px;
+	margin:20px 0;
+}
+#blog-comments-placeholder .feedbackItem,.comment_my_posted
+{
+	border-radius: 15px 15px 15px 15px;
+	box-shadow: 0 5px 4px rgba(100, 100, 100, 0.2);
+	border: 2px dotted gray;
+	padding:2px;
+	margin:10px;
+	/*IE 7 8*/
+	background-image: url(//images.cnblogs.com/cnblogs_com/singlex/623833/o_main_bg.png);
+	background: none repeat scroll 0 0 rgba(100, 100, 100, 0.1);
+}
+.comment_my_posted
+{
+	border: 2px dotted green;
+}
+.comment_quote{/*评论内的引用*/
+	padding:2px;
+	margin:10px;
+	border-radius: 15px 15px 15px 15px;
+	box-shadow: 0 5px 4px rgba(67, 86, 100, 0.2);
+	border: 2px dashed #4A7F97;
+	color:#4A7F97;
+}
+.comment_quote a{
+	color:#4A7F97
+}
+
+#blog-comments-placeholder .feedbackManage{/*  修改删除*/
+	float:right;padding:0 10px;
+}
+#blog-comments-placeholder .feedbackListSubtitle{/*  #1楼[楼主] 2014-10-25 01:17 XXX~  */
+	font-family: georgia;
+	padding:0 10px;
+}
+#blog-comments-placeholder .feedbackCon .blog_comment_body{/*评论正文*/
+	padding:10px;
+}
+#blog-comments-placeholder .feedbackCon .comment_vote{/*支持(0)反对(0)*/
+	padding:0 10px 10px 0;font-family: georgia;
+}
+#comment_nav
+{
+	padding: 0 30px 20px 10px;
+	margin-top: -35px;
+	font-size: 12px;
+}
+/*评论框*/
+.commentbox_main{
+	padding:10px;
+}
+.commentbox_main .commentbox_title{
+	width: 100%;
+}
+#main #mainContent  #comment_form #comment_form_container textarea{
+	width: 100%;
+	height:100px;
+	border: 1px dotted gray;
+	
+}
+#main #mainContent  #comment_form #comment_form_container #commentbox_opt{/*提交按钮右移*/
+	float:right;
+}
+
+
+
+
+
+/*全局设定*/
+#header #blogTitle,#footer,#main,#navigator #navList{
+	width:1100px;
+}
+#mainContent .day,.entrylistItem,#sideBar #sideBarMain,#main #mainContent #topics{
+	overflow: visible;
+	margin: 20px 0 20px;
+}
+/*一级透明度*/
+#footer,#main,.day,.entrylistItem,#sideBar #sideBarMain,#main #mainContent #topics{	
+	
+	/*透明盒子*/
+    border-radius: 5px 5px 5px 5px;
+	border: 1px solid #BFBFBF;
+	border-top: 0px solid #BFBFBF;
+	box-shadow: 0 3px 4px rgba(100, 100, 100, 0.2);
+	
+	/*IE 7 8*/
+	background-image: url(//images.cnblogs.com/cnblogs_com/singlex/623833/o_main_bg.png);
+	/*IE9 10 firefox */
+    background: none repeat scroll 0 0 rgba(255, 255, 255, 0.9);
+}
+/*二级透明度*/
+#sideBar #sideBarMain,#main #mainContent #topics{
+}
+
+#under_post_news,#site_nav_under,#under_post_kb,#ad_under_post_holder,#google_ad_c2{
+	display:none;
+}

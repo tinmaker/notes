@@ -1,0 +1,124 @@
+.pop-form .czCombobox {width:280px; color:#494949; height:30px;}
+.pop-form .czCombobox .combobox_icon{background-image:url(/resources/images/global/bg_input.png);height:20px; width:20px; left:255px; top:4px; position:absolute;}
+.pop-form .czCombobox .box_hover, 
+.pop-form .czCombobox .box_focus {cursor: pointer;}
+.pop-form .czCombobox .combobox_list {margin:0; padding:0; list-style:none; color:#000; width:280px; background:#fff; position:absolute; left:0; overflow:auto; z-index:9999; border:1px solid #999; border-top:none;}
+.pop-form .czCombobox li {padding:0 6px; font-size:14px; line-height:20px; list-style:none; margin:0;}
+.pop-form .czCombobox .li_hover {background-color:#494949; color:#FFF!important; cursor:default;}
+.pop-form .czCombobox .li_selected{background-color:#494949; color:#FFF!important;}
+
+.hide {position:absolute; left:-9999px;}
+
+.pop-form {margin:0;height:1%;/*padding-top:10px;padding-bottom:20px;*/}
+.pop-form .right,
+.pop-form .left {float:left;margin:0;font-size:14px;}
+.pop-form .right {margin-top:5px;line-height:35px;width:290px;text-align:left;}
+.pop-form .need{float:left;font-size:24px; color:#666; height:35px; padding-top:5px; overflow:hidden;}
+
+.pop-form .left {width:120px;color:#494949;padding-right:10px;text-align:right;height:40px;line-height:40px;}
+.pop-form .right input, .pop-form .right textarea {
+    font-family:Arial, Helvetica, sans-serif;
+    font-size:14px;
+    background-color:transparent;
+    background-position:0 0;
+    margin:0;padding:0 5px;border:1px solid #999;
+    width:270px;color:#171717;
+}
+.pop-form .right textarea {padding:5px;}
+.pop-form .right input {padding:0 5px;height:27px;line-height:27px;}
+.pop-form .right .input-box,form #package_type {
+    font-size: 14px;
+    color: #494949;
+    padding: 0 5px;
+    width: 272px;
+    line-height: 29px;
+    background-color: #EAEAEA;
+}
+.pop-form .right .down{
+    background:transparent url("/resources/images/popup/bg_yellow.png") 0 -50px; 
+    margin: 0 10px;
+    border: 1px solid #F4802A;
+    *border:none; 
+    color: black; width:auto;overflow:visible;
+    font: bold 14px/28px arial;
+    padding: 0 2em;
+    cursor: pointer;
+    text-shadow: 1px 1px 1px #CCC;
+}
+
+.pop-form .right .install_guide{
+    background: #fff;
+    border: 1px solid #c4c4c4;
+    padding: 0px;
+}
+.pop-form .right .install_guide_btn{color:#787878;text-decoration:none;font-weight:100;padding:0px 14px;}
+.pop-form .right .install_guide:hover{
+    background: #FC961A;
+    border: none;
+}
+.pop-form .right .install_guide_btn:hover{color:#fff;}
+
+.pop-form div.combo {position:relative;left: 0px;top: 0px;}
+.pop-form .combo input {position: absolute;}
+.pop-form .combo div.icon {position:absolute;}
+.pop-form .combo div.list-wrapper {position: absolute;overflow: hidden;height: 200px; max-height: 200px; z-index: 99999;}
+.pop-form .combo div.list-wrapper-up {}
+.pop-form .combo ul {}
+.pop-form .combo li {height: 20px;}
+.pop-form .combo li.active {}
+.pop-form .combo .visible {display: block;}
+.pop-form .combo .invisible {display: none;}
+.pop-form .combo input.empty {}
+
+.pop-form div.sexy div.icon,
+/*
+.pop-form div.sexy div.icon:hover {
+     background-image:url(/resources/images/global/bg_input.png);
+}
+*/
+
+.pop-form div.sexy {white-space: nowrap;border: 0;margin: 0;padding: 0;}
+.pop-form div.sexy input {font-size:14px;cursor:pointer; background-color:#F4F4F4;}
+/*
+.pop-form div.sexy div.icon {top:5px;left:255px;width:20px;height:20px;border: 0;background-color:transparent;background-repeat: no-repeat;background-position: 0 0px;cursor:pointer;
+}
+*/
+.pop-form div.sexy div.icon {
+	background-image:url(../images/downloads/bg.gif?ver=4);
+	top:12px;left:255px;
+	width:15px;height:15px;border: 0;
+	background-color:transparent;
+	background-repeat: no-repeat;
+	background-position: 0 -60px;
+	cursor:pointer;
+}
+
+
+.pop-form div.sexy div.list-wrapper {
+    left: 0px; top: 30px;border:1px solid #999;;background-color: #FFFFFF;padding: 0;margin: 0;bottom: auto;height: 240px; max-height: 240px; min-width: 280px;}
+
+.pop-form div.sexy div.list-wrapper-up {top: auto;bottom: 15px;border:1px solid #999;border-bottom:0;}
+.pop-form div.sexy ul {list-style-type: none;padding: 0;margin: 0;width:100%;overflow:visible;}
+.pop-form div.sexy li {margin: 0;padding:2px 4px;font-size:14px;line-height:20px; background-color: #FFFFFF;cursor: pointer;}
+.pop-form div.sexy li.active {background-color:#494949; color:#FFF!important;}
+/*for IE*/
+.pop-form div.sexy a,
+.pop-form div.sexy a:visited,
+.pop-form div.sexy a:active {display: block;width: 100%;width: 146px;text-decoration: none;font:normal 14px arial;color: #000000;cursor: pointer;margin: 0;  height: 20px;}
+
+
+
+.popup_down{width:480px; }
+.popup_thx {width:460px; }
+.popup {
+    filter:progid:DXImageTransform.Microsoft.Shadow(color=#000000,direction=120,strength=4);/*ie*/
+    -moz-box-shadow: 4px 4px 10px #000;/*firefox*/
+    -webkit-box-shadow: 4px 4px 10px #000;/*safari或chrome*/
+    box-shadow:4px 4px 10px #000;/*opera或ie9*/}
+.popup .popup_title,
+.popup .close { background-image:url("/resources/images/popup/bg_yellow.png"); _background-image:url("/resources/images/popup/bg_yellow.gif")}
+.popup .popup_title {height:30px; font-size:18px; font-weight:bold; color:white; line-height:30px; padding-left:20px; background-position:0 -50px; }
+.popup .close { display:block; float:right;height:30px; width:30px; cursor:pointer}
+.popup .popup_content {background-color:#FFF; padding:20px; zoom:1;}
+.popup .popup_content p {padding-bottom:20px;}
+.popup .popup_content strong {color:#494949;}

@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="zh-cn"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="origin">
+    <title>python  map函数 - 超级学渣渣 - 博客园</title>
+<meta property="og:description" content="map（）函数是python内置的高阶函数，对传入的list的每一个元素进行映射，返回一个新的映射之后的list python3中，map函数返回的是一个map对象，需要list（map(fun,it">
+    <link type="text/css" rel="stylesheet" href="python%20map%E5%87%BD%E6%95%B0%20-%20%E8%B6%85%E7%BA%A7%E5%AD%A6%E6%B8%A3%E6%B8%A3%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/blog-common.css">
+<link id="MainCss" type="text/css" rel="stylesheet" href="python%20map%E5%87%BD%E6%95%B0%20-%20%E8%B6%85%E7%BA%A7%E5%AD%A6%E6%B8%A3%E6%B8%A3%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/bundle-Banlieue13.css">
+<link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="python%20map%E5%87%BD%E6%95%B0%20-%20%E8%B6%85%E7%BA%A7%E5%AD%A6%E6%B8%A3%E6%B8%A3%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/bundle-Banlieue13-mobile.css">
+    <link title="RSS" type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/superxuezhazha/rss">
+    <link title="RSD" type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/superxuezhazha/rsd.xml">
+<link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/superxuezhazha/wlwmanifest.xml">
+    <script src="python%20map%E5%87%BD%E6%95%B0%20-%20%E8%B6%85%E7%BA%A7%E5%AD%A6%E6%B8%A3%E6%B8%A3%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/amp4ads-host-v0.js"></script><script src="python%20map%E5%87%BD%E6%95%B0%20-%20%E8%B6%85%E7%BA%A7%E5%AD%A6%E6%B8%A3%E6%B8%A3%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/pubads_impl_rendering_2019050901.js"></script><script async="" src="python%20map%E5%87%BD%E6%95%B0%20-%20%E8%B6%85%E7%BA%A7%E5%AD%A6%E6%B8%A3%E6%B8%A3%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/analytics.js"></script><script type="text/javascript" src="python%20map%E5%87%BD%E6%95%B0%20-%20%E8%B6%85%E7%BA%A7%E5%AD%A6%E6%B8%A3%E6%B8%A3%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/encoder.js"></script><script src="python%20map%E5%87%BD%E6%95%B0%20-%20%E8%B6%85%E7%BA%A7%E5%AD%A6%E6%B8%A3%E6%B8%A3%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/jquery-2.js"></script>
+    <script>var currentBlogId=229341;var currentBlogApp='superxuezhazha',cb_enable_mathjax=false;var isLogined=false;</script>
+    <script src="python%20map%E5%87%BD%E6%95%B0%20-%20%E8%B6%85%E7%BA%A7%E5%AD%A6%E6%B8%A3%E6%B8%A3%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/blog-common.js" type="text/javascript"></script>
+<link rel="preload" href="python%20map%E5%87%BD%E6%95%B0%20-%20%E8%B6%85%E7%BA%A7%E5%AD%A6%E6%B8%A3%E6%B8%A3%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/integrator.js" as="script"><script type="text/javascript" src="python%20map%E5%87%BD%E6%95%B0%20-%20%E8%B6%85%E7%BA%A7%E5%AD%A6%E6%B8%A3%E6%B8%A3%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/integrator.js"></script><script src="python%20map%E5%87%BD%E6%95%B0%20-%20%E8%B6%85%E7%BA%A7%E5%AD%A6%E6%B8%A3%E6%B8%A3%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/pubads_impl_2019050901.js" async=""></script></head>
+<body>
+<a name="top"></a>
+
+
+<!--done-->
+<div id="home">
+<div id="header">
+	<div id="blogTitle">
+	<a id="lnkBlogLogo" href="https://www.cnblogs.com/superxuezhazha/"><img id="blogLogo" src="python%20map%E5%87%BD%E6%95%B0%20-%20%E8%B6%85%E7%BA%A7%E5%AD%A6%E6%B8%A3%E6%B8%A3%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/logo.gif" alt="返回主页"></a>			
+		
+<!--done-->
+<h1><a id="Header1_HeaderTitle" class="headermaintitle" href="https://www.cnblogs.com/superxuezhazha/">行尸走肉</a></h1>
+<h2>一个小程序员的成长历程</h2>
+
+
+
+		
+	</div><!--end: blogTitle 博客的标题和副标题 -->
+</div><!--end: header 头部 -->
+
+<div id="main">
+	<div id="mainContent">
+	<div class="forFlow">
+		<div id="navigator">
+			
+<ul id="navList">
+	<li><a id="blog_nav_sitehome" class="menu" href="https://www.cnblogs.com/">博客园</a></li>
+	<li><a id="blog_nav_myhome" class="menu" href="https://www.cnblogs.com/superxuezhazha/">首页</a></li>
+	<li><a id="blog_nav_newpost" class="menu" rel="nofollow" href="https://i.cnblogs.com/EditPosts.aspx?opt=1">新随笔</a></li>
+	<li><a id="blog_nav_contact" accesskey="9" class="menu" rel="nofollow" href="https://msg.cnblogs.com/send/%E8%B6%85%E7%BA%A7%E5%AD%A6%E6%B8%A3%E6%B8%A3">联系</a></li>
+	<li><a id="blog_nav_admin" class="menu" rel="nofollow" href="https://i.cnblogs.com/">管理</a></li>
+	<li><a id="blog_nav_rss" class="menu" href="https://www.cnblogs.com/superxuezhazha/rss">订阅</a>
+	<a id="blog_nav_rss_image" class="aHeaderXML" href="https://www.cnblogs.com/superxuezhazha/rss"><img src="python%20map%E5%87%BD%E6%95%B0%20-%20%E8%B6%85%E7%BA%A7%E5%AD%A6%E6%B8%A3%E6%B8%A3%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/xml.gif" alt="订阅"></a></li>
+</ul>
+
+
+			<div class="blogStats">
+				
+				<div id="blog_stats">
+<!--done-->
+随笔- 567&nbsp;
+文章- 0&nbsp;
+评论- 39&nbsp;
+</div>
+				
+			</div><!--end: blogStats -->
+		</div><!--end: navigator 博客导航栏 -->
+		
+        <div id="post_detail">
+<!--done-->
+<div id="topics">
+	<div class="post">
+		<h1 class="postTitle">
+			<a id="cb_post_title_url" class="postTitle2" href="https://www.cnblogs.com/superxuezhazha/p/5714970.html">python  map函数</a>
+		</h1>
+		<div class="clear"></div>
+		<div class="postBody">
+			<div id="cnblogs_post_body" class="blogpost-body"><div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="python%20map%E5%87%BD%E6%95%B0%20-%20%E8%B6%85%E7%BA%A7%E5%AD%A6%E6%B8%A3%E6%B8%A3%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/copycode.gif" alt="复制代码"></a></span></div>
+<pre><span style="color: #000000;">map()函数
+map()是 Python 内置的高阶函数，它接收一个函数 f 和一个 list，并通过把函数 f 依次作用在 list 的每个元素上，得到一个新的 list 并返回。
+
+例如，对于list [</span>1, 2, 3, 4, 5, 6, 7, 8, 9<span style="color: #000000;">]
+
+如果希望把list的每个元素都作平方，就可以用map()函数：
+
+
+
+因此，我们只需要传入函数f(x)</span>=x*<span style="color: #000000;">x，就可以利用map()函数完成这个计算：
+
+</span><span style="color: #0000ff;">def</span><span style="color: #000000;"> f(x):
+    </span><span style="color: #0000ff;">return</span> x*<span style="color: #000000;">x
+</span><span style="color: #0000ff;">print</span> map(f, [1, 2, 3, 4, 5, 6, 7, 8, 9<span style="color: #000000;">])
+输出结果：
+
+[</span>1, 4, 9, 10, 25, 36, 49, 64, 81<span style="color: #000000;">]
+注意：map()函数不改变原有的 list，而是返回一个新的 list。
+
+利用map()函数，可以把一个 list 转换为另一个 list，只需要传入转换函数。
+
+由于list包含的元素可以是任何类型，因此，map() 不仅仅可以处理只包含数值的 list，事实上它可以处理包含任意类型的 list，只要传入的函数f可以处理这种数据类型。
+
+任务
+假设用户输入的英文名字不规范，没有按照首字母大写，后续字母小写的规则，请利用map()函数，把一个list（包含若干不规范的英文名字）变成一个包含规范英文名字的list：
+
+输入：[</span><span style="color: #800000;">'</span><span style="color: #800000;">adam</span><span style="color: #800000;">'</span>, <span style="color: #800000;">'</span><span style="color: #800000;">LISA</span><span style="color: #800000;">'</span>, <span style="color: #800000;">'</span><span style="color: #800000;">barT</span><span style="color: #800000;">'</span><span style="color: #000000;">]
+输出：[</span><span style="color: #800000;">'</span><span style="color: #800000;">Adam</span><span style="color: #800000;">'</span>, <span style="color: #800000;">'</span><span style="color: #800000;">Lisa</span><span style="color: #800000;">'</span>, <span style="color: #800000;">'</span><span style="color: #800000;">Bart</span><span style="color: #800000;">'</span><span style="color: #000000;">]
+
+
+</span><span style="color: #0000ff;">def</span><span style="color: #000000;"> format_name(s):
+    s1</span>=s[0:1].upper()+s[1<span style="color: #000000;">:].lower();
+    </span><span style="color: #0000ff;">return</span><span style="color: #000000;"> s1;
+
+</span><span style="color: #0000ff;">print</span> map(format_name, [<span style="color: #800000;">'</span><span style="color: #800000;">adam</span><span style="color: #800000;">'</span>, <span style="color: #800000;">'</span><span style="color: #800000;">LISA</span><span style="color: #800000;">'</span>, <span style="color: #800000;">'</span><span style="color: #800000;">barT</span><span style="color: #800000;">'</span>])</pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="python%20map%E5%87%BD%E6%95%B0%20-%20%E8%B6%85%E7%BA%A7%E5%AD%A6%E6%B8%A3%E6%B8%A3%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/copycode.gif" alt="复制代码"></a></span></div></div>
+<p>&nbsp;</p>
+<p>map（）函数是python内置的高阶函数，对传入的list的每一个元素进行映射，返回一个新的映射之后的list</p>
+<p>python3中，map函数返回的是一个map对象，需要list（map(fun,itor)）来将映射之后的map对象转换成列表</p></div><div id="MySignature"></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+<div id="BlogPostCategory">分类: <a href="https://www.cnblogs.com/superxuezhazha/category/855620.html" target="_blank">python</a></div>
+<div id="EntryTag"></div>
+<div id="blog_post_info"><div id="green_channel">
+        <a href="javascript:void(0);" id="green_channel_digg" onclick="DiggIt(5714970,cb_blogId,1);green_channel_success(this,'谢谢推荐！');">好文要顶</a>
+            <a id="green_channel_follow" onclick="follow('808d6ef1-b303-e511-b908-9dcfd8948a71');" href="javascript:void(0);">关注我</a>
+    <a id="green_channel_favorite" onclick="AddToWz(cb_entryId);return false;" href="javascript:void(0);">收藏该文</a>
+    <a id="green_channel_weibo" href="javascript:void(0);" title="分享至新浪微博" onclick="ShareToTsina()"><img src="python%20map%E5%87%BD%E6%95%B0%20-%20%E8%B6%85%E7%BA%A7%E5%AD%A6%E6%B8%A3%E6%B8%A3%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/icon_weibo_24.png" alt=""></a>
+    <a id="green_channel_wechat" href="javascript:void(0);" title="分享至微信" onclick="shareOnWechat()"><img src="python%20map%E5%87%BD%E6%95%B0%20-%20%E8%B6%85%E7%BA%A7%E5%AD%A6%E6%B8%A3%E6%B8%A3%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/wechat.png" alt=""></a>
+</div>
+<div id="author_profile">
+    <div id="author_profile_info" class="author_profile_info">
+            <a href="http://home.cnblogs.com/u/superxuezhazha/" target="_blank"><img src="python%20map%E5%87%BD%E6%95%B0%20-%20%E8%B6%85%E7%BA%A7%E5%AD%A6%E6%B8%A3%E6%B8%A3%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/sample_face.gif" class="author_avatar" alt=""></a>
+        <div id="author_profile_detail" class="author_profile_info">
+            <a href="http://home.cnblogs.com/u/superxuezhazha/">超级学渣渣</a><br>
+            <a href="http://home.cnblogs.com/u/superxuezhazha/followees">关注 - 4</a><br>
+            <a href="http://home.cnblogs.com/u/superxuezhazha/followers">粉丝 - 90</a>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div id="author_profile_honor"></div>
+    <div id="author_profile_follow">
+                <a href="javascript:void(0);" onclick="follow('808d6ef1-b303-e511-b908-9dcfd8948a71');return false;">+加关注</a>
+    </div>
+</div>
+<div id="div_digg">
+    <div class="diggit" onclick="votePost(5714970,'Digg')">
+        <span class="diggnum" id="digg_count">7</span>
+    </div>
+    <div class="buryit" onclick="votePost(5714970,'Bury')">
+        <span class="burynum" id="bury_count">0</span>
+    </div>
+    <div class="clear"></div>
+    <div class="diggword" id="digg_tips">
+    </div>
+</div>
+<script type="text/javascript">
+    currentDiggType = 0;
+</script></div>
+<div class="clear"></div>
+<div id="post_next_prev"><a href="https://www.cnblogs.com/superxuezhazha/p/5714949.html" class="p_n_p_prefix">« </a> 上一篇：<a href="https://www.cnblogs.com/superxuezhazha/p/5714949.html" title="发布于2016-07-28 15:25">python 把函数作为参数 ---高阶函数</a><br><a href="https://www.cnblogs.com/superxuezhazha/p/5714996.html" class="p_n_p_prefix">» </a> 下一篇：<a href="https://www.cnblogs.com/superxuezhazha/p/5714996.html" title="发布于2016-07-28 15:34">python reduce()函数</a><br></div>
+</div>
+
+
+		</div>
+		<div class="postDesc">posted @ <span id="post-date">2016-07-28 15:30</span> <a href="https://www.cnblogs.com/superxuezhazha/">超级学渣渣</a> 阅读(<span id="post_view_count">98530</span>) 评论(<span id="post_comment_count">8</span>)  <a href="https://i.cnblogs.com/EditPosts.aspx?postid=5714970" rel="nofollow">编辑</a> <a href="#" onclick="AddToWz(5714970);return false;">收藏</a></div>
+	</div>
+	<script type="text/javascript">var allowComments=true,cb_blogId=229341,cb_entryId=5714970,cb_blogApp=currentBlogApp,cb_blogUserGuid='808d6ef1-b303-e511-b908-9dcfd8948a71',cb_entryCreatedDate='2016/7/28 15:30:00';loadViewCount(cb_entryId);var cb_postType=1;var isMarkdown=false;</script>
+	
+</div><!--end: topics 文章、评论容器-->
+</div><a name="!comments"></a><div id="blog-comments-placeholder"><div id="comments_pager_top"></div>
+<!--done-->
+<br>
+<div class="feedback_area_title">评论</div>
+<div class="feedbackNoItems"></div>
+	
+
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="#3737716" class="layer">#1楼</a><a name="3737716" id="comment_anchor_3737716"></a> <span class="comment_date">2017-07-18 09:57</span> | <a id="a_comment_author_3737716" href="https://www.cnblogs.com/xiao2383363662/" target="_blank">半块砖</a> <a href="http://msg.cnblogs.com/send/%E5%8D%8A%E5%9D%97%E7%A0%96" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3737716" class="blog_comment_body">def f(x):<br>    return x*x<br>print map(f, [1, 2, 3, 4, 5, 6, 7, 8, 9])<br>输出结果：<br><br>[1, 4, 9, 10, 25, 36, 49, 64, 81]<br><br>我想问问楼主如何得出10的？写错了吧</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3737716,'Digg',this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3737716,'Bury',this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="#3737750" class="layer">#2楼</a><a name="3737750" id="comment_anchor_3737750"></a>[<span class="louzhu">楼主</span>] <span class="comment_date">2017-07-18 10:12</span> | <a id="a_comment_author_3737750" href="https://www.cnblogs.com/superxuezhazha/" target="_blank">超级学渣渣</a> <a href="http://msg.cnblogs.com/send/%E8%B6%85%E7%BA%A7%E5%AD%A6%E6%B8%A3%E6%B8%A3" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3737750" class="blog_comment_body"><a href="#3737716" title="查看所回复的评论" onclick="commentManager.renderComments(0,50,3737716);">@</a>
+半块砖<br>应该是16.。。。。都是平方数的</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3737750,'Digg',this)">支持(1)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3737750,'Bury',this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="#3791005" class="layer">#3楼</a><a name="3791005" id="comment_anchor_3791005"></a> <span class="comment_date">2017-09-20 15:31</span> | <a id="a_comment_author_3791005" href="https://www.cnblogs.com/laresh/" target="_blank">司徒道</a> <a href="http://msg.cnblogs.com/send/%E5%8F%B8%E5%BE%92%E9%81%93" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3791005" class="blog_comment_body">map接收的是一个函数和一个可迭代对象，不仅仅是list。</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3791005,'Digg',this)">支持(3)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3791005,'Bury',this)">反对(0)</a></div><span id="comment_3791005_avatar" style="display:none;">http://pic.cnblogs.com/face/824706/20151019165511.png</span>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="#3959459" class="layer">#4楼</a><a name="3959459" id="comment_anchor_3959459"></a> <span class="comment_date">2018-04-24 09:30</span> | <a id="a_comment_author_3959459" href="http://home.cnblogs.com/u/1366265/" target="_blank">缘媛凰</a> <a href="http://msg.cnblogs.com/send/%E7%BC%98%E5%AA%9B%E5%87%B0" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3959459" class="blog_comment_body">map函数可以处理二维数组吗</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3959459,'Digg',this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3959459,'Bury',this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="#3959469" class="layer">#5楼</a><a name="3959469" id="comment_anchor_3959469"></a>[<span class="louzhu">楼主</span>] <span class="comment_date">2018-04-24 09:39</span> | <a id="a_comment_author_3959469" href="https://www.cnblogs.com/superxuezhazha/" target="_blank">超级学渣渣</a> <a href="http://msg.cnblogs.com/send/%E8%B6%85%E7%BA%A7%E5%AD%A6%E6%B8%A3%E6%B8%A3" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3959469" class="blog_comment_body"><a href="#3959459" title="查看所回复的评论" onclick="commentManager.renderComments(0,50,3959459);">@</a>
+缘媛凰<br>只要是可迭代的对象就可以。让传入的函数遍历二维数组，理论上可以。我没试过呢。要不你试一下回复我结果吧</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3959469,'Digg',this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3959469,'Bury',this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="#3959505" class="layer">#6楼</a><a name="3959505" id="comment_anchor_3959505"></a> <span class="comment_date">2018-04-24 10:10</span> | <a id="a_comment_author_3959505" href="http://home.cnblogs.com/u/1366265/" target="_blank">缘媛凰</a> <a href="http://msg.cnblogs.com/send/%E7%BC%98%E5%AA%9B%E5%87%B0" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3959505" class="blog_comment_body">我试了，就是不行，才来网上找答案的，就是不知道是不是我写错了还是怎么回事，我试的不行，一维的可以</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3959505,'Digg',this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3959505,'Bury',this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="#3959565" class="layer">#7楼</a><a name="3959565" id="comment_anchor_3959565"></a>[<span class="louzhu">楼主</span>] <span class="comment_date">2018-04-24 10:47</span> | <a id="a_comment_author_3959565" href="https://www.cnblogs.com/superxuezhazha/" target="_blank">超级学渣渣</a> <a href="http://msg.cnblogs.com/send/%E8%B6%85%E7%BA%A7%E5%AD%A6%E6%B8%A3%E6%B8%A3" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3959565" class="blog_comment_body"><a href="#3959505" title="查看所回复的评论" onclick="commentManager.renderComments(0,50,3959505);">@</a>
+缘媛凰<br>那你可以在一维那里使用map：<br>   con=[<br>   [],<br>   [],<br>   []<br>]<br>for items in con:<br>    map(fun,items)</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3959565,'Digg',this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3959565,'Bury',this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="#3959650" class="layer">#8楼</a><a name="3959650" id="comment_anchor_3959650"></a><span id="comment-maxId" style="display:none;">3959650</span><span id="comment-maxDate" style="display:none;">2018/4/24 11:54:48</span> <span class="comment_date">2018-04-24 11:54</span> | <a id="a_comment_author_3959650" href="http://home.cnblogs.com/u/1366265/" target="_blank">缘媛凰</a> <a href="http://msg.cnblogs.com/send/%E7%BC%98%E5%AA%9B%E5%87%B0" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3959650" class="blog_comment_body">嗯，我试试，谢谢啦</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3959650,'Digg',this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3959650,'Bury',this)">反对(0)</a></div>
+			</div>
+		</div>
+	<div id="comments_pager_bottom"></div></div><script type="text/javascript">var commentManager = new blogCommentManager();commentManager.renderComments(0);</script>
+<div id="comment_form" class="commentform">
+<a name="commentform"></a>
+<div id="divCommentShow"></div>
+<div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="#" onclick="return RefreshPage();">刷新页面</a><a href="#top">返回顶部</a></div>
+<div id="comment_form_container"><div class="login_tips">注册用户登录后才能发表评论，请 <a rel="nofollow" href="javascript:void(0);" class="underline" onclick="return login('commentform');">登录</a> 或 <a rel="nofollow" href="javascript:void(0);" class="underline" onclick="return register();">注册</a>，<a href="http://www.cnblogs.com/">访问</a>网站首页。</div></div>
+<div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+<div id="ad_t2"><a href="http://www.ucancode.com/index.htm" target="_blank" onclick="ga('send', 'event', 'Link', 'click', 'T2-工控')">【推荐】超50万C++/C#源码: 大型实时仿真组态图形源码</a><br><a href="https://www.bagevent.com/event/2195041?bag_track=13072958" target="_blank" onclick="ga('send', 'event', 'Link', 'click', 'T2-看雪')">【活动】看雪2019安全开发者峰会，共话安全领域焦点</a><br><a href="https://ke.qq.com/adActivity.html?name=xiangxueketang2" target="_blank" onclick="ga('send', 'event', 'Link', 'click', 'T2-享学')">【培训】Java程序员年薪40W，他1年走了别人5年的路</a><br></div>
+<div id="opt_under_post"></div>
+<script async="async" src="python%20map%E5%87%BD%E6%95%B0%20-%20%E8%B6%85%E7%BA%A7%E5%AD%A6%E6%B8%A3%E6%B8%A3%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/gpt.js"></script>
+<script>
+  var googletag = googletag || {};
+  googletag.cmd = googletag.cmd || [];
+</script>
+<script>
+  googletag.cmd.push(function() {
+        googletag.defineSlot('/1090369/C1', [300, 250], 'div-gpt-ad-1546353474406-0').addService(googletag.pubads());
+        googletag.defineSlot('/1090369/C2', [468, 60], 'div-gpt-ad-1539008685004-0').addService(googletag.pubads());
+        googletag.pubads().enableSingleRequest();
+        googletag.enableServices();
+  });
+</script>
+<div id="cnblogs_c1" class="c_ad_block">
+    <div id="div-gpt-ad-1546353474406-0" style="height:250px; width:300px;" data-google-query-id="CIPdmOyBneICFUV4iwodS6MCkw"><div id="google_ads_iframe_/1090369/C1_0__container__" style="border: 0pt none;"><iframe id="google_ads_iframe_/1090369/C1_0" title="3rd party ad content" name="google_ads_iframe_/1090369/C1_0" scrolling="no" marginwidth="0" marginheight="0" style="border: 0px none; vertical-align: bottom;" srcdoc="" data-google-container-id="1" data-load-complete="true" width="300" height="250" frameborder="0"></iframe></div></div>
+</div>
+<div id="under_post_news"><div class="itnews c_ad_block"><b>相关博文：</b><br>·  <a href="https://www.cnblogs.com/zhaoyingjie/p/8669650.html" target="_blank" onclick="clickRecomItmem(8669650)">python 高阶函数 map lambda filter等</a><br>·  <a href="https://www.cnblogs.com/duanlinxiao/p/9820630.html" target="_blank" onclick="clickRecomItmem(9820630)">pythonmap常见用法</a><br>·  <a href="https://www.cnblogs.com/xaiobong/p/9955902.html" target="_blank" onclick="clickRecomItmem(9955902)">map函数</a><br>·  <a href="https://www.cnblogs.com/lzh0108/p/7783980.html" target="_blank" onclick="clickRecomItmem(7783980)">Python学习之高阶函数——map/reduce</a><br>·  <a href="https://www.cnblogs.com/aiguiling/p/8496795.html" target="_blank" onclick="clickRecomItmem(8496795)">python内置函数-map()函数</a><br></div></div>
+<div id="cnblogs_c2" class="c_ad_block">
+    <div id="div-gpt-ad-1539008685004-0" style="height:60px; width:468px;" data-google-query-id="CITdmOyBneICFUV4iwodS6MCkw"><div id="google_ads_iframe_/1090369/C2_0__container__" style="border: 0pt none;"><iframe id="google_ads_iframe_/1090369/C2_0" title="3rd party ad content" name="google_ads_iframe_/1090369/C2_0" scrolling="no" marginwidth="0" marginheight="0" style="border: 0px none; vertical-align: bottom;" srcdoc="" data-google-container-id="2" data-load-complete="true" width="468" height="60" frameborder="0"></iframe></div></div>
+</div>
+<div id="under_post_kb"><div class="itnews c_ad_block"><b>最新新闻</b>：<br> ·  <a href="https://news.cnblogs.com/n/625331/" target="_blank">深网|万达百货更名苏宁易购广场 改造店5月底亮相</a><br> ·  <a href="https://news.cnblogs.com/n/625330/" target="_blank">圈重点！腾讯全球数字生态大会带来不一样的智慧医疗</a><br> ·  <a href="https://news.cnblogs.com/n/625329/" target="_blank">3岁娃成“社交万人迷”？别再被天价“情商培训班”忽悠了</a><br> ·  <a href="https://news.cnblogs.com/n/625328/" target="_blank">国产手机十年厮杀过后，为何只剩下华为带着米OV?</a><br> ·  <a href="https://news.cnblogs.com/n/625327/" target="_blank">英国宣布5G将在7月3日上线，兼容四款5G手机</a><br>» <a href="http://news.cnblogs.com/" title="IT新闻" target="_blank">更多新闻...</a></div></div>
+<div id="HistoryToday" class="c_ad_block"></div>
+<script type="text/javascript">
+ if(enablePostBottom()) {
+    codeHighlight();
+    fixPostBody();
+    setTimeout(function () { incrementViewCount(cb_entryId); }, 50);
+    deliverT2();
+    deliverC1();
+    deliverC2();    
+    loadNewsAndKb();
+    loadBlogSignature();
+    LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+    GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+    loadOptUnderPost();
+    GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);  
+}
+</script>
+</div>
+
+    
+	</div><!--end: forFlow -->
+	</div><!--end: mainContent 主体内容容器-->
+
+	<div id="sideBar">
+		<div id="sideBarMain">
+			
+<!--done-->
+<div class="newsItem">
+<h3 class="catListTitle">公告</h3>
+	<div id="blog-news"><aside>
+  <div>
+      
+  </div>
+</aside><div id="profile_block">昵称：<a href="https://home.cnblogs.com/u/superxuezhazha/">超级学渣渣</a><br>园龄：<a href="https://home.cnblogs.com/u/superxuezhazha/" title="入园时间：2015-05-26">3年11个月</a><br>粉丝：<a href="https://home.cnblogs.com/u/superxuezhazha/followers/">90</a><br>关注：<a href="https://home.cnblogs.com/u/superxuezhazha/followees/">4</a><div id="p_b_follow"><a href="javascript:void(0);" onclick="follow('808d6ef1-b303-e511-b908-9dcfd8948a71')">+加关注</a></div><script>getFollowStatus('808d6ef1-b303-e511-b908-9dcfd8948a71')</script></div></div><script type="text/javascript">loadBlogNews();</script>
+</div>
+
+			<div id="calendar"><div id="blog-calendar" style=""><table id="blogCalendar" class="Cal" title="Calendar" cellspacing="0" cellpadding="0">
+	<tbody><tr><td colspan="7"><table class="CalTitle" cellspacing="0">
+		<tbody><tr><td class="CalNextPrev"><a href="javascript:void(0);" onclick="loadBlogCalendar('2019/04/01');return false;">&lt;</a></td><td align="center">2019年5月</td><td class="CalNextPrev" align="right"><a href="javascript:void(0);" onclick="loadBlogCalendar('2019/06/01');return false;">&gt;</a></td></tr>
+	</tbody></table></td></tr><tr><th class="CalDayHeader" abbr="日" scope="col" align="center">日</th><th class="CalDayHeader" abbr="一" scope="col" align="center">一</th><th class="CalDayHeader" abbr="二" scope="col" align="center">二</th><th class="CalDayHeader" abbr="三" scope="col" align="center">三</th><th class="CalDayHeader" abbr="四" scope="col" align="center">四</th><th class="CalDayHeader" abbr="五" scope="col" align="center">五</th><th class="CalDayHeader" abbr="六" scope="col" align="center">六</th></tr><tr><td class="CalOtherMonthDay" align="center">28</td><td class="CalOtherMonthDay" align="center">29</td><td class="CalOtherMonthDay" align="center">30</td><td align="center">1</td><td align="center"><a href="https://www.cnblogs.com/superxuezhazha/archive/2019/05/02.html"><u>2</u></a></td><td align="center">3</td><td class="CalWeekendDay" align="center">4</td></tr><tr><td class="CalWeekendDay" align="center"><a href="https://www.cnblogs.com/superxuezhazha/archive/2019/05/05.html"><u>5</u></a></td><td align="center"><a href="https://www.cnblogs.com/superxuezhazha/archive/2019/05/06.html"><u>6</u></a></td><td align="center">7</td><td align="center">8</td><td align="center">9</td><td align="center"><a href="https://www.cnblogs.com/superxuezhazha/archive/2019/05/10.html"><u>10</u></a></td><td class="CalWeekendDay" align="center">11</td></tr><tr><td class="CalWeekendDay" align="center">12</td><td align="center">13</td><td align="center">14</td><td class="CalTodayDay" align="center">15</td><td align="center">16</td><td align="center">17</td><td class="CalWeekendDay" align="center">18</td></tr><tr><td class="CalWeekendDay" align="center">19</td><td align="center">20</td><td align="center">21</td><td align="center">22</td><td align="center">23</td><td align="center">24</td><td class="CalWeekendDay" align="center">25</td></tr><tr><td class="CalWeekendDay" align="center">26</td><td align="center">27</td><td align="center">28</td><td align="center">29</td><td align="center">30</td><td align="center">31</td><td class="CalOtherMonthDay" align="center">1</td></tr><tr><td class="CalOtherMonthDay" align="center">2</td><td class="CalOtherMonthDay" align="center">3</td><td class="CalOtherMonthDay" align="center">4</td><td class="CalOtherMonthDay" align="center">5</td><td class="CalOtherMonthDay" align="center">6</td><td class="CalOtherMonthDay" align="center">7</td><td class="CalOtherMonthDay" align="center">8</td></tr>
+</tbody></table></div><script type="text/javascript">loadBlogDefaultCalendar();</script></div>
+			
+			<div id="leftcontentcontainer">
+				<div id="blog-sidecolumn"><div id="sidebar_search" class="sidebar-block">
+<div id="sidebar_search" class="mySearch">
+<h3 class="catListTitle">搜索</h3>
+<div id="sidebar_search_box">
+<div id="widget_my_zzk" class="div_my_zzk"><input id="q" onkeydown="return zzk_go_enter(event);" class="input_my_zzk" type="text">&nbsp;<input onclick="zzk_go()" value="找找看" id="btnZzk" class="btn_my_zzk" type="button"></div>
+<div id="widget_my_google" class="div_my_zzk"><input name="google_q" id="google_q" onkeydown="return google_go_enter(event)" class="input_my_zzk" type="text">&nbsp;<input onclick="google_go()" value="谷歌搜索" class="btn_my_zzk" type="button"></div>
+</div>
+</div>
+
+</div><div id="sidebar_shortcut" class="sidebar-block">
+<div class="catListLink">
+<h3 class="catListTitle">常用链接</h3>
+<ul>
+<li><a href="https://www.cnblogs.com/superxuezhazha/p/" title="我的博客的随笔列表">我的随笔</a></li><li><a href="https://www.cnblogs.com/superxuezhazha/MyComments.html" title="我发表过的评论列表">我的评论</a></li><li><a href="https://www.cnblogs.com/superxuezhazha/OtherPosts.html" title="我评论过的随笔列表">我的参与</a></li><li><a href="https://www.cnblogs.com/superxuezhazha/RecentComments.html" title="我的博客的评论列表">最新评论</a></li><li><a href="https://www.cnblogs.com/superxuezhazha/tag/" title="我的博客的标签列表">我的标签</a></li>
+<li><a id="itemListLink" onclick="this.blur();WarpClass('itemListLink', 'itemListLin_con');return false;" href="#">更多链接</a></li>
+</ul>
+<div id="itemListLin_con" style="display:none;">
+<ul>
+
+</ul>
+</div>
+</div></div><div id="sidebar_toptags" class="sidebar-block">
+<div class="catListTag">
+<h3 class="catListTitle">我的标签</h3>
+<ul>
+<li><a href="https://www.cnblogs.com/superxuezhazha/tag/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">机器学习</a>(3)</li><li><a href="https://www.cnblogs.com/superxuezhazha/tag/%E6%95%99%E5%8A%A1%E5%A4%84/">教务处</a>(1)</li><li><a href="https://www.cnblogs.com/superxuezhazha/tag/%E7%88%AC%E8%99%AB/">爬虫</a>(1)</li><li><a href="https://www.cnblogs.com/superxuezhazha/tag/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/">人工智能</a>(1)</li><li><a href="https://www.cnblogs.com/superxuezhazha/tag/%E4%B8%AD%E5%9B%BD%E6%B5%B7%E6%B4%8B%E5%A4%A7%E5%AD%A6/">中国海洋大学</a>(1)</li><li><a href="https://www.cnblogs.com/superxuezhazha/tag/AI/">AI</a>(1)</li><li><a href="https://www.cnblogs.com/superxuezhazha/tag/js/">js</a>(1)</li><li><a href="https://www.cnblogs.com/superxuezhazha/tag/pandas/">pandas</a>(1)</li>
+</ul>
+</div></div><div id="sidebar_categories">
+<div class="catListPostCategory">
+<h3 class="catListTitle">随笔分类</h3>
+
+<ul>
+
+<li><a id="CatList_LinkList_0_Link_0" href="https://www.cnblogs.com/superxuezhazha/category/1264861.html">Android(11)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_1" href="https://www.cnblogs.com/superxuezhazha/category/787483.html">asp.net(13)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_2" href="https://www.cnblogs.com/superxuezhazha/category/854418.html">BestCoder(2)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_3" href="https://www.cnblogs.com/superxuezhazha/category/832279.html">c#(8)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_4" href="https://www.cnblogs.com/superxuezhazha/category/795636.html">c++(6)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_5" href="https://www.cnblogs.com/superxuezhazha/category/865522.html">cf(1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_6" href="https://www.cnblogs.com/superxuezhazha/category/1200175.html">CSS---菜鸟教程搬运工(8)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_7" href="https://www.cnblogs.com/superxuezhazha/category/799794.html">dfs(12)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_8" href="https://www.cnblogs.com/superxuezhazha/category/1395376.html">django(11)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_9" href="https://www.cnblogs.com/superxuezhazha/category/808013.html">dp(24)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_10" href="https://www.cnblogs.com/superxuezhazha/category/1064218.html">flask(3)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_11" href="https://www.cnblogs.com/superxuezhazha/category/817649.html">html/css/js(62)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_12" href="https://www.cnblogs.com/superxuezhazha/category/815823.html">java实例学习(31)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_13" href="https://www.cnblogs.com/superxuezhazha/category/1440474.html">LaTeX(2)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_14" href="https://www.cnblogs.com/superxuezhazha/category/1318909.html">numpy(3)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_15" href="https://www.cnblogs.com/superxuezhazha/category/803198.html">ouc比赛(15)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_16" href="https://www.cnblogs.com/superxuezhazha/category/790344.html">php(2)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_17" href="https://www.cnblogs.com/superxuezhazha/category/1063410.html">pygame(6)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_18" href="https://www.cnblogs.com/superxuezhazha/category/1405524.html">pyqt</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_19" href="https://www.cnblogs.com/superxuezhazha/category/855620.html">python(75)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_20" href="https://www.cnblogs.com/superxuezhazha/category/924750.html">QT(8)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_21" href="https://www.cnblogs.com/superxuezhazha/category/816330.html">STL(8)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_22" href="https://www.cnblogs.com/superxuezhazha/category/1284502.html">tensorflow(33)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_23" href="https://www.cnblogs.com/superxuezhazha/category/848263.html">ubuntu使用(14)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_24" href="https://www.cnblogs.com/superxuezhazha/category/851882.html">vim(9)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_25" href="https://www.cnblogs.com/superxuezhazha/category/813413.html">暴力(17)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_26" href="https://www.cnblogs.com/superxuezhazha/category/1137305.html">毕业设计---视频会议系统开发全纪录(8)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_27" href="https://www.cnblogs.com/superxuezhazha/category/806886.html">并查集(6)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_28" href="https://www.cnblogs.com/superxuezhazha/category/807753.html">纯粹的数学问题(14)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_29" href="https://www.cnblogs.com/superxuezhazha/category/856334.html">递归(3)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_30" href="https://www.cnblogs.com/superxuezhazha/category/811478.html">电脑知识(6)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_31" href="https://www.cnblogs.com/superxuezhazha/category/821218.html">二叉树(2)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_32" href="https://www.cnblogs.com/superxuezhazha/category/872618.html">疯狂学java web系列(8)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_33" href="https://www.cnblogs.com/superxuezhazha/category/860848.html">概率(2)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_34" href="https://www.cnblogs.com/superxuezhazha/category/787514.html">寒假闭关-acm-cf(2)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_35" href="https://www.cnblogs.com/superxuezhazha/category/822139.html">近代史纲要(1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_36" href="https://www.cnblogs.com/superxuezhazha/category/915685.html">蓝鲸-oj(1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_37" href="https://www.cnblogs.com/superxuezhazha/category/867355.html">没搞明白(3)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_38" href="https://www.cnblogs.com/superxuezhazha/category/817469.html">模板(28)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_39" href="https://www.cnblogs.com/superxuezhazha/category/829381.html">模拟(5)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_40" href="https://www.cnblogs.com/superxuezhazha/category/826156.html">奇思妙想(13)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_41" href="https://www.cnblogs.com/superxuezhazha/category/1417215.html">深度学习(4)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_42" href="https://www.cnblogs.com/superxuezhazha/category/855966.html">树的想法</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_43" href="https://www.cnblogs.com/superxuezhazha/category/866450.html">数论(12)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_44" href="https://www.cnblogs.com/superxuezhazha/category/859098.html">数学建模学习(4)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_45" href="https://www.cnblogs.com/superxuezhazha/category/810787.html">水题(38)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_46" href="https://www.cnblogs.com/superxuezhazha/category/816352.html">搜索(6)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_47" href="https://www.cnblogs.com/superxuezhazha/category/866711.html">算法整理(3)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_48" href="https://www.cnblogs.com/superxuezhazha/category/818205.html">贪心(7)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_49" href="https://www.cnblogs.com/superxuezhazha/category/865523.html">统计(1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_50" href="https://www.cnblogs.com/superxuezhazha/category/813450.html">图论(6)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_51" href="https://www.cnblogs.com/superxuezhazha/category/813878.html">线段树(9)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_52" href="https://www.cnblogs.com/superxuezhazha/category/798393.html">小白学习(12)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_53" href="https://www.cnblogs.com/superxuezhazha/category/809879.html">一些技巧总结(10)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_54" href="https://www.cnblogs.com/superxuezhazha/category/828545.html">组合数学(4)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_55" href="https://www.cnblogs.com/superxuezhazha/category/817613.html">最短路(5)</a> </li>
+
+</ul>
+
+</div>
+
+<div class="catListPostArchive">
+<h3 class="catListTitle">随笔档案</h3>
+
+<ul>
+
+<li><a id="CatList_LinkList_1_Link_0" href="https://www.cnblogs.com/superxuezhazha/archive/2019/05.html">2019年5月 (6)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_1" href="https://www.cnblogs.com/superxuezhazha/archive/2019/04.html">2019年4月 (9)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_2" href="https://www.cnblogs.com/superxuezhazha/archive/2019/03.html">2019年3月 (14)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_3" href="https://www.cnblogs.com/superxuezhazha/archive/2019/02.html">2019年2月 (18)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_4" href="https://www.cnblogs.com/superxuezhazha/archive/2018/10.html">2018年10月 (2)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_5" href="https://www.cnblogs.com/superxuezhazha/archive/2018/09.html">2018年9月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_6" href="https://www.cnblogs.com/superxuezhazha/archive/2018/08.html">2018年8月 (30)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_7" href="https://www.cnblogs.com/superxuezhazha/archive/2018/07.html">2018年7月 (5)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_8" href="https://www.cnblogs.com/superxuezhazha/archive/2018/06.html">2018年6月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_9" href="https://www.cnblogs.com/superxuezhazha/archive/2018/05.html">2018年5月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_10" href="https://www.cnblogs.com/superxuezhazha/archive/2018/04.html">2018年4月 (10)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_11" href="https://www.cnblogs.com/superxuezhazha/archive/2018/03.html">2018年3月 (3)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_12" href="https://www.cnblogs.com/superxuezhazha/archive/2018/02.html">2018年2月 (4)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_13" href="https://www.cnblogs.com/superxuezhazha/archive/2018/01.html">2018年1月 (5)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_14" href="https://www.cnblogs.com/superxuezhazha/archive/2017/12.html">2017年12月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_15" href="https://www.cnblogs.com/superxuezhazha/archive/2017/08.html">2017年8月 (10)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_16" href="https://www.cnblogs.com/superxuezhazha/archive/2017/07.html">2017年7月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_17" href="https://www.cnblogs.com/superxuezhazha/archive/2017/04.html">2017年4月 (8)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_18" href="https://www.cnblogs.com/superxuezhazha/archive/2017/03.html">2017年3月 (12)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_19" href="https://www.cnblogs.com/superxuezhazha/archive/2017/02.html">2017年2月 (70)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_20" href="https://www.cnblogs.com/superxuezhazha/archive/2017/01.html">2017年1月 (5)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_21" href="https://www.cnblogs.com/superxuezhazha/archive/2016/12.html">2016年12月 (14)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_22" href="https://www.cnblogs.com/superxuezhazha/archive/2016/11.html">2016年11月 (18)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_23" href="https://www.cnblogs.com/superxuezhazha/archive/2016/10.html">2016年10月 (3)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_24" href="https://www.cnblogs.com/superxuezhazha/archive/2016/08.html">2016年8月 (69)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_25" href="https://www.cnblogs.com/superxuezhazha/archive/2016/07.html">2016年7月 (108)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_26" href="https://www.cnblogs.com/superxuezhazha/archive/2016/06.html">2016年6月 (5)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_27" href="https://www.cnblogs.com/superxuezhazha/archive/2016/05.html">2016年5月 (34)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_28" href="https://www.cnblogs.com/superxuezhazha/archive/2016/04.html">2016年4月 (44)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_29" href="https://www.cnblogs.com/superxuezhazha/archive/2016/03.html">2016年3月 (37)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_30" href="https://www.cnblogs.com/superxuezhazha/archive/2016/02.html">2016年2月 (15)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_31" href="https://www.cnblogs.com/superxuezhazha/archive/2015/08.html">2015年8月 (4)</a> </li>
+
+</ul>
+
+</div>
+
+</div><div id="sidebar_recentcomments" class="sidebar-block"><div id="recent_comments_wrap">
+<div class="catListComment">
+<h3 class="catListTitle">最新评论</h3>
+
+	<div id="RecentCommentsBlock"><ul>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/superxuezhazha/p/5405443.html#4245852">1. Re:CodeForces 300C --数论</a></li>
+        <li class="recent_comment_body">@CoAAColA明白了...</li>
+        <li class="recent_comment_author">--超级学渣渣</li>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/superxuezhazha/p/5405443.html#4245836">2. Re:CodeForces 300C --数论</a></li>
+        <li class="recent_comment_body">因为用宏的话在编译过程中就是简单地替换，比如楼主你的ans+=dp[n]*comi%prim*comni%prim;对编译器来说就是ans+=dp[n]*comi%1000000000+7*comni......</li>
+        <li class="recent_comment_author">--CoAAColA</li>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/superxuezhazha/p/5793536.html#4241224">3. Re:python特殊函数 __call__()</a></li>
+        <li class="recent_comment_body">very good!</li>
+        <li class="recent_comment_author">--DrHW</li>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/superxuezhazha/p/5746922.html#4176851">4. Re:python 的特殊方法 __str__和__repr__</a></li>
+        <li class="recent_comment_body">@云剑决命令行里面直接输入p，是不会调用这个函数的。我猜测是python的设计方案就是这样。你直接输变量名会返回给你变量的内存信息。只有调用print这类的输出给客户看的信息，才会主动调用__str_......</li>
+        <li class="recent_comment_author">--超级学渣渣</li>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/superxuezhazha/p/5746922.html#4176641">5. Re:python 的特殊方法 __str__和__repr__</a></li>
+        <li class="recent_comment_body">__str__和__repr__如果要把一个类的实例变成 str，就需要实现特殊方法__str__()：class Person(object): def __init__(self, name.........</li>
+        <li class="recent_comment_author">--云剑决</li>
+</ul>
+</div>
+</div>
+</div></div><div id="sidebar_topviewedposts" class="sidebar-block"><div id="topview_posts_wrap">
+<div class="catListView">
+<h3 class="catListTitle">阅读排行榜</h3>
+	<div id="TopViewPostsBlock"><ul><li><a href="https://www.cnblogs.com/superxuezhazha/p/5714970.html">1. python  map函数(98527)</a></li><li><a href="https://www.cnblogs.com/superxuezhazha/p/5793536.html">2. python特殊函数 __call__()(54293)</a></li><li><a href="https://www.cnblogs.com/superxuezhazha/p/5746922.html">3. python 的特殊方法 __str__和__repr__(46017)</a></li><li><a href="https://www.cnblogs.com/superxuezhazha/p/6012771.html">4. python 简单的txt文件读写(23215)</a></li><li><a href="https://www.cnblogs.com/superxuezhazha/p/5737955.html">5. python 多态(15732)</a></li></ul></div>
+</div>
+</div></div><div id="sidebar_topcommentedposts" class="sidebar-block"><div id="topfeedback_posts_wrap">
+<div class="catListFeedback">
+<h3 class="catListTitle">评论排行榜</h3>
+	<div id="TopFeedbackPostsBlock"><ul><li><a href="https://www.cnblogs.com/superxuezhazha/p/5714970.html">1. python  map函数(8)</a></li><li><a href="https://www.cnblogs.com/superxuezhazha/p/5793536.html">2. python特殊函数 __call__()(7)</a></li><li><a href="https://www.cnblogs.com/superxuezhazha/p/5737955.html">3. python 多态(6)</a></li><li><a href="https://www.cnblogs.com/superxuezhazha/p/5746922.html">4. python 的特殊方法 __str__和__repr__(3)</a></li><li><a href="https://www.cnblogs.com/superxuezhazha/p/6233688.html">5. QT操作EXCEL(2)</a></li></ul></div>
+</div>
+</div></div><div id="sidebar_topdiggedposts" class="sidebar-block"><div id="topdigg_posts_wrap">
+<div class="catListView">
+<h3 class="catListTitle">推荐排行榜</h3>
+<div id="TopDiggPostsBlock"><ul><li><a href="https://www.cnblogs.com/superxuezhazha/p/5714970.html">1. python  map函数(7)</a></li><li><a href="https://www.cnblogs.com/superxuezhazha/p/5793536.html">2. python特殊函数 __call__()(6)</a></li><li><a href="https://www.cnblogs.com/superxuezhazha/p/5737955.html">3. python 多态(4)</a></li><li><a href="https://www.cnblogs.com/superxuezhazha/p/5677541.html">4. 我的vimrc文件(2)</a></li><li><a href="https://www.cnblogs.com/superxuezhazha/p/6208708.html">5. Qt实现端口扫描器(1)</a></li></ul></div>
+</div></div></div></div><script type="text/javascript">loadBlogSideColumn();</script>
+			</div>
+			
+		</div><!--end: sideBarMain -->
+	</div><!--end: sideBar 侧边栏容器 -->
+	<div class="clear"></div>
+	</div><!--end: main -->
+	<div class="clear"></div>
+	<div id="footer">
+		
+<!--done-->
+Copyright ©2019 超级学渣渣
+	</div><!--end: footer -->
+</div><!--end: home 自定义的最大容器 -->
+
+
+
+</body></html>

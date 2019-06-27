@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="zh-cn"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="origin">
+    <title>Linux下gcc编译生成动态链接库*.so文件并调用它 - richyhuang - 博客园</title>
+<meta property="og:description" content="动态库*.so在linux下用c和c++编程时经常会碰到，最近在网站找了几篇文章介绍动态库的编译和链接，总算搞懂了这个之前一直不太了解得东东，这里做个笔记，也为其它正为动态库链接库而苦恼的兄弟们提供一">
+    <link type="text/css" rel="stylesheet" href="Linux%E4%B8%8Bgcc%E7%BC%96%E8%AF%91%E7%94%9F%E6%88%90%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93*.so%E6%96%87%E4%BB%B6%E5%B9%B6%E8%B0%83%E7%94%A8%E5%AE%83%20-%20richyhuang%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/blog-common.css">
+<link id="MainCss" type="text/css" rel="stylesheet" href="Linux%E4%B8%8Bgcc%E7%BC%96%E8%AF%91%E7%94%9F%E6%88%90%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93*.so%E6%96%87%E4%BB%B6%E5%B9%B6%E8%B0%83%E7%94%A8%E5%AE%83%20-%20richyhuang%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/bundle-facebook.css">
+<link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="Linux%E4%B8%8Bgcc%E7%BC%96%E8%AF%91%E7%94%9F%E6%88%90%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93*.so%E6%96%87%E4%BB%B6%E5%B9%B6%E8%B0%83%E7%94%A8%E5%AE%83%20-%20richyhuang%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/bundle-facebook-mobile.css">
+    <link title="RSS" type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/huangxinzhen/rss">
+    <link title="RSD" type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/huangxinzhen/rsd.xml">
+<link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/huangxinzhen/wlwmanifest.xml">
+    <script src="Linux%E4%B8%8Bgcc%E7%BC%96%E8%AF%91%E7%94%9F%E6%88%90%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93*.so%E6%96%87%E4%BB%B6%E5%B9%B6%E8%B0%83%E7%94%A8%E5%AE%83%20-%20richyhuang%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/amp4ads-host-v0.js"></script><script src="Linux%E4%B8%8Bgcc%E7%BC%96%E8%AF%91%E7%94%9F%E6%88%90%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93*.so%E6%96%87%E4%BB%B6%E5%B9%B6%E8%B0%83%E7%94%A8%E5%AE%83%20-%20richyhuang%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/pubads_impl_rendering_2019050901.js"></script><script async="" src="Linux%E4%B8%8Bgcc%E7%BC%96%E8%AF%91%E7%94%9F%E6%88%90%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93*.so%E6%96%87%E4%BB%B6%E5%B9%B6%E8%B0%83%E7%94%A8%E5%AE%83%20-%20richyhuang%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/analytics.js"></script><script src="Linux%E4%B8%8Bgcc%E7%BC%96%E8%AF%91%E7%94%9F%E6%88%90%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93*.so%E6%96%87%E4%BB%B6%E5%B9%B6%E8%B0%83%E7%94%A8%E5%AE%83%20-%20richyhuang%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/jquery-2.js"></script>
+    <script>var currentBlogId=201929;var currentBlogApp='huangxinzhen',cb_enable_mathjax=false;var isLogined=false;</script>
+    <script src="Linux%E4%B8%8Bgcc%E7%BC%96%E8%AF%91%E7%94%9F%E6%88%90%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93*.so%E6%96%87%E4%BB%B6%E5%B9%B6%E8%B0%83%E7%94%A8%E5%AE%83%20-%20richyhuang%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/blog-common.js" type="text/javascript"></script>
+<link rel="preload" href="Linux%E4%B8%8Bgcc%E7%BC%96%E8%AF%91%E7%94%9F%E6%88%90%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93*.so%E6%96%87%E4%BB%B6%E5%B9%B6%E8%B0%83%E7%94%A8%E5%AE%83%20-%20richyhuang%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/integrator.js" as="script"><script type="text/javascript" src="Linux%E4%B8%8Bgcc%E7%BC%96%E8%AF%91%E7%94%9F%E6%88%90%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93*.so%E6%96%87%E4%BB%B6%E5%B9%B6%E8%B0%83%E7%94%A8%E5%AE%83%20-%20richyhuang%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/integrator.js"></script><script src="Linux%E4%B8%8Bgcc%E7%BC%96%E8%AF%91%E7%94%9F%E6%88%90%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93*.so%E6%96%87%E4%BB%B6%E5%B9%B6%E8%B0%83%E7%94%A8%E5%AE%83%20-%20richyhuang%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/pubads_impl_2019050901.js" async=""></script></head>
+<body>
+<a name="top"></a>
+
+
+<div id="home">
+<div id="header">
+	<div id="blogTitle">
+		
+<!--done-->
+<h1><a id="Header2_HeaderTitle" class="headermaintitle" href="https://www.cnblogs.com/huangxinzhen/">richyhuang</a></h1>
+<h2></h2>
+
+
+
+		
+	</div><!--end: blogTitle 博客的标题和副标题 -->
+	<div id="navigator">
+		
+<!--done-->
+			<ul id="navList">
+				<li><a id="blog_nav_sitehome" class="menu" href="https://www.cnblogs.com/">博客园</a></li>
+				<li><a id="blog_nav_myhome" class="menu" href="https://www.cnblogs.com/huangxinzhen/">首页</a></li>
+				<li><a id="blog_nav_newpost" class="menu" rel="nofollow" href="https://i.cnblogs.com/EditPosts.aspx?opt=1">新随笔</a></li>
+				<li><a id="blog_nav_contact" accesskey="9" class="menu" rel="nofollow" href="https://msg.cnblogs.com/send/richyhuang">联系</a></li>
+				<li><a id="blog_nav_admin" class="menu" rel="nofollow" href="https://i.cnblogs.com/">管理</a></li>
+				<li><a id="blog_nav_rss" class="menu" href="https://www.cnblogs.com/huangxinzhen/rss">订阅</a>
+				<a id="blog_nav_rss_image" class="aHeaderXML" href="https://www.cnblogs.com/huangxinzhen/rss"><img src="Linux%E4%B8%8Bgcc%E7%BC%96%E8%AF%91%E7%94%9F%E6%88%90%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93*.so%E6%96%87%E4%BB%B6%E5%B9%B6%E8%B0%83%E7%94%A8%E5%AE%83%20-%20richyhuang%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/xml.gif" alt="订阅"></a></li>
+			</ul>
+
+
+		<div class="blogStats">
+			
+			<div id="blog_stats">
+<!--done-->
+随笔- 19&nbsp;
+文章- 0&nbsp;
+评论- 0&nbsp;
+</div>
+			
+		</div><!--end: blogStats -->
+	</div><!--end: navigator 博客导航栏 -->
+</div><!--end: header 头部 -->
+
+<div id="main">
+	<div id="mainContent">
+	<div class="forFlow">
+		
+        <div id="post_detail">
+<!--done-->
+<div id="topics">
+	<div class="post">
+		<h1 class="postTitle">
+			<a id="cb_post_title_url" class="postTitle2" href="https://www.cnblogs.com/huangxinzhen/p/4047051.html">Linux下gcc编译生成动态链接库*.so文件并调用它</a>
+		</h1>
+		<div class="clear"></div>
+		<div class="postBody">
+			<div id="cnblogs_post_body" class="blogpost-body"><p>动态库*.so在linux下用c和c++编程时经常会碰到，最近在网站找了几篇文章介绍动态库的编译和链接，总算搞懂了这个之前一直不太了解得东东，这里做个笔记，也为其它正为动态库链接库而苦恼的兄弟们提供一点帮助。<br>1、动态库的编译<br><br>下面通过一个例子来介绍如何生成一个动态库。这里有一个头文件：so_test.h，三个.c文件：test_a.c、test_b.c、test_c.c，我们将这几个文件编译成一个动态库：libtest.so。<br><br>//so_test.h：<br>#include "stdio.h"<br>void test_a();<br>void test_b();<br>void test_c();<br><br>//test_a.c：<br>#include "so_test.h"<br>void test_a()<br>{<br>&nbsp;&nbsp;printf("this is in test_a...\n");<br>}<br><br><br>//test_b.c：<br>#include "so_test.h"<br>void test_b()<br>{<br>&nbsp;&nbsp;printf("this is in test_b...\n");<br>}<br><br><br><br>//test_c.c：<br>#include "so_test.h"<br>void test_c()<br>{<br>&nbsp;&nbsp;printf("this is in test_c...\n");<br>}<br>将这几个文件编译成一个动态库：libtest.so<br>$ gcc test_a.c test_b.c test_c.c -fPIC -shared -o libtest.so<br><br>2、动态库的链接<br>在1、中，我们已经成功生成了一个自己的动态链接库libtest.so，下面我们通过一个程序来调用这个库里的函数。程序的源文件为：test.c。<br><br>test.c：<br>#include "so_test.h"<br>int main()<br>{<br>test_a();<br>test_b();<br>test_c();<br>return 0;<br>}<br>将test.c与动态库libtest.so链接生成执行文件test：<br>$ gcc test.c -L. -ltest -o test<br>测试是否动态连接，如果列出libtest.so，那么应该是连接正常了<br>$ ldd test<br>执行test，可以看到它是如何调用动态库中的函数的。<br>3、编译参数解析<br>最主要的是GCC命令行的一个选项:<br>-shared该选项指定生成动态连接库（让连接器生成T类型的导出符号表，有时候也生成弱连接W类型的导出符号），不用该标志外部程序无法连接。相当于一个可执行文件<br><br>-fPIC：表示编译为位置独立的代码，不用此选项的话编译后的代码是位置相关的所以动态载入时是通过代码拷贝的方式来满足不同进程的需要，而不能达到真正代码段共享的目的。<br><br>-L.：表示要连接的库在当前目录中<br><br>-ltest：编译器查找动态连接库时有隐含的命名规则，即在给出的名字前面加上lib，后面加上.so来确定库的名称<br><br>LD_LIBRARY_PATH：这个环境变量指示动态连接器可以装载动态库的路径。<br><br>当然如果有root权限的话，可以修改/etc/ld.so.conf文件，然后调用 /sbin/ldconfig来达到同样的目的，不过如果没有root权限，那么只能采用输出LD_LIBRARY_PATH的方法了。<br><br>4、注意<br><br>调
+用动态库的时候有几个问题会经常碰到，有时，明明已经将库的头文件所在目录 通过 “-I” include进来了，库所在文件通过 
+“-L”参数引导，并指定了“-l”的库名，但通过ldd命令察看时，就是死活找不到你指定链接的so文件，这时你要作的就是通过修改 
+LD_LIBRARY_PATH或者/etc/ld.so.conf文件来指定动态库的目录。通常这样做就可以解决库无法链接的问题了。<br><br>在linux下可以用export命令来设置这个值，在linux终端下输入:<br>export LD_LIBRARY_PATH=/opt/au1200_rm/build_tools/bin: $LD_LIBRARY_PATH: 　　<br>然后再输入:export 　　<br>即会显示是否设置正确 　　<br>export方式在重启后失效，所以也可以用 vim /etc/bashrc ，修改其中的LD_LIBRARY_PATH变量。 　　<br>例如：LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/au1200_rm/build_tools/bin。</p></div><div id="MySignature"></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+<div id="BlogPostCategory"></div>
+<div id="EntryTag"></div>
+<div id="blog_post_info"><div id="green_channel">
+        <a href="javascript:void(0);" id="green_channel_digg" onclick="DiggIt(4047051,cb_blogId,1);green_channel_success(this,'谢谢推荐！');">好文要顶</a>
+            <a id="green_channel_follow" onclick="follow('f34a442f-d36f-e311-8d02-90b11c0b17d6');" href="javascript:void(0);">关注我</a>
+    <a id="green_channel_favorite" onclick="AddToWz(cb_entryId);return false;" href="javascript:void(0);">收藏该文</a>
+    <a id="green_channel_weibo" href="javascript:void(0);" title="分享至新浪微博" onclick="ShareToTsina()"><img src="Linux%E4%B8%8Bgcc%E7%BC%96%E8%AF%91%E7%94%9F%E6%88%90%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93*.so%E6%96%87%E4%BB%B6%E5%B9%B6%E8%B0%83%E7%94%A8%E5%AE%83%20-%20richyhuang%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/icon_weibo_24.png" alt=""></a>
+    <a id="green_channel_wechat" href="javascript:void(0);" title="分享至微信" onclick="shareOnWechat()"><img src="Linux%E4%B8%8Bgcc%E7%BC%96%E8%AF%91%E7%94%9F%E6%88%90%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93*.so%E6%96%87%E4%BB%B6%E5%B9%B6%E8%B0%83%E7%94%A8%E5%AE%83%20-%20richyhuang%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/wechat.png" alt=""></a>
+</div>
+<div id="author_profile">
+    <div id="author_profile_info" class="author_profile_info">
+            <a href="http://home.cnblogs.com/u/huangxinzhen/" target="_blank"><img src="Linux%E4%B8%8Bgcc%E7%BC%96%E8%AF%91%E7%94%9F%E6%88%90%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93*.so%E6%96%87%E4%BB%B6%E5%B9%B6%E8%B0%83%E7%94%A8%E5%AE%83%20-%20richyhuang%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/sample_face.gif" class="author_avatar" alt=""></a>
+        <div id="author_profile_detail" class="author_profile_info">
+            <a href="http://home.cnblogs.com/u/huangxinzhen/">richyhuang</a><br>
+            <a href="http://home.cnblogs.com/u/huangxinzhen/followees">关注 - 0</a><br>
+            <a href="http://home.cnblogs.com/u/huangxinzhen/followers">粉丝 - 0</a>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div id="author_profile_honor"></div>
+    <div id="author_profile_follow">
+                <a href="javascript:void(0);" onclick="follow('f34a442f-d36f-e311-8d02-90b11c0b17d6');return false;">+加关注</a>
+    </div>
+</div>
+<div id="div_digg">
+    <div class="diggit" onclick="votePost(4047051,'Digg')">
+        <span class="diggnum" id="digg_count">0</span>
+    </div>
+    <div class="buryit" onclick="votePost(4047051,'Bury')">
+        <span class="burynum" id="bury_count">0</span>
+    </div>
+    <div class="clear"></div>
+    <div class="diggword" id="digg_tips">
+    </div>
+</div>
+<script type="text/javascript">
+    currentDiggType = 0;
+</script></div>
+<div class="clear"></div>
+<div id="post_next_prev"><a href="https://www.cnblogs.com/huangxinzhen/p/4046962.html" class="p_n_p_prefix">« </a> 上一篇：<a href="https://www.cnblogs.com/huangxinzhen/p/4046962.html" title="发布于2014-10-23 21:45">vim 常用变量</a><br><a href="https://www.cnblogs.com/huangxinzhen/p/4049753.html" class="p_n_p_prefix">» </a> 下一篇：<a href="https://www.cnblogs.com/huangxinzhen/p/4049753.html" title="发布于2014-10-25 10:04">python 与cpp接口编程</a><br></div>
+</div>
+
+
+		</div>
+		<div class="postDesc">posted @ <span id="post-date">2014-10-23 22:36</span> <a href="https://www.cnblogs.com/huangxinzhen/">richyhuang</a> 阅读(<span id="post_view_count">21226</span>) 评论(<span id="post_comment_count">0</span>)  <a href="https://i.cnblogs.com/EditPosts.aspx?postid=4047051" rel="nofollow">编辑</a> <a href="#" onclick="AddToWz(4047051);return false;">收藏</a></div>
+	</div>
+	<script type="text/javascript">var allowComments=true,cb_blogId=201929,cb_entryId=4047051,cb_blogApp=currentBlogApp,cb_blogUserGuid='f34a442f-d36f-e311-8d02-90b11c0b17d6',cb_entryCreatedDate='2014/10/23 22:36:00';loadViewCount(cb_entryId);var cb_postType=1;var isMarkdown=false;</script>
+	
+</div>
+<!--end: topics 文章、评论容器-->
+</div><a name="!comments"></a><div id="blog-comments-placeholder"></div><script type="text/javascript">var commentManager = new blogCommentManager();commentManager.renderComments(0);</script>
+<div id="comment_form" class="commentform">
+<a name="commentform"></a>
+<div id="divCommentShow"></div>
+<div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="#" onclick="return RefreshPage();">刷新页面</a><a href="#top">返回顶部</a></div>
+<div id="comment_form_container"><div class="login_tips">注册用户登录后才能发表评论，请 <a rel="nofollow" href="javascript:void(0);" class="underline" onclick="return login('commentform');">登录</a> 或 <a rel="nofollow" href="javascript:void(0);" class="underline" onclick="return register();">注册</a>，<a href="http://www.cnblogs.com/">访问</a>网站首页。</div></div>
+<div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+<div id="ad_t2"><a href="http://www.ucancode.com/index.htm" target="_blank" onclick="ga('send', 'event', 'Link', 'click', 'T2-工控')">【推荐】超50万C++/C#源码: 大型实时仿真组态图形源码</a><br><a href="https://www.bagevent.com/event/2195041?bag_track=13072958" target="_blank" onclick="ga('send', 'event', 'Link', 'click', 'T2-看雪')">【活动】看雪2019安全开发者峰会，共话安全领域焦点</a><br><a href="https://ke.qq.com/adActivity.html?name=xiangxueketang2" target="_blank" onclick="ga('send', 'event', 'Link', 'click', 'T2-享学')">【培训】Java程序员年薪40W，他1年走了别人5年的路</a><br></div>
+<div id="opt_under_post"></div>
+<script async="async" src="Linux%E4%B8%8Bgcc%E7%BC%96%E8%AF%91%E7%94%9F%E6%88%90%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93*.so%E6%96%87%E4%BB%B6%E5%B9%B6%E8%B0%83%E7%94%A8%E5%AE%83%20-%20richyhuang%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/gpt.js"></script>
+<script>
+  var googletag = googletag || {};
+  googletag.cmd = googletag.cmd || [];
+</script>
+<script>
+  googletag.cmd.push(function() {
+        googletag.defineSlot('/1090369/C1', [300, 250], 'div-gpt-ad-1546353474406-0').addService(googletag.pubads());
+        googletag.defineSlot('/1090369/C2', [468, 60], 'div-gpt-ad-1539008685004-0').addService(googletag.pubads());
+        googletag.pubads().enableSingleRequest();
+        googletag.enableServices();
+  });
+</script>
+<div id="cnblogs_c1" class="c_ad_block">
+    <div id="div-gpt-ad-1546353474406-0" style="height:250px; width:300px;" data-google-query-id="CIH5uPKBneICFVcxKgodAA4CVQ"><div id="google_ads_iframe_/1090369/C1_0__container__" style="border: 0pt none;"><iframe id="google_ads_iframe_/1090369/C1_0" title="3rd party ad content" name="google_ads_iframe_/1090369/C1_0" scrolling="no" marginwidth="0" marginheight="0" style="border: 0px none; vertical-align: bottom;" srcdoc="" data-google-container-id="1" data-load-complete="true" width="300" height="250" frameborder="0"></iframe></div></div>
+</div>
+<div id="under_post_news"><div class="itnews c_ad_block"><b>相关博文：</b><br>·  <a href="https://www.cnblogs.com/alinh/p/6737485.html" target="_blank" onclick="clickRecomItmem(6737485)">Linux下gcc编译生成动态链接库*.so文件并调用它</a><br>·  <a href="https://www.cnblogs.com/woshare/p/5826487.html" target="_blank" onclick="clickRecomItmem(5826487)">Linux下gcc编译生成动态链接库*.so文件并调用它</a><br>·  <a href="https://www.cnblogs.com/fence/archive/2009/09/29/1576503.html" target="_blank" onclick="clickRecomItmem(1576503)">转：如何用gcc编译生成动态链接库*.so文件 动态库</a><br>·  <a href="https://www.cnblogs.com/loveCloud/archive/2012/08/29/2662862.html" target="_blank" onclick="clickRecomItmem(2662862)">用gcc编译生成动态链接库*.so文件的方法</a><br>·  <a href="https://www.cnblogs.com/threef/p/3350501.html" target="_blank" onclick="clickRecomItmem(3350501)">动态链接库*.so的编译与使用</a><br></div></div>
+<div id="cnblogs_c2" class="c_ad_block">
+    <div id="div-gpt-ad-1539008685004-0" style="height:60px; width:468px;" data-google-query-id="CIL5uPKBneICFVcxKgodAA4CVQ"><div id="google_ads_iframe_/1090369/C2_0__container__" style="border: 0pt none;"><iframe id="google_ads_iframe_/1090369/C2_0" title="3rd party ad content" name="google_ads_iframe_/1090369/C2_0" scrolling="no" marginwidth="0" marginheight="0" style="border: 0px none; vertical-align: bottom;" srcdoc="" data-google-container-id="2" data-load-complete="true" width="468" height="60" frameborder="0"></iframe></div></div>
+</div>
+<div id="under_post_kb"><div class="itnews c_ad_block"><b>最新新闻</b>：<br> ·  <a href="https://news.cnblogs.com/n/625331/" target="_blank">深网|万达百货更名苏宁易购广场 改造店5月底亮相</a><br> ·  <a href="https://news.cnblogs.com/n/625330/" target="_blank">圈重点！腾讯全球数字生态大会带来不一样的智慧医疗</a><br> ·  <a href="https://news.cnblogs.com/n/625329/" target="_blank">3岁娃成“社交万人迷”？别再被天价“情商培训班”忽悠了</a><br> ·  <a href="https://news.cnblogs.com/n/625328/" target="_blank">国产手机十年厮杀过后，为何只剩下华为带着米OV?</a><br> ·  <a href="https://news.cnblogs.com/n/625327/" target="_blank">英国宣布5G将在7月3日上线，兼容四款5G手机</a><br>» <a href="http://news.cnblogs.com/" title="IT新闻" target="_blank">更多新闻...</a></div></div>
+<div id="HistoryToday" class="c_ad_block"></div>
+<script type="text/javascript">
+ if(enablePostBottom()) {
+    codeHighlight();
+    fixPostBody();
+    setTimeout(function () { incrementViewCount(cb_entryId); }, 50);
+    deliverT2();
+    deliverC1();
+    deliverC2();    
+    loadNewsAndKb();
+    loadBlogSignature();
+    LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+    GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+    loadOptUnderPost();
+    GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);  
+}
+</script>
+</div>
+
+    
+	</div><!--end: forFlow -->
+	</div><!--end: mainContent 主体内容容器-->
+
+	<div id="sideBar">
+		<div id="sideBarMain">
+		<div id="calendar"><div id="blog-calendar" style=""><table id="blogCalendar" class="Cal" title="Calendar" cellspacing="0" cellpadding="0">
+	<tbody><tr><td colspan="7"><table class="CalTitle" cellspacing="0">
+		<tbody><tr><td class="CalNextPrev"><a href="javascript:void(0);" onclick="loadBlogCalendar('2019/04/01');return false;">&lt;</a></td><td align="center">2019年5月</td><td class="CalNextPrev" align="right"><a href="javascript:void(0);" onclick="loadBlogCalendar('2019/06/01');return false;">&gt;</a></td></tr>
+	</tbody></table></td></tr><tr><th class="CalDayHeader" abbr="日" scope="col" align="center">日</th><th class="CalDayHeader" abbr="一" scope="col" align="center">一</th><th class="CalDayHeader" abbr="二" scope="col" align="center">二</th><th class="CalDayHeader" abbr="三" scope="col" align="center">三</th><th class="CalDayHeader" abbr="四" scope="col" align="center">四</th><th class="CalDayHeader" abbr="五" scope="col" align="center">五</th><th class="CalDayHeader" abbr="六" scope="col" align="center">六</th></tr><tr><td class="CalOtherMonthDay" align="center">28</td><td class="CalOtherMonthDay" align="center">29</td><td class="CalOtherMonthDay" align="center">30</td><td align="center">1</td><td align="center">2</td><td align="center">3</td><td class="CalWeekendDay" align="center">4</td></tr><tr><td class="CalWeekendDay" align="center">5</td><td align="center">6</td><td align="center">7</td><td align="center">8</td><td align="center">9</td><td align="center">10</td><td class="CalWeekendDay" align="center">11</td></tr><tr><td class="CalWeekendDay" align="center">12</td><td align="center">13</td><td align="center">14</td><td class="CalTodayDay" align="center">15</td><td align="center">16</td><td align="center">17</td><td class="CalWeekendDay" align="center">18</td></tr><tr><td class="CalWeekendDay" align="center">19</td><td align="center">20</td><td align="center">21</td><td align="center">22</td><td align="center">23</td><td align="center">24</td><td class="CalWeekendDay" align="center">25</td></tr><tr><td class="CalWeekendDay" align="center">26</td><td align="center">27</td><td align="center">28</td><td align="center">29</td><td align="center">30</td><td align="center">31</td><td class="CalOtherMonthDay" align="center">1</td></tr><tr><td class="CalOtherMonthDay" align="center">2</td><td class="CalOtherMonthDay" align="center">3</td><td class="CalOtherMonthDay" align="center">4</td><td class="CalOtherMonthDay" align="center">5</td><td class="CalOtherMonthDay" align="center">6</td><td class="CalOtherMonthDay" align="center">7</td><td class="CalOtherMonthDay" align="center">8</td></tr>
+</tbody></table></div><script type="text/javascript">loadBlogDefaultCalendar();</script></div>
+			
+<!--done-->
+<div class="newsItem">
+<h3 class="catListTitle">公告</h3>
+	<div id="blog-news"><div id="profile_block">昵称：<a href="https://home.cnblogs.com/u/huangxinzhen/">richyhuang</a><br>园龄：<a href="https://home.cnblogs.com/u/huangxinzhen/" title="入园时间：2013-12-28">5年4个月</a><br>粉丝：<a href="https://home.cnblogs.com/u/huangxinzhen/followers/">0</a><br>关注：<a href="https://home.cnblogs.com/u/huangxinzhen/followees/">0</a><div id="p_b_follow"><a href="javascript:void(0);" onclick="follow('f34a442f-d36f-e311-8d02-90b11c0b17d6')">+加关注</a></div><script>getFollowStatus('f34a442f-d36f-e311-8d02-90b11c0b17d6')</script></div></div><script type="text/javascript">loadBlogNews();</script>
+</div>
+			
+			
+			<div id="leftcontentcontainer">
+				<div id="blog-sidecolumn"><div id="sidebar_search" class="sidebar-block">
+<div id="sidebar_search" class="mySearch">
+<h3 class="catListTitle">搜索</h3>
+<div id="sidebar_search_box">
+<div id="widget_my_zzk" class="div_my_zzk"><input id="q" onkeydown="return zzk_go_enter(event);" class="input_my_zzk" type="text">&nbsp;<input onclick="zzk_go()" value="找找看" id="btnZzk" class="btn_my_zzk" type="button"></div>
+<div id="widget_my_google" class="div_my_zzk"><input name="google_q" id="google_q" onkeydown="return google_go_enter(event)" class="input_my_zzk" type="text">&nbsp;<input onclick="google_go()" value="谷歌搜索" class="btn_my_zzk" type="button"></div>
+</div>
+</div>
+
+</div><div id="sidebar_shortcut" class="sidebar-block">
+<div class="catListLink">
+<h3 class="catListTitle">常用链接</h3>
+<ul>
+<li><a href="https://www.cnblogs.com/huangxinzhen/p/" title="我的博客的随笔列表">我的随笔</a></li><li><a href="https://www.cnblogs.com/huangxinzhen/MyComments.html" title="我发表过的评论列表">我的评论</a></li><li><a href="https://www.cnblogs.com/huangxinzhen/OtherPosts.html" title="我评论过的随笔列表">我的参与</a></li><li><a href="https://www.cnblogs.com/huangxinzhen/RecentComments.html" title="我的博客的评论列表">最新评论</a></li><li><a href="https://www.cnblogs.com/huangxinzhen/tag/" title="我的博客的标签列表">我的标签</a></li>
+<li><a id="itemListLink" onclick="this.blur();WarpClass('itemListLink', 'itemListLin_con');return false;" href="#">更多链接</a></li>
+</ul>
+<div id="itemListLin_con" style="display:none;">
+<ul>
+
+</ul>
+</div>
+</div></div><div id="sidebar_toptags" class="sidebar-block">
+<div class="catListTag">
+<h3 class="catListTitle">我的标签</h3>
+<ul>
+<li><a href="https://www.cnblogs.com/huangxinzhen/tag/filezilla%20server%20win8.1%20firewall%20passive/">filezilla server win8.1 firewall passive</a>(1)</li>
+</ul>
+</div></div><div id="sidebar_categories">
+<div class="catListPostArchive">
+<h3 class="catListTitle">随笔档案</h3>
+
+<ul>
+
+<li><a id="CatList_LinkList_0_Link_0" href="https://www.cnblogs.com/huangxinzhen/archive/2014/12.html">2014年12月 (7)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_1" href="https://www.cnblogs.com/huangxinzhen/archive/2014/11.html">2014年11月 (4)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_2" href="https://www.cnblogs.com/huangxinzhen/archive/2014/10.html">2014年10月 (8)</a> </li>
+
+</ul>
+
+</div>
+
+</div><div id="sidebar_recentcomments" class="sidebar-block"><div id="recent_comments_wrap" style="display: none;">
+<div class="catListComment">
+<h3 class="catListTitle">最新评论</h3>
+
+	<div id="RecentCommentsBlock"></div>
+</div>
+</div></div><div id="sidebar_topviewedposts" class="sidebar-block"><div id="topview_posts_wrap">
+<div class="catListView">
+<h3 class="catListTitle">阅读排行榜</h3>
+	<div id="TopViewPostsBlock"><ul><li><a href="https://www.cnblogs.com/huangxinzhen/p/4047051.html">1. Linux下gcc编译生成动态链接库*.so文件并调用它(21222)</a></li><li><a href="https://www.cnblogs.com/huangxinzhen/p/4096629.html">2. apk去广告工具(利用apktool去除apk文件里的广告)(9897)</a></li><li><a href="https://www.cnblogs.com/huangxinzhen/p/4155534.html">3. Fedora 17 无线网卡配置笔记(580)</a></li><li><a href="https://www.cnblogs.com/huangxinzhen/p/4166021.html">4. fedora linux源代码下载(451)</a></li><li><a href="https://www.cnblogs.com/huangxinzhen/p/4049753.html">5. python 与cpp接口编程(445)</a></li></ul></div>
+</div>
+</div></div><div id="sidebar_topcommentedposts" class="sidebar-block"><div id="topfeedback_posts_wrap" style="display: none;">
+<div class="catListFeedback">
+<h3 class="catListTitle">评论排行榜</h3>
+	<div id="TopFeedbackPostsBlock"></div>
+</div>
+</div></div><div id="sidebar_topdiggedposts" class="sidebar-block"><div id="topdigg_posts_wrap" style="display: none;">
+<div class="catListView">
+<h3 class="catListTitle">推荐排行榜</h3>
+<div id="TopDiggPostsBlock"></div>
+</div></div></div></div><script type="text/javascript">loadBlogSideColumn();</script>
+			</div>
+			
+		</div><!--end: sideBarMain -->
+	</div><!--end: sideBar 侧边栏容器 -->
+	<div class="clear"></div>
+	</div><!--end: main -->
+	<div class="clear"></div>
+	<div id="footer">
+		
+<!--done-->
+Copyright ©2019 richyhuang
+	</div><!--end: footer -->
+</div><!--end: home 自定义的最大容器 -->
+
+
+
+<div id="SL_balloon_obj" alt="0" style="display: block;"><div id="SL_button" class="SL_ImTranslatorLogo" style="background: rgba(0, 0, 0, 0) url(&quot;moz-extension://ff8779c2-911a-4099-9fca-9bbf5c9090e4/content/img/util/imtranslator-s.png&quot;) repeat scroll 0% 0%; display: none; opacity: 1;"></div><div id="SL_shadow_translation_result2" style="display: none;"></div><div id="SL_shadow_translator" style="left: -10000px; top: -10000px; display: none;"><div id="SL_planshet"><div id="SL_arrow_up" style="background: rgba(0, 0, 0, 0) url(&quot;moz-extension://ff8779c2-911a-4099-9fca-9bbf5c9090e4/content/img/util/up.png&quot;) repeat scroll 0% 0%;"></div><div id="SL_Bproviders"></div><div id="SL_alert_bbl" style="display: none;"><div id="SLHKclose" style="background: rgba(0, 0, 0, 0) url(&quot;moz-extension://ff8779c2-911a-4099-9fca-9bbf5c9090e4/content/img/util/delete.png&quot;) repeat scroll 0% 0%;"></div><div id="SL_alert_cont"></div></div><div id="SL_TB"><table id="SL_tables" cellspacing="1"><tr><td class="SL_td" width="10%" align="right"><input id="SL_locer" title="Lock-in language" type="checkbox"></td><td class="SL_td" width="20%" align="left"><select id="SL_lng_from" style="background: rgb(255, 255, 255) url(&quot;moz-extension://ff8779c2-911a-4099-9fca-9bbf5c9090e4/content/img/util/select.png&quot;) no-repeat scroll 100% 0px;"><option value="auto" selected="selected">Detect language</option><option value="af">Afrikaans</option><option value="sq">Albanian</option><option value="am">Amharic</option><option value="ar">Arabic</option><option value="hy">Armenian</option><option value="az">Azerbaijani</option><option value="eu">Basque</option><option value="be">Belarusian</option><option value="bn">Bengali</option><option value="bs">Bosnian</option><option value="bg">Bulgarian</option><option value="ca">Catalan</option><option value="ceb">Cebuano</option><option value="ny">Chichewa</option><option value="zh-CN">Chinese (Simplified)</option><option value="zh-TW">Chinese (Traditional)</option><option value="co">Corsican</option><option value="hr">Croatian</option><option value="cs">Czech</option><option value="da">Danish</option><option value="nl">Dutch</option><option value="en">English</option><option value="eo">Esperanto</option><option value="et">Estonian</option><option value="tl">Filipino</option><option value="fi">Finnish</option><option value="fr">French</option><option value="fy">Frisian</option><option value="gl">Galician</option><option value="ka">Georgian</option><option value="de">German</option><option value="el">Greek</option><option value="gu">Gujarati</option><option value="ht">Haitian Creole</option><option value="ha">Hausa</option><option value="haw">Hawaiian</option><option value="iw">Hebrew</option><option value="hi">Hindi</option><option value="hmn">Hmong</option><option value="hu">Hungarian</option><option value="is">Icelandic</option><option value="ig">Igbo</option><option value="id">Indonesian</option><option value="ga">Irish</option><option value="it">Italian</option><option value="ja">Japanese</option><option value="jw">Javanese</option><option value="kn">Kannada</option><option value="kk">Kazakh</option><option value="km">Khmer</option><option value="ko">Korean</option><option value="ku">Kurdish</option><option value="ky">Kyrgyz</option><option value="lo">Lao</option><option value="la">Latin</option><option value="lv">Latvian</option><option value="lt">Lithuanian</option><option value="lb">Luxembourgish</option><option value="mk">Macedonian</option><option value="mg">Malagasy</option><option value="ms">Malay</option><option value="ml">Malayalam</option><option value="mt">Maltese</option><option value="mi">Maori</option><option value="mr">Marathi</option><option value="mn">Mongolian</option><option value="my">Myanmar (Burmese)</option><option value="ne">Nepali</option><option value="no">Norwegian</option><option value="ps">Pashto</option><option value="fa">Persian</option><option value="pl">Polish</option><option value="pt">Portuguese</option><option value="pa">Punjabi</option><option value="ro">Romanian</option><option value="ru">Russian</option><option value="sm">Samoan</option><option value="gd">Scots Gaelic</option><option value="sr">Serbian</option><option value="st">Sesotho</option><option value="sn">Shona</option><option value="sd">Sindhi</option><option value="si">Sinhala</option><option value="sk">Slovak</option><option value="sl">Slovenian</option><option value="so">Somali</option><option value="es">Spanish</option><option value="su">Sundanese</option><option value="sw">Swahili</option><option value="sv">Swedish</option><option value="tg">Tajik</option><option value="ta">Tamil</option><option value="te">Telugu</option><option value="th">Thai</option><option value="tr">Turkish</option><option value="uk">Ukrainian</option><option value="ur">Urdu</option><option value="uz">Uzbek</option><option value="vi">Vietnamese</option><option value="cy">Welsh</option><option value="xh">Xhosa</option><option value="yi">Yiddish</option><option value="yo">Yoruba</option><option value="zu">Zulu</option></select></td><td class="SL_td" width="3" align="center"><div id="SL_switch_b" title="Switch languages" style="background: rgba(0, 0, 0, 0) url(&quot;moz-extension://ff8779c2-911a-4099-9fca-9bbf5c9090e4/content/img/util/switchb.png&quot;) repeat scroll 0% 0%;"></div></td><td class="SL_td" width="20%" align="left"><select id="SL_lng_to" style="background: rgb(255, 255, 255) url(&quot;moz-extension://ff8779c2-911a-4099-9fca-9bbf5c9090e4/content/img/util/select.png&quot;) no-repeat scroll 100% 0px;"><option value="af">Afrikaans</option><option value="sq">Albanian</option><option value="am">Amharic</option><option value="ar">Arabic</option><option value="hy">Armenian</option><option value="az">Azerbaijani</option><option value="eu">Basque</option><option value="be">Belarusian</option><option value="bn">Bengali</option><option value="bs">Bosnian</option><option value="bg">Bulgarian</option><option value="ca">Catalan</option><option value="ceb">Cebuano</option><option value="ny">Chichewa</option><option value="zh-CN">Chinese (Simplified)</option><option value="zh-TW">Chinese (Traditional)</option><option value="co">Corsican</option><option value="hr">Croatian</option><option value="cs">Czech</option><option value="da">Danish</option><option value="nl">Dutch</option><option value="en">English</option><option value="eo">Esperanto</option><option value="et">Estonian</option><option value="tl">Filipino</option><option value="fi">Finnish</option><option value="fr">French</option><option value="fy">Frisian</option><option value="gl">Galician</option><option value="ka">Georgian</option><option value="de">German</option><option value="el">Greek</option><option value="gu">Gujarati</option><option value="ht">Haitian Creole</option><option value="ha">Hausa</option><option value="haw">Hawaiian</option><option value="iw">Hebrew</option><option value="hi">Hindi</option><option value="hmn">Hmong</option><option value="hu">Hungarian</option><option value="is">Icelandic</option><option value="ig">Igbo</option><option value="id">Indonesian</option><option value="ga">Irish</option><option value="it">Italian</option><option value="ja">Japanese</option><option value="jw">Javanese</option><option value="kn">Kannada</option><option value="kk">Kazakh</option><option value="km">Khmer</option><option value="ko">Korean</option><option value="ku">Kurdish</option><option value="ky">Kyrgyz</option><option value="lo">Lao</option><option value="la">Latin</option><option value="lv">Latvian</option><option value="lt">Lithuanian</option><option value="lb">Luxembourgish</option><option value="mk">Macedonian</option><option value="mg">Malagasy</option><option value="ms">Malay</option><option value="ml">Malayalam</option><option value="mt">Maltese</option><option value="mi">Maori</option><option value="mr">Marathi</option><option value="mn">Mongolian</option><option value="my">Myanmar (Burmese)</option><option value="ne">Nepali</option><option value="no">Norwegian</option><option value="ps">Pashto</option><option value="fa">Persian</option><option value="pl">Polish</option><option value="pt">Portuguese</option><option value="pa">Punjabi</option><option value="ro">Romanian</option><option value="ru">Russian</option><option value="sm">Samoan</option><option value="gd">Scots Gaelic</option><option value="sr">Serbian</option><option value="st">Sesotho</option><option value="sn">Shona</option><option value="sd">Sindhi</option><option value="si">Sinhala</option><option value="sk">Slovak</option><option value="sl">Slovenian</option><option value="so">Somali</option><option value="es">Spanish</option><option value="su">Sundanese</option><option value="sw">Swahili</option><option value="sv">Swedish</option><option value="tg">Tajik</option><option value="ta">Tamil</option><option value="te">Telugu</option><option value="th">Thai</option><option value="tr">Turkish</option><option value="uk">Ukrainian</option><option value="ur">Urdu</option><option value="uz">Uzbek</option><option value="vi">Vietnamese</option><option value="cy">Welsh</option><option value="xh">Xhosa</option><option value="yi">Yiddish</option><option value="yo">Yoruba</option><option value="zu">Zulu</option></select></td><td class="SL_td" width="8%" align="center"><div id="SL_TTS_voice" title="undefined" style="background: rgba(0, 0, 0, 0) url(&quot;moz-extension://ff8779c2-911a-4099-9fca-9bbf5c9090e4/content/img/util/ttsvoice.png&quot;) repeat scroll 0% 0%;"></div></td><td class="SL_td" width="8%" align="center"><div id="SL_copy" title="Copy translation" class="SL_copy" style="background: rgba(0, 0, 0, 0) url(&quot;moz-extension://ff8779c2-911a-4099-9fca-9bbf5c9090e4/content/img/util/copy.png&quot;) repeat scroll 0% 0%;"></div></td><td class="SL_td" width="8%" align="center"><div id="SL_bbl_font_patch"></div><div id="SL_bbl_font" title="Font size" class="SL_bbl_font" style="background: rgba(0, 0, 0, 0) url(&quot;moz-extension://ff8779c2-911a-4099-9fca-9bbf5c9090e4/content/img/util/font.png&quot;) repeat scroll 0% 0%;"></div></td><td class="SL_td" width="8%" align="center"><div id="SL_bbl_help" title="Help" style="background: rgba(0, 0, 0, 0) url(&quot;moz-extension://ff8779c2-911a-4099-9fca-9bbf5c9090e4/content/img/util/bhelp.png&quot;) repeat scroll 0% 0%;"></div></td><td class="SL_td" width="15%" align="right"><div id="SL_pin" class="SL_pin_off" title="Pin pop-up bubble" style="background: rgba(0, 0, 0, 0) url(&quot;moz-extension://ff8779c2-911a-4099-9fca-9bbf5c9090e4/content/img/util/pin-on.png&quot;) repeat scroll 0% 0%;"></div></td></tr></table></div></div><div id="SL_shadow_translation_result" style="visibility: visible;"></div><div id="SL_loading" class="SL_loading" style="background: rgba(0, 0, 0, 0) url(&quot;moz-extension://ff8779c2-911a-4099-9fca-9bbf5c9090e4/content/img/util/loading.gif&quot;) repeat scroll 0% 0%;"></div><div id="SL_player2"></div><div id="SL_alert100">Text-to-speech function is limited to 200 characters</div><div id="SL_Balloon_options" style="background: rgb(255, 255, 255) url(&quot;moz-extension://ff8779c2-911a-4099-9fca-9bbf5c9090e4/content/img/util/bg3.png&quot;) repeat scroll 0% 0%;"><div id="SL_arrow_down" style="background: rgba(0, 0, 0, 0) url(&quot;moz-extension://ff8779c2-911a-4099-9fca-9bbf5c9090e4/content/img/util/down.png&quot;) repeat scroll 0% 0%;"></div><table id="SL_tbl_opt" width="100%"><tr><td class="SL_td" width="5%" align="center"><input id="SL_BBL_locer" checked="checked" title="Show Translator's button 3 second(s)" type="checkbox"></td><td class="SL_td" width="5%" align="left"><div id="SL_BBL_IMG" title="Show Translator's button 3 second(s)" style="background: rgba(0, 0, 0, 0) url(&quot;moz-extension://ff8779c2-911a-4099-9fca-9bbf5c9090e4/content/img/util/bbl-logo.png&quot;) repeat scroll 0% 0%;"></div></td><td class="SL_td" width="70%" align="center"><a href="moz-extension://ff8779c2-911a-4099-9fca-9bbf5c9090e4/content/html/options/options.html?bbl" target="_blank" class="SL_options" id="SL_opt1" title="Show options">Options</a> : <a href="moz-extension://ff8779c2-911a-4099-9fca-9bbf5c9090e4/content/html/options/options.html?hist" target="_blank" class="SL_options" id="SL_opt2" title="Translation History">History</a> : <a href="moz-extension://ff8779c2-911a-4099-9fca-9bbf5c9090e4/content/html/options/options.html?feed" target="_blank" class="SL_options" id="SL_opt3" title="ImTranslator Feedback">Feedback</a> : <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=GD9D8CPW8HFA2" target="_blank" class="SL_options" id="SL_opt4" title="Make a small contribution">Donate</a></td><td class="SL_td" width="15%" align="right"><span id="SL_Balloon_Close" class="SL_options" title="Close">Close</span></td></tr></table></div></div></div></body></html>

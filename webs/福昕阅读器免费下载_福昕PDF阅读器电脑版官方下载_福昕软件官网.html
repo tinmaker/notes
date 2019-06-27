@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html lang="zh"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8">
+
+<link type="text/css" rel="stylesheet" href="%E7%A6%8F%E6%98%95%E9%98%85%E8%AF%BB%E5%99%A8%E5%85%8D%E8%B4%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95PDF%E9%98%85%E8%AF%BB%E5%99%A8%E7%94%B5%E8%84%91%E7%89%88%E5%AE%98%E6%96%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95%E8%BD%AF%E4%BB%B6%E5%AE%98%E7%BD%91_files/y13_html5.css">
+<link type="text/css" rel="stylesheet" href="%E7%A6%8F%E6%98%95%E9%98%85%E8%AF%BB%E5%99%A8%E5%85%8D%E8%B4%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95PDF%E9%98%85%E8%AF%BB%E5%99%A8%E7%94%B5%E8%84%91%E7%89%88%E5%AE%98%E6%96%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95%E8%BD%AF%E4%BB%B6%E5%AE%98%E7%BD%91_files/y13_basic.css">
+<link type="text/css" rel="stylesheet" href="%E7%A6%8F%E6%98%95%E9%98%85%E8%AF%BB%E5%99%A8%E5%85%8D%E8%B4%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95PDF%E9%98%85%E8%AF%BB%E5%99%A8%E7%94%B5%E8%84%91%E7%89%88%E5%AE%98%E6%96%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95%E8%BD%AF%E4%BB%B6%E5%AE%98%E7%BD%91_files/y13_reader.css">
+<link type="text/css" rel="stylesheet" href="%E7%A6%8F%E6%98%95%E9%98%85%E8%AF%BB%E5%99%A8%E5%85%8D%E8%B4%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95PDF%E9%98%85%E8%AF%BB%E5%99%A8%E7%94%B5%E8%84%91%E7%89%88%E5%AE%98%E6%96%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95%E8%BD%AF%E4%BB%B6%E5%AE%98%E7%BD%91_files/y13_960_24_col.css">
+<!--[if lt IE 9]><script src="https://www.foxitsoftware.cn/resources/js/html5shiv.js"></script><![endif]-->
+<script src="%E7%A6%8F%E6%98%95%E9%98%85%E8%AF%BB%E5%99%A8%E5%85%8D%E8%B4%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95PDF%E9%98%85%E8%AF%BB%E5%99%A8%E7%94%B5%E8%84%91%E7%89%88%E5%AE%98%E6%96%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95%E8%BD%AF%E4%BB%B6%E5%AE%98%E7%BD%91_files/push.js"></script><script type="text/javascript" src="%E7%A6%8F%E6%98%95%E9%98%85%E8%AF%BB%E5%99%A8%E5%85%8D%E8%B4%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95PDF%E9%98%85%E8%AF%BB%E5%99%A8%E7%94%B5%E8%84%91%E7%89%88%E5%AE%98%E6%96%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95%E8%BD%AF%E4%BB%B6%E5%AE%98%E7%BD%91_files/jquery-1.js"></script>
+<script type="text/javascript" src="%E7%A6%8F%E6%98%95%E9%98%85%E8%AF%BB%E5%99%A8%E5%85%8D%E8%B4%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95PDF%E9%98%85%E8%AF%BB%E5%99%A8%E7%94%B5%E8%84%91%E7%89%88%E5%AE%98%E6%96%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95%E8%BD%AF%E4%BB%B6%E5%AE%98%E7%BD%91_files/common.js"></script>
+<script type="text/javascript" src="%E7%A6%8F%E6%98%95%E9%98%85%E8%AF%BB%E5%99%A8%E5%85%8D%E8%B4%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95PDF%E9%98%85%E8%AF%BB%E5%99%A8%E7%94%B5%E8%84%91%E7%89%88%E5%AE%98%E6%96%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95%E8%BD%AF%E4%BB%B6%E5%AE%98%E7%BD%91_files/trace.js"></script>
+<!--[if IE 6]>
+<script type="text/javascript" src="https://www.foxitsoftware.cn/resources/js/DD_belatedPNG.js" ></script>
+<script type="text/javascript">
+	DD_belatedPNG.fix(".png_bg"); 
+</script>
+<![endif]-->
+<title>福昕阅读器免费下载_福昕PDF阅读器电脑版官方下载_福昕软件官网</title>
+<meta name="keywords" content="福昕阅读器,pdf阅读器,pdf阅读器下载,pdf阅读器电脑版pdf阅读器官方,pdf阅读器哪个好,最好的pdf阅读器,免费pdf阅读器,pdf电子书阅读器,pdf文档阅读器,pdf阅读器官方下载,pdf阅读器免费下载">
+<meta name="description" content="PDF阅读器下载首选福昕阅读器。福昕阅读器是一款在全球流行的PDF阅读器，用户超越4.7亿！福昕阅读器能够快速打开、浏览、审阅、注释、签署及打印PDF文档，具有轻快、高效、安全等特性。PDF阅读器哪个好？当然是福昕阅读器。">
+<link rel="stylesheet" href="%E7%A6%8F%E6%98%95%E9%98%85%E8%AF%BB%E5%99%A8%E5%85%8D%E8%B4%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95PDF%E9%98%85%E8%AF%BB%E5%99%A8%E7%94%B5%E8%84%91%E7%89%88%E5%AE%98%E6%96%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95%E8%BD%AF%E4%BB%B6%E5%AE%98%E7%BD%91_files/default.css"><script type="text/javascript" src="%E7%A6%8F%E6%98%95%E9%98%85%E8%AF%BB%E5%99%A8%E5%85%8D%E8%B4%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95PDF%E9%98%85%E8%AF%BB%E5%99%A8%E7%94%B5%E8%84%91%E7%89%88%E5%AE%98%E6%96%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95%E8%BD%AF%E4%BB%B6%E5%AE%98%E7%BD%91_files/artDialog.js"></script>
+<script type="text/javascript" src="%E7%A6%8F%E6%98%95%E9%98%85%E8%AF%BB%E5%99%A8%E5%85%8D%E8%B4%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95PDF%E9%98%85%E8%AF%BB%E5%99%A8%E7%94%B5%E8%84%91%E7%89%88%E5%AE%98%E6%96%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95%E8%BD%AF%E4%BB%B6%E5%AE%98%E7%BD%91_files/iframeTools.js"></script>
+<link rel="canonical" href="https://www.foxitsoftware.cn/products/reader/">
+<style type="text/css">h1 {
+        font-weight: bold;
+    }
+    h2 {
+        font-size: 24px;
+        font-weight: bold;
+    }
+</style>
+<script type="text/javascript" charset="utf-8">
+    $(function () {
+        $('.show_hide_block').hide();
+        $('.show_hide').click(function () {
+            d = $('.show_hide_block').css('display');
+            if (d == 'none') {
+                $(this).html('点击收起');
+                $('.show_hide_block').show();
+            } else {
+                $(this).html('查看更多功能');
+                $('.show_hide_block').hide();
+            }
+        });
+    });
+</script>
+</head>
+<body><div style="position: fixed; left: 771px; top: 381px; display: none; width: auto; z-index: 1988;" class="   aui_state_focus aui_state_lock"><div class="aui_outer"><table class="aui_border"><tbody><tr><td class="aui_nw"></td><td class="aui_n"></td><td class="aui_ne"></td></tr><tr><td class="aui_w"></td><td class="aui_c"><div class="aui_inner"><table class="aui_dialog"><tbody><tr><td colspan="2" class="aui_header"><div class="aui_titleBar"><div class="aui_title" style="cursor: move; display: block;">加载</div><a class="aui_close" href="javascript:/*artDialog*/;" style="display: none;">×</a></div></td></tr><tr><td class="aui_icon" style="display: none;"><div class="aui_iconBg" style="background: rgba(0, 0, 0, 0) none repeat scroll 0% 0%;"></div></td><td class="aui_main" style="width: 300px; height: auto;"><div class="aui_content" style="padding: 20px 25px;"><img src="%E7%A6%8F%E6%98%95%E9%98%85%E8%AF%BB%E5%99%A8%E5%85%8D%E8%B4%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95PDF%E9%98%85%E8%AF%BB%E5%99%A8%E7%94%B5%E8%84%91%E7%89%88%E5%AE%98%E6%96%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95%E8%BD%AF%E4%BB%B6%E5%AE%98%E7%BD%91_files/loading.gif"></div></td></tr><tr><td colspan="2" class="aui_footer"><div class="aui_buttons" style="display: none;"></div></td></tr></tbody></table></div></td><td class="aui_e"></td></tr><tr><td class="aui_sw"></td><td class="aui_s"></td><td class="aui_se" style="cursor: se-resize;"></td></tr></tbody></table></div></div>
+<div class="wrapper ">
+    <script>
+var _hmt = _hmt || [];
+</script>
+<!-- start top section -->
+<!--[if lt IE 7]>                                                                       // less than ie 7
+ <script defer type=”text/javascript” src=”'./resources/js/png.js”></script>
+ <script type="text/javascript">
+  ie_png.fix('.png, .menu ul li a span');                               // 第二个参数为含有png的标签id（css）
+  ie_png.fix('.png, .logo span');                                       // 有png的都加上去
+ </script>
+<![endif]-->
+<style type="text/css">
+    .b1,.b2,.b3,.b4,.b1b,.b2b,.b3b,.b4b,.b{display:block;overflow:hidden;z-index:999}
+    .b1,.b2,.b3,.b1b,.b2b,.b3b{height:1px;z-index:999}
+    .b2,.b3,.b4,.b2b,.b3b,.b4b,.b{border-left:1px solid #999;border-right:1px solid #999;z-index:999}
+    .b1,.b1b{margin:0 5px;background:#999;z-index:999}
+    .b2,.b2b{margin:0 3px;border-width:2px;z-index:999}
+    .b3,.b3b{margin:0 2px;z-index:999}
+    .b4,.b4b{height:2px;margin:0 1px;z-index:999}
+    .d1{background:white;z-index:999}
+    .k {height:260px;z-index:999}
+    @media screen and (max-width: 1270px) { /*当屏幕尺寸小于1270px时，应用下面的CSS样式*/
+      .dropdownThree {
+            width: 700px !important;
+        margin-left: 300px !important;
+      }
+    }
+    a.header-location{
+        height: 19px !important;
+        font-size: 12px !important;
+        line-height: 19px !important;
+        font-weight: normal !important;
+        color: #DE3225 !important;
+        border: #DE3225 1px solid !important;
+        padding: 0 5px !important;
+        -webkit-border-radius: 3px!important;
+        -moz-border-radius: 3px!important;
+        border-radius: 3px!important;
+        text-decoration: none !important;
+        display: inline-block;
+    }
+    a.header-location:hover{
+        color: #ffffff !important;
+        background: #DE3225 !important;
+    }
+    ul.topLinks li{display:inline-block;width:11px;height:26px;margin:0px;text-indent:-9999px;
+                   cursor:pointer;border:none;
+    }
+    ul.topLinks li a{border:none;
+    }
+    ul.topLinks li a img{border:none;
+    }
+    #wx_code_div{
+        width:260px;height:260px;
+        position:absolute;left:430px;z-index:999;top:25px;
+    }
+    #supReg{
+    position: absolute;
+     left: 150px;
+     top: 32px;
+    }
+    #cpdf-header-zone a:hover{
+        background: #fdfdfd;
+    }
+    .visit_new_site {
+        position: absolute;
+        right: 0px;
+        top: 2px ;
+    }
+    .visit_new_site a{
+        color: #ffffff; 
+        text-decoration: underline;
+        }
+    .visit_new_site a:hover{
+        color: #fbb217;
+        text-decoration: underline;
+    }
+    /*header_19*/
+    .header_19 a,
+    .header_19 a:hover { text-decoration: none; }
+    .header_19 a{color: #555;outline:none;-moz-outline:none;}
+    .header_19 a:hover{color: #f60;}
+    .header_19 a img{display: block;}
+    .header_19{
+        position: fixed;
+        z-index: 99999;
+        width: 100%;
+        height: 35px;
+        background:#f7f7f7;
+        /*box-shadow: 2px 2px 10px #dfdfdf;*/
+        font-size:12px;
+    }
+    .header_19 ul, ol {
+        list-style: none;
+        margin-bottom: 0px;
+    }
+    .header_19 ul li {
+        line-height: 2.9 !important;
+    }
+    .header-all{
+        width: 950px;
+        margin: auto;
+        height: 35px;
+        line-height: 35px;
+    }
+    .header-l .header-l-ul li,.header-l .header-l-ul li i,.header-l .header-l-ul li a{
+        float:left;
+    }
+    .header-l-read a:hover,.header-l-edit a:hover,.header-l-transformation a:hover,.header-l-other a:hover{
+        color:#f68b24;
+    }
+    .header-l-read:hover .arrow,.header-l-edit:hover .arrow,.header-l-transformation:hover .arrow,.header-l-other:hover .arrow{
+        background: url(https://www.foxitsoftware.cn/resources/images/header/arrow-hover.png);
+        width: 7px;
+        height: 4px;
+        margin-top: 15px;
+        margin-left: 7px;
+    }
+    .header-l-read:hover .item,.header-l-APP:hover .item,.header-l-edit:hover .item,.header-l-transformation:hover .item,.header-l-other:hover .item{
+        color:#f68b24;
+    }
+    
+    .header-l .header-l-ul li i{
+        background:url(https://www.foxitsoftware.cn/resources/images/header/arrow.png);
+        width: 7px;
+        height: 4px;
+        margin-top: 15px;
+        margin-left: 7px;
+    }
+    .header-l .header-l-ul li{
+        margin-left: 42px;
+        position: relative;
+        cursor: pointer;
+    }
+    .header-l .header-l-ul .header-l-title{
+        margin: 0;
+    }
+    /* 右边 */
+    .header-r div{
+        float:right;
+    }
+    .sina-logo{
+        background:url(https://www.foxitsoftware.cn/resources/images/header/sina.png);
+        width: 20px;
+        height: 16px;
+        margin: 8px 10px 0 18px;
+    }
+    .line{
+        margin: 0 8px;
+    }
+    .new_official_website a{
+        text-decoration: underline;
+    }
+    .read_drop,.edit_drop,.transformation_drop,.other_drop{
+        padding-top:20px;
+        width: 230px;
+        position: absolute;
+        top:35px;
+        background:#f5f5f5;;
+        text-indent:15px;
+        left: -15px;
+        display:none;
+        border:1px solid #dfdfdf;
+        /*box-shadow: 2px 2px 10px #dfdfdf;*/
+    }
+    .read_drop p,.edit_drop p,.transformation_drop p,.other_drop p{
+        height: 40px;
+        line-height: 40px;
+        margin: 0;
+    }
+    .read_drop p a,.edit_drop p a,.transformation_drop p a,.other_drop p a{
+        font-size:13px;
+        color:#282828;
+        text-align: left;
+        width: 230px;
+        display: block;
+    }
+    .read_drop p a:hover,.edit_drop p a:hover,.transformation_drop p a:hover,.other_drop p a:hover{
+        color:#f68b24;
+    }
+    .read_drop p:hover,.edit_drop p:hover,.transformation_drop p:hover,.other_drop p:hover{
+        background-color:#e9e8e8;
+    }
+    .header-l-read:hover .read_drop{
+        display:block;
+    }
+    .header-l-edit:hover .edit_drop{
+        display:block;
+    }
+    .header-l-transformation:hover .transformation_drop{
+        display:block;
+    }
+    .header-l-other:hover .other_drop{
+        display:block;
+    }
+    /* APP下拉 */
+    .header-l .header-l-ul li .reader_logo{
+        background:url(https://www.foxitsoftware.cn/resources/images/header/reader.png);
+        width: 105px;
+        height: 105px;
+        margin: auto;
+        margin-left: 64px;
+    }
+    .header-l .header-l-ul li .scanner_logo{
+        background:url(https://www.foxitsoftware.cn/resources/images/header/scanner.png?v=20190221);
+        background-size: 105px;
+        width: 105px;
+        height: 105px;
+        margin: auto;
+    }
+    .APP_drop{
+        background:#f5f5f5;
+        position: absolute;
+        width: 417px;
+        top:35px;
+        text-indent:15px;
+        left: -15px; 
+        padding-top: 30px;
+        display: none;
+        border:1px solid #dfdfdf;
+        /*box-shadow: 2px 2px 10px #dfdfdf;*/
+    }
+    .APP_line{
+        height:105px;
+        border-right:1px solid #bbbbbb;
+        margin-left:20px;
+        margin-right: 30px; 
+    }
+    .reader_19,.APP_line,.scanner{
+        float: left;
+    }
+    .reader_19{
+        margin-right: -7px;
+    }
+    .App_drop_text_reader{
+        color:#282828;
+        font-size:13px;
+        margin-left: 33px;
+        text-indent: 0;
+    }
+    .App_drop_text_scanner{
+        color:#282828;
+        font-size:13px;
+        text-indent: 0;
+    }
+    .header-l-APP:hover .APP_drop{
+        display:block;
+    }
+    .header-l-APP:hover .arrow{
+        display:block;
+        background: url(https://www.foxitsoftware.cn/resources/images/header/arrow-hover.png);
+        width: 7px;
+        height: 4px;
+        margin-top: 15px;
+        margin-left: 8px;
+    }
+    /* 登录 */
+    .landing_registration {
+        margin-right: 18px;
+        margin-left: 8px;
+    }
+    .landing_registration .landing:hover ,.landing_registration .regist:hover {
+        color:#f68b24;
+    }
+    .new_official_website a:hover{
+        color:#f68b24;
+    }
+    /* 登录成功 */
+    .out_login{
+        margin-left: 28px;
+    }
+    .user_name,.out_login{
+        cursor:pointer;
+    }
+    .user_name:hover,.out_login:hover{
+        color:#f68b24
+    }
+    .not_active{
+        color:#f61b1b;
+        font-size:14px;
+    }
+    /* 三角形下拉 */
+    .triangle{
+        border-top: 0px solid transparent;
+        border-left: 5px solid transparent;
+        border-right: 5px solid transparent;
+        border-bottom: 6px solid #dfdfdf;
+        position: absolute;
+        top: -7px;
+        left: 20px;
+       }
+    .triangle-border{
+        border-top: 0px solid transparent;
+        border-left: 5px solid transparent;
+        border-right: 5px solid transparent;
+        border-bottom: 6px solid #f5f5f5;
+        position: absolute;
+        top: -6px;
+        left: 20px;
+    }
+    /*header_19 end*/
+</style>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('#wx_code').mousemove(function() {
+            $('#wx_code_div').fadeIn(1000);
+        });
+        $('#wx_code').mouseout(function() {
+            $('#wx_code_div').fadeOut(1000);
+        });
+        $(".header-qq-2").click(function(){
+            $("#qidian_wpa_2852066922_21").contents().find(".icon-qq").click();
+        });
+    });
+</script>
+<!--<div style="width:0px;height:0px;overflow:hidden;"><script src="https://wp.qiye.qq.com/qidian/2852066922/8b0629a780ca41a1bbb66b7d9fc25b0e" charset="utf-8"></script></div>-->
+<div class="header_19">
+    <div class="header-all">
+        <div class="header-l">
+            <ul class="header-l-ul">
+                <li class="header-l-title"><a href="https://www.foxitsoftware.cn/">福昕官网</a></li>
+                <li class="header-l-read"><a href="#" class="item">阅读</a><i class="arrow"></i>
+                        <div class="read_drop">
+                            <div class="triangle"></div>
+                            <div class="triangle-border"></div>
+                            <div style="height: 140px;">
+                                <p><a href="https://www.foxitsoftware.cn/products/reader/">福昕阅读器</a></p>
+                                <p><a href="https://www.foxitsoftware.cn/products/reader-plus/">福昕阅读器领鲜版</a></p>
+                                <p><a href="https://www.foxitsoftware.cn/products/mobilereader/">福昕PDF阅读器（移动版）</a></p>
+                            </div>
+                        </div>
+                </li>
+                <li class="header-l-edit"><a href="#" class="item">编辑</a><i class="arrow"></i>
+                        <div class="edit_drop" style="width: 300px;">
+                            <div class="triangle"></div>
+                            <div class="triangle-border"></div>
+                            <div style="height: 180px;">
+                                <p><a href="http://editor.foxitsoftware.cn/?agent=foxit&amp;MD=menu" style="width: 160px;" rel="nofollow" target="_blank">福昕PDF编辑器个人版</a>
+                                <a class="header-location" style="width: 105px;margin: 8px 0 0 0;display: inline; float: none;" href="http://editor.foxitsoftware.cn/?agent=foxit&amp;MD=menu" target="_blank" rel="nofollow">
+                                        永久免费试用
+                                </a>
+                                </p>
+                                <p><a href="https://www.foxitsoftware.cn/pdf-editor/">福昕高级PDF编辑器</a></p>
+                                <p><a href="https://www.foxitsoftware.cn/pdf-editor-mac/" style="width: 180px;">福昕高级PDF编辑器<span style="font-style: italic;">Mac版</span></a>
+                                <a class="header-location" style="width: 55px;margin: 8px 0 0 0;display: inline; float: none;" href="https://www.foxitsoftware.cn/pdf-editor-mac/">
+                                        新品
+                                </a>
+                                </p>
+                                <p><a href="http://edit.foxitcloud.cn/?agent=foxit&amp;MD=menu" style="width: 100px;" rel="nofollow" target="_blank">PDF在线编辑</a>
+                                <a class="header-location" style="width: 75px;margin: 8px 0 0 0;display: inline; float: none;" href="http://edit.foxitcloud.cn/?agent=foxit&amp;MD=menu" target="_blank" rel="nofollow">
+                                        限时免费
+                                </a>
+                                </p>
+                            </div>    
+                        </div>
+                </li>
+                <li class="header-l-transformation"><a href="#" class="item">转换</a><i class="arrow"></i>
+                        <div class="transformation_drop">
+                            <div class="triangle"></div>
+                            <div class="triangle-border"></div>
+                            <div style="height: 180px;">
+                                <p><a href="http://pdf2word.pdf365.cn/?agent=foxit&amp;MD=menu" rel="nofollow" target="_blank">福昕PDF转Word</a></p>
+                                <p><a href="https://www.pdf365.cn/?agent=foxit&amp;MD=menu" rel="nofollow" target="_blank">PDF在线转换</a></p>
+                                <p><a href="http://www.img365.cn/?agent=foxit&amp;MD=menu" rel="nofollow" target="_blank">图片在线转换</a></p>
+                                <p><a href="http://scanner.pdf365.cn/?agent=foxit&amp;MD=menu" rel="nofollow" target="_blank">福昕扫描王</a></p>
+                            </div>
+                        </div>
+                </li>
+                <li class="header-l-other"><a href="#" class="item">翻译/论文</a><i class="arrow"></i>
+                        <div class="other_drop">
+                            <div class="triangle"></div>
+                            <div class="triangle-border"></div>
+                            <div style="height: 180px;">
+                                <p><a href="http://fanyi.pdf365.cn/?agent=foxit&amp;MD=menu" rel="nofollow" target="_blank" style="width: 100px;">PDF文档翻译</a>
+                                    <a class="header-location" style="width: 100px;margin: 8px 0 0 0;display: inline; float: none;" href="http://fanyi.pdf365.cn/?agent=foxit&amp;MD=menu" target="_blank" rel="nofollow">
+                                        低至1元/页
+                                    </a>
+                                </p>
+                                <p><a href="http://shrink.foxitreader.cn/?agent=foxit&amp;MD=menu" rel="nofollow" target="_blank">福昕PDF压缩大师</a></p>
+                                <p><a href="http://paper.pdf365.cn/?agent=foxit&amp;MD=menu" rel="nofollow" target="_blank">免费论文查重 <img src="%E7%A6%8F%E6%98%95%E9%98%85%E8%AF%BB%E5%99%A8%E5%85%8D%E8%B4%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95PDF%E9%98%85%E8%AF%BB%E5%99%A8%E7%94%B5%E8%84%91%E7%89%88%E5%AE%98%E6%96%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95%E8%BD%AF%E4%BB%B6%E5%AE%98%E7%BD%91_files/hot.gif" style="display: inline;" width="22px"></a></p>
+                                <p><a href="http://fanyi.pdf365.cn/free?agent=foxit&amp;MD=topmenu" rel="nofollow" target="_blank">图片识别翻译</a></p>
+                            </div>
+                        </div>
+                </li>
+                <li class="header-l-APP"><a href="#" class="item">APP下载</a><i class="arrow"></i>
+                        <div class="APP_drop">
+                            <div class="triangle"></div>
+                            <div class="triangle-border"></div>
+                            <div style="height: 180px;">
+                                <div class="reader_19">
+                                    <div class="reader_logo"></div>
+                                    <p class="App_drop_text_reader">扫描下载福昕PDF阅读器APP</p>
+                                </div>
+                                <div class="APP_line"></div>
+                                <div class="scanner">
+                                    <div class="scanner_logo"></div>
+                                    <p class="App_drop_text_scanner">扫描下载福昕扫描王APP</p>
+                                </div>
+                            </div>
+                        </div>
+                </li>
+            </ul>
+        </div>
+        <div class="header-r">         
+                <div class="new_official_website"><a href="https://www.foxitsoftware.cn/new/v2/" rel="nofollow">访问新官网</a></div>
+                                  
+                <div class="landing_registration">
+                    <span><a class="landing" href="https://www.foxitsoftware.cn/login.php?reUrl=https%3A%2F%2Fwww.foxitsoftware.cn%2Fproducts%2Freader%2F" rel="nofollow">登录</a><i class="line">|</i><a class="regist" href="https://www.foxitsoftware.cn/register.php" rel="nofollow">注册</a></span>
+                </div>
+                                <a href="http://e.weibo.com/foxitsoftware" rel="nofollow" target="_blank"><div class="sina-logo"></div></a>
+                <!-- 登录状态 -->
+                         </div>
+    </div>
+</div>
+<div class="container_24">
+    <header id="top" class="grid_24" style="margin-top: 40px;">
+        <div id="logo">
+            <img src="%E7%A6%8F%E6%98%95%E9%98%85%E8%AF%BB%E5%99%A8%E5%85%8D%E8%B4%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95PDF%E9%98%85%E8%AF%BB%E5%99%A8%E7%94%B5%E8%84%91%E7%89%88%E5%AE%98%E6%96%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95%E8%BD%AF%E4%BB%B6%E5%AE%98%E7%BD%91_files/supReg.png" id="supReg">
+            <p><a href="https://www.foxitsoftware.cn/" title="欢迎来到福昕!">欢迎来到福昕!</a></p>
+        </div>
+        <div id="slogen"> <div class="topimg"></div> 
+            <!-- <h1>Fast, Affordable, and Secure PDF Solutions</h1>  --> 
+        </div>
+       
+       <!-- 二维码浮动div -->
+
+
+            <div id="wx_code_div" style="display:none;">
+                <b class="b1"></b><b class="b2 d1"></b><b class="b3 d1"></b><b class="b4 d1"></b>
+                <div class="b d1 k">
+
+                    <img src="%E7%A6%8F%E6%98%95%E9%98%85%E8%AF%BB%E5%99%A8%E5%85%8D%E8%B4%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95PDF%E9%98%85%E8%AF%BB%E5%99%A8%E7%94%B5%E8%84%91%E7%89%88%E5%AE%98%E6%96%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95%E8%BD%AF%E4%BB%B6%E5%AE%98%E7%BD%91_files/wx_code.jpg">
+
+                </div>
+                <b class="b4b d1"></b><b class="b3b d1"></b><b class="b2b d1"></b><b class="b1b"></b>
+            </div>
+
+
+        <!-- 二维码浮动div -->
+        <!-- start main menu -->
+        <nav id="mainNav">
+            <ul class="mainNavMenu">
+                <li><a href="https://www.foxitsoftware.cn/">首页</a></li>
+                <li><a href="javascript:void(0);" class="selected">产品</a>
+                    <div class="dropdownThree" style="width:1250px;margin-left:110px;">
+                        <div class="col_1">
+                            <h4>PDF 阅读器</h4>
+                            <ul>
+                                <li><a href="https://www.foxitsoftware.cn/products/reader/" onclick="_baidu('旧版导航','点击','福昕阅读器')">福昕阅读器</a></li>
+                                <li><a href="https://www.foxitsoftware.cn/products/reader-plus/" onclick="_baidu('旧版导航','点击','福昕阅读器领鲜版')">福昕阅读器领鲜版</a></li>							                                
+                                <li><a href="https://www.foxitsoftware.cn/products/mobilereader/" onclick="_baidu('旧版导航','点击','福昕阅读器（移动版）')">福昕阅读器（移动版）</a></li>
+                            </ul>
+                        </div>
+                        <div class="col_3" style="width:320px;">
+                            <h4 style="width:250px;">PDF编辑与安全</h4>
+                            <ul>
+                                <li style="height: 30px;">
+                                    <a href="http://editor.foxitsoftware.cn/?agent=foxit&amp;MD=menu" target="_blank" style="width:130px;" onclick="_baidu('旧版导航','点击','福昕PDF编辑器个人版')">福昕PDF编辑器个人版</a>
+                                    <a class="header-location" style="width: 105px;margin: 0;display: inline;" href="http://editor.foxitsoftware.cn/?agent=foxit&amp;MD=menu" target="_blank" rel="nofollow" onclick="_baidu('旧版导航','点击','永久免费试用')">
+                                        永久免费试用
+                                    </a>
+                                </li>
+                                <li style="height: 30px;">
+                                    <a href="https://www.foxitsoftware.cn/pdf-editor/" style="width:200px;" onclick="_baidu('旧版导航','点击','福昕高级PDF编辑器')">福昕高级PDF编辑器 <!--<img src="https://www.foxitsoftware.cn/resources/images/header/4off.png" width="59px">--></a>
+                                                                    </li>
+                                <li style="height: 30px;">
+                                    <a href="https://www.foxitsoftware.cn/pdf-editor-mac/" style="width:150px;" onclick="_baidu('旧版导航','点击','福昕高级PDF编辑器Mac版')">福昕高级PDF编辑器<i>Mac版</i></a>
+                                    <a class="header-location" style="width: 105px;margin: 0;display: inline;" href="https://www.foxitsoftware.cn/pdf-editor-mac/" onclick="_baidu('旧版导航','点击','福昕高级PDF编辑器Mac版')">
+                                        新品
+                                    </a>
+                                </li>
+                                
+                                <li><a href="https://www.foxitsoftware.cn/products/rms/">Foxit PDF Security Suite</a></li>
+                                <li style="height: 30px;">
+                                    <a href="http://edit.foxitcloud.cn/?agent=foxit&amp;MD=menu" target="_blank" style="width:80px;" onclick="_baidu('旧版导航','点击','PDF在线编辑')" rel="nofollow">PDF在线编辑</a>
+                                    <a class="header-location" style="width: 105px;margin: 0;display: inline;" href="http://edit.foxitcloud.cn/?agent=foxit&amp;MD=menu" target="_blank" rel="nofollow" onclick="_baidu('旧版导航','点击','PDF在线编辑')">
+                                        限时免费
+                                    </a>
+                                </li>
+                                
+                            </ul>
+                        </div>
+                        <div class="col_1" style="width:400px;">
+                          <h4 style="width:400px;">PDF特色服务</h4>
+                            <ul>
+                                <li style="width:200px;"><a href="http://pdf2word.pdf365.cn/?agent=foxit&amp;MD=menu" target="_blank" rel="nofollow" onclick="_baidu('旧版导航','点击','福昕PDF转Word')">福昕PDF转Word</a></li>
+                                <!--<li style="width:200px;"><a href="http://huifu.foxitreader.cn/?agent=foxit&MD=menu"  target="_blank" rel="nofollow" onclick="_baidu('旧版导航','点击','福昕数据恢复大师')">福昕数据恢复大师 <img src="https://www.foxitsoftware.cn/resources/images/header/new.gif" width="22px"></a></li>-->
+                                <li style="width:200px;"><a href="http://paper.pdf365.cn/?agent=foxit&amp;MD=menu" target="_blank" rel="nofollow" onclick="_baidu('旧版导航','点击','免费论文查重')">免费论文查重 <img src="%E7%A6%8F%E6%98%95%E9%98%85%E8%AF%BB%E5%99%A8%E5%85%8D%E8%B4%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95PDF%E9%98%85%E8%AF%BB%E5%99%A8%E7%94%B5%E8%84%91%E7%89%88%E5%AE%98%E6%96%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95%E8%BD%AF%E4%BB%B6%E5%AE%98%E7%BD%91_files/hot.gif" width="22px"></a></li>
+                                <li style="width:200px;"><a href="http://shrink.foxitreader.cn/?agent=foxit&amp;MD=menu" target="_blank" rel="nofollow" onclick="_baidu('旧版导航','点击','福昕PDF压缩大师(个人)')">福昕PDF压缩大师(个人)</a></li>
+                                <li style="width:200px;"><a href="http://fanyi.pdf365.cn/?agent=foxit&amp;MD=menu" target="_blank" rel="nofollow" onclick="_baidu('旧版导航','点击','PDF文档翻译')" style="width: 90px;">PDF文档翻译</a>
+                                    <a class="header-location" style="width: 100px;margin: 0;display: inline;" href="http://fanyi.pdf365.cn/?agent=foxit&amp;MD=menu" target="_blank" onclick="_baidu('旧版导航','点击','低至1元/页')" rel="nofollow">
+                                        低至1元/页
+                                    </a>
+                                </li>
+                                <li style="width:200px;"><a href="https://www.pdf365.cn/?agent=foxit&amp;MD=menu" target="_blank" rel="nofollow" onclick="_baidu('旧版导航','点击','PDF在线转换')">PDF在线转换</a></li>
+                                <li style="width:200px;"><a href="http://img.pdf365.cn/?agent=foxit&amp;MD=menu" target="_blank" rel="nofollow" onclick="_baidu('旧版导航','点击','图片在线处理')">图片在线处理</a></li>
+                                <li style="width:200px;"><a href="http://scanner.pdf365.cn/?agent=foxit&amp;MD=menu" target="_blank" rel="nofollow" onclick="_baidu('旧版导航','点击','图片文字识别')">图片文字识别</a></li>
+                            </ul>
+                        </div>
+                        <div class="col_2" style="width: 280px;" id="cpdf-header-zone">
+                                <a href="https://www.foxitsoftware.cn/cpdf/" style="width:240px;border:none;text-align: center;margin-top: 30px;margin-left:20px;padding:20px;display: block">
+                                    <img src="%E7%A6%8F%E6%98%95%E9%98%85%E8%AF%BB%E5%99%A8%E5%85%8D%E8%B4%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95PDF%E9%98%85%E8%AF%BB%E5%99%A8%E7%94%B5%E8%84%91%E7%89%88%E5%AE%98%E6%96%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95%E8%BD%AF%E4%BB%B6%E5%AE%98%E7%BD%91_files/cpdf-color-logo.png">
+                                    <p style="color: #f68121;font-size: 14px;">新一代的智能PDF，专为互联世界打造</p>
+                                    <p style="color: #f68121;">查看更多</p>
+                                </a>
+                        </div>
+                        <div class="col_2" style="width:500px;">
+                            <h4 style="width:430px;">PDF软件开发包</h4>
+                            <ul>
+                                <li><a href="https://developers.foxitsoftware.cn/pdf-sdk/" style="width: 250px;" target="_blank" rel="nofollow">福昕PDF开发工具包（Foxit PDF SDK）</a></li>
+                               
+                            </ul>
+                        </div>
+                        <div class="col_1" style="width:400px;">
+                          <h4 style="width:400px;">PDF解决方案</h4>
+                            <ul>                            	
+                                <li style="width:200px;"><a href="https://www.foxitsoftware.cn/products/pdf-toolkit/">Toolkit PDF批量处理</a></li>
+                                <li style="width:200px;"><a href="https://www.foxitsoftware.cn/products/ultraforms-2d-barcode-generator/">Ultraforms PDF表单</a></li>
+                                <li style="width:200px;"><a href="https://www.foxitsoftware.cn/products/ifilter/">IFilter PDF检索</a></li>
+                                <li style="width:200px;"><a href="https://www.foxitsoftware.cn/products/mobile-scanning-solutions/">福昕移动扫描解决方案</a></li>
+                                <li style="width:200px;"><a href="https://www.foxitsoftware.cn/products/luratech-pdf-compressor/">PDF 压缩器</a></li>
+                                <li style="width:200px;"><a href="https://www.foxitsoftware.cn/products/luratech-rendition-server/">Rendition Server文档集中转换</a></li>
+                                <li style="width:200px;"><a href="https://www.foxitsoftware.cn/products/maestro-ocr-software/">Maestro光学字符识别服务器</a></li>
+                            </ul>
+                            
+                        </div>
+                        <div class="col_2" style="width: 280px;margin-top: -40px;" id="cpdf-header-zone">
+                            <a href="http://work.foxitcloud.cn/?agent=foxit&amp;MD=menu" target="_blank" style="width:240px;border:none;text-align: center;margin-top: 30px;margin-left:20px;padding:20px;display: block" onclick="_baidu('旧版导航','点击','福昕云办公')" rel="nofollow">
+                                <img src="%E7%A6%8F%E6%98%95%E9%98%85%E8%AF%BB%E5%99%A8%E5%85%8D%E8%B4%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95PDF%E9%98%85%E8%AF%BB%E5%99%A8%E7%94%B5%E8%84%91%E7%89%88%E5%AE%98%E6%96%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95%E8%BD%AF%E4%BB%B6%E5%AE%98%E7%BD%91_files/fxybg-logo.png">
+                                <p style="color: #f68121;font-size: 14px;">一体化办公，福昕云就够了</p>
+                                <p style="color: #f68121;">查看更多</p>
+                            </a>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                </li>
+
+                <li class=""><a href="https://www.foxitsoftware.cn/solutions/">解决方案</a>
+                    <div class="dropdownOne">
+                        <div class="col_1">
+                            <ul>
+                                <li><a href="https://www.foxitsoftware.cn/solutions/drm/">电子文档安全分发解决方案</a></li>
+                                <li><a href="https://www.foxitsoftware.cn/solutions/e-sign/">PDF文档电子签章解决方案</a></li>
+                                <li><a href="https://www.foxitsoftware.cn/solutions/rms/">PDF文档安全应用解决方案</a></li>
+                                <li><a href="https://www.foxitsoftware.cn/solutions/pdfprint.php">网络印刷解决方案</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+                <li class=""><a href="https://www.foxitsoftware.cn/cpdf/">互联PDF</a>
+                    <div class="dropdownOne">
+                        <div class="col_1">
+                            <ul>
+                                <li><a href="https://www.foxitsoftware.cn/cpdf/">产品介绍</a></li>
+                                <li><a href="https://www.foxitsoftware.cn/cpdf/features/">功能介绍</a></li>
+                                <li><a href="https://www.foxitsoftware.cn/cpdf/resources/">资料下载</a></li>
+                                <li><a href="https://www.foxitsoftware.cn/cpdf/support/">服务与支持</a></li>
+                                <li><a href="https://www.foxitsoftware.cn/cpdf/news/">新闻与活动</a></li>
+                                <li><a href="https://www.foxitsoftware.cn/cpdf/free-try/">免费试用</a></li>
+                                <li><a href="https://www.foxitsoftware.cn/cpdf/sales/">销售信息</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+                <li class=""><a href="https://www.foxitsoftware.cn/downloads/">下载</a> </li>
+
+                <li class=""><a href="https://www.foxitsoftware.cn/support/" rel="nofollow">支持</a>
+                    <div class="dropdownOne">
+                        <div class="col_1">
+                            <ul>
+                                <li><a href="https://www.foxitsoftware.cn/support/" rel="nofollow">服务与支持</a></li>
+                                <li><a href="https://www.foxitsoftware.cn/support/usermanuals.php" rel="nofollow">用户手册</a></li>
+                                <li><a href="https://developers.foxitsoftware.cn/sdk-docs/" rel="nofollow" target="_blank">福昕PDF开发工具包用户手册</a></li>
+                                <li><a href="https://www.foxitsoftware.cn/support/security-advisories.php" rel="nofollow">安全公告</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+                <li><a href="https://www.foxitsoftware.cn/company/" rel="nofollow">关于福昕</a>
+                    <div class="dropdownOne">
+                        <div class="col_1">
+                            <ul>
+                                <li><a href="https://www.foxitsoftware.cn/company/" rel="nofollow">公司介绍</a></li>
+                                <li><a href="https://www.foxitsoftware.cn/company/customers.php" rel="nofollow">福昕客户</a></li>
+                                <li><a href="https://www.foxitsoftware.cn/company/press.php" rel="nofollow">企业新闻</a></li>
+                                <li><a href="https://www.foxitsoftware.cn/company/history.php" rel="nofollow">福昕大事记</a></li>
+                                <li><a href="https://www.foxitsoftware.cn/company/management.php" rel="nofollow">管理团队</a></li>
+                                <li><a href="https://www.foxitsoftware.cn/company/jobs.php" rel="nofollow">诚聘英才</a></li>
+                                <!--<li><a href="https://www.foxitsoftware.cn/company/contact.php">联系我们</a></li>-->
+                            </ul>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                </li>
+                
+                <li class=""><a href="https://www.foxitsoftware.cn/company/contact.php" rel="nofollow">联系我们</a> </li>
+                
+            </ul>
+        </nav>
+
+        <!-- end main menu --> 
+    </header>
+    <!-- end grid_24 -->
+    <div class="clear"></div>
+</div>
+<!-- end top section container_24 --> 
+</div>
+<script type="text/javascript" src="%E7%A6%8F%E6%98%95%E9%98%85%E8%AF%BB%E5%99%A8%E5%85%8D%E8%B4%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95PDF%E9%98%85%E8%AF%BB%E5%99%A8%E7%94%B5%E8%84%91%E7%89%88%E5%AE%98%E6%96%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95%E8%BD%AF%E4%BB%B6%E5%AE%98%E7%BD%91_files/jquery.js"></script>
+<script type="text/javascript" src="%E7%A6%8F%E6%98%95%E9%98%85%E8%AF%BB%E5%99%A8%E5%85%8D%E8%B4%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95PDF%E9%98%85%E8%AF%BB%E5%99%A8%E7%94%B5%E8%84%91%E7%89%88%E5%AE%98%E6%96%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95%E8%BD%AF%E4%BB%B6%E5%AE%98%E7%BD%91_files/jquery_002.js"></script>
+<!--? @include ROOTPATH.'include/class/HttpsClient.php'; ?-->
+<script type="text/javascript">
+    var cURL = window.location.pathname;
+    if (cURL.indexOf("/pdf/") != -1 || cURL.indexOf("/products/") != -1 || cURL.indexOf("/Secure_PDF_Reader/") != -1 || cURL.indexOf("/PDF_Converter/") != -1 || cURL.indexOf("/PDF_Editor/") != -1 || cURL.indexOf("/Secure_PDF_Security/") != -1)
+        $(".mainNavMenu>li:eq(1)>a").addClass('selected');
+    else if (cURL.indexOf("/cpdf/") != -1 || cURL.indexOf("/cpdf/solutions/") != -1 || cURL.indexOf("/cpdf/downloads/") != -1 || cURL.indexOf("/cpdf/support/") != -1 || cURL.indexOf("/cpdf/news/") != -1 || cURL.indexOf("/cpdf/free-try/") != -1 || cURL.indexOf("/cpdf/sales/") != -1)
+        $(".mainNavMenu>li:eq(3)>a").addClass('selected');
+    else if (cURL.indexOf("/downloads/") != -1)
+        $(".mainNavMenu>li:eq(4)>a").addClass('selected');
+    else if (cURL.indexOf("/solutions/") != -1 || cURL.indexOf("/solutions/") != -1)
+        $(".mainNavMenu>li:eq(2)>a").addClass('selected');
+    else if (cURL.indexOf("/contact.php") != -1 || cURL.indexOf("/company/contact.php") != -1)
+        $(".mainNavMenu>li:eq(7)>a").addClass('selected');
+    else if (cURL.indexOf("/customers/") != -1 || cURL.indexOf("/company/") != -1)
+        $(".mainNavMenu>li:eq(6)>a").addClass('selected');
+    else if (cURL.indexOf("/support/") != -1 || cURL.indexOf("/support/") != -1)
+        $(".mainNavMenu>li:eq(5)>a").addClass('selected');
+    else
+        $(".mainNavMenu>li:eq(0)>a").addClass('selected');
+
+
+    $(".getQQSuportBlock").click(function(){
+		  $("#topQQSuport").show();
+	});
+	$("#topQQSuport").mouseleave(function(){
+		  $("#topQQSuport").hide();
+	});
+
+    $("#mobile_site_block").mouseover(function(){
+        $("#mobile_site_code").show();
+    });
+    $("#mobile_site_block").mouseout(function(){
+        $("#mobile_site_code").hide();
+    });
+</script>
+<div style="display:none;">
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fc398b0a7a1a2ab94daf61f08a9898c7d' type='text/javascript'%3E%3C/script%3E"));
+</script><script src="%E7%A6%8F%E6%98%95%E9%98%85%E8%AF%BB%E5%99%A8%E5%85%8D%E8%B4%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95PDF%E9%98%85%E8%AF%BB%E5%99%A8%E7%94%B5%E8%84%91%E7%89%88%E5%AE%98%E6%96%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95%E8%BD%AF%E4%BB%B6%E5%AE%98%E7%BD%91_files/h.js" type="text/javascript"></script>
+<script type="text/javascript" src="%E7%A6%8F%E6%98%95%E9%98%85%E8%AF%BB%E5%99%A8%E5%85%8D%E8%B4%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95PDF%E9%98%85%E8%AF%BB%E5%99%A8%E7%94%B5%E8%84%91%E7%89%88%E5%AE%98%E6%96%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95%E8%BD%AF%E4%BB%B6%E5%AE%98%E7%BD%91_files/trace_002.js"></script>
+<script>
+//自动推送代码以便百度可以抓取更多隐藏页面
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+</div>
+
+
+    <!-- start main content wrapper -->
+    <div class="wrapper wrapperBg ">
+        <div class="container_24">
+            <!-- start breadcrumb section grid_24 -->
+            <div id="breadcrumb" class="grid_24">
+                <ul class="breadcrumbNav">
+                    <li><a href="https://www.foxitsoftware.cn/">主页</a></li>
+                    &gt;
+                    <li><a>产品</a></li>
+                    &gt;
+                    <li>福昕PDF阅读器</li>
+                </ul>
+            </div>
+            <!-- end breadcrumb section grid_24 -->
+            <div class="clear"></div>
+            <!-- start header banner section grid_24 -->
+            <section id="headerBanner" class="grid_24 FoxitReader">
+                
+<script type="text/javascript" src="%E7%A6%8F%E6%98%95%E9%98%85%E8%AF%BB%E5%99%A8%E5%85%8D%E8%B4%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95PDF%E9%98%85%E8%AF%BB%E5%99%A8%E7%94%B5%E8%84%91%E7%89%88%E5%AE%98%E6%96%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95%E8%BD%AF%E4%BB%B6%E5%AE%98%E7%BD%91_files/jquery_003.js"></script>
+<script type="text/javascript" src="%E7%A6%8F%E6%98%95%E9%98%85%E8%AF%BB%E5%99%A8%E5%85%8D%E8%B4%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95PDF%E9%98%85%E8%AF%BB%E5%99%A8%E7%94%B5%E8%84%91%E7%89%88%E5%AE%98%E6%96%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95%E8%BD%AF%E4%BB%B6%E5%AE%98%E7%BD%91_files/jquery_004.js"></script>
+<script type="text/javascript" src="%E7%A6%8F%E6%98%95%E9%98%85%E8%AF%BB%E5%99%A8%E5%85%8D%E8%B4%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95PDF%E9%98%85%E8%AF%BB%E5%99%A8%E7%94%B5%E8%84%91%E7%89%88%E5%AE%98%E6%96%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95%E8%BD%AF%E4%BB%B6%E5%AE%98%E7%BD%91_files/jquery_005.js"></script>
+<script type="text/javascript" src="%E7%A6%8F%E6%98%95%E9%98%85%E8%AF%BB%E5%99%A8%E5%85%8D%E8%B4%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95PDF%E9%98%85%E8%AF%BB%E5%99%A8%E7%94%B5%E8%84%91%E7%89%88%E5%AE%98%E6%96%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95%E8%BD%AF%E4%BB%B6%E5%AE%98%E7%BD%91_files/checkform.js"></script>
+<script type="text/javascript" src="%E7%A6%8F%E6%98%95%E9%98%85%E8%AF%BB%E5%99%A8%E5%85%8D%E8%B4%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95PDF%E9%98%85%E8%AF%BB%E5%99%A8%E7%94%B5%E8%84%91%E7%89%88%E5%AE%98%E6%96%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95%E8%BD%AF%E4%BB%B6%E5%AE%98%E7%BD%91_files/artDialog_002.js"></script>
+<link rel="stylesheet" type="text/css" href="%E7%A6%8F%E6%98%95%E9%98%85%E8%AF%BB%E5%99%A8%E5%85%8D%E8%B4%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95PDF%E9%98%85%E8%AF%BB%E5%99%A8%E7%94%B5%E8%84%91%E7%89%88%E5%AE%98%E6%96%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95%E8%BD%AF%E4%BB%B6%E5%AE%98%E7%BD%91_files/popup.css">
+
+
+<script type="text/javascript">
+
+$('#rd-popup').czPopupLayar({
+    className:'popup popup_down', 
+    title:'下载 福昕PDF阅读器', 
+    zIndex: 2000,
+    initCallback: function(){ this.$element.removeClass('hide') }, 
+    showCallback: function() { getDownForm ($('#rd-popup'), 'Foxit-Reader', 'Windows');},
+    hideCallback: function() { $('#rd-popup').html('');}
+});
+$('#rd-popup2').czPopupLayar({
+    className:'popup popup_down', 
+    title:'下载 福昕PDF阅读器', 
+    zIndex: 2000,
+    initCallback: function(){ this.$element.removeClass('hide') }, 
+    showCallback: function() { getDownForm ($('#rd-popup2'), 'Foxit-Reader', 'Windows','','1');},
+    hideCallback: function() { $('#rd-popup2').html('');}
+});
+
+var fx_loading = art.dialog.loading();fx_loading.hide();
+
+</script>
+
+<h1>福昕阅读器 <img src="%E7%A6%8F%E6%98%95%E9%98%85%E8%AF%BB%E5%99%A8%E5%85%8D%E8%B4%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95PDF%E9%98%85%E8%AF%BB%E5%99%A8%E7%94%B5%E8%84%91%E7%89%88%E5%AE%98%E6%96%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95%E8%BD%AF%E4%BB%B6%E5%AE%98%E7%BD%91_files/new.png" style="vertical-align: top"></h1>
+<h2 style="font-size: 24px; font-weight: normal;">阅读PDF文档的理想选择</h2>
+<!-- start banner highlights and video play sections grid_24 -->
+<section id="bannerHighlights" class="grid_24 alpha omega">
+    <ul class="highlights" style="top: 0;">
+        <li> ● 全新的Ribbon界面，全球用户超越4.75亿</li>
+        <li> ● 支持PDF文档手写签名、插入印章</li>
+        <li> ● 更多安全控制包括Foxit DRM内容管理插件</li>
+        <li> ● 支持微软AD RMS对PDF文档的安全应用</li>
+    </ul>
+    <a style="display:none" href="javascript:;" onclick="art.dialog.open('', {title: 'Foxit Reader', height: 500, width: 880, fixed: true, lock: true});" title="Free PDF reader, PDF reader download, PDF viewer download, free pdf software download" class="bannerVideoBTN"></a>
+</section>
+<!-- start banner action section grid_24 -->
+<section id="bannerCallActions" class="grid_24 omega alpha">
+<input class="hidden_download_position" value="" type="hidden">
+<a onclick="$('.hidden_download_position').val('FRD_banner_index_download_btn');$('#rd-popup').czPopupLayar('instance').show();" href="javascript:;" class="btn btnYellow btnL " style="margin:30px 0 0 20px;font-size: 22px;padding: 2px 35px;">免费下载</a>
+<!-- 
+<a onclick="$('#rd-popup').czPopupLayar('instance').show();" href="javascript:;" style="margin-left: 12px;margin-right:5px;"><img src="https://www.foxitsoftware.cn/resources/images/product/reader/high-down.png" /></a>
+<a onclick="$('#rd-popup2').czPopupLayar('instance').show();" href="javascript:;" style="margin-right:5px;"><img src="https://www.foxitsoftware.cn/resources/images/product/reader/common-down.png" /></a>-->
+<!--<a href="https://www.foxitsoftware.cn/products/reader/enterprise_register.php" target="_blank" ><img src="https://www.foxitsoftware.cn/resources/images/product/reader/ent-down.png" /></a><a href="https://www.foxitsoftware.cn/products/volume.php" class="btn btnDark btnL">Volume Licensing</a>-->
+    </section>
+<!-- end banner action section grid_24 -->                <div class="clear"></div>
+            </section>
+            <!-- end header banner section grid_24 -->
+            <div class="clear"></div>
+            <!-- start tab navgrid_24 -->
+            <section id="tabIconNav" class=" grid_24">
+
+                <div style="float:right;position:relative;left:0px;top:5px;"><a href="https://www.foxitsoftware.cn/products/reader/comparison.php" target="_blank" style="padding-left:3px;text-decoration:none;font-size: 18px;font-weight: 400;">福昕阅读器各操作系统平台功能对比&gt;&gt;</a>
+                </div>
+
+                <div class="clear"></div>
+                                <h2 style="float:left;">福昕阅读器：PDF阅读和打印</h2>
+
+                <div class="clear"></div>
+                <!--start tabs nav -->
+                <ul class="tabIconNavigation" style="">
+                    <li><a href="https://www.foxitsoftware.cn/products/reader/" class="selected"><img src="%E7%A6%8F%E6%98%95%E9%98%85%E8%AF%BB%E5%99%A8%E5%85%8D%E8%B4%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95PDF%E9%98%85%E8%AF%BB%E5%99%A8%E7%94%B5%E8%84%91%E7%89%88%E5%AE%98%E6%96%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95%E8%BD%AF%E4%BB%B6%E5%AE%98%E7%BD%91_files/tab-view-print.png" alt="" width="64" height="64"><br>
+                            阅读/打印<br><br></a></li>
+                    <li><a href="https://www.foxitsoftware.cn/products/reader/PDF-create.php"><img src="%E7%A6%8F%E6%98%95%E9%98%85%E8%AF%BB%E5%99%A8%E5%85%8D%E8%B4%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95PDF%E9%98%85%E8%AF%BB%E5%99%A8%E7%94%B5%E8%84%91%E7%89%88%E5%AE%98%E6%96%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95%E8%BD%AF%E4%BB%B6%E5%AE%98%E7%BD%91_files/tab-PDF-create.png" alt="" width="64" height="64"><br>
+                            创建PDF文件<br>
+                            <br>
+                        </a></li>
+                    <li><a href="https://www.foxitsoftware.cn/products/reader/collaborate-share.php"><img src="%E7%A6%8F%E6%98%95%E9%98%85%E8%AF%BB%E5%99%A8%E5%85%8D%E8%B4%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95PDF%E9%98%85%E8%AF%BB%E5%99%A8%E7%94%B5%E8%84%91%E7%89%88%E5%AE%98%E6%96%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95%E8%BD%AF%E4%BB%B6%E5%AE%98%E7%BD%91_files/tab-collaborate-share.png" alt="" width="64" height="64"><br>
+                            合作/共享<br><br></a></li>
+                    <li><a href="https://www.foxitsoftware.cn/products/reader/forms.php"><img src="%E7%A6%8F%E6%98%95%E9%98%85%E8%AF%BB%E5%99%A8%E5%85%8D%E8%B4%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95PDF%E9%98%85%E8%AF%BB%E5%99%A8%E7%94%B5%E8%84%91%E7%89%88%E5%AE%98%E6%96%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95%E8%BD%AF%E4%BB%B6%E5%AE%98%E7%BD%91_files/tab-forms.png" alt="" width="64" height="64"><br>
+                            表单<br>
+                            <br>
+                        </a></li>
+                    <li><a href="https://www.foxitsoftware.cn/products/reader/vulnerability-protection.php"><img src="%E7%A6%8F%E6%98%95%E9%98%85%E8%AF%BB%E5%99%A8%E5%85%8D%E8%B4%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95PDF%E9%98%85%E8%AF%BB%E5%99%A8%E7%94%B5%E8%84%91%E7%89%88%E5%AE%98%E6%96%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95%E8%BD%AF%E4%BB%B6%E5%AE%98%E7%BD%91_files/tab-vulnerability-protection.png" alt="" width="64" height="64"><br>
+                            安全保护<br><br>
+                        </a></li>
+                    <li><a href="https://www.foxitsoftware.cn/products/reader/protect-sign.php"><img src="%E7%A6%8F%E6%98%95%E9%98%85%E8%AF%BB%E5%99%A8%E5%85%8D%E8%B4%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95PDF%E9%98%85%E8%AF%BB%E5%99%A8%E7%94%B5%E8%84%91%E7%89%88%E5%AE%98%E6%96%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95%E8%BD%AF%E4%BB%B6%E5%AE%98%E7%BD%91_files/tab-protect-sign.png" alt="" width="64" height="64"><br>
+                            PDF签名<br>
+                            <br>
+                        </a></li>
+                    <li><a href="https://www.foxitsoftware.cn/products/reader/ad-rms-interation.php"><img src="%E7%A6%8F%E6%98%95%E9%98%85%E8%AF%BB%E5%99%A8%E5%85%8D%E8%B4%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95PDF%E9%98%85%E8%AF%BB%E5%99%A8%E7%94%B5%E8%84%91%E7%89%88%E5%AE%98%E6%96%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95%E8%BD%AF%E4%BB%B6%E5%AE%98%E7%BD%91_files/tab-AD-RMS-interation.png" alt="" width="64" height="64"><br>
+                            AD RMS 集成<br><br>
+                        </a></li>
+                    <li><a href="https://www.foxitsoftware.cn/products/reader/customize-deploy.php"><img src="%E7%A6%8F%E6%98%95%E9%98%85%E8%AF%BB%E5%99%A8%E5%85%8D%E8%B4%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95PDF%E9%98%85%E8%AF%BB%E5%99%A8%E7%94%B5%E8%84%91%E7%89%88%E5%AE%98%E6%96%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95%E8%BD%AF%E4%BB%B6%E5%AE%98%E7%BD%91_files/tab-customize-deploy.png" alt="" width="64" height="64"><br>
+                            自定义配置<br><br>
+                        </a></li>
+                </ul>
+                <div class="clear"></div>
+                <!--end tabs nav -->
+                <!--start tabs contents -->
+                <div class="grid_24 alpha omega">
+                    <section id="first" class="tabIconContent">
+                        <div class="margin-bottom-30">
+                            <div class="left col-md-8">
+                                <div class="_title1">兼容JAWS屏幕阅读器</div>
+                                <p>帮助盲人和视障用户通过文字转语音输出或可刷新的盲文显示器阅读屏幕内容。</p>
+                            </div>
+                            <div class="right col-md-3">
+                            </div>
+                        </div>
+                        <div class="margin-bottom-30">
+                            <div class="left col-md-8">
+                                <div class="_title1">直观的用户界面</div>
+                                <p>采用Microsoft Office设计风格，支持Ribbon工具栏模式，界面清楚明了，给用户提供类似于Microsoft Office的使用体验。</p>
+                            </div>
+                            <div class="right col-md-3">
+                                <img src="%E7%A6%8F%E6%98%95%E9%98%85%E8%AF%BB%E5%99%A8%E5%85%8D%E8%B4%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95PDF%E9%98%85%E8%AF%BB%E5%99%A8%E7%94%B5%E8%84%91%E7%89%88%E5%AE%98%E6%96%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95%E8%BD%AF%E4%BB%B6%E5%AE%98%E7%BD%91_files/intuitiveiuseri-interface.jpg" alt="直观的用户界面" height="100">
+                            </div>
+                        </div>
+                        <div class="margin-bottom-30">
+                            <div class="left col-md-8">
+                                <div class="_title1">自定义工具栏</div>
+                                <p>支持新建选项卡或自定义当前选项卡。用户可以调整选项卡中按钮的位置，也可以直接创建新的选项卡，用以放置常用工具按钮。</p>
+                            </div>
+                            <div class="right col-md-3">
+                                <img src="%E7%A6%8F%E6%98%95%E9%98%85%E8%AF%BB%E5%99%A8%E5%85%8D%E8%B4%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95PDF%E9%98%85%E8%AF%BB%E5%99%A8%E7%94%B5%E8%84%91%E7%89%88%E5%AE%98%E6%96%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95%E8%BD%AF%E4%BB%B6%E5%AE%98%E7%BD%91_files/CustomizeToolbar.png" alt="自定义工具栏" width="220" height="100">
+                            </div>
+                        </div>
+                        <div class="margin-bottom-30">
+                            <div class="left col-md-8">
+                                <div class="_title1">触屏支持</div>
+                                <p>提供触屏模式，在Windows触屏设备中使用更加方便。</p>
+                            </div>
+                            <div class="right col-md-3">
+                                <img src="%E7%A6%8F%E6%98%95%E9%98%85%E8%AF%BB%E5%99%A8%E5%85%8D%E8%B4%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95PDF%E9%98%85%E8%AF%BB%E5%99%A8%E7%94%B5%E8%84%91%E7%89%88%E5%AE%98%E6%96%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95%E8%BD%AF%E4%BB%B6%E5%AE%98%E7%BD%91_files/touch-screen.png" alt="触屏支持" width="220" height="100">
+                            </div>
+                        </div>
+                        <div class="margin-bottom-30">
+                            <div class="left col-md-8">
+                                <div class="_title1">快速/小巧</div>
+                                <p>高效阅读、创建和打印PDF文件；占用系统资源少；企业部署方便。</p>
+                            </div>
+                            <div class="right col-md-3">
+                                <img src="%E7%A6%8F%E6%98%95%E9%98%85%E8%AF%BB%E5%99%A8%E5%85%8D%E8%B4%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95PDF%E9%98%85%E8%AF%BB%E5%99%A8%E7%94%B5%E8%84%91%E7%89%88%E5%AE%98%E6%96%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95%E8%BD%AF%E4%BB%B6%E5%AE%98%E7%BD%91_files/high-small-lightweight.jpg" alt="快速/小巧" width="220" height="100">
+                            </div>
+                        </div>
+                        <div class="margin-bottom-30">
+                            <div class="left col-md-8">
+                                <div class="_title1">PDF 文件包</div>
+                                <p>支持在PDF 文件包中查看、打印文件或搜索文本信息。</p>
+                            </div>
+                            <div class="right col-md-3">
+                                <img src="%E7%A6%8F%E6%98%95%E9%98%85%E8%AF%BB%E5%99%A8%E5%85%8D%E8%B4%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95PDF%E9%98%85%E8%AF%BB%E5%99%A8%E7%94%B5%E8%84%91%E7%89%88%E5%AE%98%E6%96%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95%E8%BD%AF%E4%BB%B6%E5%AE%98%E7%BD%91_files/PDF-portfolios.jpg" alt="PDF 文件包" width="220" height="100">
+                            </div>
+                        </div>
+                        <div class="margin-bottom-30">
+                            <div class="left col-md-8">
+                                <div class="_title1">多文档查看</div>
+                                <p>支持多标签文档浏览模式，方便用户在不同的PDF文档间实现快速切换浏览。</p>
+                            </div>
+                            <div class="right col-md-3">
+                                <img src="%E7%A6%8F%E6%98%95%E9%98%85%E8%AF%BB%E5%99%A8%E5%85%8D%E8%B4%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95PDF%E9%98%85%E8%AF%BB%E5%99%A8%E7%94%B5%E8%84%91%E7%89%88%E5%AE%98%E6%96%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95%E8%BD%AF%E4%BB%B6%E5%AE%98%E7%BD%91_files/multi-document-viewing.jpg" alt="多文档查看" width="220" height="100">
+                            </div>
+                        </div>
+                        <div class="margin-bottom-30">
+                            <div class="left col-md-8">
+                                <div class="_title1">书签</div>
+                                <p>支持在PDF文档中快速添加、编辑、修改书签。</p>
+                            </div>
+                            <div class="right col-md-3">
+                                <img src="%E7%A6%8F%E6%98%95%E9%98%85%E8%AF%BB%E5%99%A8%E5%85%8D%E8%B4%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95PDF%E9%98%85%E8%AF%BB%E5%99%A8%E7%94%B5%E8%84%91%E7%89%88%E5%AE%98%E6%96%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95%E8%BD%AF%E4%BB%B6%E5%AE%98%E7%BD%91_files/bookmarks.jpg" alt="书签" width="210" height="100">
+                            </div>
+                        </div>
+                        <div class="margin-bottom-30 show_hide_block" style="display: none;">
+                            <div class="left col-md-8">
+                                <div class="_title1">搜索文本</div>
+                                <p>支持在PDF文件、文件夹、磁盘或网络中搜索文本。</p>
+                            </div>
+                            <div class="right col-md-3">
+                                <img src="%E7%A6%8F%E6%98%95%E9%98%85%E8%AF%BB%E5%99%A8%E5%85%8D%E8%B4%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95PDF%E9%98%85%E8%AF%BB%E5%99%A8%E7%94%B5%E8%84%91%E7%89%88%E5%AE%98%E6%96%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95%E8%BD%AF%E4%BB%B6%E5%AE%98%E7%BD%91_files/text-search.jpg" alt="搜索文本" width="220" height="100">
+                            </div>
+                        </div>
+                        <div class="margin-bottom-30 show_hide_block" style="display: none;">
+                            <div class="left col-md-8">
+                                <div class="_title1">朗读功能</div>
+                                <p>支持朗读PDF文件。</p>
+                            </div>
+                            <div class="right col-md-3">
+                                <img src="%E7%A6%8F%E6%98%95%E9%98%85%E8%AF%BB%E5%99%A8%E5%85%8D%E8%B4%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95PDF%E9%98%85%E8%AF%BB%E5%99%A8%E7%94%B5%E8%84%91%E7%89%88%E5%AE%98%E6%96%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95%E8%BD%AF%E4%BB%B6%E5%AE%98%E7%BD%91_files/read-out-loud.jpg" alt="朗读功能" width="220" height="100">
+                            </div>
+                        </div>
+                        <div class="margin-bottom-30 show_hide_block" style="display: none;">
+                            <div class="left col-md-8">
+                                <div class="_title1">旋转/缩放文件</div>
+                                <p>支持横向或纵向旋转页面；支持缩放页面或通过选框缩放工具、放大镜或仿真放大镜放大页面。</p>
+                            </div>
+                            <div class="right col-md-3">
+                                <img src="%E7%A6%8F%E6%98%95%E9%98%85%E8%AF%BB%E5%99%A8%E5%85%8D%E8%B4%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95PDF%E9%98%85%E8%AF%BB%E5%99%A8%E7%94%B5%E8%84%91%E7%89%88%E5%AE%98%E6%96%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95%E8%BD%AF%E4%BB%B6%E5%AE%98%E7%BD%91_files/rotate-zoom.jpg" alt="旋转/缩放文件" width="220" height="100">
+                            </div>
+                        </div>
+                        <div class="margin-bottom-30 show_hide_block" style="display: none;">
+                            <div class="left col-md-8">
+                                <div class="_title1">多种文档显示模式</div>
+                                <p>支持阅读模式、逆序阅读模式以及文本查看模式。</p>
+                            </div>
+                            <div class="right col-md-3">
+                                <img src="%E7%A6%8F%E6%98%95%E9%98%85%E8%AF%BB%E5%99%A8%E5%85%8D%E8%B4%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95PDF%E9%98%85%E8%AF%BB%E5%99%A8%E7%94%B5%E8%84%91%E7%89%88%E5%AE%98%E6%96%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95%E8%BD%AF%E4%BB%B6%E5%AE%98%E7%BD%91_files/convenien-multi-document-viewing.jpg" alt="多种文档显示模式" width="220" height="100">
+                            </div>
+                        </div>
+                        <div class="margin-bottom-30 show_hide_block" style="display: none;">
+                            <div class="left col-md-8">
+                                <div class="_title1">多种页面显示模式</div>
+                                <p>支持全屏、单页、单页连续、拆分、双联、双联连续、双联时单独显示封面、自动滚屏等模式；同时支持页面过渡效果设置。</p>
+                            </div>
+                            <div class="right col-md-3">
+                                <img src="%E7%A6%8F%E6%98%95%E9%98%85%E8%AF%BB%E5%99%A8%E5%85%8D%E8%B4%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95PDF%E9%98%85%E8%AF%BB%E5%99%A8%E7%94%B5%E8%84%91%E7%89%88%E5%AE%98%E6%96%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95%E8%BD%AF%E4%BB%B6%E5%AE%98%E7%BD%91_files/diverse-document-views.jpg" alt="多种页面显示模式">
+                            </div>
+                        </div>
+                        <div class="margin-bottom-30 show_hide_block" style="display: none;">
+                            <div class="left col-md-8">
+                                <div class="_title1">标尺和网格</div>
+                                <p>显示标尺、参考线和透明网格。</p>
+                            </div>
+                            <div class="right col-md-3">
+                                <img src="%E7%A6%8F%E6%98%95%E9%98%85%E8%AF%BB%E5%99%A8%E5%85%8D%E8%B4%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95PDF%E9%98%85%E8%AF%BB%E5%99%A8%E7%94%B5%E8%84%91%E7%89%88%E5%AE%98%E6%96%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95%E8%BD%AF%E4%BB%B6%E5%AE%98%E7%BD%91_files/rulers-grids.jpg" alt="标尺和网格" width="220" height="100">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 align-center"><a href="javascript:;" class="show_hide" style="font-size:16px;text-decoration:none;color:#F18D00;">查看更多功能</a>
+                            </div>
+                        </div>
+
+                    </section>
+                    <div style="clear:both"></div>
+                    <!--end tab 1-->
+                </div>
+                <!--end tabs content grid_24-->
+                <div style="clear:both"></div>
+            </section>
+            <!-- end tab navgrid_24 -->
+            <div style="clear:both"></div>
+            <!-- start main content grid_24 -->
+<section id="mainContent" class="grid_24">
+    <h2>福昕阅读器PDF阅读和打印功能简介</h2>
+    <!--start content left grid_18-->
+    <section class="grid_18 alpha">
+        <aside class="grid_6 omega boxshot"> <img src="%E7%A6%8F%E6%98%95%E9%98%85%E8%AF%BB%E5%99%A8%E5%85%8D%E8%B4%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95PDF%E9%98%85%E8%AF%BB%E5%99%A8%E7%94%B5%E8%84%91%E7%89%88%E5%AE%98%E6%96%B9%E4%B8%8B%E8%BD%BD_%E7%A6%8F%E6%98%95%E8%BD%AF%E4%BB%B6%E5%AE%98%E7%BD%91_files/box-reader.png" width="130" height="174">
+              <!--<p>Foxit Reader </p>-->
+        </aside>
+        <!--end grid_6-->
+        <article class=" grid_12 alpha">
+            <p>福昕阅读器作为一款在全球范围内流行的PDF阅读器，能够快速打开、浏览、审阅、注释、签署及打印任何PDF文件，具有轻快、高效、安全等特性，是目前一款带有PDF创建功能的阅读器，支持<a href="https://www.foxitsoftware.cn/products/reader/PDF-create.php" style="color: #282828;">Word转PDF</a>、
+Excel转PDF。此外，它以安全著称，从底层技术、应用设计、功能实现到处理机制，都广泛考虑了各层面用户对安全的需求，也是支持微软
+SharePoint服务器和Office365环境下对PDF文档的权限控制与应用，被微软推荐为首选的PDF阅读器。福昕阅读器采用快速、精准的
+PDF渲染引擎，渲染速度快，渲染质量高（高保真度），为用户提供一流的PDF查看和打印体验。</p>
+			<ul>
+                <li>PDF阅读器——支持快速查看和打印PDF文件/PDF文件包，占用系统资源少。</li>
+                <li>查看多个PDF文件——支持多标签文档浏览模式，方便用户在不同的PDF文档间实现快速切换浏览。</li>
+                <li>灵活设置PDF阅读方式——支持三种文档显示模式：阅读模式、逆序阅读模式和文本查看模式；支持多种页面显示模式：全屏显示、单页显示、连续页显示、拆分显示、双联页显示、双联页连续显示、双联页显示模式时单独显示封面、自动滚动显示；支持页面过渡效果设置。</li>
+                <li>书签支持——支持在PDF文档中快速添加、编辑和删除书签。</li>
+                <li>多种文档查看模式——支持横向和纵向两种布局；支持通过缩放选项或选框缩放、放大镜和仿真放大镜等工具缩放PDF文档。</li>
+            </ul>
+            <a onclick="$('.hidden_download_position').val('FRD_view_print_download_btn');$('#rd-popup').czPopupLayar('instance').show();" href="javascript:;" class="btn btnYellow btnL ">免费下载</a><!--<a href="/shopping/upgrade.php" class="btn btnGray btnM" title=""> Upgrade </a>--> </article>
+        <!--end grid_12-->
+        <div style="clear:both"></div>
+        <h2>福昕阅读器系统要求</h2>
+        <!--start content left grid_18-->
+        <article class=" grid_18 alpha">
+        <h3 style="margin: 10px 0 12px 0;">支持平台</h3>
+                            <h3>Windows</h3>
+                            <ul>
+<li>Windows 7</li>
+<li>Windows 8</li>
+<li>Windows 10</li>
+<li>Windows Office<sup>®</sup> 2007或更高版本（针对部分PDF文档创建功能）</li>
+                            </ul>
+                            <h3>macOS</h3>
+                            <ul>
+                            <li>macOS 10.12 及以上版本</li>
+                            </ul>
+                            
+                            <h3>Linux</h3>
+                            <ul>
+<li>Ubuntu Desktop 14.04 ~ 16.10</li>
+<li>Red Hat Enterprise Linux Server 6.x（64位） ~ 7.x</li>
+<li>SUSE 12 Linux Enterprise Server</li>
+<li>OpenSUSE 13.2</li>
+<li>OpenSUSE Leap 42.x</li>
+                            </ul>
+                            <h3 style="font-weight: normal;">针对活动目录权限管理服务，支持以下系统：</h3>
+                            <ul>
+<li>Ubuntu Desktop 14.04 ~ 16.10</li>
+<li>Red Hat Enterprise Linux Server 6.x（64位） ~ 7.x</li>
+<li>OpenSUSE 13.2</li>
+<li>OpenSUSE Leap 42.x</li>
+                            </ul>
+                            <h3>Citrix</h3>
+                            <ul>
+<li>通过Citrix Ready<sup>®</sup>验证，支持Citrix XenApp<sup>®</sup> 7.6</li>
+                            </ul>
+            <h3>推荐配置</h3>
+            <ul>
+                <li>1.3 GHz或更快的处理器</li>
+                <li>512 MB内存(推荐使用1GB或1GB以上内存）</li>
+                <li>1GB可用硬盘空间</li>
+                <li>1024*768屏幕分辨率</li>
+            </ul>
+        </article>        <!--end grid_12-->
+        <div style="clear:both"></div>
+    </section>
+    <!--end content left grid_18--> 
+    <!--start sidebar grid_6-->
+    <aside id="sidebar" class="grid_6 omega"> 
+        <!-- <a href="" title="" class="btnBlock ">
+            <p>PhantomPDF Product Comparation</p>
+            </a>-->
+        <ul class="relatedLinks">
+            <li><a href="mailto:support@foxitsoftware.cn" title="">联系我们</a>	</li>
+            <li><a href="http://cdn07.foxitsoftware.cn/pub/foxit/datasheet/reader/zh_cn/Datasheet_Reader_CN.pdf" target="_blank" title="">单页</a></li>
+            <li><a href="https://www.foxitsoftware.cn/products/reader/eula.html" target="_blank" title="">最终用户许可协议</a></li>
+            <li><a href="https://www.foxitsoftware.cn/products/reader/version_history.php" target="_blank" title="">发布历史</a></li>
+            <!--<li style="background:url(https://www.foxitsoftware.cn/resources/images/product/reader/video_icon.png) no-repeat 82% 35%;"><a href="javascript:;" title="福昕阅读器6.0新功能"  onclick="art.dialog.open('webinar_swf.php', {title: '福昕直播间', height:620, width:840, fixed:true, lock: true});">福昕阅读器6.0介绍视频</a></li>-->
+        </ul>
+    </aside>
+    <div style="clear:both"></div>
+</section>
+<!-- end main content grid_24 -->
+
+
+
+            <div style="clear:both"></div>
+        </div>
+        <!--end tabs sec container_24-->
+        <div style="clear:both"></div>
+    </div><div style="position: fixed; height: 100%; width: 100%; top: 0px; left: 0px; z-index: 2000; background-color: rgb(51, 51, 51); opacity: 0.6; display: none;"></div><div style="z-index: 2001; position: fixed; display: none;"><div class="czPopupLayar popup popup_down">						<div class="popup_title"><a class="close"></a><span>下载 福昕PDF阅读器</span></div>						<div class="popup_content"><div id="rd-popup" class="pop-form" style="height:280px;"></div></div>					</div></div><div style="position: fixed; height: 100%; width: 100%; top: 0px; left: 0px; z-index: 2000; background-color: rgb(51, 51, 51); opacity: 0.6; display: none;"></div><div style="z-index: 2001; position: fixed; display: none;"><div class="czPopupLayar popup popup_down">						<div class="popup_title"><a class="close"></a><span>下载 福昕PDF阅读器</span></div>						<div class="popup_content"><div id="rd-popup2" class="pop-form" style="height:280px;"></div></div>					</div></div><div style="width: 100%; height: 100%; position: fixed; z-index: 1987; top: 0px; left: 0px; overflow: hidden; display: none;"><div style="height: 100%; background: rgb(0, 0, 0) none repeat scroll 0% 0%; opacity: 0.7;"></div></div>
+    <!-- end main content wrapper -->
+    <div style="clear:both"></div>
+
+    <style>
+    .site-language li a {
+        color: #000000 !important;
+        display: inline-block;
+        width: 100%;
+        height: 100%
+    }
+    .contact_qq .logo {
+    height: 16px;
+    width: 16px;
+    background-image: url(https://www.foxitsoftware.cn/resources/images/global/QQ.png);
+    display: inline-block;
+    position: relative;
+    top: 3px;
+}
+</style>
+<!-- start footer wrapper -->
+<div class="wrapper">
+    <!-- start footer sec -->
+    <div class="container_24">
+        <div class="grid_24" id="footer">
+            <!-- start newsletter -->
+            <div class="clear"></div>
+            <div class="grid_5 alpha" style="width:150px;">
+                <ul>
+                    <li>
+                        <h4 class="marginTOP" style="font-weight:bold;"><a href="https://www.foxitsoftware.cn/sitemap.php">网站地图</a></h4>
+                    </li>
+                    <li>
+                        <h4 class="marginTOP" style="font-weight:bold;">下载</h4>
+                    </li>
+                    <li><a href="https://www.foxitsoftware.cn/downloads/">福昕阅读器</a></li>
+                    <li><a href="https://www.foxitsoftware.cn/downloads/#Foxit-PhantomPDF-Business/Chinese">福昕高级PDF编辑器</a>
+                    </li>
+                                    </ul>
+            </div>
+            <div class="grid_5 alpha" style="width:150px;">
+                <ul>
+                    <li>
+                        <h4 class="marginTOP" style="font-weight:bold;">解决方案</h4>
+                    </li>
+                    <li><a href="https://www.foxitsoftware.cn/solutions/drm/">电子文档安全分发解决方案</a></li>
+                    <li><a href="https://www.foxitsoftware.cn/solutions/e-sign/">PDF文档电子签章解决方案</a></li>
+                    <li><a href="https://www.foxitsoftware.cn/solutions/rms/">PDF文档安全应用解决方案</a></li>
+                    <li><a href="https://www.foxitsoftware.cn/solutions/pdfprint.php">网络印刷解决方案</a></li>
+                </ul>
+            </div>
+            <div class="grid_5" style="width:180px;">
+                <ul>
+                    <li>
+                        <h4 class="marginTOP" style="font-weight:bold;">产品</h4>
+                    </li>
+                    <li><a href="https://www.foxitsoftware.cn/products/reader/">福昕阅读器</a></li>
+                    <li><a href="https://www.foxitsoftware.cn/products/mobilereader/">福昕阅读器（移动版）</a></li>
+                    <li><a href="https://www.foxitsoftware.cn/pdf-editor/">福昕高级PDF编辑器</a></li>
+                    <li><a href="https://www.foxitsoftware.cn/products/rms/">Foxit PDF Security Suite</a></li>
+                    <li><a href="https://www.foxitsoftware.cn/products/pdf-toolkit/">Toolkit PDF批量处理</a></li>
+                    <li><a href="https://www.foxitsoftware.cn/products/ifilter/">IFilter PDF检索</a></li>
+                    <li><a href="https://www.foxitsoftware.cn/products/luratech-pdf-compressor/">PDF 压缩器</a></li>
+                    <li><a href="https://www.foxitsoftware.cn/products/ultraforms-2d-barcode-generator/">Ultraforms
+                            PDF表单</a></li>
+                    <li><a href="https://www.foxitsoftware.cn/products/mobile-scanning-solutions/">福昕移动扫描解决方案</a></li>
+                    <li><a href="https://www.foxitsoftware.cn/products/luratech-rendition-server/">Rendition
+                            Server文档集中转换</a></li>
+                    <li><a href="https://developers.foxitsoftware.cn/pdf-sdk/" target="_blank" rel="nofollow">Foxit PDF SDK</a></li>
+                    
+                </ul>
+            </div>
+            <div class="grid_5" style="width:135px;">
+                <ul>
+                    <li class="">
+                        <h4 class="marginTOP" style="font-weight:bold;">支持</h4>
+                    </li>
+                    <li><a href="https://www.foxitsoftware.cn/support/" rel="nofollow">帮助中心</a></li>
+                    <li><a href="https://www.foxitsoftware.cn/support/faq_technical.php" rel="nofollow">用户手册</a></li>
+                    <!--
+                    <li><a href="https://www.foxitsoftware.cn/support/exportcompliance.php">出口资讯</a></li>
+                    -->
+                </ul>
+            </div>
+            <div class="grid_4" style="width:100px;">
+                <ul>
+                    <h4 class="marginTOP" style="font-weight:bold;">关于福昕</h4>
+                    <li><a href="https://www.foxitsoftware.cn/company/" rel="nofollow">公司介绍</a></li>
+                    <li><a href="https://www.foxitsoftware.cn/company/customers.php" rel="nofollow">福昕客户</a></li>
+                    <li><a href="https://www.foxitsoftware.cn/company/press.php" rel="nofollow">企业新闻</a></li>
+                    <li><a href="https://www.foxitsoftware.cn/company/history.php" rel="nofollow">福昕大事记</a></li>
+                    <li><a href="https://www.foxitsoftware.cn/company/management.php" rel="nofollow">管理团队</a></li>
+                    <li><a href="https://www.foxitsoftware.cn/company/jobs.php" rel="nofollow">诚聘英才</a></li>
+                    <!--
+                    <li>
+                        <h2 class="marginTOP" style="font-weight:bold;"><a href="https://www.foxitsoftware.cn/company/contact.php" style="font-size:14px;">联系我们</a></h2>
+                    </li>
+                    -->
+                </ul>
+            </div>
+            <div class="grid_5 omega" style="width:190px;">
+                <ul>
+                    <li>
+                        <h4 class="marginTOP" style="font-weight:bold;"><a href="https://www.foxitsoftware.cn/company/contact.php">联系我们</a></h4>
+                    </li>
+                    <!--<li>福州：0591-38509898</li>
+                    <li>客服：0591-38509808</li>
+                    <li class="contact_qq"><a style="margin-right: 10px;" class="qq" href="tencent://Message/?Uin=2468013786&site=qq&menu=yes" rel="nofollow"><i class="logo" style="margin-right: 10px;" ></i>技术支持1</a><a class="qq" href="tencent://Message/?Uin=1833245064&site=qq&menu=yes" rel="nofollow"><i class="logo" style="margin-right: 10px;"></i>技术支持2</a></li>
+
+                    <li class="contact_qq"><a style="margin-right: 10px;" class="qq" href="tencent://Message/?Uin=3597001044&site=qq&menu=yes" rel="nofollow"><i class="logo" style="margin-right: 10px;"></i>技术支持3</a><a class="qq" href="tencent://Message/?Uin=2248206360&site=qq&menu=yes" rel="nofollow"><i class="logo" style="margin-right: 10px;"></i>技术支持4</a></li>
+                    -->
+                    <li>
+                        <div id="newsletterForm" style="margin-top:15px;">
+                            <div class="grid_5 omega">
+                                <div class="czCombobox czSite" id="czCombobox_1" style="position: relative;">
+                                    <div class="combobox_icon"></div>
+                                    <input id="site-language-input" class="combobox_txt box_focus" readonly="readonly" tabindex="0" value="简体中文" type="text">
+                                    <ul class="combobox_list site-language" style="overflow: auto; position: absolute; top: 27px; height: 200px; display: none;">
+                                        <li><a href="https://www.foxitsoftware.com/" class="site-language-a">英语</a></li>
+                                        <li><a href="https://www.foxitsoftware.com/de/" class="site-language-a">德语</a></li>
+                                        <li><a href="https://www.foxitsoftware.com/es-la/">西班牙语</a></li>
+                                        <li><a href="https://www.foxitsoftware.com/pt-br/">葡萄牙语</a></li>
+                                        <li><a href="https://www.foxitsoftware.com/fr/">法语</a></li>
+                                        <li><a href="https://www.foxitsoftware.com/ru/">俄语</a></li>
+                                        <li><a href="http://www.foxitsoftware.com/japan/">日语</a></li>
+                                        <li><a href="http://www.foxitsoftware.com/kr/">韩语</a></li>
+                                        <li><a href="http://www.foxitsoftware.hk/">香港繁体</a></li>
+                                        <li><a href="http://www.foxitsoftware.tw/">台湾繁体</a></li>
+                                        <li><a href="http://www.foxitsoftware.cn/">简体中文</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>&nbsp;</li>
+                    <li><a href="http://blog.sina.com.cn/foxitsoftware" rel="nofollow">福昕博客</a> | <a href="https://www.foxitsoftware.cn/company/privacy.php" rel="nofollow">隐私策略</a></li>
+                </ul>
+            </div>
+            <div class="clear"></div>
+            <p class="copy" style="margin-top:40px;">©2019 Foxit Software Incorporated. All
+                rights reserved.<br>
+                许可证号<a href="http://www.miitbeian.gov.cn/state/outPortal/loginPortal.action;jsessionid=r57lm7Fa0IV3Gbjfzg5m02OTdhCaAC0HXJnrsZqIku_J00kXHWbt!1316315234" target="_blank">闽ICP备13015634号</a> 版权所有福建福昕软件开发股份有限公司
+                <br>
+
+            </p>
+
+
+        </div>
+        <!-- end grid_24 -->
+    </div>
+    <!-- end container_24 -->
+</div>
+<!-- end footer wrapper -->
+<script type="text/javascript">
+    $(function(){
+        $("#site-language-input").click(function(){
+            $(".site-language").show();
+        })
+        $('.site-language li').mouseover(function(){
+            $(this).addClass('li_hover');
+        })
+        $('.site-language li').mouseleave(function(){
+            $(this).removeClass('li_hover');
+        })
+        $(document).mouseup(function(e){
+            if($(e.target).parent(".site-language").length==0){
+                $(".site-language").hide();
+            }
+        })
+
+    })
+</script>
+<div style="display: none; position: fixed; left: 0px; top: 0px; width: 100%; height: 100%; cursor: move; opacity: 0; background: rgb(255, 255, 255) none repeat scroll 0% 0%;"></div></body></html>

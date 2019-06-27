@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="zh-cn"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="never">
+    <title>相机标定原理介绍（一） - Jessica&amp;jie - 博客园</title>
+<meta property="og:description" content="http://blog.csdn.net/aptx704610875/article/details/48914043标定实例 一.总体原理： 摄像机标定(Camera calibration)简单来">
+    <link type="text/css" rel="stylesheet" href="%E7%9B%B8%E6%9C%BA%E6%A0%87%E5%AE%9A%E5%8E%9F%E7%90%86%E4%BB%8B%E7%BB%8D%EF%BC%88%E4%B8%80%EF%BC%89%20-%20Jessica&amp;jie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/blog-common.css">
+<link id="MainCss" type="text/css" rel="stylesheet" href="%E7%9B%B8%E6%9C%BA%E6%A0%87%E5%AE%9A%E5%8E%9F%E7%90%86%E4%BB%8B%E7%BB%8D%EF%BC%88%E4%B8%80%EF%BC%89%20-%20Jessica&amp;jie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/bundle-clover.css">
+<link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="%E7%9B%B8%E6%9C%BA%E6%A0%87%E5%AE%9A%E5%8E%9F%E7%90%86%E4%BB%8B%E7%BB%8D%EF%BC%88%E4%B8%80%EF%BC%89%20-%20Jessica&amp;jie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/bundle-clover-mobile.css">
+    <link title="RSS" type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/Jessica-jie/rss">
+    <link title="RSD" type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/Jessica-jie/rsd.xml">
+<link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/Jessica-jie/wlwmanifest.xml">
+    <script src="%E7%9B%B8%E6%9C%BA%E6%A0%87%E5%AE%9A%E5%8E%9F%E7%90%86%E4%BB%8B%E7%BB%8D%EF%BC%88%E4%B8%80%EF%BC%89%20-%20Jessica&amp;jie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/amp4ads-host-v0.js"></script><script src="%E7%9B%B8%E6%9C%BA%E6%A0%87%E5%AE%9A%E5%8E%9F%E7%90%86%E4%BB%8B%E7%BB%8D%EF%BC%88%E4%B8%80%EF%BC%89%20-%20Jessica&amp;jie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/pubads_impl_rendering_2019050901.js"></script><script async="" src="%E7%9B%B8%E6%9C%BA%E6%A0%87%E5%AE%9A%E5%8E%9F%E7%90%86%E4%BB%8B%E7%BB%8D%EF%BC%88%E4%B8%80%EF%BC%89%20-%20Jessica&amp;jie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/analytics.js"></script><script src="%E7%9B%B8%E6%9C%BA%E6%A0%87%E5%AE%9A%E5%8E%9F%E7%90%86%E4%BB%8B%E7%BB%8D%EF%BC%88%E4%B8%80%EF%BC%89%20-%20Jessica&amp;jie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/jquery-2.js"></script>
+    <script>var currentBlogId=317895;var currentBlogApp='Jessica-jie',cb_enable_mathjax=false;var isLogined=false;</script>
+    <script src="%E7%9B%B8%E6%9C%BA%E6%A0%87%E5%AE%9A%E5%8E%9F%E7%90%86%E4%BB%8B%E7%BB%8D%EF%BC%88%E4%B8%80%EF%BC%89%20-%20Jessica&amp;jie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/blog-common.js" type="text/javascript"></script>
+<link rel="preload" href="%E7%9B%B8%E6%9C%BA%E6%A0%87%E5%AE%9A%E5%8E%9F%E7%90%86%E4%BB%8B%E7%BB%8D%EF%BC%88%E4%B8%80%EF%BC%89%20-%20Jessica&amp;jie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/integrator.js" as="script"><script type="text/javascript" src="%E7%9B%B8%E6%9C%BA%E6%A0%87%E5%AE%9A%E5%8E%9F%E7%90%86%E4%BB%8B%E7%BB%8D%EF%BC%88%E4%B8%80%EF%BC%89%20-%20Jessica&amp;jie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/integrator.js"></script><script src="%E7%9B%B8%E6%9C%BA%E6%A0%87%E5%AE%9A%E5%8E%9F%E7%90%86%E4%BB%8B%E7%BB%8D%EF%BC%88%E4%B8%80%EF%BC%89%20-%20Jessica&amp;jie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/pubads_impl_2019050901.js" async=""></script></head>
+<body>
+<a name="top"></a>
+
+
+<!--done-->
+<table width="100%" cellspacing="0" cellpadding="0" border="0" align="center">
+<tbody><tr>
+	<td width="299" background="%E7%9B%B8%E6%9C%BA%E6%A0%87%E5%AE%9A%E5%8E%9F%E7%90%86%E4%BB%8B%E7%BB%8D%EF%BC%88%E4%B8%80%EF%BC%89%20-%20Jessica&amp;jie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/banner1.jpg"></td>
+	<td background="%E7%9B%B8%E6%9C%BA%E6%A0%87%E5%AE%9A%E5%8E%9F%E7%90%86%E4%BB%8B%E7%BB%8D%EF%BC%88%E4%B8%80%EF%BC%89%20-%20Jessica&amp;jie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/banner.jpg">
+<!--done-->
+<div class="header">
+	<div class="headerText">
+		<a id="Header1_HeaderTitle" class="headermaintitle" href="https://www.cnblogs.com/Jessica-jie/">Jessica&amp;jie</a><br>
+		
+	</div>
+</div>
+</td>
+	<td width="296" background="%E7%9B%B8%E6%9C%BA%E6%A0%87%E5%AE%9A%E5%8E%9F%E7%90%86%E4%BB%8B%E7%BB%8D%EF%BC%88%E4%B8%80%EF%BC%89%20-%20Jessica&amp;jie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/banner2.jpg"></td>
+</tr>
+</tbody></table>
+<div id="mylinks"><a id="blog_nav_sitehome" class="menu" href="https://www.cnblogs.com/">博客园</a>&nbsp; &nbsp;
+<a id="blog_nav_myhome" class="menu" href="https://www.cnblogs.com/Jessica-jie/">首页</a>&nbsp; &nbsp;
+<a href="http://q.cnblogs.com/" class="menu" target="_blank">博问</a>&nbsp; &nbsp;
+<a href="http://home.cnblogs.com/ing/" class="menu" target="_blank">闪存</a>&nbsp; &nbsp;
+<a id="blog_nav_newpost" class="menu" rel="nofollow" href="https://i.cnblogs.com/EditPosts.aspx?opt=1">新随笔</a>&nbsp; &nbsp;
+
+&nbsp; &nbsp;
+<a id="blog_nav_admin" class="menu" rel="nofollow" href="https://i.cnblogs.com/">管理</a>
+<!-- <a id="blog_nav_contact" accesskey="9" class="menu" rel="nofollow" href="https://msg.cnblogs.com/send/Jessica%26amp%3Bjie">联系</a>&nbsp;&nbsp;&nbsp; -->
+</div>
+<div id="mytopmenu">
+	
+		<div id="mystats">
+			<div id="blog_stats">
+<!--done-->
+<div class="blogStats">
+posts - 129,&nbsp;
+comments - 55,&nbsp;
+trackbacks - 0
+
+</div></div></div>
+	
+</div>
+<div id="centercontent">
+	
+        <div id="post_detail">
+<!--done-->
+<div class="post">
+	<div class="postTitle">
+		<a id="cb_post_title_url" class="postTitle2" href="https://www.cnblogs.com/Jessica-jie/p/6596450.html">相机标定原理介绍（一）</a>
+	</div>
+	<div id="cnblogs_post_body" class="blogpost-body"><p><span style="font-size: 15px;"><strong><a href="http://blog.csdn.net/aptx704610875/article/details/48914043" target="_blank">http://blog.csdn.net/aptx704610875/article/details/48914043</a>标定实例</strong></span></p>
+<p>&nbsp;</p>
+<p><span style="font-size: 18px;"><strong>一.总体原理：</strong></span></p>
+<p><span style="font-size: 16px;">摄像机标定(Camera calibration)简单来说是从世界坐标系换到图像坐标系的过程，也就是求最终的投影矩阵的过程。</span></p>
+<p><span style="font-size: 16px;">[1]基本的坐标系：</span></p>
+<ul>
+<li><span style="font-size: 16px;">世界坐标系；</span></li>
+<li><span style="font-size: 16px;">相机坐标系；</span></li>
+<li><span style="font-size: 16px;">成像平面坐标系；</span></li>
+<li><span style="font-size: 16px;">像素坐标系</span></li>
+</ul>
+<p>[2<span style="font-size: 16px;">]一般来说，标定的过程分为两个部分：</span></p>
+<ul>
+<li><span style="font-size: 16px;">第一步是从世界坐标系转为相机坐标系，这一步是<span style="background-color: #00ffff;">三维点到三维点</span>的转换，包括R，t<span class="MathJax_Preview"><span id="MathJax-Element-2-Frame" class="MathJax"><span class="MathJax_Preview"><span id="MathJax-Element-3-Frame" class="MathJax">（相机外参，<span class="MathJax_Preview"><span class="MathJax_Preview"><span class="MathJax"><span class="RichText CopyrightRichText-richText">确定了相机在某个三维空间中的位置和朝向</span></span></span></span>）等参数；</span></span></span></span></span></li>
+<li><span style="font-size: 16px;">第二部是从相机坐标系转为<span style="font-size: 16px;">成像平面</span>坐标系（<span style="font-size: 16px;">像素坐标系</span>），这一步是<span style="background-color: #00ffff;">三维点到二维点</span>的转换，包括K（<span class="MathJax_Preview"><span id="MathJax-Element-4-Frame" class="MathJax">相机内参,<span class="RichText CopyrightRichText-richText">是对相机物理特性的近似</span>）等参数；</span></span></span></li>
+<li>投影矩阵 <span class="MathJax_Preview"><span class="MathJax_Preview"><span class="MathJax">：<span style="font-size: 18px;"> P=K [ R | t ]&nbsp;&nbsp;&nbsp; <span style="font-size: 16px;">是一个3×4矩阵，混合了内参和外参而成。</span></span><br>
+</span></span></span>
+<div class="MathJax_Display" style="text-align: center;"><span id="MathJax-Element-80-Frame" class="MathJax"><span id="MathJax-Span-1054" class="math" style="width: 9.804em; display: inline-block;"><span style="display: inline-block; position: relative; width: 7.413em; height: 0px; font-size: 132%;"><span style="position: absolute; clip: rect(2.422em, 1000em, 4.546em, -0.454em); top: -3.734em; left: 0em;"><span id="MathJax-Span-1055" class="mrow"><span id="MathJax-Span-1056" class="mi" style="font-family: MathJax_Math; font-style: italic;">P<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.109em;"><span id="MathJax-Span-1057" class="mo" style="font-family: MathJax_Main; padding-left: 0.278em;">=<span id="MathJax-Span-1058" class="mi" style="font-family: MathJax_Math; font-style: italic; padding-left: 0.278em;">K<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.04em;"><span id="MathJax-Span-1059" class="mrow" style="padding-left: 0.167em;"><span id="MathJax-Span-1060" class="mo" style="vertical-align: 0em;"><span style="font-family: MathJax_Size2;">[<span id="MathJax-Span-1061" class="mtable" style="padding-right: 0.167em; padding-left: 0.167em;"><span style="display: inline-block; position: relative; width: 2.936em; height: 0px;"><span style="position: absolute; clip: rect(3.209em, 1000em, 4.238em, -0.454em); top: -4.004em; left: 0.4em;"><span style="display: inline-block; position: relative; width: 0.758em; height: 0px;"><span style="position: absolute; clip: rect(1.59em, 1000em, 2.618em, -0.454em); top: -2.385em; left: 50%; margin-left: -0.379em;"><span id="MathJax-Span-1062" class="mtd"><span id="MathJax-Span-1063" class="mrow"><span id="MathJax-Span-1064" class="mi" style="font-family: MathJax_Math; font-style: italic;">R<span style="display: inline-block; width: 0px; height: 2.435em;"><span style="display: inline-block; width: 0px; height: 4.004em;"><span style="position: absolute; clip: rect(3.266em, 1000em, 4.228em, -0.468em); top: -4.004em; left: 2.158em;"><span style="display: inline-block; position: relative; width: 0.379em; height: 0px;"><span style="position: absolute; clip: rect(1.647em, 1000em, 2.608em, -0.468em); top: -2.385em; left: 50%; margin-left: -0.189em;"><span id="MathJax-Span-1065" class="mtd"><span id="MathJax-Span-1066" class="mrow"><span id="MathJax-Span-1067" class="mi" style="font-family: MathJax_Math; font-style: italic;">t<span style="display: inline-block; width: 0px; height: 2.435em;"><span style="display: inline-block; width: 0px; height: 4.004em;"><span style="border-left: 0.068em solid; display: inline-block; overflow: hidden; width: 0px; height: 1.431em; vertical-align: 0em; position: absolute; top: -0.965em; left: 1.658em; border-style: solid;"><span id="MathJax-Span-1068" class="mo" style="vertical-align: 0em;"><span style="font-family: MathJax_Size2;">]</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</ul>
+<p><span class="MathJax_Preview"><span id="MathJax-Element-1-Frame" class="MathJax"><span id="MathJax-Span-1" class="math" style="width: 1.018em; display: inline-block;">&nbsp;<img src="%E7%9B%B8%E6%9C%BA%E6%A0%87%E5%AE%9A%E5%8E%9F%E7%90%86%E4%BB%8B%E7%BB%8D%EF%BC%88%E4%B8%80%EF%BC%89%20-%20Jessica&amp;jie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/1034872-20170322154327674-741545036.bin" alt=""></span></span></span></p>
+<p><span style="font-size: 18px;"><strong>二.基本知识介绍及</strong></span></p>
+<p><span style="font-size: 16px;">1、摄像机模型</span></p>
+<div>Pinhole Camera模型如下图所示：</div>
+<div>
+<div>
+<div><img style="margin: 0 10px 0 0;" src="%E7%9B%B8%E6%9C%BA%E6%A0%87%E5%AE%9A%E5%8E%9F%E7%90%86%E4%BB%8B%E7%BB%8D%EF%BC%88%E4%B8%80%EF%BC%89%20-%20Jessica&amp;jie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/3270457754501304191.jpg" alt="摄像机模型与标定 - 小企鹅 - 企鹅的博客"></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+&nbsp;</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<span style="font-size: 16px;">&nbsp;是一个小孔成像的模型，其中：</span></div>
+<div><span class="MathJax_Preview" style="font-size: 16px;"><span id="MathJax-Element-228-Frame" class="MathJax">&nbsp; [1]<em>O</em>点表示<code>camera centre</code>，即相机的中心点，也是相机坐标系的中心点；</span></span></div>
+<div><span class="MathJax_Preview" style="font-size: 16px;"><span id="MathJax-Element-229-Frame" class="MathJax">&nbsp; [2]z轴表示<code>principal axis</code>，即相机的主轴；</span></span></div>
+<div><span class="MathJax_Preview" style="font-size: 16px;"><span id="MathJax-Element-230-Frame" class="MathJax">&nbsp; [3]q点所在的平面表示<code>image plane</code>，即相机的像平面，也就是图片坐标系所在的二维平面；</span></span></div>
+<div><span style="font-size: 16px;"><span class="MathJax_Preview">&nbsp; [4]</span><span class="MathJax_Preview"><span id="MathJax-Element-231-Frame" class="MathJax"><span class="MathJax_Preview" style="font-size: 16px;"><span id="MathJax-Element-232-Frame" class="MathJax"><em>O1</em></span></span>点表示<code>principal point</code>，即主点，主轴与像平面相交的点；</span></span></span></div>
+<div><span class="MathJax_Preview" style="font-size: 16px;"><span id="MathJax-Element-232-Frame" class="MathJax">&nbsp; [5]<em>O</em>点到<em>O1</em><span class="MathJax_Preview"><span id="MathJax-Element-233-Frame" class="MathJax">点的距离，也就是右边图中的f,<span class="MathJax_Preview"><span id="MathJax-Element-234-Frame" class="MathJax">即相机的焦距；</span></span></span></span></span></span></div>
+<div><span style="font-size: 16px;"><span class="MathJax_Preview"><span id="MathJax-Element-231-Frame" class="MathJax">&nbsp; [6]</span></span>像平面上的x<span class="MathJax_Preview"><span id="MathJax-Element-235-Frame" class="MathJax">和y<span class="MathJax_Preview"><span id="MathJax-Element-236-Frame" class="MathJax">坐标轴是与相机坐标系上的X<span class="MathJax_Preview"><span id="MathJax-Element-237-Frame" class="MathJax">和Y<span class="MathJax_Preview"><span id="MathJax-Element-238-Frame" class="MathJax">坐标轴互相平行的；</span></span></span></span></span></span></span></span></span></div>
+<div><span style="font-size: 16px;"><span class="MathJax_Preview">&nbsp; [7]</span>相机坐标系是以X,Y,Z<span class="MathJax_Preview"><span id="MathJax-Element-239-Frame" class="MathJax"><span class="MathJax_Preview"><span id="MathJax-Element-240-Frame" class="MathJax"><span class="MathJax_Preview"><span id="MathJax-Element-241-Frame" class="MathJax">（大写）三个轴组成的且原点在O<span class="MathJax_Preview"><span id="MathJax-Element-242-Frame" class="MathJax">点，度量值为米（<code>m</code>）； </span></span></span></span></span></span></span></span></span></div>
+<div><span style="font-size: 16px;">&nbsp; [8]像平面坐标系是以x,y（<span class="MathJax_Preview"><span id="MathJax-Element-243-Frame" class="MathJax"><span class="MathJax_Preview"><span id="MathJax-Element-244-Frame" class="MathJax">小写）两个轴组成的且原点在O1<span class="MathJax_Preview"><span id="MathJax-Element-245-Frame" class="MathJax">点，度量值为米（<code>m</code>）；</span></span></span></span></span></span></span></div>
+<div><span style="font-size: 16px;"><span class="MathJax_Preview"><span id="MathJax-Element-239-Frame" class="MathJax"><span class="MathJax_Preview"><span id="MathJax-Element-240-Frame" class="MathJax"><span class="MathJax_Preview"><span id="MathJax-Element-241-Frame" class="MathJax"><span class="MathJax_Preview"><span id="MathJax-Element-242-Frame" class="MathJax">&nbsp; [9]</span></span></span></span></span></span></span></span>像素坐标系一般指图片相对坐标系，在这里可以认为和像平面坐标系在一个平面上，不过原点是在图片的角上，而且度量值为像素的个数（<code>pixel</code>）；</span></div>
+<div><span style="font-size: 16px;">&nbsp;</span></div>
+<div>
+<div><span style="line-height: 22px; font-size: 16px;">2、<span style="line-height: 22px; font-size: 16px;"><span style="line-height: 22px; font-size: 16px;"><span style="line-height: 22px;"><span style="line-height: 22px;"><span style="line-height: 22px;">相机坐标系</span></span></span></span></span><em><span style="line-height: 22px; font-size: 16px;"><span style="line-height: 22px;"><span style="line-height: 22px;"><span style="line-height: 22px;"><em><strong>→</strong></em></span></span></span></span></em><span style="line-height: 22px; font-size: 16px;"><span style="line-height: 22px;"><span style="line-height: 22px;"><span style="line-height: 22px;">成像平面坐标系</span></span></span></span></span></div>
+<div><span style="line-height: 22px; font-size: 16px;">[1]以<em>O</em>点为原点建立摄像机坐标系。点<em>Q(X,Y,Z)</em>为摄像机坐标系空间中的一点，该点被光线投影到图像平面上的<em>q(x,y,f)</em>点。</span></div>
+<div><span style="line-height: 22px; font-size: 16px;">图像平面与光轴z轴垂直，和投影中心<span style="line-height: 22px;">距离为<em>f&nbsp;<span style="line-height: 22px;"><span style="line-height: 22px;"><span style="line-height: 22px;">（f是相机的焦距）</span></span></span></em>。按照三角比例关系可以得出：</span></span></div>
+<div><span style="font-size: 16px;"><em>x/f = X/Z &nbsp; &nbsp; &nbsp; y/f = Y/Z &nbsp; </em>，即<em> <span style="color: #0000ff;">x = fX/Z &nbsp; &nbsp; &nbsp; y = fY/Z</span></em></span></div>
+<div><span style="line-height: 22px; font-size: 16px;"><span style="line-height: 22px;">以上将坐标为<span style="line-height: 22px;">(X,Y,Z)的<span style="line-height: 22px;">Q点映射到投影平面上坐标为<span style="line-height: 22px;">(x,y)的q点的过程称作<span style="background-color: #00ffff;">投影变换</span>。</span></span></span></span></span></div>
+<div><span style="line-height: 22px; font-size: 16px;">上述Q点到q点的变换关系用3*3的矩阵可表示为：<em>q = MQ </em>，其中</span></div>
+<div><span style="font-size: 16px;">&nbsp;&nbsp;<img src="%E7%9B%B8%E6%9C%BA%E6%A0%87%E5%AE%9A%E5%8E%9F%E7%90%86%E4%BB%8B%E7%BB%8D%EF%BC%88%E4%B8%80%EF%BC%89%20-%20Jessica&amp;jie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/1034872-20170511111831379-838852812.bin" alt=""></span><br><span style="font-size: 16px;">&nbsp; &nbsp;&nbsp;最终得出透视投影变换矩阵为：</span></div>
+<div style="text-align: left;">
+<div style="text-align: left;"><span style="font-size: 16px;"><span style="white-space: pre;"><img src="%E7%9B%B8%E6%9C%BA%E6%A0%87%E5%AE%9A%E5%8E%9F%E7%90%86%E4%BB%8B%E7%BB%8D%EF%BC%88%E4%B8%80%EF%BC%89%20-%20Jessica&amp;jie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/1034872-20170511112021629-14957473.png" alt="">				<strong>（1）</strong></span></span></div>
+<div><span style="font-size: 16px;">M<span style="line-height: 22px;"><span style="line-height: 22px;">称为<span style="background-color: #ffffff;">摄像机的内参数矩阵</span>，<span style="background-color: #ff99cc;">单位均为物理尺寸。</span></span></span></span></div>
+<div>
+<div class="MathJax_Display" style="text-align: center;"><span id="MathJax-Element-32-Frame" class="MathJax" style="font-size: 16px;"><span id="MathJax-Span-159" class="math" style="width: 20.304em; display: inline-block;"><span style="display: inline-block; position: relative; width: 15.368em; height: 0px;"><span style="position: absolute; clip: rect(1.748em, 1000em, 3.272em, -0.393em); top: -2.76em; left: 0em;"><span id="MathJax-Span-160" class="mrow"><span id="MathJax-Span-161" class="mrow"><span id="MathJax-Span-162" class="mo" style="font-family: MathJax_Main;">(<span id="MathJax-Span-163" class="mtable" style="padding-right: 0.167em; padding-left: 0.167em;"><span style="display: inline-block; position: relative; width: 4.868em; height: 0px;"><span style="position: absolute; clip: rect(3.209em, 1000em, 4.411em, -0.461em); top: -4.004em; left: 0em;"><span style="display: inline-block; position: relative; width: 1.082em; height: 0px;"><span style="position: absolute; clip: rect(1.806em, 1000em, 3.008em, -0.461em); top: -2.602em; left: 50%; margin-left: -0.541em;"><span id="MathJax-Span-164" class="mtd"><span id="MathJax-Span-165" class="mrow"><span id="MathJax-Span-166" class="mi" style="font-family: MathJax_Math; font-style: italic;">X<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.024em;"><span id="MathJax-Span-167" class="mo" style="font-family: MathJax_Main;">,<span style="display: inline-block; width: 0px; height: 2.652em;"><span style="display: inline-block; width: 0px; height: 4.004em;"><span style="position: absolute; clip: rect(3.209em, 1000em, 4.411em, -0.457em); top: -4.004em; left: 2.082em;"><span style="display: inline-block; position: relative; width: 1.028em; height: 0px;"><span style="position: absolute; clip: rect(1.806em, 1000em, 3.008em, -0.457em); top: -2.602em; left: 50%; margin-left: -0.514em;"><span id="MathJax-Span-168" class="mtd"><span id="MathJax-Span-169" class="mrow"><span id="MathJax-Span-170" class="mi" style="font-family: MathJax_Math; font-style: italic;">Y<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.182em;"><span id="MathJax-Span-171" class="mo" style="font-family: MathJax_Main;">,<span style="display: inline-block; width: 0px; height: 2.652em;"><span style="display: inline-block; width: 0px; height: 4.004em;"><span style="position: absolute; clip: rect(3.209em, 1000em, 4.217em, -0.429em); top: -4.004em; left: 4.11em;"><span style="display: inline-block; position: relative; width: 0.758em; height: 0px;"><span style="position: absolute; clip: rect(1.59em, 1000em, 2.597em, -0.429em); top: -2.385em; left: 50%; margin-left: -0.379em;"><span id="MathJax-Span-172" class="mtd"><span id="MathJax-Span-173" class="mrow"><span id="MathJax-Span-174" class="mi" style="font-family: MathJax_Math; font-style: italic;">Z<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.04em;"><span style="display: inline-block; width: 0px; height: 2.435em;"><span style="display: inline-block; width: 0px; height: 4.004em;"><span id="MathJax-Span-175" class="mo" style="font-family: MathJax_Main;">)<span id="MathJax-Span-176" class="mo" style="font-family: MathJax_Main; padding-left: 0.278em;">↦<span id="MathJax-Span-177" class="mrow" style="padding-left: 0.278em;"><span id="MathJax-Span-178" class="mo" style="vertical-align: 0em; padding-left: 0.278em;"><span style="font-family: MathJax_Size1;">(<span id="MathJax-Span-179" class="mtable" style="padding-right: 0.167em; padding-left: 0.167em;"><span style="display: inline-block; position: relative; width: 6.411em; height: 0px;"><span style="position: absolute; clip: rect(3.117em, 1000em, 4.442em, -0.432em); top: -4.004em; left: 0em;"><span style="display: inline-block; position: relative; width: 2.868em; height: 0px;"><span style="position: absolute; clip: rect(1.739em, 1000em, 3.064em, -0.432em); top: -2.627em; left: 50%; margin-left: -1.434em;"><span id="MathJax-Span-180" class="mtd"><span id="MathJax-Span-181" class="mrow"><span id="MathJax-Span-182" class="mi" style="font-family: MathJax_Math; font-style: italic;">f<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.06em;"><span id="MathJax-Span-183" class="mi" style="font-family: MathJax_Math; font-style: italic;">X<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.024em;"><span id="MathJax-Span-184" class="texatom"><span id="MathJax-Span-185" class="mrow"><span id="MathJax-Span-186" class="mo" style="font-family: MathJax_Main;">/<span id="MathJax-Span-187" class="mi" style="font-family: MathJax_Math; font-style: italic;">Z<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.04em;"><span id="MathJax-Span-188" class="mo" style="font-family: MathJax_Main;">,<span style="display: inline-block; width: 0px; height: 2.652em;"><span style="display: inline-block; width: 0px; height: 4.004em;"><span style="position: absolute; clip: rect(3.117em, 1000em, 4.442em, -0.432em); top: -4.004em; left: 3.868em;"><span style="display: inline-block; position: relative; width: 2.543em; height: 0px;"><span style="position: absolute; clip: rect(1.739em, 1000em, 3.064em, -0.432em); top: -2.627em; left: 50%; margin-left: -1.272em;"><span id="MathJax-Span-189" class="mtd"><span id="MathJax-Span-190" class="mrow"><span id="MathJax-Span-191" class="mi" style="font-family: MathJax_Math; font-style: italic;">f<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.06em;"><span id="MathJax-Span-192" class="mi" style="font-family: MathJax_Math; font-style: italic;">Y<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.182em;"><span id="MathJax-Span-193" class="texatom"><span id="MathJax-Span-194" class="mrow"><span id="MathJax-Span-195" class="mo" style="font-family: MathJax_Main;">/<span id="MathJax-Span-196" class="mi" style="font-family: MathJax_Math; font-style: italic;">Z<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.04em;"><span style="display: inline-block; width: 0px; height: 2.652em;"><span style="display: inline-block; width: 0px; height: 4.004em;"><span id="MathJax-Span-197" class="mo" style="vertical-align: 0em;"><span style="font-family: MathJax_Size1;">)</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+<div>
+<div class="MathJax_Display" style="text-align: center;"><span id="MathJax-Element-32-Frame" class="MathJax" style="font-size: 16px;"><span id="MathJax-Span-159" class="math" style="width: 20.304em; display: inline-block;"><span style="display: inline-block; position: relative; width: 15.368em; height: 0px;"><span style="position: absolute; clip: rect(1.748em, 1000em, 3.272em, -0.393em); top: -2.76em; left: 0em;"><span id="MathJax-Span-160" class="mrow"><span id="MathJax-Span-161" class="mrow"><span id="MathJax-Span-162" class="mo" style="font-family: MathJax_Main;">(<span id="MathJax-Span-163" class="mtable" style="padding-right: 0.167em; padding-left: 0.167em;"><span style="display: inline-block; position: relative; width: 4.868em; height: 0px;"><span style="position: absolute; clip: rect(3.209em, 1000em, 4.411em, -0.461em); top: -4.004em; left: 0em;"><span style="display: inline-block; position: relative; width: 1.082em; height: 0px;"><span style="position: absolute; clip: rect(1.806em, 1000em, 3.008em, -0.461em); top: -2.602em; left: 50%; margin-left: -0.541em;"><span id="MathJax-Span-164" class="mtd"><span id="MathJax-Span-165" class="mrow"><span id="MathJax-Span-166" class="mi" style="font-family: MathJax_Math; font-style: italic;">X<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.024em;"><span id="MathJax-Span-167" class="mo" style="font-family: MathJax_Main;">,<span style="display: inline-block; width: 0px; height: 2.652em;"><span style="display: inline-block; width: 0px; height: 4.004em;"><span style="position: absolute; clip: rect(3.209em, 1000em, 4.411em, -0.457em); top: -4.004em; left: 2.082em;"><span style="display: inline-block; position: relative; width: 1.028em; height: 0px;"><span style="position: absolute; clip: rect(1.806em, 1000em, 3.008em, -0.457em); top: -2.602em; left: 50%; margin-left: -0.514em;"><span id="MathJax-Span-168" class="mtd"><span id="MathJax-Span-169" class="mrow"><span id="MathJax-Span-170" class="mi" style="font-family: MathJax_Math; font-style: italic;">Y<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.182em;"><span id="MathJax-Span-171" class="mo" style="font-family: MathJax_Main;">,<span style="display: inline-block; width: 0px; height: 2.652em;"><span style="display: inline-block; width: 0px; height: 4.004em;"><span style="position: absolute; clip: rect(3.209em, 1000em, 4.217em, -0.429em); top: -4.004em; left: 4.11em;"><span style="display: inline-block; position: relative; width: 0.758em; height: 0px;"><span style="position: absolute; clip: rect(1.59em, 1000em, 2.597em, -0.429em); top: -2.385em; left: 50%; margin-left: -0.379em;"><span id="MathJax-Span-172" class="mtd"><span id="MathJax-Span-173" class="mrow"><span id="MathJax-Span-174" class="mi" style="font-family: MathJax_Math; font-style: italic;">Z<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.04em;"><span style="display: inline-block; width: 0px; height: 2.435em;"><span style="display: inline-block; width: 0px; height: 4.004em;"><span id="MathJax-Span-175" class="mo" style="font-family: MathJax_Main;">)<span id="MathJax-Span-176" class="mo" style="font-family: MathJax_Main; padding-left: 0.278em;">↦<span id="MathJax-Span-177" class="mrow" style="padding-left: 0.278em;"><span id="MathJax-Span-178" class="mo" style="vertical-align: 0em; padding-left: 0.278em;"><span style="font-family: MathJax_Size1;">(<span id="MathJax-Span-179" class="mtable" style="padding-right: 0.167em; padding-left: 0.167em;"><span style="display: inline-block; position: relative; width: 6.411em; height: 0px;"><span style="position: absolute; clip: rect(3.117em, 1000em, 4.442em, -0.432em); top: -4.004em; left: 0em;"><span style="display: inline-block; position: relative; width: 2.868em; height: 0px;"><span style="position: absolute; clip: rect(1.739em, 1000em, 3.064em, -0.432em); top: -2.627em; left: 50%; margin-left: -1.434em;"><span id="MathJax-Span-180" class="mtd"><span id="MathJax-Span-181" class="mrow"><span id="MathJax-Span-182" class="mi" style="font-family: MathJax_Math; font-style: italic;">f<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.06em;"><span id="MathJax-Span-183" class="mi" style="font-family: MathJax_Math; font-style: italic;">X<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.024em;"><span id="MathJax-Span-184" class="texatom"><span id="MathJax-Span-185" class="mrow"><span id="MathJax-Span-186" class="mo" style="font-family: MathJax_Main;">/<span id="MathJax-Span-187" class="mi" style="font-family: MathJax_Math; font-style: italic;">Z<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.04em;"><span id="MathJax-Span-188" class="mo" style="font-family: MathJax_Main;">,<span style="display: inline-block; width: 0px; height: 2.652em;"><span style="display: inline-block; width: 0px; height: 4.004em;"><span style="position: absolute; clip: rect(3.117em, 1000em, 4.442em, -0.432em); top: -4.004em; left: 3.868em;"><span style="display: inline-block; position: relative; width: 2.543em; height: 0px;"><span style="position: absolute; clip: rect(1.739em, 1000em, 3.064em, -0.432em); top: -2.627em; left: 50%; margin-left: -1.272em;"><span id="MathJax-Span-189" class="mtd"><span id="MathJax-Span-190" class="mrow"><span id="MathJax-Span-191" class="mi" style="font-family: MathJax_Math; font-style: italic;">f<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.06em;"><span id="MathJax-Span-192" class="mi" style="font-family: MathJax_Math; font-style: italic;">Y<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.182em;"><span id="MathJax-Span-193" class="texatom"><span id="MathJax-Span-194" class="mrow"><span id="MathJax-Span-195" class="mo" style="font-family: MathJax_Main;">/<span id="MathJax-Span-196" class="mi" style="font-family: MathJax_Math; font-style: italic;">Z<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.04em;"><span style="display: inline-block; width: 0px; height: 2.652em;"><span style="display: inline-block; width: 0px; height: 4.004em;"><span id="MathJax-Span-197" class="mo" style="vertical-align: 0em;"><span style="font-family: MathJax_Size1;">)</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<span style="line-height: 22px; font-size: 16px;">
+
+<span style="line-height: 22px;"><span style="background-color: #00ffff;">通过上面，可以把相机坐标系转换到像图像坐标系的物理单位[即(X,Y,Z)<em><strong>→</strong></em>(<em><span style="line-height: 22px;"><span style="color: #0000ff;">x</span></span></em>,<em><span style="line-height: 22px;"><span style="color: #0000ff;"><span lang="EN-US"><span style="line-height: 22px;">y</span></span></span></span></em>)]</span></span></span><br id="加入偏移量">
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<span style="line-height: 22px; font-size: 16px;">
+
+
+
+
+
+<span style="line-height: 22px;">
+3、<span style="line-height: 22px; font-size: 16px;"><span style="line-height: 22px; font-size: 16px;"><span style="line-height: 22px;"><span style="line-height: 22px;"><span style="line-height: 22px;">成像平面</span></span></span></span></span>坐标系<span style="line-height: 22px; font-size: 16px;"><span style="line-height: 22px;"><span><em><strong>→</strong></em></span></span></span>像素坐标系</span></span></div>
+<div><span style="line-height: 22px; background-color: #00ffff; font-size: 16px;"><span style="line-height: 22px;">通过下面，可以把像平面坐标系物理单位到像素单位[即<span style="line-height: 22px;"><span style="line-height: 22px;"><em><strong>→</strong></em>(<em><span style="line-height: 22px;"><span style="color: #0000ff;">u</span></span></em>,<em><span style="line-height: 22px;"><span style="color: #0000ff;"><span lang="EN-US"><span style="line-height: 22px;">v</span></span></span></span></em>)</span></span>]</span></span></div>
+<div>
+<div><span style="line-height: 22px; font-size: 16px;">&nbsp;</span></div>
+<div><span style="font-size: 16px;">以图像平面的左上角或左下角为原点建立坐标系。假设像平面坐标系原点位于图像左下角，水平向右为u轴，垂直向上为v轴，均以像素为单位。</span></div>
+<div><span style="font-size: 16px;"><span style="line-height: 22px;">以图像平面与光轴的交点<span style="line-height: 22px;"><em style="line-height: 22px;"><span style="line-height: 22px;" lang="EN-US">O<sub style="line-height: 19px;"><span style="line-height: 19px;" lang="EN-US">1</span></sub><span style="line-height: 22px;">&nbsp;</span></span></em>为原点建立坐标系，<span style="line-height: 22px;">水平向右为x轴，垂直向上为y轴。</span></span></span></span><span style="line-height: 22px; font-size: 16px;"><span style="line-height: 22px;"><span style="line-height: 22px;">原点<em style="line-height: 22px;"><span style="line-height: 22px;" lang="EN-US">O<sub style="line-height: 19px;"><span style="line-height: 19px;" lang="EN-US">1</span></sub></span></em>一般位于图像中心处，<em style="line-height: 22px;"><span style="line-height: 22px;" lang="EN-US">O<sub style="line-height: 19px;"><span style="line-height: 19px;" lang="EN-US">1</span></sub></span></em><span style="line-height: 22px;">在以像素为单位的图像坐标系中的坐标为(<em style="line-height: 22px;"><span style="line-height: 22px;" lang="EN-US">u<sub style="line-height: 19px;"><span style="line-height: 19px;" lang="EN-US">0,&nbsp;</span></sub></span></em><em style="line-height: 22px;"><span style="line-height: 22px;" lang="EN-US">v<sub style="line-height: 19px;"><span style="line-height: 19px;" lang="EN-US">0</span></sub></span></em><span style="line-height: 22px;">)。</span></span></span></span></span></div>
+<div><span style="line-height: 22px; font-size: 16px;"><span style="line-height: 22px;"><span style="line-height: 22px;"><span style="line-height: 22px;"><span style="line-height: 22px;"><span style="line-height: 22px;"><span style="line-height: 22px;">像平面坐标系和像素坐标系虽然在同一个平面上，但是原点并不是同一个。</span></span></span></span></span></span></span></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+<div>
+<div><img style="margin-top: 0px; margin-right: 10px; margin-bottom: 0px; margin-left: 0px; width: 300px; height: auto;" src="%E7%9B%B8%E6%9C%BA%E6%A0%87%E5%AE%9A%E5%8E%9F%E7%90%86%E4%BB%8B%E7%BB%8D%EF%BC%88%E4%B8%80%EF%BC%89%20-%20Jessica&amp;jie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/3383892170115700056.jpg" alt="摄像机模型与标定 - 小企鹅 - 企鹅的博客"></div>
+<div>
+<div>
+<div style="line-height: 22px;"><span style="line-height: 22px;"><br><span style="line-height: 22px; font-size: 16px;">设每个像素的物理尺寸大小为 dx * dy (mm) (&nbsp;<span style="line-height: 22px;">由于单个像素点投影在图像平面上是矩形而不是正方形，因此可能dx != dy)<span style="line-height: 22px;">，</span></span></span></span></div>
+<div style="line-height: 22px;"><span style="line-height: 22px; font-size: 16px;"><span style="line-height: 22px;"><span style="line-height: 22px;"><span style="line-height: 22px;">图像平面上某点在成像平面坐标系中的坐标为<span style="line-height: 22px;">(<em style="line-height: 22px;">x, y</em>)，在像素坐标系中的坐标为(<em style="line-height: 22px;">u, v</em>)，则二者满足如下关系：<span style="background-color: #00ffff;">[即<span style="line-height: 22px;"><span style="line-height: 22px;"><span style="line-height: 22px;"><span style="line-height: 22px;"><span style="line-height: 22px;">(<em style="line-height: 22px;">x, y</em>)<span style="line-height: 22px;"><span style="line-height: 22px;"><em><strong>→</strong><span style="line-height: 22px;"><span style="line-height: 22px;"><span style="line-height: 22px;"><span style="line-height: 22px;"><span style="line-height: 22px;">(<em style="line-height: 22px;">u, v</em>)</span></span></span></span></span></em></span></span></span></span></span></span></span>]</span></span></span></span></span></span></div>
+<div style="line-height: 22px;"><span style="font-size: 16px;"><em style="line-height: 22px;"><span style="color: #0000ff;"><span style="line-height: 22px;">u = x / dx +&nbsp;<span style="line-height: 22px;"><span style="line-height: 22px;" lang="EN-US">u<sub style="line-height: 19px;"><span style="line-height: 19px;" lang="EN-US">0 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</span></sub><span style="line-height: 22px;">v = y / dy +&nbsp;<span style="line-height: 22px;"><sub style="line-height: 19px;"><span style="line-height: 19px;" lang="EN-US">&nbsp;</span></sub><span style="line-height: 22px;"><span style="line-height: 22px;" lang="EN-US">v<sub style="line-height: 19px;"><span style="line-height: 19px;" lang="EN-US">0</span></sub></span></span></span></span></span></span></span></span></em></span></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<span style="line-height: 22px; font-size: 16px;">
+
+
+
+
+
+
+用齐次坐标与矩阵形式表示为：
+</span></div>
+<div><img style="margin: 0 10px 0 0;" src="%E7%9B%B8%E6%9C%BA%E6%A0%87%E5%AE%9A%E5%8E%9F%E7%90%86%E4%BB%8B%E7%BB%8D%EF%BC%88%E4%B8%80%EF%BC%89%20-%20Jessica&amp;jie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/6597327052378553223.jpg" alt="摄像机模型与标定 - 小企鹅 - 企鹅的博客"></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+&nbsp;将等式两边都乘以<span style="line-height: 22px;">点<em style="line-height: 22px;">Q(X,Y,Z)</em><span style="line-height: 22px;">坐标中的Z可得：</span></span></div>
+<div>
+<div><img style="margin: 0 10px 0 0;" src="%E7%9B%B8%E6%9C%BA%E6%A0%87%E5%AE%9A%E5%8E%9F%E7%90%86%E4%BB%8B%E7%BB%8D%EF%BC%88%E4%B8%80%EF%BC%89%20-%20Jessica&amp;jie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/6597950475472008345.jpg" alt="摄像机模型与标定 - 小企鹅 - 企鹅的博客"></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+&nbsp;将摄像机坐标系中的（1）式代入上式可得：</div>
+<div>
+<div>
+<div><img src="%E7%9B%B8%E6%9C%BA%E6%A0%87%E5%AE%9A%E5%8E%9F%E7%90%86%E4%BB%8B%E7%BB%8D%EF%BC%88%E4%B8%80%EF%BC%89%20-%20Jessica&amp;jie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/1034872-20170511112141051-1937976333.bin" alt=""></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+&nbsp; 则右边第一个矩阵和第二个矩阵的乘积亦为<span style="line-height: 22px;"><span style="background-color: #ff99cc;">摄像机的内参数矩阵（单位为像素）</span>，相乘后可得：</span></div>
+<div>
+<div><strong style="line-height: 22px;"><img src="%E7%9B%B8%E6%9C%BA%E6%A0%87%E5%AE%9A%E5%8E%9F%E7%90%86%E4%BB%8B%E7%BB%8D%EF%BC%88%E4%B8%80%EF%BC%89%20-%20Jessica&amp;jie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/1034872-20170511112331629-941675718.png" alt="">（2）</strong></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+&nbsp;和（1）式相比，此<span style="background-color: #ff99cc;">内参数矩阵中<span style="font-size: medium;"><em>f/dx, f/dy,&nbsp;
+<span style="line-height: 22px;"><span style="line-height: 22px;"><span style="line-height: 22px;" lang="EN-US">c<sub style="line-height: 19px;"><span style="line-height: 19px;" lang="EN-US">x</span></sub></span></span>/dx+u0,
+<span style="line-height: 22px;"><span style="line-height: 22px;"><span style="line-height: 22px;" lang="EN-US">c<sub style="line-height: 19px;"><span style="line-height: 19px;" lang="EN-US">y</span></sub></span></span><span style="line-height: 22px;">/dy+v0<span style="line-height: 22px;">&nbsp;</span></span></span></span></em></span>&nbsp;的单位均为像素</span>。令<span style="line-height: 22px;">内参数矩阵为K，则上式可写成：</span></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+<div><img style="margin: 0 10px 0 0;" src="%E7%9B%B8%E6%9C%BA%E6%A0%87%E5%AE%9A%E5%8E%9F%E7%90%86%E4%BB%8B%E7%BB%8D%EF%BC%88%E4%B8%80%EF%BC%89%20-%20Jessica&amp;jie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/725642490060127789.jpg" alt="摄像机模型与标定 - 小企鹅 - 企鹅的博客"><span style="white-space: pre;">			<span style="white-space: pre;">		<strong>（3）</strong></span></span></div>
+<div><span style="white-space: pre; font-size: 18px;"><span style="white-space: pre;"><strong>三.<strong>相机内参K</strong>（与棋盘所在空间的3D几何相关）</strong></span></span></div>
+<div><span style="white-space: pre;"><span style="white-space: pre;"><strong>&nbsp; </strong></span></span></div>
+<div><span style="white-space: pre;"><span style="white-space: pre;">在计算机视觉中，<span style="background-color: #ffffff;">摄像机内参数矩阵</span><br></span></span></div>
+<div><span style="white-space: pre;"><span style="white-space: pre;"><strong> <img src="%E7%9B%B8%E6%9C%BA%E6%A0%87%E5%AE%9A%E5%8E%9F%E7%90%86%E4%BB%8B%E7%BB%8D%EF%BC%88%E4%B8%80%EF%BC%89%20-%20Jessica&amp;jie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/1034872-20170322163118736-527915814.bin" alt=""></strong>其中&nbsp;<em>f&nbsp;</em>为摄像机的焦距，单位一般是<em>mm</em>;<em>dx</em>,<em>dy</em> 为像元尺寸;<em>u<sub>0</sub></em>,<em>v<sub>0&nbsp;</sub></em>为图像中心。</span></span></div>
+<div><span style="white-space: pre;"><span style="white-space: pre;">                                 fx = f/dx, fy = f/dy,分别称为x轴和y轴上的归一化焦距.</span></span></div>
+<div>&nbsp;</div>
+<div><span style="font-size: 16px;"><strong><span style="line-height: 22px;"><span style="line-height: 22px;">为更好的理解，举个实例：</span></span></strong></span></div>
+<div><span style="white-space: pre; font-size: 16px;"><span style="white-space: pre;">现以NiKon D700相机为例进行求解其内参数矩阵：<br>就算大家身边没有这款相机也无所谓，可以在网上百度一下，很方便的就知道其一些参数——&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;<br>&nbsp; 焦距 f = 35mm&nbsp;&nbsp; 最高分辨率：4256×2832&nbsp;&nbsp;&nbsp;&nbsp; 传感器尺寸：36.0×23.9 mm<br>根据以上定义可以有：<br><span style="white-space: pre;"><span style="white-space: pre;"><em>u<sub>0</sub></em></span></span>= 4256/2 = 2128&nbsp;&nbsp; <span style="white-space: pre;"><em>v<sub>0</sub></em></span>= 2832/2 = 1416&nbsp; dx = 36.0/4256&nbsp;&nbsp; dy = 23.9/2832<br>fx = f/dx = 4137.8&nbsp;&nbsp; fy = f/dy = 4147.3</span></span></div>
+<div><span style="white-space: pre; font-size: 16px;"><span style="white-space: pre;"><br>分辨率可以从显示分辨率与图像分辨率两个方向来分类。<br>[1]显示分辨率（屏幕分辨率）是屏幕图像的精密度，是指显示器所能显示的像素有多少。由于屏幕上的点、线和面都是由像素组成的，</span></span></div>
+<div><span style="white-space: pre; font-size: 16px;"><span style="white-space: pre;">显示器可显示的像素越多，画面就越精细，同样的屏幕区域内能显示的信息也越多，所以分辨率是个非常重要的性能指标之一。</span></span></div>
+<div><span style="white-space: pre; font-size: 16px;"><span style="white-space: pre;">可以把整个图像想象成是一个大型的棋盘，而分辨率的表示方式就是所有经线和纬线交叉点的数目。</span></span></div>
+<div><span style="white-space: pre; font-size: 16px;"><span style="white-space: pre;">显示分辨率一定的情况下，显示屏越小图像越清晰，反之，显示屏大小固定时，显示分辨率越高图像越清晰。<br>[2]图像分辨率则是单位英寸中所包含的像素点数，其定义更趋近于分辨率本身的定义。</span></span></div>
+<div><span style="font-size: 18px;"><strong>&nbsp;四.畸变参数（与点集如何畸变的2D几何相关。）</strong></span></div>
+<p><span style="font-size: 16px;">采用理想针孔模型，由于通过针孔的光线少，摄像机曝光太慢，在实际使用中均采用透镜，可以使图像生成迅速，但代价是引入了畸变。</span></p>
+<p><span style="font-size: 16px;">有两种畸变对投影图像影响较大： <span style="line-height: 22px;"><span style="line-height: 22px;">径向畸变和切向畸变。</span></span></span></p>
+<div>
+<div><span style="font-size: 16px;">1、径向畸变</span><br><span style="font-size: 16px;">对某些透镜，光线在远离透镜中心的地方比靠近中心的地方更加弯曲，产生“筒形”或“鱼眼”现象，称为径向畸变。</span></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+<div><span style="font-size: 16px;">一般来讲，成像仪中心的径向畸变为0，越向边缘移动，畸变越严重。不过径向畸变可以通过下面的泰勒级数展开式来校正：</span></div>
+<div>
+<p><span style="font-size: 16px;"><span lang="PT-BR"><em>x</em><sub><span lang="PT-BR">corrected </span></sub><span lang="PT-BR">= <em>x</em>(1+k<sub>1</sub>r<sup>2</sup>+k<sub>2</sub>r<sup>4</sup>+k<sub>3</sub>r<sup>6</sup>)</span></span></span></p>
+<p><span style="font-size: 16px;"><em><span lang="PT-BR">y</span></em><sub><span lang="PT-BR">corrected </span></sub><span lang="PT-BR">= <em>y</em>(1+k<sub>1</sub>r<sup>2</sup>+k<sub>2</sub>r<sup>4</sup>+k<sub>3</sub>r<sup>6</sup>)</span></span></p>
+<p><span style="line-height: 22px; font-size: 16px;">这里（x, y）是畸变点在成像仪上的原始位置，<span style="line-height: 22px;">r为该点距离<span style="line-height: 22px;">成像仪<span style="line-height: 22px;">中心的距离，<span style="line-height: 22px;">（<span style="line-height: 25px;" lang="PT-BR"><em style="line-height: 25px;">x</em><sub><span style="line-height: 20px;" lang="PT-BR">corrected&nbsp;<span style="line-height: 22px;" lang="PT-BR">，</span></span></sub><em style="line-height: 25px; font-size: medium;"><span style="line-height: 25px;" lang="PT-BR">y</span></em><sub style="line-height: 20px;"><span style="line-height: 20px;" lang="PT-BR">corrected</span></sub>&nbsp;<span style="line-height: 22px;">）是校正后的新位置。</span></span></span></span></span></span></span></p>
+<p><span style="line-height: 22px; font-size: 16px;"><span style="line-height: 22px;"><span style="line-height: 22px;"><span style="line-height: 22px;"><span style="line-height: 22px;"><span style="line-height: 25px;" lang="PT-BR"><span style="line-height: 22px;"><span style="background-color: #00ffff;">对于一般的摄像机校正，</span><span style="background-color: #00ffff;">通常使用泰勒级数中的前两项</span><span style="line-height: 25px;"><span style="background-color: #00ffff;">k<sub style="line-height: 20px;">1</sub></span><span style="line-height: 25px;"><span style="background-color: #00ffff;">和k<sub style="line-height: 20px;">2</sub></span><span style="line-height: 22px;"><span style="background-color: #00ffff;">就够了</span>；对畸变很大的摄像机，比如鱼眼透镜，可以使用第三径向畸变项<span style="line-height: 25px;">k<sub style="line-height: 20px;">3</sub></span></span></span></span></span></span></span></span></span></span></span></p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+<p><span style="line-height: 22px; font-size: 16px;">
+<span style="line-height: 22px;">2、切向畸变</span></span></p>
+<div><span style="font-size: 16px;">当成像仪被粘贴在摄像机的时候，会存在一定的误差，使得<span style="line-height: 22px;">图像平面和透镜不完全平行，从而产生切向畸变。也就是说，如果一个矩形被投影到成像仪上时，</span></span></div>
+<div><span style="line-height: 22px; font-size: 16px;">可能会变成一个梯形。切向畸变可以通过如下公式来校正：</span></div>
+<div><span style="line-height: 25px; font-size: 16px;" lang="PT-BR"><em style="line-height: 25px;">x</em><sub style="line-height: 20px;"><span style="line-height: 20px;" lang="PT-BR">corrected&nbsp;</span></sub><span style="line-height: 25px;" lang="PT-BR">=&nbsp;<em style="line-height: 25px;">x +&nbsp;</em><span style="line-height: 25px;">[ 2<span style="line-height: 25px;">p<sub style="line-height: 20px;">1</sub><em style="line-height: 25px; font-size: medium;">y +&nbsp;</em><span style="line-height: 25px;">p<sub style="line-height: 20px;">2&nbsp;</sub><span style="line-height: 25px;">(<span style="line-height: 25px;">r<sup style="line-height: 20px;">2&nbsp;</sup><span style="line-height: 25px;">+ 2x<sup style="line-height: 20px;">2</sup><span style="line-height: 25px;">) ]</span></span></span></span></span></span></span></span></span></div>
+<div><span style="line-height: 25px; font-size: 16px;" lang="PT-BR"><em style="line-height: 25px;">y</em><sub style="line-height: 20px;"><span style="line-height: 20px;" lang="PT-BR">corrected&nbsp;</span></sub><span style="line-height: 25px;" lang="PT-BR">=&nbsp;<em style="line-height: 25px;">y +&nbsp;</em><span style="line-height: 25px;">[&nbsp;<span style="line-height: 25px;" lang="PT-BR"><span style="line-height: 25px;">2<span style="line-height: 25px;">p<sub style="line-height: 20px;">2</sub><em style="line-height: 25px; font-size: medium;">x&nbsp;</em><em style="line-height: 25px; font-size: medium;">+&nbsp;</em><span style="line-height: 25px;">p<sub style="line-height: 20px;">1&nbsp;</sub><span style="line-height: 25px;">(<span style="line-height: 25px;">r<sup style="line-height: 20px;">2&nbsp;</sup><span style="line-height: 25px;">+ 2y<sup style="line-height: 20px;">2</sup><span style="line-height: 25px;">)<em style="line-height: 25px; font-size: medium;">&nbsp;</em><span style="line-height: 25px;">]</span></span></span></span></span></span></span></span></span></span></span></span></div>
+<div><span style="line-height: 22px; font-size: 16px;">这里（x, y）是畸变点在成像仪上的原始位置，<span style="line-height: 22px;">r为该点距离<span style="line-height: 22px;">成像仪<span style="line-height: 22px;">中心的距离，<span style="line-height: 22px;">（<span style="line-height: 25px;" lang="PT-BR"><em style="line-height: 25px;">x</em><sub style="line-height: 19px;"><span style="line-height: 20px;" lang="PT-BR">corrected&nbsp;<span style="line-height: 22px;" lang="PT-BR">，</span></span></sub><em style="line-height: 25px; font-size: medium;"><span style="line-height: 25px;" lang="PT-BR">y</span></em><sub style="line-height: 20px;"><span style="line-height: 20px;" lang="PT-BR">corrected</span></sub><span style="line-height: 22px;">&nbsp;<span style="line-height: 22px;">）是校正后的新位置。
+</span></span></span></span></span></span></span></span></div>
+<div><span style="line-height: 22px; font-size: 16px;">&nbsp;</span></div>
+<div>&nbsp;</div>
+<div><span style="font-size: 14pt;"><strong>五.<span style="color: #000000;">摄像机的外参数</span></strong></span>
+<p><span style="font-size: 15px;"><span style="color: #000000;">旋转向量（大小为1×3的矢量或旋转矩阵3×3）和平移向量（tx,ty,tz）。</span></span></p>
+<p><span style="font-size: 15px;"><span style="color: #000000;"><span style="font-size: 15px;"><span style="color: #000000;">旋转向量</span></span>:旋转向量是旋转矩阵紧凑的变现形式，旋转向量为1×3的行矢量。</span></span></p>
+<p><span style="font-size: 15px;"><span style="color: #000000;"><img src="%E7%9B%B8%E6%9C%BA%E6%A0%87%E5%AE%9A%E5%8E%9F%E7%90%86%E4%BB%8B%E7%BB%8D%EF%BC%88%E4%B8%80%EF%BC%89%20-%20Jessica&amp;jie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/1034872-20170415175016626-499447614.bin" alt=""></span></span></p>
+<p>&nbsp;r就是旋转向量，旋转向量的方向是旋转轴 ,旋转向量的模为围绕旋转轴旋转的角度。</p>
+<p>通过上面的公式，我们就可以求解出旋转矩阵R。同样的已知旋转矩阵，我们也可以通过下面的公式求解得到旋转向量：</p>
+<p><img src="%E7%9B%B8%E6%9C%BA%E6%A0%87%E5%AE%9A%E5%8E%9F%E7%90%86%E4%BB%8B%E7%BB%8D%EF%BC%88%E4%B8%80%EF%BC%89%20-%20Jessica&amp;jie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/1034872-20170415175133923-1571875187.png" alt=""></p>
+
+
+
+
+
+
+
+
+
+
+
+</div>
+<div><span style="line-height: 22px; background-color: #ffffff; font-size: 18px;"><span style="line-height: 25px;"><span style="line-height: 25px;"><span style="line-height: 25px;"><span style="line-height: 25px;"><span style="line-height: 25px;"><span style="line-height: 25px;"><strong>六.思考</strong></span></span></span></span></span></span></span></div>
+<div>&nbsp;</div>
+<div>
+<div><span style="line-height: 22px;"><span style="line-height: 25px; font-size: medium;"><span style="line-height: 25px; font-size: medium;"><span style="line-height: 25px; font-size: medium;"><span style="line-height: 25px; font-size: medium;"><span style="font-size: medium; line-height: 25px;"><span style="line-height: 25px; font-size: medium;">那为什么要做相机标定呢？</span></span></span></span></span></span></span></div>
+<div><span style="line-height: 22px;"><span style="line-height: 22px;"><span style="line-height: 25px; font-size: medium;"><span style="line-height: 25px; font-size: medium;"><span style="line-height: 25px; font-size: medium;"><span style="line-height: 25px; font-size: medium;"><span style="font-size: medium; line-height: 25px;"><span style="line-height: 25px; font-size: medium;">【1】进行<span style="background-color: #00ffff;">摄像机标定的目的</span>：<span style="background-color: #ff99cc;">求出相机的内、外参数，以及畸变参数</span>。<br></span></span></span></span></span></span></span></span><span style="line-height: 22px;"><span style="line-height: 25px; font-size: medium;"><span style="line-height: 25px; font-size: medium;"><span style="line-height: 25px; font-size: medium;"><span style="line-height: 25px; font-size: medium;"><span style="font-size: medium; line-height: 25px;"><span style="line-height: 25px; font-size: medium;">【2】标定相机后通常是想做两件事：一个是由于<span><span><span><span><span>每个镜头的畸变程度各不相同，通过相机标定可以校正这种镜头畸变</span></span></span></span></span><span style="background-color: #00ffff;">矫正畸变</span>，生成矫正后的图像；另一个是<span style="background-color: #00ffff;">根据获得的图像重构三维场景</span>。</span></span></span></span></span></span></span></div>
+<div><span style="line-height: 22px;"><span style="line-height: 22px;"><span style="line-height: 25px; font-size: medium;"><span style="line-height: 25px; font-size: medium;"><span style="line-height: 25px; font-size: medium;"><span style="line-height: 25px; font-size: medium;"><span style="font-size: medium; line-height: 25px;"><span style="line-height: 25px; font-size: medium;">&nbsp; &nbsp; &nbsp;<span style="font-size: 16px;">&nbsp;</span></span></span></span></span></span></span></span></span><span style="font-size: 16px;"><span style="font-family: 'PingFang SC';">摄像机标定过程，简单的可以简单的描述为通过标定板，如下图，可以得到</span>n<span style="font-family: 'PingFang SC';">个对应的<span style="background-color: #ff99cc;">世界坐标</span>三维点</span>X<sub>i</sub><span style="font-family: 'PingFang SC';">和对应的<span style="background-color: #ff99cc;">图像坐标</span>二维点</span>x<sub>i</sub><span style="font-family: 'PingFang SC';">，这些三维点到二维点的转换都可以通过上面提到的相机内参</span></span>K<span style="font-size: 16px;"><span style="font-family: 'PingFang SC';">，相机外参</span></span><span style="font-family: 'Times New Roman';">R</span><span style="font-size: 16px;"><span style="font-family: 'PingFang SC';">和</span><span style="font-family: 'Times New Roman';">t</span><span style="font-family: 'PingFang SC';">，以及畸变参数</span></span><span style="font-family: 'Times New Roman';">D</span><span style="font-size: 16px;"><span style="font-family: 'PingFang SC';">，经过一系列的矩阵变换得到。</span></span></div>
+<div>&nbsp;</div>
+<p><img src="%E7%9B%B8%E6%9C%BA%E6%A0%87%E5%AE%9A%E5%8E%9F%E7%90%86%E4%BB%8B%E7%BB%8D%EF%BC%88%E4%B8%80%EF%BC%89%20-%20Jessica&amp;jie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/1034872-20170322153303783-1405768063.png" alt=""></p>
+<p><span style="font-size: 14pt;"><strong>七.标定内幕过程的分析：</strong></span></p>
+<p><strong>1.假设有N个角点和K个棋盘图像（不同位置），<span style="background-color: #00ccff;">需要多少个视场和角点才能提供足够的约束</span>来求解这些参数呢？</strong></p>
+<p>K个棋盘，可以提供2NK的约束，即2NK的方程。（乘以2是因为每个点都由x和y两个坐标值组成）</p>
+<p>忽略每次的畸变，那么我们需要求解4个内参数和6K个外参数。（因为对于不同的视场，6个外参数是不同的）</p>
+<p>那么有解的前提是方程的总数应该大于等于未知参数的总数即2NK&gt;=6K+4,或者写成(N-3)K&gt;=2。</p>
+<p>为了方便理解，下图是一个3×3大小的棋盘,红色圈标记出了它含有的内角点：</p>
+<p><img src="%E7%9B%B8%E6%9C%BA%E6%A0%87%E5%AE%9A%E5%8E%9F%E7%90%86%E4%BB%8B%E7%BB%8D%EF%BC%88%E4%B8%80%EF%BC%89%20-%20Jessica&amp;jie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/1034872-20170415180152564-914342918.png" alt=""></p>
+<p>如果我们令N=5,K=1，带入到上述不等式，是满足不等式，这就是意味着我们仅需要一个视场和带有5个内角点的棋盘就可以求解出10个参数了。其
+实不然，为了描述投影视场的所有目标只需要4个点，即一次性在四个方向上延展正方形的边，把它变成任意四边形。因此，无论一个平面上检测到多少个角点，我
+们只能得到4个有用的角点信息。如上图所示是一个3×3大小的棋盘，有4个内角点。对于每一个视场，我们仅能给出4个有用的角点信息，那么上述的公式中<span style="background-color: #00ffff;">N就约束为4，即公式变为(4-3)K&gt;=2，即K&gt;=2。</span>即要求解10个参数最少需要两个视场。考虑到噪声和数值稳定性要求，对大棋盘需求收集更多的图像。为了得到高质量结果，至少<span style="background-color: #00ffff;">需要10幅7×8或者更大棋盘的图像</span>（而且只在移动棋盘在不同图像中足够大以从视场图像中得到更加丰富的信息）。</p>
+<p><strong>2.数学是怎么应用于标定的？</strong></p>
+<p>OpenCV选着那些能够很好工作于平面物体的方法。OpenCV中使用的求解焦距和偏移的算法是基于张的方法，但求解畸变参数则是另外一个基于Brown的方法。</p>
+<p>(1)首先我们假定求解标定参数时，摄像机没有畸变。对于每一个棋盘视场，我们得到一个前面描述的单应性矩阵H，大小为3×3。将H写成列向量的形式，即H=[h1 h2 h3]，每个h是3×1向量，<span style="color: #3366ff;">单应性矩阵H是物理变换（旋转、平移）和相机内参数组成。我们的目的就是分解这个H，能够从中分解出这些成分。</span></p>
+<p><img src="%E7%9B%B8%E6%9C%BA%E6%A0%87%E5%AE%9A%E5%8E%9F%E7%90%86%E4%BB%8B%E7%BB%8D%EF%BC%88%E4%B8%80%EF%BC%89%20-%20Jessica&amp;jie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/1034872-20170511103123551-1460442787.jpg" alt=""><br>
+</p>
+<p>M是摄像机内参数矩阵，r1,r2是旋转矢量3×1，t是平移矢量，缩放因子s，对应项相等得到如下：</p>
+<p><img src="%E7%9B%B8%E6%9C%BA%E6%A0%87%E5%AE%9A%E5%8E%9F%E7%90%86%E4%BB%8B%E7%BB%8D%EF%BC%88%E4%B8%80%EF%BC%89%20-%20Jessica&amp;jie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/1034872-20170511103252847-360333516.bin" alt="">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; λ=1/s</p>
+<p>我们知道R=[r1,r2,r3]<span style="background-color: #00ffff;">，r3消失，是因为我们另Z=0</span>。R是一个正交阵，即<span style="background-color: #00ffff;">R的转置等于R的逆</span>。正交阵的<span style="background-color: #00ffff;">每个列向量是两两正交且单位化的</span>（即模为1）,那么r1和r2是相互正交。</p>
+<p><span style="background-color: #00ffff;">正交的含义有两个：两个矢量的点积为0，两个矢量的长度相等</span>。下面我们就用这两个约束来进行求解。</p>
+<p><img src="%E7%9B%B8%E6%9C%BA%E6%A0%87%E5%AE%9A%E5%8E%9F%E7%90%86%E4%BB%8B%E7%BB%8D%EF%BC%88%E4%B8%80%EF%BC%89%20-%20Jessica&amp;jie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/1034872-20170511103447941-1469475052.bin" alt=""><br>
+</p>
+<p>我们将r1和r2带入到上述的公式得：</p>
+<p><img src="%E7%9B%B8%E6%9C%BA%E6%A0%87%E5%AE%9A%E5%8E%9F%E7%90%86%E4%BB%8B%E7%BB%8D%EF%BC%88%E4%B8%80%EF%BC%89%20-%20Jessica&amp;jie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/1034872-20170511103528035-272354619.jpg" alt=""><br>
+</p>
+<p>令：<img src="%E7%9B%B8%E6%9C%BA%E6%A0%87%E5%AE%9A%E5%8E%9F%E7%90%86%E4%BB%8B%E7%BB%8D%EF%BC%88%E4%B8%80%EF%BC%89%20-%20Jessica&amp;jie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/1034872-20170415181436470-372440302.png" alt=""></p>
+<p>展开有：<img src="%E7%9B%B8%E6%9C%BA%E6%A0%87%E5%AE%9A%E5%8E%9F%E7%90%86%E4%BB%8B%E7%BB%8D%EF%BC%88%E4%B8%80%EF%BC%89%20-%20Jessica&amp;jie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/1034872-20170511103628613-503034859.jpg" alt=""></p>
+<p>&nbsp;</p>
+<p>其中M公式如下：</p>
+<p><span style="background-color: #00ffff;">（注意：这里的<em><span lang="EN-US">c<sub><span lang="EN-US">x、<em><span lang="EN-US">C<sub><span lang="EN-US">y</span></sub></span></em></span></sub></span></em>相当于上面的<em><span lang="EN-US"><sub><span lang="EN-US"><em><span lang="EN-US"><sub><span lang="EN-US">U0、V0</span></sub></span></em></span></sub></span></em>）</span></p>
+<p><img src="%E7%9B%B8%E6%9C%BA%E6%A0%87%E5%AE%9A%E5%8E%9F%E7%90%86%E4%BB%8B%E7%BB%8D%EF%BC%88%E4%B8%80%EF%BC%89%20-%20Jessica&amp;jie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/1034872-20170511103720957-62967563.bin" alt=""></p>
+<p>将M带入公式，可以得到矩阵B的通用形式的封闭解：</p>
+<p><img src="%E7%9B%B8%E6%9C%BA%E6%A0%87%E5%AE%9A%E5%8E%9F%E7%90%86%E4%BB%8B%E7%BB%8D%EF%BC%88%E4%B8%80%EF%BC%89%20-%20Jessica&amp;jie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/1034872-20170511103826222-140372256.jpg" alt=""><br>
+</p>
+<p><br>
+</p>
+<p>这里重新写一下两个约束：</p>
+<p><img src="%E7%9B%B8%E6%9C%BA%E6%A0%87%E5%AE%9A%E5%8E%9F%E7%90%86%E4%BB%8B%E7%BB%8D%EF%BC%88%E4%B8%80%EF%BC%89%20-%20Jessica&amp;jie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/1034872-20170511103911160-863511774.jpg" alt=""><br>
+</p>
+<p>由于B是对称真，那么B可以仅有对角线下半元素或者对角线上半元素表示，即可以有6个元素表示。我们将通用形式展开，并且提取出B成分，<span style="color: #3333ff;">那么通用形式可以写成含有旋转成分和含有B成分的6个元素组成的向量的点积（<span style="color: #ff0000;">注意：是点积，不是两个矩阵相乘<span style="color: #3333ff;">），如下：</span></span></span></p>
+<p><img src="%E7%9B%B8%E6%9C%BA%E6%A0%87%E5%AE%9A%E5%8E%9F%E7%90%86%E4%BB%8B%E7%BB%8D%EF%BC%88%E4%B8%80%EF%BC%89%20-%20Jessica&amp;jie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/1034872-20170511103954113-262153582.jpg" alt=""><br>
+</p>
+<p>从上述公式，我们<span style="background-color: #00ffff;">已知单应性矩阵H</span>,那么它其中的每一个元素我们都是已知的，那么上述Bij是我们要求解的值，</p>
+<p>我们可以组合两个约束为如下的形式：</p>
+<p><img src="%E7%9B%B8%E6%9C%BA%E6%A0%87%E5%AE%9A%E5%8E%9F%E7%90%86%E4%BB%8B%E7%BB%8D%EF%BC%88%E4%B8%80%EF%BC%89%20-%20Jessica&amp;jie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/1034872-20170511104020832-478371843.bin" alt=""></p>
+<p>每一个视场我们可以得到形如上面描述的2个公式（上述黄色部分），那么对于K的视场，我们可以得到2K个这样的公式。</p>
+<p>我们堆积这些方程有：<img src="%E7%9B%B8%E6%9C%BA%E6%A0%87%E5%AE%9A%E5%8E%9F%E7%90%86%E4%BB%8B%E7%BB%8D%EF%BC%88%E4%B8%80%EF%BC%89%20-%20Jessica&amp;jie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/1034872-20170415193305376-479797352.png" alt=""></p>
+<p>b是要求解未知数矢量大小为6×1，V是2K×6的矩阵，如果K&gt;=2，那么方程有解b=[B11,B12,B22,B13,B23,B33]T<span>。摄像机<span style="background-color: #00ffff;">内参数可以从B矩阵的封闭解中直接得到</span>：</span></p>
+<p><img src="%E7%9B%B8%E6%9C%BA%E6%A0%87%E5%AE%9A%E5%8E%9F%E7%90%86%E4%BB%8B%E7%BB%8D%EF%BC%88%E4%B8%80%EF%BC%89%20-%20Jessica&amp;jie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/1034872-20170511104117863-666826411.png" alt="" width="319" height="149"></p>
+<p>外参数（旋转和平移）可以由单应性条件计算得到：</p>
+<p><img src="%E7%9B%B8%E6%9C%BA%E6%A0%87%E5%AE%9A%E5%8E%9F%E7%90%86%E4%BB%8B%E7%BB%8D%EF%BC%88%E4%B8%80%EF%BC%89%20-%20Jessica&amp;jie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/1034872-20170511104133551-1243940204.png" alt=""></p>
+<p>上述公式中，λ,M,H,都是求解的得到的作为已知量，（r3=r1×r2，这是因为r1,r2,r3两两正交）。</p>
+<p>需要小心的是，当我们使用真实的数据求解时，将计算得到的r向量放在一起（R=(r1,r2,r3)），我们并不能得到精确的旋转矩阵R，使得R为正交阵。</p>
+<p><span style="color: #3366ff;">为了解决这个问题，我们常使用强制的方法，即对R进行奇异值分解，R=UDVT，U，V为正交阵，D为对角阵，如果R是正交阵，那么奇异值分解后的对角阵D是单位阵，那么我们将单位阵I代替对角阵D,进而重构出满足正交条件的R.</span></p>
+<p>(2)在前面的工作中，我们总是先忽略透镜畸变，然后求解得到的系统。如果针孔模型是完美的，令（xp,yp）为点的位置，令(xd,yd)为畸变的位置，那么有：</p>
+<p><img src="%E7%9B%B8%E6%9C%BA%E6%A0%87%E5%AE%9A%E5%8E%9F%E7%90%86%E4%BB%8B%E7%BB%8D%EF%BC%88%E4%B8%80%EF%BC%89%20-%20Jessica&amp;jie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/1034872-20170511104237801-1511076497.jpg" alt=""></p>
+
+
+
+
+
+
+
+</div>
+<div>
+<p>通过下面的替换，可以得到没有畸变的标定结果：</p>
+<p><img src="%E7%9B%B8%E6%9C%BA%E6%A0%87%E5%AE%9A%E5%8E%9F%E7%90%86%E4%BB%8B%E7%BB%8D%EF%BC%88%E4%B8%80%EF%BC%89%20-%20Jessica&amp;jie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/1034872-20170511104305097-1922678830.bin" alt="" width="359" height="61"></p>
+<p>就像先前描述的那样，上述5个畸变参数：k1,k2,k3,p1,p2，需要3个角点构成的6组方程就可以求解。我们猜测一下，我们通过前面的计算
+已经求解出相机的内参数:fx,fy,cx,cy，棋盘平面上角点的坐标为世界坐标，其中X,Y我们可以理解为在其平面上的坐标，Z是一个尺度，因为我们
+知道求解单应性矩阵H，也是一个尺度，所以具体怎么控制，先不用管，我们就可以通过上述公式一求解出xp和yp，xd,yd就是成像仪上角点的真实位置，
+那么就可以由xp,yp和xd,yd的点对，带入到上述的公式二，求可以求解出5个畸变系数。</p>
+<p><br>
+</p>
+
+
+
+
+
+
+
+
+
+
+
+</div>
+<div><span style="line-height: 22px; background-color: #ffffff;"><span style="line-height: 25px; font-size: medium;"><span style="line-height: 25px; font-size: medium;"><span style="line-height: 25px; font-size: medium;"><span style="line-height: 25px; font-size: medium;"><span style="font-size: medium; line-height: 25px;"><span style="line-height: 25px; font-size: medium;"><span style="background-color: #00ffff;">备注</span>：</span></span></span></span></span></span></span></div>
+<div><span style="line-height: 22px; background-color: #ffffff;"><span style="line-height: 22px; background-color: #ffffff;"><span style="line-height: 25px; font-size: medium;"><span style="line-height: 25px; font-size: medium;"><span style="line-height: 25px; font-size: medium;"><span style="line-height: 25px; font-size: medium;"><span style="font-size: medium; line-height: 25px;"><span style="line-height: 25px; font-size: medium;">齐次坐标 <br>
+  就是将一个原本是n维的向量用一个n+1维向量来表示。 <br>
+  许多图形应用涉及到几何变换，主要包括平移、旋转、缩放。以矩阵表达式来计算这些变换时，平移是矩阵相加，旋转和缩放则是矩阵相乘，综合起来可以表示<span class="MathJax_Preview"><span class="MathJax">为x=R*X+t (</span></span></span></span></span></span></span></span></span></span>注：因为习惯的原因，实际使用时一般使用变化矩阵左乘向量）(<em>R</em>&nbsp;旋转缩放矩阵，<em>t</em>&nbsp;为平移矩阵，<em>X</em>&nbsp;为原向量，<em>x</em>&nbsp;为变换后的向量)。</div>
+<div><span style="line-height: 22px; background-color: #ffffff;"><span style="line-height: 25px; font-size: medium;"><span style="line-height: 25px; font-size: medium;"><span style="line-height: 25px; font-size: medium;"><span style="line-height: 25px; font-size: medium;"><span style="font-size: medium; line-height: 25px;"><span style="line-height: 25px; font-size: medium;"><span class="MathJax_Preview"><span id="MathJax-Element-117-Frame" class="MathJax"><span class="MathJax_Preview"><span id="MathJax-Element-118-Frame" class="MathJax"><span class="MathJax_Preview"><span id="MathJax-Element-119-Frame" class="MathJax"><span class="MathJax_Preview"><span id="MathJax-Element-120-Frame" class="MathJax"><span class="MathJax_Preview"><span id="MathJax-Element-121-Frame" class="MathJax">引入齐次坐标的目的主要是合并矩阵运算中的乘法和加法，表示为x=P*X<span class="MathJax_Preview"><span id="MathJax-Element-122-Frame" class="MathJax">的形式。</span></span></span></span></span></span></span></span></span></span></span><span id="MathJax-Element-117-Frame" class="MathJax"><span class="MathJax_Preview"><span id="MathJax-Element-118-Frame" class="MathJax"><span class="MathJax_Preview"><span id="MathJax-Element-119-Frame" class="MathJax"><span class="MathJax_Preview"><span id="MathJax-Element-120-Frame" class="MathJax"><span class="MathJax_Preview"><span id="MathJax-Element-121-Frame" class="MathJax"><span class="MathJax_Preview"><span id="MathJax-Element-122-Frame" class="MathJax">即它提供了用矩阵运算把二维、三维甚至高维空间中的一个点集从一个坐标系变换到另一个坐标系的有效方法。和上面的计算过程是对应的。</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></div>
+<div>&nbsp;</div>
+<div>&nbsp;</div>
+<div>&nbsp;</div>
+
+
+
+
+
+
+</div></div><div id="MySignature"></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+<div id="BlogPostCategory">分类: <a href="https://www.cnblogs.com/Jessica-jie/category/969882.html" target="_blank">摄像机模型与标定（基础知识积累）</a></div>
+<div id="EntryTag"></div>
+<div id="blog_post_info"><div id="green_channel">
+        <a href="javascript:void(0);" id="green_channel_digg" onclick="DiggIt(6596450,cb_blogId,1);green_channel_success(this,'谢谢推荐！');">好文要顶</a>
+            <a id="green_channel_follow" onclick="follow('ed88a5ca-8085-e611-845c-ac853d9f53ac');" href="javascript:void(0);">关注我</a>
+    <a id="green_channel_favorite" onclick="AddToWz(cb_entryId);return false;" href="javascript:void(0);">收藏该文</a>
+    <a id="green_channel_weibo" href="javascript:void(0);" title="分享至新浪微博" onclick="ShareToTsina()"><img src="%E7%9B%B8%E6%9C%BA%E6%A0%87%E5%AE%9A%E5%8E%9F%E7%90%86%E4%BB%8B%E7%BB%8D%EF%BC%88%E4%B8%80%EF%BC%89%20-%20Jessica&amp;jie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/icon_weibo_24.png" alt=""></a>
+    <a id="green_channel_wechat" href="javascript:void(0);" title="分享至微信" onclick="shareOnWechat()"><img src="%E7%9B%B8%E6%9C%BA%E6%A0%87%E5%AE%9A%E5%8E%9F%E7%90%86%E4%BB%8B%E7%BB%8D%EF%BC%88%E4%B8%80%EF%BC%89%20-%20Jessica&amp;jie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/wechat.png" alt=""></a>
+</div>
+<div id="author_profile">
+    <div id="author_profile_info" class="author_profile_info">
+            <a href="http://home.cnblogs.com/u/Jessica-jie/" target="_blank"><img src="%E7%9B%B8%E6%9C%BA%E6%A0%87%E5%AE%9A%E5%8E%9F%E7%90%86%E4%BB%8B%E7%BB%8D%EF%BC%88%E4%B8%80%EF%BC%89%20-%20Jessica&amp;jie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/20170312194811.png" class="author_avatar" alt=""></a>
+        <div id="author_profile_detail" class="author_profile_info">
+            <a href="http://home.cnblogs.com/u/Jessica-jie/">Jessica&amp;jie</a><br>
+            <a href="http://home.cnblogs.com/u/Jessica-jie/followees">关注 - 6</a><br>
+            <a href="http://home.cnblogs.com/u/Jessica-jie/followers">粉丝 - 147</a>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div id="author_profile_honor"></div>
+    <div id="author_profile_follow">
+                <a href="javascript:void(0);" onclick="follow('ed88a5ca-8085-e611-845c-ac853d9f53ac');return false;">+加关注</a>
+    </div>
+</div>
+<div id="div_digg">
+    <div class="diggit" onclick="votePost(6596450,'Digg')">
+        <span class="diggnum" id="digg_count">5</span>
+    </div>
+    <div class="buryit" onclick="votePost(6596450,'Bury')">
+        <span class="burynum" id="bury_count">0</span>
+    </div>
+    <div class="clear"></div>
+    <div class="diggword" id="digg_tips">
+    </div>
+</div>
+<script type="text/javascript">
+    currentDiggType = 0;
+</script></div>
+<div class="clear"></div>
+<div id="post_next_prev"><a href="https://www.cnblogs.com/Jessica-jie/p/6591230.html" class="p_n_p_prefix">« </a> 上一篇：<a href="https://www.cnblogs.com/Jessica-jie/p/6591230.html" title="发布于2017-03-20 19:49">[ERROR]  Failed to contact master at [localhost:11311]. Retrying...</a><br><a href="https://www.cnblogs.com/Jessica-jie/p/6600961.html" class="p_n_p_prefix">» </a> 下一篇：<a href="https://www.cnblogs.com/Jessica-jie/p/6600961.html" title="发布于2017-03-22 17:14">相机标定原理介绍（二）</a><br></div>
+</div>
+
+
+	<div class="postDesc">posted on <span id="post-date">2017-03-21 20:17</span> <a href="https://www.cnblogs.com/Jessica-jie/">Jessica&amp;jie</a> 阅读(<span id="post_view_count">49941</span>) 评论(<span id="post_comment_count">5</span>)  <a href="https://i.cnblogs.com/EditPosts.aspx?postid=6596450" rel="nofollow">编辑</a> <a href="#" onclick="AddToWz(6596450);return false;">收藏</a></div>
+</div>
+<script type="text/javascript">var allowComments=true,cb_blogId=317895,cb_entryId=6596450,cb_blogApp=currentBlogApp,cb_blogUserGuid='ed88a5ca-8085-e611-845c-ac853d9f53ac',cb_entryCreatedDate='2017/3/21 20:17:00';loadViewCount(cb_entryId);var cb_postType=1;var isMarkdown=false;</script>
+
+</div><a name="!comments"></a><div id="blog-comments-placeholder"><div id="comments_pager_top"></div>
+<!--done-->
+<br>
+<b>FeedBack:</b>
+<div class="feedbackNoItems"></div>
+	
+
+		<div class="feedbackItem">
+			<div class="feedbackListTitle"><a href="#3771855" class="layer">#1楼</a><a name="3771855" id="comment_anchor_3771855"></a></div>
+			<div class="feedbackListSubtitle">
+				 <span class="comment_date">2017-08-31 14:35</span> | <a id="a_comment_author_3771855" href="http://home.cnblogs.com/u/718629/" target="_blank">龙小文</a> <a href="http://msg.cnblogs.com/send/%E9%BE%99%E5%B0%8F%E6%96%87" title="发送站内短消息" class="sendMsg2This">&nbsp;</a><br>
+				<div align="left"><div id="comment_body_3771855" class="blog_comment_body">非常解惑，感谢。</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3771855,'Digg',this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3771855,'Bury',this)">反对(0)</a></div>&nbsp;&nbsp;<span class="comment_actions"></span></div>
+			</div>
+			
+			
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListTitle"><a href="#3805468" class="layer">#2楼</a><a name="3805468" id="comment_anchor_3805468"></a></div>
+			<div class="feedbackListSubtitle">
+				 <span class="comment_date">2017-10-09 16:21</span> | <a id="a_comment_author_3805468" href="https://www.cnblogs.com/uestc-mm/" target="_blank">小淼博客</a> <a href="http://msg.cnblogs.com/send/%E5%B0%8F%E6%B7%BC%E5%8D%9A%E5%AE%A2" title="发送站内短消息" class="sendMsg2This">&nbsp;</a><br>
+				<div align="left"><div id="comment_body_3805468" class="blog_comment_body">楼
+主我想请问一下，内参参数基本的有4个dx和dy和f焦距以及图像尺寸，那么这里的相机的畸变参数是否要考虑进去呢？因为相机的畸变在最后的图像还原的过
+程中需要使用吧，所以采用二阶的泰勒级数来计算的话，还有畸变参数k1，k2，k4，k5，p1，p2这些参数。其次就是世界坐标系转换到相机坐标系当中
+的旋转参数theta、gama以及beta和平移参数Xp，Yp，Zp这样，这样算下来参数就不止10个了，还是说在进行世界坐标系转换到相机坐标系的
+过程中已经完成了相机径向畸变和切向畸变的问题呢？我不知道我的理解对不对，还望解惑一下~谢谢！</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3805468,'Digg',this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3805468,'Bury',this)">反对(0)</a></div><span id="comment_3805468_avatar" style="display:none;">http://pic.cnblogs.com/face/772331/20160414001200.png</span>&nbsp;&nbsp;<span class="comment_actions"></span></div>
+			</div>
+			
+			
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListTitle"><a href="#3879735" class="layer">#3楼</a><a name="3879735" id="comment_anchor_3879735"></a></div>
+			<div class="feedbackListSubtitle">
+				 <span class="comment_date">2018-01-02 17:40</span> | <a id="a_comment_author_3879735" href="http://home.cnblogs.com/u/473472/" target="_blank">0x200b</a> <a href="http://msg.cnblogs.com/send/0x200b" title="发送站内短消息" class="sendMsg2This">&nbsp;</a><br>
+				<div align="left"><div id="comment_body_3879735" class="blog_comment_body">你好，请问有相机标定相关的书籍推荐吗？或者说你在写这篇博客之前，看的是哪一本书或者教材呢？网上我搜到的书都只是图像处理，完全没有相机标定相关的内容。</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3879735,'Digg',this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3879735,'Bury',this)">反对(0)</a></div>&nbsp;&nbsp;<span class="comment_actions"></span></div>
+			</div>
+			
+			
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListTitle"><a href="#3881382" class="layer">#4楼</a><a name="3881382" id="comment_anchor_3881382"></a>[<span class="louzhu">楼主</span>]</div>
+			<div class="feedbackListSubtitle">
+				 <span class="comment_date">2018-01-04 15:01</span> | <a id="a_comment_author_3881382" href="https://www.cnblogs.com/Jessica-jie/" target="_blank">Jessica&amp;jie</a> <a href="http://msg.cnblogs.com/send/Jessica%26amp%3Bjie" title="发送站内短消息" class="sendMsg2This">&nbsp;</a><br>
+				<div align="left"><div id="comment_body_3881382" class="blog_comment_body"><a href="#3879735" title="查看所回复的评论" onclick="commentManager.renderComments(0,50,3879735);">@</a>
+0x200b<br>Learning OpenCV是一本很不错的书，可以看看</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3881382,'Digg',this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3881382,'Bury',this)">反对(0)</a></div><span id="comment_3881382_avatar" style="display:none;">http://pic.cnblogs.com/face/1034872/20170312194811.png</span>&nbsp;&nbsp;<span class="comment_actions"></span></div>
+			</div>
+			
+			
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListTitle"><a href="#3952987" class="layer">#5楼</a><a name="3952987" id="comment_anchor_3952987"></a><span id="comment-maxId" style="display:none;">3952987</span><span id="comment-maxDate" style="display:none;">2018/4/16 17:22:08</span></div>
+			<div class="feedbackListSubtitle">
+				 <span class="comment_date">2018-04-16 17:22</span> | <a id="a_comment_author_3952987" href="https://www.cnblogs.com/a2455915246/" target="_blank">JackieFirst</a> <a href="http://msg.cnblogs.com/send/JackieFirst" title="发送站内短消息" class="sendMsg2This">&nbsp;</a><br>
+				<div align="left"><div id="comment_body_3952987" class="blog_comment_body">楼主，“其实不然，为了描述投影视场的所有目标只需要4个点，即一次性在四个方向上延展正方形的边，把它变成任意四边形。因此，无论一个平面上检测到多少个角点，我们只能得到4个有用的角点信息”，是指PnP问题推出的结论吗？</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3952987,'Digg',this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3952987,'Bury',this)">反对(0)</a></div>&nbsp;&nbsp;<span class="comment_actions"></span></div>
+			</div>
+			
+			
+		</div>
+	
+
+
+
+<div id="comments_pager_bottom"></div></div><script type="text/javascript">var commentManager = new blogCommentManager();commentManager.renderComments(0);</script>
+<div id="comment_form" class="commentform">
+<a name="commentform"></a>
+<div id="divCommentShow"></div>
+<div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="#" onclick="return RefreshPage();">刷新页面</a><a href="#top">返回顶部</a></div>
+<div id="comment_form_container"><div class="login_tips">注册用户登录后才能发表评论，请 <a rel="nofollow" href="javascript:void(0);" class="underline" onclick="return login('commentform');">登录</a> 或 <a rel="nofollow" href="javascript:void(0);" class="underline" onclick="return register();">注册</a>，<a href="http://www.cnblogs.com/">访问</a>网站首页。</div></div>
+<div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+<div id="ad_t2"><a href="http://www.ucancode.com/index.htm" target="_blank" onclick="ga('send', 'event', 'Link', 'click', 'T2-工控')">【推荐】超50万C++/C#源码: 大型实时仿真组态图形源码</a><br><a href="https://www.bagevent.com/event/2195041?bag_track=13072958" target="_blank" onclick="ga('send', 'event', 'Link', 'click', 'T2-看雪')">【活动】看雪2019安全开发者峰会，共话安全领域焦点</a><br><a href="https://ke.qq.com/adActivity.html?name=xiangxueketang2" target="_blank" onclick="ga('send', 'event', 'Link', 'click', 'T2-享学')">【培训】Java程序员年薪40W，他1年走了别人5年的路</a><br></div>
+<div id="opt_under_post"></div>
+<script async="async" src="%E7%9B%B8%E6%9C%BA%E6%A0%87%E5%AE%9A%E5%8E%9F%E7%90%86%E4%BB%8B%E7%BB%8D%EF%BC%88%E4%B8%80%EF%BC%89%20-%20Jessica&amp;jie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/gpt.js"></script>
+<script>
+  var googletag = googletag || {};
+  googletag.cmd = googletag.cmd || [];
+</script>
+<script>
+  googletag.cmd.push(function() {
+        googletag.defineSlot('/1090369/C1', [300, 250], 'div-gpt-ad-1546353474406-0').addService(googletag.pubads());
+        googletag.defineSlot('/1090369/C2', [468, 60], 'div-gpt-ad-1539008685004-0').addService(googletag.pubads());
+        googletag.pubads().enableSingleRequest();
+        googletag.enableServices();
+  });
+</script>
+<div id="cnblogs_c1" class="c_ad_block">
+    <div id="div-gpt-ad-1546353474406-0" style="height:250px; width:300px;" data-google-query-id="CNe7u-GCneICFdQJvAod0r4AHA"><div id="google_ads_iframe_/1090369/C1_0__container__" style="border: 0pt none;"><iframe id="google_ads_iframe_/1090369/C1_0" title="3rd party ad content" name="google_ads_iframe_/1090369/C1_0" scrolling="no" marginwidth="0" marginheight="0" style="border: 0px none; vertical-align: bottom;" srcdoc="" data-google-container-id="1" data-load-complete="true" width="300" height="250" frameborder="0"></iframe></div></div>
+</div>
+<div id="under_post_news" style="display: none;"></div>
+<div id="cnblogs_c2" class="c_ad_block">
+    <div id="div-gpt-ad-1539008685004-0" style="height:60px; width:468px;" data-google-query-id="CNi7u-GCneICFdQJvAod0r4AHA"><div id="google_ads_iframe_/1090369/C2_0__container__" style="border: 0pt none;"><iframe id="google_ads_iframe_/1090369/C2_0" title="3rd party ad content" name="google_ads_iframe_/1090369/C2_0" scrolling="no" marginwidth="0" marginheight="0" style="border: 0px none; vertical-align: bottom;" srcdoc="" data-google-container-id="2" data-load-complete="true" width="468" height="60" frameborder="0"></iframe></div></div>
+</div>
+<div id="under_post_kb"><div class="itnews c_ad_block"><b>最新新闻</b>：<br> ·  <a href="https://news.cnblogs.com/n/625331/" target="_blank">深网|万达百货更名苏宁易购广场 改造店5月底亮相</a><br> ·  <a href="https://news.cnblogs.com/n/625330/" target="_blank">圈重点！腾讯全球数字生态大会带来不一样的智慧医疗</a><br> ·  <a href="https://news.cnblogs.com/n/625329/" target="_blank">3岁娃成“社交万人迷”？别再被天价“情商培训班”忽悠了</a><br> ·  <a href="https://news.cnblogs.com/n/625328/" target="_blank">国产手机十年厮杀过后，为何只剩下华为带着米OV?</a><br> ·  <a href="https://news.cnblogs.com/n/625327/" target="_blank">英国宣布5G将在7月3日上线，兼容四款5G手机</a><br>» <a href="http://news.cnblogs.com/" title="IT新闻" target="_blank">更多新闻...</a></div></div>
+<div id="HistoryToday" class="c_ad_block"></div>
+<script type="text/javascript">
+ if(enablePostBottom()) {
+    codeHighlight();
+    fixPostBody();
+    setTimeout(function () { incrementViewCount(cb_entryId); }, 50);
+    deliverT2();
+    deliverC1();
+    deliverC2();    
+    loadNewsAndKb();
+    loadBlogSignature();
+    LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+    GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+    loadOptUnderPost();
+    GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);  
+}
+</script>
+</div>
+
+    
+</div>
+<div id="leftcontent">
+	
+		<div id="leftcontentcontainer">
+			
+<!--done-->
+<div class="newsItem">
+	<div id="blog-news"><div id="profile_block">昵称：<a href="https://home.cnblogs.com/u/Jessica-jie/">Jessica&amp;jie</a><br>园龄：<a href="https://home.cnblogs.com/u/Jessica-jie/" title="入园时间：2016-09-28">2年7个月</a><br>粉丝：<a href="https://home.cnblogs.com/u/Jessica-jie/followers/">147</a><br>关注：<a href="https://home.cnblogs.com/u/Jessica-jie/followees/">6</a><div id="p_b_follow"><a href="javascript:void(0);" onclick="follow('ed88a5ca-8085-e611-845c-ac853d9f53ac')">+加关注</a></div><script>getFollowStatus('ed88a5ca-8085-e611-845c-ac853d9f53ac')</script></div></div><script type="text/javascript">loadBlogNews();</script>
+</div>
+<br>			
+			<div id="blog-calendar" style=""><table id="blogCalendar" class="Cal" title="Calendar" cellspacing="0" cellpadding="0">
+	<tbody><tr><td colspan="7"><table class="CalTitle" cellspacing="0">
+		<tbody><tr><td class="CalNextPrev"><a href="javascript:void(0);" onclick="loadBlogCalendar('2019/04/01');return false;">&lt;</a></td><td align="center">2019年5月</td><td class="CalNextPrev" align="right"><a href="javascript:void(0);" onclick="loadBlogCalendar('2019/06/01');return false;">&gt;</a></td></tr>
+	</tbody></table></td></tr><tr><th class="CalDayHeader" abbr="日" scope="col" align="center">日</th><th class="CalDayHeader" abbr="一" scope="col" align="center">一</th><th class="CalDayHeader" abbr="二" scope="col" align="center">二</th><th class="CalDayHeader" abbr="三" scope="col" align="center">三</th><th class="CalDayHeader" abbr="四" scope="col" align="center">四</th><th class="CalDayHeader" abbr="五" scope="col" align="center">五</th><th class="CalDayHeader" abbr="六" scope="col" align="center">六</th></tr><tr><td class="CalOtherMonthDay" align="center">28</td><td class="CalOtherMonthDay" align="center">29</td><td class="CalOtherMonthDay" align="center">30</td><td align="center">1</td><td align="center">2</td><td align="center">3</td><td class="CalWeekendDay" align="center">4</td></tr><tr><td class="CalWeekendDay" align="center">5</td><td align="center">6</td><td align="center">7</td><td align="center">8</td><td align="center">9</td><td align="center">10</td><td class="CalWeekendDay" align="center">11</td></tr><tr><td class="CalWeekendDay" align="center">12</td><td align="center">13</td><td align="center">14</td><td class="CalTodayDay" align="center">15</td><td align="center">16</td><td align="center">17</td><td class="CalWeekendDay" align="center">18</td></tr><tr><td class="CalWeekendDay" align="center">19</td><td align="center">20</td><td align="center">21</td><td align="center">22</td><td align="center">23</td><td align="center">24</td><td class="CalWeekendDay" align="center">25</td></tr><tr><td class="CalWeekendDay" align="center">26</td><td align="center">27</td><td align="center">28</td><td align="center">29</td><td align="center">30</td><td align="center">31</td><td class="CalOtherMonthDay" align="center">1</td></tr><tr><td class="CalOtherMonthDay" align="center">2</td><td class="CalOtherMonthDay" align="center">3</td><td class="CalOtherMonthDay" align="center">4</td><td class="CalOtherMonthDay" align="center">5</td><td class="CalOtherMonthDay" align="center">6</td><td class="CalOtherMonthDay" align="center">7</td><td class="CalOtherMonthDay" align="center">8</td></tr>
+</tbody></table></div><script type="text/javascript">loadBlogDefaultCalendar();</script>
+			<div id="blog-sidecolumn"><div id="sidebar_search" class="sidebar-block">
+<div id="sidebar_search" class="mySearch">
+<h3 class="catListTitle">搜索</h3>
+<div id="sidebar_search_box">
+<div id="widget_my_zzk" class="div_my_zzk"><input id="q" onkeydown="return zzk_go_enter(event);" class="input_my_zzk" type="text">&nbsp;<input onclick="zzk_go()" value="找找看" id="btnZzk" class="btn_my_zzk" type="button"></div>
+<div id="widget_my_google" class="div_my_zzk"><input name="google_q" id="google_q" onkeydown="return google_go_enter(event)" class="input_my_zzk" type="text">&nbsp;<input onclick="google_go()" value="谷歌搜索" class="btn_my_zzk" type="button"></div>
+</div>
+</div>
+
+</div><div id="sidebar_shortcut" class="sidebar-block">
+<h3 class="catListTitle">常用链接</h3>
+<ul>
+<li><a href="https://www.cnblogs.com/Jessica-jie/p/" title="我的博客的随笔列表">我的随笔</a></li><li><a href="https://www.cnblogs.com/Jessica-jie/MyComments.html" title="我发表过的评论列表">我的评论</a></li><li><a href="https://www.cnblogs.com/Jessica-jie/OtherPosts.html" title="我评论过的随笔列表">我的参与</a></li><li><a href="https://www.cnblogs.com/Jessica-jie/RecentComments.html" title="我的博客的评论列表">最新评论</a></li><li><a href="https://www.cnblogs.com/Jessica-jie/tag/" title="我的博客的标签列表">我的标签</a></li>
+</ul>
+<div id="itemListLin_con" style="display:none;">
+
+</div></div><div id="sidebar_toptags" class="sidebar-block"></div><div id="sidebar_categories">
+<!--done-->
+
+		<h1 class="catListTitle">随笔分类</h1>
+		
+				<ul class="catList">
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_0" class="listitem" href="https://www.cnblogs.com/Jessica-jie/category/1114103.html">c++(6)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_1" class="listitem" href="https://www.cnblogs.com/Jessica-jie/category/968446.html">linux指令(11)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_2" class="listitem" href="https://www.cnblogs.com/Jessica-jie/category/1038437.html">Matlab(1)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_3" class="listitem" href="https://www.cnblogs.com/Jessica-jie/category/1115767.html">OpenCV(2)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_4" class="listitem" href="https://www.cnblogs.com/Jessica-jie/category/968154.html">ROS(21)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_5" class="listitem" href="https://www.cnblogs.com/Jessica-jie/category/1103973.html">SLAM基础积累(25)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_6" class="listitem" href="https://www.cnblogs.com/Jessica-jie/category/1247100.html">svo(4)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_7" class="listitem" href="https://www.cnblogs.com/Jessica-jie/category/968153.html">ubuntu常识(2)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_8" class="listitem" href="https://www.cnblogs.com/Jessica-jie/category/968444.html">安装(9)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_9" class="listitem" href="https://www.cnblogs.com/Jessica-jie/category/1114131.html">工具(2)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_10" class="listitem" href="https://www.cnblogs.com/Jessica-jie/category/968441.html">例子程序(22)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_11" class="listitem" href="https://www.cnblogs.com/Jessica-jie/category/1217617.html">滤波(4)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_12" class="listitem" href="https://www.cnblogs.com/Jessica-jie/category/969882.html">摄像机模型与标定（基础知识积累）(3)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_13" class="listitem" href="https://www.cnblogs.com/Jessica-jie/category/968438.html">遇到的error(8)</a></li>
+			
+				</ul>
+			
+	
+		<h1 class="catListTitle">随笔档案</h1>
+		
+				<ul class="catList">
+			
+				<li class="catListItem"> <a id="CatList_LinkList_1_Link_0" class="listitem" href="https://www.cnblogs.com/Jessica-jie/archive/2018/07.html">2018年7月 (3)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_1_Link_1" class="listitem" href="https://www.cnblogs.com/Jessica-jie/archive/2018/06.html">2018年6月 (3)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_1_Link_2" class="listitem" href="https://www.cnblogs.com/Jessica-jie/archive/2018/05.html">2018年5月 (4)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_1_Link_3" class="listitem" href="https://www.cnblogs.com/Jessica-jie/archive/2018/04.html">2018年4月 (8)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_1_Link_4" class="listitem" href="https://www.cnblogs.com/Jessica-jie/archive/2018/03.html">2018年3月 (13)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_1_Link_5" class="listitem" href="https://www.cnblogs.com/Jessica-jie/archive/2018/01.html">2018年1月 (3)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_1_Link_6" class="listitem" href="https://www.cnblogs.com/Jessica-jie/archive/2017/12.html">2017年12月 (6)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_1_Link_7" class="listitem" href="https://www.cnblogs.com/Jessica-jie/archive/2017/11.html">2017年11月 (9)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_1_Link_8" class="listitem" href="https://www.cnblogs.com/Jessica-jie/archive/2017/10.html">2017年10月 (19)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_1_Link_9" class="listitem" href="https://www.cnblogs.com/Jessica-jie/archive/2017/09.html">2017年9月 (8)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_1_Link_10" class="listitem" href="https://www.cnblogs.com/Jessica-jie/archive/2017/08.html">2017年8月 (3)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_1_Link_11" class="listitem" href="https://www.cnblogs.com/Jessica-jie/archive/2017/07.html">2017年7月 (3)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_1_Link_12" class="listitem" href="https://www.cnblogs.com/Jessica-jie/archive/2017/06.html">2017年6月 (4)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_1_Link_13" class="listitem" href="https://www.cnblogs.com/Jessica-jie/archive/2017/05.html">2017年5月 (2)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_1_Link_14" class="listitem" href="https://www.cnblogs.com/Jessica-jie/archive/2017/04.html">2017年4月 (11)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_1_Link_15" class="listitem" href="https://www.cnblogs.com/Jessica-jie/archive/2017/03.html">2017年3月 (23)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_1_Link_16" class="listitem" href="https://www.cnblogs.com/Jessica-jie/archive/2017/02.html">2017年2月 (1)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_1_Link_17" class="listitem" href="https://www.cnblogs.com/Jessica-jie/archive/2016/12.html">2016年12月 (4)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_1_Link_18" class="listitem" href="https://www.cnblogs.com/Jessica-jie/archive/2016/11.html">2016年11月 (2)</a></li>
+			
+				</ul>
+			
+	
+</div><div id="sidebar_recentcomments" class="sidebar-block"><div id="recent_comments_wrap">
+<h3 class="catListTitle">最新评论</h3>
+<div class="RecentComment" id="RecentComments">
+	<div id="RecentCommentsBlock"><ul>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/Jessica-jie/p/8622449.html#4218152">1. Re:特征点匹配+特征检测方法汇总</a></li>
+        <li class="recent_comment_body">楼主写的真的很好</li>
+        <li class="recent_comment_author">--耶梦加得Asa</li>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/Jessica-jie/p/7523364.html#4119346">2. Re:线特征---LBD算法（三）</a></li>
+        <li class="recent_comment_body">n的取值为啥是2w和3w？</li>
+        <li class="recent_comment_author">--hit-zhang</li>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/Jessica-jie/p/9286083.html#4104578">3. Re:ieee文献免费下载办法</a></li>
+        <li class="recent_comment_body">666</li>
+        <li class="recent_comment_author">--蚌蚌头</li>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/Jessica-jie/p/7574121.html#4100080">4. Re:线特征---LineMatching代码运行（五）</a></li>
+        <li class="recent_comment_body">你好，我的编译过程报了这两个错误，不知道您有遇到吗？我用的是ubuntu14.041------------home/test/Documents/1-Code/9-LocDetection/LBD_......</li>
+        <li class="recent_comment_author">--沉默的熔岩</li>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/Jessica-jie/p/7739775.html#4097105">5. Re:Bundle Adjustment---即最小化重投影误差（高翔slam---第七讲）</a></li>
+        <li class="recent_comment_body">在介绍什么是重投影误差那里，更好的表述是，<br>先通过对极几何计算出两帧图片之间相机的运动。在得到相机运动之后，再通过三角测量估计特征点的空间位置。<br>whatever，写的很赞！</li>
+        <li class="recent_comment_author">--cv_gordon</li>
+</ul>
+</div>
+</div>
+</div></div><div id="sidebar_topviewedposts" class="sidebar-block"><div id="topview_posts_wrap">
+<h3 class="catListTitle">阅读排行榜</h3>
+<div class="RecentComment" id="TopViewPosts"> 
+	<div id="TopViewPostsBlock"><ul><li><a href="https://www.cnblogs.com/Jessica-jie/p/6596450.html">1. 相机标定原理介绍（一）(49936)</a></li><li><a href="https://www.cnblogs.com/Jessica-jie/p/7739775.html">2. Bundle Adjustment---即最小化重投影误差（高翔slam---第七讲）(10117)</a></li><li><a href="https://www.cnblogs.com/Jessica-jie/p/6081308.html">3. 利用matlab摄像机标定(9353)</a></li><li><a href="https://www.cnblogs.com/Jessica-jie/p/6950604.html">4. 香港科技大学的VINS_MONO初试(9033)</a></li><li><a href="https://www.cnblogs.com/Jessica-jie/p/7719359.html">5. 当前的开源SLAM方案(8664)</a></li></ul></div>
+</div>
+</div></div><div id="sidebar_topcommentedposts" class="sidebar-block"><div id="topfeedback_posts_wrap">
+<h3 class="catListTitle">评论排行榜</h3>
+<div class="RecentComment" id="TopCommentsPosts">
+	<div id="TopFeedbackPostsBlock"><ul><li><a href="https://www.cnblogs.com/Jessica-jie/p/6381190.html">1. ubuntu 安装Pangolin 过程(13)</a></li><li><a href="https://www.cnblogs.com/Jessica-jie/p/7545554.html">2. 线特征---LineMatching原理（四）(7)</a></li><li><a href="https://www.cnblogs.com/Jessica-jie/p/6596450.html">3. 相机标定原理介绍（一）(5)</a></li><li><a href="https://www.cnblogs.com/Jessica-jie/p/7574121.html">4. 线特征---LineMatching代码运行（五）(4)</a></li><li><a href="https://www.cnblogs.com/Jessica-jie/p/7510931.html">5. 线特征---LSD and LBD程序运行（一）(4)</a></li></ul></div>
+</div></div></div><div id="sidebar_topdiggedposts" class="sidebar-block"><div id="topdigg_posts_wrap">
+<h3 class="catListTitle">推荐排行榜</h3>
+<div class="RecentComment">
+	<div id="TopDiggPostsBlock"><ul><li><a href="https://www.cnblogs.com/Jessica-jie/p/6596450.html">1. 相机标定原理介绍（一）(5)</a></li><li><a href="https://www.cnblogs.com/Jessica-jie/p/7510931.html">2. 线特征---LSD and LBD程序运行（一）(3)</a></li><li><a href="https://www.cnblogs.com/Jessica-jie/p/6950604.html">3. 香港科技大学的VINS_MONO初试(2)</a></li><li><a href="https://www.cnblogs.com/Jessica-jie/p/6381190.html">4. ubuntu 安装Pangolin 过程(2)</a></li><li><a href="https://www.cnblogs.com/Jessica-jie/p/7739775.html">5. Bundle Adjustment---即最小化重投影误差（高翔slam---第七讲）(2)</a></li></ul></div>
+</div></div></div></div><script type="text/javascript">loadBlogSideColumn();</script></div>
+	
+</div>
+
+
+<!--done-->
+<div class="footer">
+	
+	Copyright ©2019 Jessica&amp;jie Powered By<a href="https://www.cnblogs.com/">博客园</a> 模板提供：<a href="http://blog.hjenglish.com/">沪江博客</a>
+</div>
+
+
+
+</body></html>

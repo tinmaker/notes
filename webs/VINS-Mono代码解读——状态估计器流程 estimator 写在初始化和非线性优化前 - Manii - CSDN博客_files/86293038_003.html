@@ -1,0 +1,3628 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <link rel="canonical" href="https://blog.csdn.net/qq_41839222/article/details/86293038"/>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="renderer" content="webkit"/>
+    <meta name="force-rendering" content="webkit"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="referrer" content="always">
+    <meta http-equiv="Cache-Control" content="no-siteapp" /><link rel="alternate" media="handheld" href="#" />
+    <meta name="shenma-site-verification" content="5a59773ab8077d4a62bf469ab966a63b_1497598848">
+        <meta name="csdn-baidu-search"  content='{"autorun":true,"install":true,"keyword":"VINS-Mono代码解读——状态估计器流程 estimator 写在初始化和非线性优化前 - Manii"}'>
+    
+    <link href="https://csdnimg.cn/public/favicon.ico" rel="SHORTCUT ICON">
+    <title>VINS-Mono代码解读——状态估计器流程 estimator 写在初始化和非线性优化前 - Manii - CSDN博客</title>
+
+        
+                    <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/detail-c9f101d6a9.min.css">
+            
+            <script type="application/ld+json">{"@context":"https:\/\/ziyuan.baidu.com\/contexts\/cambrian.jsonld","@id":"https:\/\/blog.csdn.net\/qq_41839222\/article\/details\/86293038","appid":"1563894916825412","title":"VINS-Mono\u4ee3\u7801\u89e3\u8bfb\u2014\u2014\u72b6\u6001\u4f30\u8ba1\u5668\u6d41\u7a0b estimator \u5199\u5728\u521d\u59cb\u5316\u548c\u975e\u7ebf\u6027\u4f18\u5316\u524d - Manii","images":["https:\/\/img-blog.csdnimg.cn\/20190113164733561.png?x-oss-process=image\/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQxODM5MjIy,size_16,color_FFFFFF,t_70"],"pubDate":"2019-05-15T15:32:09"}</script>
+        
+          <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/themes/skin-blue/skin-blue-b7967eb1c8.min.css">
+        <script type="text/javascript">
+        var username = "qq_41839222";
+        var userPermission = false;
+        var blog_address = "https://blog.csdn.net/qq_41839222";
+        var static_host = "https://csdnimg.cn/release/phoenix/";
+        var currentUserName = "qq_35593140";
+        var currentUserPermission = false;
+        var isShowAds = true;
+        var isOwner = false;
+        var loginUrl = "http://passport.csdn.net/account/login?from=https://blog.csdn.net/qq_41839222/article/details/86293038"
+        var blogUrl = "https://blog.csdn.net/";
+        //页面皮肤样式
+        var curSkin = "skin-blue";
+        // 第四范式所需数据
+        var articleTitles = "VINS-Mono代码解读——状态估计器流程 estimator 写在初始化和非线性优化前 - Manii";
+        var articleID = "86293038";
+        
+        var nickName = "Manii";
+        var isCorporate = false;
+        var subDomainBlogUrl = "https://blog.csdn.net/"
+        var digg_base_url = "https://blog.csdn.net/qq_41839222/phoenix/comment";
+        var articleDetailUrl = "https://blog.csdn.net/qq_41839222/article/details/86293038";
+    </script>
+    <script type="text/javascript">
+        // Traffic Stats of the entire Web site By baidu
+        var _hmt = _hmt || [];
+        (function() {
+            var hm = document.createElement("script");
+            hm.src = "https://hm.baidu.com/hm.js?6bcd52f51e9b3dce32bec4a3997715ac";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+        // Traffic Stats of the entire Web site By baidu end
+    </script>
+    <script src="https://csdnimg.cn/public/common/libs/jquery/jquery-1.9.1.min.js" type="text/javascript"></script>
+    <script src="https://csdnimg.cn/rabbit/exposure-click/main-1.0.6.js"></script>
+    <script src="//g.csdnimg.cn/fixed-sidebar/1.1.3/fixed-sidebar.js" type="text/javascript"></script>
+    <!-- 新版上报 -->
+      <script src="//g.csdnimg.cn/track/1.2.6/track.js" type="text/javascript"></script>
+    <!-- 新版上报end -->
+
+    <link rel="stylesheet" href="https://csdnimg.cn/public/sandalstrap/1.4/css/sandalstrap.min.css">
+    <style>
+        .MathJax, .MathJax_Message, .MathJax_Preview{
+            display: none
+        }
+    </style>
+</head>
+<!-- nodata 第三栏接口无数据时样式不变 -->
+<body class="nodata " > 
+    <link rel="stylesheet" href="https://csdnimg.cn/public/common/toolbar/content_toolbar_css/content_toolbar.css">
+    <script id="toolbar-tpl-scriptId" src="https://csdnimg.cn/public/common/toolbar/js/content_toolbar.js" type="text/javascript" domain="https://blog.csdn.net/"></script>
+<div id="kp_box_476" data-pid="476" data-track-view='{"mod":"kp_popu_476-891","con":",,"}' data-track-click='{"mod":"kp_popu_476-891","con":",,"}'><script src="//csdnimg.cn/public/common/indexSuperise/1.0.7/indexSuperise.js?20190508180304"></script>
+<script>
+window.csdn.indexSuperise({
+zIndex:11000,
+    smallMoveImg: "//ubmcmm.baidustatic.com/media/v1/0f000ntnp0VTgAexmTK7v0.png", 
+    smallMove: "notMove", 
+    link: "//h5.youzan.com/v2/ump/promocard/fetch?alias=1eme18l51", 
+    trackSuperId: "476", 
+    trackSId: "891",
+    show360id: "t5unDb",
+    title360: "码书商店代金券" ,
+    show360QrlinkQrCode: 'http://img-ads.csdn.net/2019/201905151059539116.png',
+});
+</script></div><link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/blog_code-c3a0c33d5c.css">
+<link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/vendor/pagination/paging.css">
+<script type="text/javascript">
+	// 容错处理
+	var NEWS_FEED = function(){}
+</script>
+<script type="text/javascript" src="//static.mediav.com/js/mvf_news_feed.js"></script>
+<script type="text/javascript" src="//g.csdnimg.cn/copyright/1.0.3/copyright.js"></script>
+<div style="display:none;">
+	<img src="" onerror='setTimeout(function(){if(!/(csdn.net|iteye.com|baiducontent.com|googleusercontent.com|360webcache.com|sogoucdn.com|bingj.com|baidu.com)$/.test(window.location.hostname)){window.location.href="\x68\x74\x74\x70\x73\x3a\x2f\x2f\x77\x77\x77\x2e\x63\x73\x64\x6e\x2e\x6e\x65\x74"}},3000);'>
+</div>
+<link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/chart-3456820cac.css" />
+<script src="https://dup.baidustatic.com/js/ds.js"></script>
+<div class="container clearfix" id="mainBox">
+			<div class="recommend-right">
+  <ul class="recommend-fixed-box">
+    
+  </ul>
+</div>	    <main>
+        <div class="blog-content-box">
+	<div class="article-header-box">
+		<div class="article-header">
+			<div class="article-title-box">
+				<span class="article-type type-1 float-left">原</span>				<h1 class="title-article">VINS-Mono代码解读——状态估计器流程 estimator 写在初始化和非线性优化前</h1>
+			</div>
+			<div class="article-info-box">
+				<div class="article-bar-top">
+																									<span class="time">2019年01月13日 15:09:41</span>
+					<a class="follow-nickName" href="https://me.csdn.net/qq_41839222" target="_blank">Manii</a>
+						<span class="read-count">阅读数：511</span>
+						
+																												<div class="tags-box space">
+								<span class="label">所属专栏：</span>
+																<a class="tag-link" href="https://blog.csdn.net/column/details/34866.html" target="_blank">VINS论文学习与代码解读</a>
+																</a>
+							</div>
+																	</div>
+				<div class="operating">
+									</div>
+			</div>
+		</div>
+	</div>
+	<article class="baidu_pl">
+		<div id="article_content" class="article_content clearfix csdn-tracking-statistics" data-pid="blog"  data-mod=popu_307  data-dsm = "post" >
+								<link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/template/css/ck_htmledit_views-f57960eb32.css" />
+        								            <div id="content_views" class="markdown_views prism-atom-one-dark">
+							<!-- flowchart 箭头图标 勿删 -->
+							<svg xmlns="http://www.w3.org/2000/svg" style="display: none;"><path stroke-linecap="round" d="M5,0 0,2.5 5,5z" id="raphael-marker-block" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);"></path></svg>
+							<h1><a id="_0"></a>前言</h1>
+<p>本文主要介绍VINS的状态估计器模块（estimator），主要在代码中/vins_estimator节点的相关部分实现。</p>
+<p>这个模块可以说是VINS的最核心模块，从论文的内容上来说，里面的内容包括了VINS的估计器初始化、基于滑动窗口的非线性优化实现紧耦合，即论文第五章（V. ESTIMATOR INITIALIZATION）第六章（VI. TIGHTLY-COUPLED MONOCULAR VIO）。此外还包括了关键帧的选择，即论文第四章（IV. MEASUREMENT PREPROCESSING A. Vision Processing Front-end） 的部分内容。</p>
+<p>该模块的代码放在文件夹vins_estimator中，可以看到，除了上述内容外，还包括有外参标定、可视化等其他功能的实现，内容实在是太多了！所以本文主要是对vins_estimator文件夹内每个文件的代码功能进行简单整理，并从estimator_node.cpp开始，对状态估计器的具体流程进行代码解读，<strong>初始化以及紧耦合的理论知识和具体实现将放在以后进行详细说明</strong>。</p>
+<p>其中论文中对于关键帧的选择（论文IV A部分）：<br>
+两个关键帧选择标准：<br>
+1、与上一个关键帧的平均视差。如果在当前帧和最新关键帧之间跟踪的特征点的平均视差超出某个特定阈值，则将该帧视为新的关键帧。<br>
+2、跟踪质量。如果跟踪的特征数量低于某一阈值，则将此帧视为新的关键帧。这个标准是为了避免跟踪特征完全丢失。<br>
+具体在bool FeatureManager::addFeatureCheckParallax()中实现。</p>
+<hr>
+<h1><a id="_14"></a>流程图</h1>
+<p><img src="https://img-blog.csdnimg.cn/20190222143043441.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQxODM5MjIy,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<hr>
+<h1><a id="_19"></a>代码实现</h1>
+<h2><a id="vins_estimator_20"></a>vins_estimator文件夹</h2>
+<ul>
+<li>factor：
+<ul>
+<li>imu_factor.h：IMU残差、雅可比</li>
+<li>intergration_base.h：IMU预积分</li>
+<li>marginalization.cpp/.h：边缘化</li>
+<li>pose_local_parameterization.cpp/.h：局部参数化</li>
+<li>projection_factor.cpp/.h：视觉残差</li>
+</ul>
+</li>
+<li>initial：
+<ul>
+<li>initial_alignment.cpp/.h：视觉和IMU校准(陀螺仪偏置、尺度、重力加速度和速度)</li>
+<li>initial_ex_rotation.cpp/.h：相机和IMU外参标定</li>
+<li>initial_sfm.cpp/.h：纯视觉SFM、三角化、PNP</li>
+<li>solve_5pts.cpp/.h：5点法求基本矩阵得到Rt</li>
+</ul>
+</li>
+<li>utility：
+<ul>
+<li>CameraPoseVisualization.cpp/.h：相机位姿可视化</li>
+<li>tic_toc.h：记录时间</li>
+<li>utility.cpp/.h：各种四元数、矩阵转换</li>
+<li>visualization.cpp/.h：各种数据发布</li>
+</ul>
+</li>
+<li>estimator.cpp/.h：紧耦合的VIO状态估计器实现</li>
+<li>estimator_node.cpp：ROS 节点函数，回调函数</li>
+<li>feature_manager.cpp/.h：特征点管理，三角化，关键帧等</li>
+<li>parameters.cpp/.h：读取参数</li>
+</ul>
+<h2><a id="_42"></a>输入输出</h2>
+<p><img src="https://img-blog.csdnimg.cn/20190113164733561.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQxODM5MjIy,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>输入：<br>
+1、IMU的角速度和线加速度，即订阅了IMU发布的topic：IMU_TOPIC="/imu0"<br>
+2、图像追踪的特征点，即订阅了feature_trackers模块发布的topic：“/feature_tracker/feature"<br>
+3、复位信号，即订阅了feature_trackers模块发布的topic：“/feature_tracker/restart"<br>
+4、重定位的匹配点，即订阅了pose_graph模块发布的topic：“/pose_graph/match_points"</p>
+<p>输出：<br>
+1、在线程void process()中给RVIZ发送里程计信息PQV、关键点三维坐标、相机位姿、点云信息、IMU到相机的外参、重定位位姿等</p>
+<pre><code class="prism language-cpp"><span class="token function">pubOdometry</span><span class="token punctuation">(</span>estimator<span class="token punctuation">,</span> header<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//"odometry"</span>
+<span class="token function">pubKeyPoses</span><span class="token punctuation">(</span>estimator<span class="token punctuation">,</span> header<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//"key_poses"</span>
+<span class="token function">pubCameraPose</span><span class="token punctuation">(</span>estimator<span class="token punctuation">,</span> header<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//"camera_pose"</span>
+<span class="token function">pubPointCloud</span><span class="token punctuation">(</span>estimator<span class="token punctuation">,</span> header<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//"history_cloud"</span>
+<span class="token function">pubTF</span><span class="token punctuation">(</span>estimator<span class="token punctuation">,</span> header<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//"extrinsic"</span>
+<span class="token function">pubKeyframe</span><span class="token punctuation">(</span>estimator<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//"keyframe_point"、"keyframe_pose"</span>
+<span class="token keyword">if</span> <span class="token punctuation">(</span>relo_msg <span class="token operator">!=</span> <span class="token constant">NULL</span><span class="token punctuation">)</span>
+	<span class="token function">pubRelocalization</span><span class="token punctuation">(</span>estimator<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//"relo_relative_pose"</span>
+</code></pre>
+<p>2、在回调函数void imu_callback(const sensor_msgs::ImuConstPtr &amp;imu_msg)发布最新的由IMU直接递推得到的PQV</p>
+<pre><code class="prism language-cpp"><span class="token keyword">if</span> <span class="token punctuation">(</span>estimator<span class="token punctuation">.</span>solver_flag <span class="token operator">==</span> Estimator<span class="token operator">::</span>SolverFlag<span class="token operator">::</span>NON_LINEAR<span class="token punctuation">)</span>
+            <span class="token function">pubLatestOdometry</span><span class="token punctuation">(</span>tmp_P<span class="token punctuation">,</span> tmp_Q<span class="token punctuation">,</span> tmp_V<span class="token punctuation">,</span> header<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//"imu_propagate"</span>
+</code></pre>
+<hr>
+<h2><a id="estimator_nodecpp_72"></a>estimator_node.cpp</h2>
+
+<table>
+<thead>
+<tr>
+<th>函数</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>void predict</td>
+<td>从IMU测量值imu_msg和上一个PVQ递推得到当前PVQ</td>
+</tr>
+<tr>
+<td>void update()</td>
+<td>得到窗口最后一个图像帧的imu项[P,Q,V,ba,bg,a,g]，对imu_buf中剩余imu_msg进行PVQ递推</td>
+</tr>
+<tr>
+<td><strong>getMeasurements()</strong></td>
+<td>对imu和图像数据进行对齐并组合</td>
+</tr>
+<tr>
+<td>void imu_callback</td>
+<td>imu回调函数，将imu_msg存入imu_buf，递推IMU的PQV并发布"imu_propagate”</td>
+</tr>
+<tr>
+<td>void feature_callback</td>
+<td>feature回调函数，将feature_msg放入feature_buf</td>
+</tr>
+<tr>
+<td>void restart_callback</td>
+<td>restart回调函数，收到restart消息时清空feature_buf和imu_buf，估计器重置，时间重置</td>
+</tr>
+<tr>
+<td>void relocalization_callback</td>
+<td>relocalization回调函数，将points_msg放入relo_buf</td>
+</tr>
+<tr>
+<td><strong>void process()</strong></td>
+<td>VIO的主线程</td>
+</tr>
+<tr>
+<td><strong>int main()</strong></td>
+<td>程序入口</td>
+</tr>
+</tbody>
+</table><hr>
+<h3><a id="_int_mainint_argc_char_argv_87"></a>程序入口 int main(int argc, char **argv)</h3>
+<p>1、ROS初始化、设置句柄</p>
+<pre><code class="prism language-cpp">ros<span class="token operator">::</span><span class="token function">init</span><span class="token punctuation">(</span>argc<span class="token punctuation">,</span> argv<span class="token punctuation">,</span> <span class="token string">"vins_estimator"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+ros<span class="token operator">::</span>NodeHandle <span class="token function">n</span><span class="token punctuation">(</span><span class="token string">"~"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+ros<span class="token operator">::</span>console<span class="token operator">::</span><span class="token function">set_logger_level</span><span class="token punctuation">(</span>ROSCONSOLE_DEFAULT_NAME<span class="token punctuation">,</span> ros<span class="token operator">::</span>console<span class="token operator">::</span>levels<span class="token operator">::</span>Info<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>2、读取参数，设置状态估计器参数</p>
+<pre><code class="prism language-cpp"><span class="token function">readParameters</span><span class="token punctuation">(</span>n<span class="token punctuation">)</span><span class="token punctuation">;</span>
+estimator<span class="token punctuation">.</span><span class="token function">setParameter</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>3、发布用于RVIZ显示的Topic，本模块具体发布的内容详见输入输出</p>
+<pre><code class="prism language-cpp"><span class="token function">registerPub</span><span class="token punctuation">(</span>n<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>4、订阅IMU、feature、restart、match_points的topic，执行各自回调函数</p>
+<pre><code class="prism language-cpp">ros<span class="token operator">::</span>Subscriber sub_imu <span class="token operator">=</span> n<span class="token punctuation">.</span><span class="token function">subscribe</span><span class="token punctuation">(</span>IMU_TOPIC<span class="token punctuation">,</span> <span class="token number">2000</span><span class="token punctuation">,</span> imu_callback<span class="token punctuation">,</span> ros<span class="token operator">::</span><span class="token function">TransportHints</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">tcpNoDelay</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+ros<span class="token operator">::</span>Subscriber sub_image <span class="token operator">=</span> n<span class="token punctuation">.</span><span class="token function">subscribe</span><span class="token punctuation">(</span><span class="token string">"/feature_tracker/feature"</span><span class="token punctuation">,</span> <span class="token number">2000</span><span class="token punctuation">,</span> feature_callback<span class="token punctuation">)</span><span class="token punctuation">;</span>
+ros<span class="token operator">::</span>Subscriber sub_restart <span class="token operator">=</span> n<span class="token punctuation">.</span><span class="token function">subscribe</span><span class="token punctuation">(</span><span class="token string">"/feature_tracker/restart"</span><span class="token punctuation">,</span> <span class="token number">2000</span><span class="token punctuation">,</span> restart_callback<span class="token punctuation">)</span><span class="token punctuation">;</span>
+ros<span class="token operator">::</span>Subscriber sub_relo_points <span class="token operator">=</span> n<span class="token punctuation">.</span><span class="token function">subscribe</span><span class="token punctuation">(</span><span class="token string">"/pose_graph/match_points"</span><span class="token punctuation">,</span> <span class="token number">2000</span><span class="token punctuation">,</span> relocalization_callback<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>5、创建VIO主线程</p>
+<pre><code class="prism language-cpp">std<span class="token operator">::</span>thread measurement_process<span class="token punctuation">{</span>process<span class="token punctuation">}</span><span class="token punctuation">;</span>
+</code></pre>
+<hr>
+<h3><a id="4_117"></a>4个回调函数</h3>
+<p>这里需要注意的一点是：节点estimator，以及创建了一个process，必须考虑多线程安全问题：<br>
+1、队列imu_buf、feature_buf、relo_buf是被多线程共享的，因而在回调函数将相应的msg放入buf或进行pop时，需要设置互斥锁m_buf，在操作前lock()，操作后unlock()。其他互斥锁同理。<br>
+2、在feature_callback和imu_callback中还设置了条件锁，在完成将msg放入buf的操作后唤醒作用于process线程中的获取观测值数据的函数。</p>
+<pre><code class="prism language-cpp">std<span class="token operator">::</span>condition_variable con<span class="token punctuation">;</span>
+con<span class="token punctuation">.</span><span class="token function">notify_one</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>3、在imu_callback中还通过lock_guard的方式构造互斥锁m_state，它能在构造时加锁，析构时解锁。</p>
+<pre><code class="prism language-cpp">std<span class="token operator">::</span>lock_guard<span class="token operator">&lt;</span>std<span class="token operator">::</span>mutex<span class="token operator">&gt;</span> <span class="token function">lg</span><span class="token punctuation">(</span>m_state<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<hr>
+<h3><a id="VIO_void_process_131"></a>VIO主线程 void process()</h3>
+<p>通过while (true)不断循环，主要功能包括等待并获取measurements，计算dt，然后执行以下函数：<br>
+stimator.processIMU()进行IMU预积分<br>
+estimator.setReloFrame()设置重定位帧<br>
+estimator.processImage()处理图像帧：初始化，紧耦合的非线性优化<br>
+其中measurements的数据格式可以表示为：(IMUs, img_msg)s   s表示容器（vector）</p>
+<p>1、 等待上面两个接收数据完成就会被唤醒，在执行getMeasurements()提取measurements时互斥锁m_buf会锁住，此时无法接收数据。<br>
+getMeasurements()的作用是对imu和图像数据进行对齐并组合，之后会具体分析</p>
+<pre><code class="prism language-cpp">std<span class="token operator">::</span>unique_lock<span class="token operator">&lt;</span>std<span class="token operator">::</span>mutex<span class="token operator">&gt;</span> <span class="token function">lk</span><span class="token punctuation">(</span>m_buf<span class="token punctuation">)</span><span class="token punctuation">;</span>
+con<span class="token punctuation">.</span><span class="token function">wait</span><span class="token punctuation">(</span>lk<span class="token punctuation">,</span> <span class="token punctuation">[</span><span class="token operator">&amp;</span><span class="token punctuation">]</span>
+	<span class="token punctuation">{</span>
+	<span class="token keyword">return</span> <span class="token punctuation">(</span>measurements <span class="token operator">=</span> <span class="token function">getMeasurements</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">size</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">!=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+	<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+lk<span class="token punctuation">.</span><span class="token function">unlock</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>2、对measurements中的每一个measurement (IMUs,IMG)组合进行操作<br>
+for (auto &amp;measurement : measurements)</p>
+<p>2.1、对于measurement中的每一个imu_msg，计算dt并执行processIMU()。<br>
+processIMU()实现了IMU的预积分，通过中值积分得到当前PQV作为优化初值</p>
+<pre><code class="prism language-cpp">estimator<span class="token punctuation">.</span><span class="token function">processIMU</span><span class="token punctuation">(</span>dt<span class="token punctuation">,</span> <span class="token function">Vector3d</span><span class="token punctuation">(</span>dx<span class="token punctuation">,</span> dy<span class="token punctuation">,</span> dz<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token function">Vector3d</span><span class="token punctuation">(</span>rx<span class="token punctuation">,</span> ry<span class="token punctuation">,</span> rz<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>              
+</code></pre>
+<p>2.2、在relo_buf中取出最后一个重定位帧，拿出其中的信息并执行setReloFrame()</p>
+<pre><code class="prism language-cpp"><span class="token comment">// set relocalization frame</span>
+sensor_msgs<span class="token operator">::</span>PointCloudConstPtr relo_msg <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
+<span class="token keyword">while</span> <span class="token punctuation">(</span><span class="token operator">!</span>relo_buf<span class="token punctuation">.</span><span class="token function">empty</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+	relo_msg <span class="token operator">=</span> relo_buf<span class="token punctuation">.</span><span class="token function">front</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    relo_buf<span class="token punctuation">.</span><span class="token function">pop</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">if</span> <span class="token punctuation">(</span>relo_msg <span class="token operator">!=</span> <span class="token constant">NULL</span><span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+	<span class="token comment">/*...*/</span>
+    estimator<span class="token punctuation">.</span><span class="token function">setReloFrame</span><span class="token punctuation">(</span>frame_stamp<span class="token punctuation">,</span> frame_index<span class="token punctuation">,</span> match_points<span class="token punctuation">,</span> relo_t<span class="token punctuation">,</span> relo_r<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>2.3、建立每个特征点的(camera_id,[x,y,z,u,v,vx,vy])s的map，索引为feature_id</p>
+<pre><code class="prism language-cpp">map<span class="token operator">&lt;</span><span class="token keyword">int</span><span class="token punctuation">,</span> vector<span class="token operator">&lt;</span>pair<span class="token operator">&lt;</span><span class="token keyword">int</span><span class="token punctuation">,</span> Eigen<span class="token operator">::</span>Matrix<span class="token operator">&lt;</span><span class="token keyword">double</span><span class="token punctuation">,</span> <span class="token number">7</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token operator">&gt;&gt;</span><span class="token operator">&gt;&gt;</span> image<span class="token punctuation">;</span>
+<span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">unsigned</span> <span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> img_msg<span class="token operator">-</span><span class="token operator">&gt;</span>points<span class="token punctuation">.</span><span class="token function">size</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+	<span class="token keyword">int</span> v <span class="token operator">=</span> img_msg<span class="token operator">-</span><span class="token operator">&gt;</span>channels<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span>values<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">+</span> <span class="token number">0.5</span><span class="token punctuation">;</span>
+    <span class="token keyword">int</span> feature_id <span class="token operator">=</span> v <span class="token operator">/</span> NUM_OF_CAM<span class="token punctuation">;</span>
+    <span class="token keyword">int</span> camera_id <span class="token operator">=</span> v <span class="token operator">%</span> NUM_OF_CAM<span class="token punctuation">;</span>
+    <span class="token comment">/* double x,y,z,p_u,p_v,velocity_x,velocity_y     */</span>
+    <span class="token function">ROS_ASSERT</span><span class="token punctuation">(</span>z <span class="token operator">==</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//判断是否归一化了    Eigen::Matrix&lt;double, 7, 1&gt; xyz_uv_velocity;</span>
+    xyz_uv_velocity <span class="token operator">&lt;&lt;</span> x<span class="token punctuation">,</span> y<span class="token punctuation">,</span> z<span class="token punctuation">,</span> p_u<span class="token punctuation">,</span> p_v<span class="token punctuation">,</span> velocity_x<span class="token punctuation">,</span> velocity_y<span class="token punctuation">;</span>
+    image<span class="token punctuation">[</span>feature_id<span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">emplace_back</span><span class="token punctuation">(</span>camera_id<span class="token punctuation">,</span>  xyz_uv_velocity<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>2.4、处理图像，这里实现了视觉与IMU的初始化以及非线性优化的紧耦合</p>
+<pre><code class="prism language-cpp">estimator<span class="token punctuation">.</span><span class="token function">processImage</span><span class="token punctuation">(</span>image<span class="token punctuation">,</span> img_msg<span class="token operator">-</span><span class="token operator">&gt;</span>header<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>2.5、向RVIZ发布里程计信息、关键位姿、相机位姿、点云和TF关系，这部分在之前输入输出已经介绍了</p>
+<p>2.6、更新IMU参数[P,Q,V,ba,bg,a,g]，注意线程安全</p>
+<pre><code class="prism language-cpp">m_buf<span class="token punctuation">.</span><span class="token function">lock</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+m_state<span class="token punctuation">.</span><span class="token function">lock</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">if</span> <span class="token punctuation">(</span>estimator<span class="token punctuation">.</span>solver_flag <span class="token operator">==</span> Estimator<span class="token operator">::</span>SolverFlag<span class="token operator">::</span>NON_LINEAR<span class="token punctuation">)</span>
+	<span class="token function">update</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//更新IMU参数[P,Q,V,ba,bg,a,g]</span>
+m_state<span class="token punctuation">.</span><span class="token function">unlock</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+m_buf<span class="token punctuation">.</span><span class="token function">unlock</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<hr>
+<h3><a id="stdvectorstdpairstdvectorsensor_msgsImuConstPtr_sensor_msgsPointCloudConstPtr_getMeasurements_205"></a>std::vector&lt;std::pair&lt;std::vector&lt;sensor_msgs::ImuConstPtr&gt;, sensor_msgs::PointCloudConstPtr&gt;&gt; getMeasurements()</h3>
+<p>该函数的主要功能是对imu和图像数据进行对齐并组合，返回的是(IMUs, img_msg)s，即图像帧所对应的所有IMU数据，并将其放入一个容器vector中。<br>
+IMU和图像帧的对应关系在新版的代码中有变化：对图像帧j，每次取完imu_buf中所有时间戳小于它的imu_msg，<strong>以及第一个时间戳大于图像帧时间戳的imu_msg</strong>  （这里还需要加上同步时间存在的延迟td）。<br>
+因此在新代码中，每个大于图像帧时间戳的第一个imu_msg是被两个图像帧共用的，而产生的差别在processIMU()前进行了对应的处理。<br>
+（这一部分我不知道自己理解的对不对，若有错误请指出！）</p>
+<pre><code>img:    i -------- j  -  -------- k
+imu:    - jjjjjjjj - j+k kkkkkkkk -
+</code></pre>
+<pre><code class="prism language-cpp">std<span class="token operator">::</span>vector<span class="token operator">&lt;</span>std<span class="token operator">::</span>pair<span class="token operator">&lt;</span>std<span class="token operator">::</span>vector<span class="token operator">&lt;</span>sensor_msgs<span class="token operator">::</span>ImuConstPtr<span class="token operator">&gt;</span><span class="token punctuation">,</span> sensor_msgs<span class="token operator">::</span>PointCloudConstPtr<span class="token operator">&gt;&gt;</span>
+<span class="token function">getMeasurements</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    std<span class="token operator">::</span>vector<span class="token operator">&lt;</span>std<span class="token operator">::</span>pair<span class="token operator">&lt;</span>std<span class="token operator">::</span>vector<span class="token operator">&lt;</span>sensor_msgs<span class="token operator">::</span>ImuConstPtr<span class="token operator">&gt;</span><span class="token punctuation">,</span> sensor_msgs<span class="token operator">::</span>PointCloudConstPtr<span class="token operator">&gt;&gt;</span> measurements<span class="token punctuation">;</span>
+
+    <span class="token keyword">while</span> <span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span>
+    <span class="token punctuation">{</span>
+        <span class="token comment">//直到把缓存中的图像特征数据或者IMU数据取完，才能够跳出此函数</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>imu_buf<span class="token punctuation">.</span><span class="token function">empty</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">||</span> feature_buf<span class="token punctuation">.</span><span class="token function">empty</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+            <span class="token keyword">return</span> measurements<span class="token punctuation">;</span>
+
+        <span class="token comment">//对齐标准：IMU最后一个数据的时间要大于第一个图像特征数据的时间</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token punctuation">(</span>imu_buf<span class="token punctuation">.</span><span class="token function">back</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">-</span><span class="token operator">&gt;</span>header<span class="token punctuation">.</span>stamp<span class="token punctuation">.</span><span class="token function">toSec</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&gt;</span> feature_buf<span class="token punctuation">.</span><span class="token function">front</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">-</span><span class="token operator">&gt;</span>header<span class="token punctuation">.</span>stamp<span class="token punctuation">.</span><span class="token function">toSec</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">+</span> estimator<span class="token punctuation">.</span>td<span class="token punctuation">)</span><span class="token punctuation">)</span>
+        <span class="token punctuation">{</span>
+            <span class="token comment">//ROS_WARN("wait for imu, only should happen at the beginning");</span>
+            sum_of_wait<span class="token operator">++</span><span class="token punctuation">;</span>
+            <span class="token keyword">return</span> measurements<span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+
+        <span class="token comment">//对齐标准：IMU第一个数据的时间要小于第一个图像特征数据的时间</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token punctuation">(</span>imu_buf<span class="token punctuation">.</span><span class="token function">front</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">-</span><span class="token operator">&gt;</span>header<span class="token punctuation">.</span>stamp<span class="token punctuation">.</span><span class="token function">toSec</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&lt;</span> feature_buf<span class="token punctuation">.</span><span class="token function">front</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">-</span><span class="token operator">&gt;</span>header<span class="token punctuation">.</span>stamp<span class="token punctuation">.</span><span class="token function">toSec</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">+</span> estimator<span class="token punctuation">.</span>td<span class="token punctuation">)</span><span class="token punctuation">)</span>
+        <span class="token punctuation">{</span>
+            <span class="token function">ROS_WARN</span><span class="token punctuation">(</span><span class="token string">"throw img, only should happen at the beginning"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            feature_buf<span class="token punctuation">.</span><span class="token function">pop</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">continue</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+
+        sensor_msgs<span class="token operator">::</span>PointCloudConstPtr img_msg <span class="token operator">=</span> feature_buf<span class="token punctuation">.</span><span class="token function">front</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        feature_buf<span class="token punctuation">.</span><span class="token function">pop</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        std<span class="token operator">::</span>vector<span class="token operator">&lt;</span>sensor_msgs<span class="token operator">::</span>ImuConstPtr<span class="token operator">&gt;</span> IMUs<span class="token punctuation">;</span>
+
+        <span class="token comment">//图像数据(img_msg)，对应多组在时间戳内的imu数据,然后塞入measurements</span>
+        <span class="token keyword">while</span> <span class="token punctuation">(</span>imu_buf<span class="token punctuation">.</span><span class="token function">front</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">-</span><span class="token operator">&gt;</span>header<span class="token punctuation">.</span>stamp<span class="token punctuation">.</span><span class="token function">toSec</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&lt;</span> img_msg<span class="token operator">-</span><span class="token operator">&gt;</span>header<span class="token punctuation">.</span>stamp<span class="token punctuation">.</span><span class="token function">toSec</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">+</span> estimator<span class="token punctuation">.</span>td<span class="token punctuation">)</span>
+        <span class="token punctuation">{</span>
+            <span class="token comment">//emplace_back相比push_back能更好地避免内存的拷贝与移动</span>
+            IMUs<span class="token punctuation">.</span><span class="token function">emplace_back</span><span class="token punctuation">(</span>imu_buf<span class="token punctuation">.</span><span class="token function">front</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            imu_buf<span class="token punctuation">.</span><span class="token function">pop</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        
+        <span class="token comment">//这里把下一个imu_msg也放进去了,但没有pop</span>
+        <span class="token comment">//因此当前图像帧和下一图像帧会共用这个imu_msg</span>
+        IMUs<span class="token punctuation">.</span><span class="token function">emplace_back</span><span class="token punctuation">(</span>imu_buf<span class="token punctuation">.</span><span class="token function">front</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>IMUs<span class="token punctuation">.</span><span class="token function">empty</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+            <span class="token function">ROS_WARN</span><span class="token punctuation">(</span><span class="token string">"no imu between two image"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        measurements<span class="token punctuation">.</span><span class="token function">emplace_back</span><span class="token punctuation">(</span>IMUs<span class="token punctuation">,</span> img_msg<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">return</span> measurements<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<hr>
+<h2><a id="estimatorcpph_270"></a>estimator.cpp/.h</h2>
+<p>构建了一个estimator类，这次我们主要讨论流程问题，因而暂时只分析一下processImage()</p>
+
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>void Estimator::setParameter()</td>
+<td>设置部分参数</td>
+</tr>
+<tr>
+<td>void Estimator::clearState()</td>
+<td>清空或初始化滑动窗口中所有的状态量</td>
+</tr>
+<tr>
+<td>void Estimator::processIMU()</td>
+<td>处理IMU数据，预积分</td>
+</tr>
+<tr>
+<td><strong>void Estimator::processImage()</strong></td>
+<td>处理图像特征数据</td>
+</tr>
+<tr>
+<td>bool Estimator::initialStructure()</td>
+<td>视觉的结构初始化</td>
+</tr>
+<tr>
+<td>bool Estimator::visualInitialAlign()</td>
+<td>视觉惯性联合初始化</td>
+</tr>
+<tr>
+<td>bool Estimator::relativePose()</td>
+<td>判断两帧有足够视差30且内点数目大于12则可进行初始化，同时得到R和T</td>
+</tr>
+<tr>
+<td>void Estimator::solveOdometry()</td>
+<td>VIO非线性优化求解里程计</td>
+</tr>
+<tr>
+<td>void Estimator::vector2double()</td>
+<td>vector转换成double数组，因为ceres使用数值数组</td>
+</tr>
+<tr>
+<td>void Estimator::double2vector()</td>
+<td>数据转换，vector2double的相反过程</td>
+</tr>
+<tr>
+<td>bool Estimator::failureDetection()</td>
+<td>检测系统运行是否失败</td>
+</tr>
+<tr>
+<td>void Estimator::optimization()</td>
+<td>基于滑动窗口的紧耦合的非线性优化，残差项的构造和求解</td>
+</tr>
+<tr>
+<td>void Estimator::slideWindow()</td>
+<td>滑动窗口法</td>
+</tr>
+<tr>
+<td>void Estimator::setReloFrame()</td>
+<td>重定位操作</td>
+</tr>
+</tbody>
+</table><h3><a id="void_EstimatorprocessImage_289"></a>void Estimator::processImage()</h3>
+<p>1、addFeatureCheckParallax()添加之前检测到的特征点到feature容器list中，计算每一个点跟踪的次数，以及它的视差并通过检测两帧之间的视差决定是否作为关键帧。<br>
+param[in]   frame_count 窗口内帧的个数<br>
+param[in]   image 某帧所有特征点的[camera_id,[x,y,z,u,v,vx,vy]]构成的map,索引为feature_id<br>
+param[in]   td 相机和IMU同步校准得到的时间差</p>
+<pre><code class="prism language-cpp">    <span class="token keyword">if</span> <span class="token punctuation">(</span>f_manager<span class="token punctuation">.</span><span class="token function">addFeatureCheckParallax</span><span class="token punctuation">(</span>frame_count<span class="token punctuation">,</span> image<span class="token punctuation">,</span> td<span class="token punctuation">)</span><span class="token punctuation">)</span>
+        marginalization_flag <span class="token operator">=</span> MARGIN_OLD<span class="token punctuation">;</span><span class="token comment">//=0</span>
+    <span class="token keyword">else</span>
+        marginalization_flag <span class="token operator">=</span> MARGIN_SECOND_NEW<span class="token punctuation">;</span><span class="token comment">//=1</span>
+</code></pre>
+<p>2、 将图像数据、时间、临时预积分值存到图像帧类中</p>
+<pre><code class="prism language-cpp">   
+    ImageFrame <span class="token function">imageframe</span><span class="token punctuation">(</span>image<span class="token punctuation">,</span> header<span class="token punctuation">.</span>stamp<span class="token punctuation">.</span><span class="token function">toSec</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    imageframe<span class="token punctuation">.</span>pre_integration <span class="token operator">=</span> tmp_pre_integration<span class="token punctuation">;</span>
+    
+    all_image_frame<span class="token punctuation">.</span><span class="token function">insert</span><span class="token punctuation">(</span><span class="token function">make_pair</span><span class="token punctuation">(</span>header<span class="token punctuation">.</span>stamp<span class="token punctuation">.</span><span class="token function">toSec</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> imageframe<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>3、更新临时预积分初始值</p>
+<pre><code class="prism language-cpp">    
+    tmp_pre_integration <span class="token operator">=</span> <span class="token keyword">new</span> IntegrationBase<span class="token punctuation">{</span>acc_0<span class="token punctuation">,</span> gyr_0<span class="token punctuation">,</span> Bas<span class="token punctuation">[</span>frame_count<span class="token punctuation">]</span><span class="token punctuation">,</span> Bgs<span class="token punctuation">[</span>frame_count<span class="token punctuation">]</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+</code></pre>
+<p>4、判断是否需要进行外参标定</p>
+<pre><code class="prism language-cpp">    <span class="token keyword">if</span><span class="token punctuation">(</span>ESTIMATE_EXTRINSIC <span class="token operator">==</span> <span class="token number">2</span><span class="token punctuation">)</span><span class="token comment">//如果没有外参则进行标定</span>
+    <span class="token punctuation">{</span>
+        <span class="token function">ROS_INFO</span><span class="token punctuation">(</span><span class="token string">"calibrating extrinsic param, rotation movement is needed"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>frame_count <span class="token operator">!=</span> <span class="token number">0</span><span class="token punctuation">)</span>
+        <span class="token punctuation">{</span>
+            vector<span class="token operator">&lt;</span>pair<span class="token operator">&lt;</span>Vector3d<span class="token punctuation">,</span> Vector3d<span class="token operator">&gt;&gt;</span> corres <span class="token operator">=</span> f_manager<span class="token punctuation">.</span><span class="token function">getCorresponding</span><span class="token punctuation">(</span>frame_count <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">,</span> frame_count<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            Matrix3d calib_ric<span class="token punctuation">;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>initial_ex_rotation<span class="token punctuation">.</span><span class="token function">CalibrationExRotation</span><span class="token punctuation">(</span>corres<span class="token punctuation">,</span> pre_integrations<span class="token punctuation">[</span>frame_count<span class="token punctuation">]</span><span class="token operator">-</span><span class="token operator">&gt;</span>delta_q<span class="token punctuation">,</span> calib_ric<span class="token punctuation">)</span><span class="token punctuation">)</span>
+            <span class="token punctuation">{</span>
+                <span class="token function">ROS_WARN</span><span class="token punctuation">(</span><span class="token string">"initial extrinsic rotation calib success"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token function">ROS_WARN_STREAM</span><span class="token punctuation">(</span><span class="token string">"initial extrinsic rotation: "</span> <span class="token operator">&lt;&lt;</span> endl <span class="token operator">&lt;&lt;</span> calib_ric<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                ric<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token operator">=</span> calib_ric<span class="token punctuation">;</span>
+                RIC<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token operator">=</span> calib_ric<span class="token punctuation">;</span>
+                ESTIMATE_EXTRINSIC <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+</code></pre>
+<p>5、solver_flag==INITIAL 进行初始化<br>
+5.1、确保有足够的frame参与初始化，有外参，且当前帧时间戳大于初始化时间戳+0.1秒</p>
+<p>5.2、执行视觉惯性联合初始化</p>
+<pre><code class="prism language-cpp">result <span class="token operator">=</span> <span class="token function">initialStructure</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+initial_timestamp <span class="token operator">=</span> header<span class="token punctuation">.</span>stamp<span class="token punctuation">.</span><span class="token function">toSec</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>5.3、初始化成功则进行一次非线性优化，不成功则进行滑窗操作</p>
+<pre><code class="prism language-cpp"><span class="token keyword">if</span><span class="token punctuation">(</span>result<span class="token punctuation">)</span><span class="token comment">//初始化成功</span>
+<span class="token punctuation">{</span>
+	solver_flag <span class="token operator">=</span> NON_LINEAR<span class="token punctuation">;</span>
+    <span class="token function">solveOdometry</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">slideWindow</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    f_manager<span class="token punctuation">.</span><span class="token function">removeFailures</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">ROS_INFO</span><span class="token punctuation">(</span><span class="token string">"Initialization finish!"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    last_R <span class="token operator">=</span> Rs<span class="token punctuation">[</span>WINDOW_SIZE<span class="token punctuation">]</span><span class="token punctuation">;</span>
+    last_P <span class="token operator">=</span> Ps<span class="token punctuation">[</span>WINDOW_SIZE<span class="token punctuation">]</span><span class="token punctuation">;</span>
+    last_R0 <span class="token operator">=</span> Rs<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+    last_P0 <span class="token operator">=</span> Ps<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">;</span>        
+<span class="token punctuation">}</span>
+<span class="token keyword">else</span>
+	<span class="token function">slideWindow</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>6、solver_flag==NON_LINEAR进行非线性优化</p>
+<p>6.1、执行非线性优化具体函数solveOdometry()</p>
+<p>6.2、检测系统运行是否失败，若失败则重置估计器</p>
+<pre><code class="prism language-cpp"><span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">failureDetection</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token comment">//失败</span>
+        <span class="token punctuation">{</span>
+            <span class="token function">ROS_WARN</span><span class="token punctuation">(</span><span class="token string">"failure detection!"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            failure_occur <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+            <span class="token function">clearState</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token function">setParameter</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token function">ROS_WARN</span><span class="token punctuation">(</span><span class="token string">"system reboot!"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">return</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+</code></pre>
+<p>6.3、执行窗口滑动函数slideWindow();</p>
+<p>6.4、去除估计失败的点并发布关键点位置</p>
+<pre><code class="prism language-cpp">f_manager<span class="token punctuation">.</span><span class="token function">removeFailures</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">ROS_DEBUG</span><span class="token punctuation">(</span><span class="token string">"marginalization costs: %fms"</span><span class="token punctuation">,</span> t_margin<span class="token punctuation">.</span><span class="token function">toc</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">// prepare output of VINS</span>
+key_poses<span class="token punctuation">.</span><span class="token function">clear</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;=</span> WINDOW_SIZE<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span>
+key_poses<span class="token punctuation">.</span><span class="token function">push_back</span><span class="token punctuation">(</span>Ps<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<hr>
+<h2><a id="void_update_389"></a>void update()</h2>
+<p>这个函数在非线性优化时才会在process()中被调用<br>
+1、从估计器中得到滑动窗口中最后一个图像帧的imu更新项[P,Q,V,ba,bg,a,g]</p>
+<pre><code class="prism language-cpp">    latest_time <span class="token operator">=</span> current_time<span class="token punctuation">;</span>
+    tmp_P <span class="token operator">=</span> estimator<span class="token punctuation">.</span>Ps<span class="token punctuation">[</span>WINDOW_SIZE<span class="token punctuation">]</span><span class="token punctuation">;</span>
+    tmp_Q <span class="token operator">=</span> estimator<span class="token punctuation">.</span>Rs<span class="token punctuation">[</span>WINDOW_SIZE<span class="token punctuation">]</span><span class="token punctuation">;</span>
+    tmp_V <span class="token operator">=</span> estimator<span class="token punctuation">.</span>Vs<span class="token punctuation">[</span>WINDOW_SIZE<span class="token punctuation">]</span><span class="token punctuation">;</span>
+    tmp_Ba <span class="token operator">=</span> estimator<span class="token punctuation">.</span>Bas<span class="token punctuation">[</span>WINDOW_SIZE<span class="token punctuation">]</span><span class="token punctuation">;</span>
+    tmp_Bg <span class="token operator">=</span> estimator<span class="token punctuation">.</span>Bgs<span class="token punctuation">[</span>WINDOW_SIZE<span class="token punctuation">]</span><span class="token punctuation">;</span>
+    acc_0 <span class="token operator">=</span> estimator<span class="token punctuation">.</span>acc_0<span class="token punctuation">;</span>
+    gyr_0 <span class="token operator">=</span> estimator<span class="token punctuation">.</span>gyr_0<span class="token punctuation">;</span>
+</code></pre>
+<p>2、对imu_buf中剩余的imu_msg进行PVQ递推<br>
+（因为imu的频率比图像频率要高很多，在getMeasurements(）将图像和imu时间对齐后，imu_buf中还会存在imu数据）</p>
+<pre><code class="prism language-cpp">	queue<span class="token operator">&lt;</span>sensor_msgs<span class="token operator">::</span>ImuConstPtr<span class="token operator">&gt;</span> tmp_imu_buf <span class="token operator">=</span> imu_buf<span class="token punctuation">;</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span>sensor_msgs<span class="token operator">::</span>ImuConstPtr tmp_imu_msg<span class="token punctuation">;</span> <span class="token operator">!</span>tmp_imu_buf<span class="token punctuation">.</span><span class="token function">empty</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> tmp_imu_buf<span class="token punctuation">.</span><span class="token function">pop</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        <span class="token function">predict</span><span class="token punctuation">(</span>tmp_imu_buf<span class="token punctuation">.</span><span class="token function">front</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<hr>
+
+            </div>
+						<link href="https://csdnimg.cn/release/phoenix/mdeditor/markdown_views-258a4616f7.css" rel="stylesheet">
+                      </div>
+	</article>
+</div>
+
+  <div class="hide-article-box hide-article-pos text-center">
+    <div class="border"></div>
+        <a class="btn article-footer-btn" id="btn-readmore" data-track-view='{"mod":"popu_376","con":",https://blog.csdn.net/qq_41839222/article/details/86293038,"}' data-track-click='{"mod":"popu_376","con":",https://blog.csdn.net/qq_41839222/article/details/86293038,"}'>阅读更多</a>
+        <a class="btn article-footer-btn article-footer-bookmark-btn" >
+      <svg class="icon no-active hover-hide" aria-hidden="true">
+        <use xlink:href="#csdnc-bookmark"></use>
+      </svg>
+      <span>收藏</span>
+    </a>
+    <div class="btn article-footer-btn  bds_weixin article-footer-share-btn" data-cmd="weixin" title="分享">
+      <svg class="icon no-active hover-hide" aria-hidden="true">
+        <use xlink:href="#csdnc-share"></use>
+      </svg>
+      <span>分享</span>
+      <div class="bdsharebuttonbox">
+        <a href="#"class="bds_weixin clear-share-style-article-footer" data-cmd="weixin" title="分享"></a>
+      </div>
+    </div>
+
+  </div>
+  
+  <script>
+  (function(){
+    function collection(){
+      if (currentUserName) {
+        var markObj = {};
+            markObj.imgUrl ='https://csdnimg.cn/release/phoenix/static_blog/images/appqr.png';
+        var markPrompt = (new window.csdn.publicPrompt).init(markObj);
+        var maeked = '您已经收藏过';
+        if (!$(this).hasClass("liked")) {
+          $.ajax({
+            url: 'https://my.csdn.net/my/favorite/do_add/2',
+            dataType: 'json',
+            type: 'POST',
+            xhrFields: {
+              withCredentials: true
+            },
+            data: {
+              title: articleTit,
+              url: 'https://blog.csdn.net/qq_41839222/article/details/86293038',
+              share: 1,
+              map_name: ''
+            },
+            success: function(data) {
+              
+              if (data.succ == 1) {
+                $('.btn-bookmark').addClass("liked");
+                $('.article-footer-bookmark-btn').addClass("liked").children('span').text('已收藏');
+                markPrompt.show({})
+                // alert('收藏成功,可以在个人中心查看我的收藏');
+              } else {
+                if (data.msg === "您已经收藏过") {
+                  $('.btn-bookmark').addClass("liked");
+                  $('.article-footer-bookmark-btn').addClass("liked").children('span').text('已收藏');
+                  markPrompt.show({
+                    titleStr: maeked
+                  })
+                }else{
+                  alert(data.msg);
+                  
+                }
+              }
+            }
+          });
+        } else {
+          markPrompt.show({
+            titleStr: maeked
+          })
+        }
+      } else {
+        window.csdn.loginBox.show();
+      }
+    }
+    function permissionCheck(dom){
+      var returnData = false;
+      switch (true) {
+        case currentUserPermission && userPermission:
+          clearReadMoreBtn(dom)
+          returnData = true;
+          break;
+        case userPermission:
+          dom.text('VIP阅读');
+          returnData = false;
+          break;
+        default:
+          
+      }
+      return returnData;
+    }
+    window.csdn = window.csdn ? window.csdn : {};
+    window.csdn.articleCollection = collection;
+    function clearReadMoreBtn(dom) {
+      if(userPermission && !(dom instanceof jQuery)) {
+        window.open('https://mall.csdn.net/vip?utm_source=brv')
+        return false;
+      }
+      dom = dom instanceof jQuery ? dom : $(this);
+      $("div.article_content").removeAttr("style");
+      dom.parent().remove();
+    }
+    function setArticleH(btnReadmore,posi){
+      var winH = $(window).height();
+      var articleBox = $("div.article_content");
+      var artH = articleBox.height();
+      if(artH > winH*posi){
+        articleBox.css({
+          'height':winH*posi+'px',
+          'overflow':'hidden'
+        })
+        btnReadmore.click(clearReadMoreBtn)
+      }else{
+        btnReadmore.parent().remove()
+      }
+    }
+    var btnReadmore = $("#btn-readmore");
+    $('.article-footer-bookmark-btn').click(window.csdn.articleCollection)
+    if(btnReadmore.length>0){
+      if (permissionCheck(btnReadmore)) {
+        return false;
+      }
+      if(currentUserName){
+        setArticleH(btnReadmore,3);
+      }else{
+        setArticleH(btnReadmore,0.5);
+      }
+    }else{
+      $('.hide-article-box').addClass('hide-article-style');
+    }
+  })()
+</script>
+<script>
+		$(".MathJax").remove();
+		if($('div.markdown_views pre.prettyprint code.hljs').length > 0 ){
+				$('div.markdown_views')[0].className = 'markdown_views';
+		}
+</script>
+        <div id="dmp_ad_58"><div id="kp_box_58" data-pid="58" data-track-view='{"mod":"kp_popu_58-386","con":",,"}' data-track-click='{"mod":"kp_popu_58-386","con":",,"}'><div style="width:100%;background:#fff;">
+<script type="text/javascript" src="//rabc1.iteye.com/production/resource/web/6xwm4l.js?lg=ydmpioh"></script>
+</div></div></div>        <a id="commentBox"></a>
+<div class="comment-box">
+	
+	<div class="comment-edit-box d-flex">
+		<a id="commentsedit"></a>
+		<div class="user-img">
+			<a href="//me.csdn.net/qq_35593140" target="_blank">
+				<img class="" src="https://avatar.csdn.net/4/F/7/3_qq_35593140.jpg">
+			</a>
+		</div>
+		<form id="commentform">
+			<input type="hidden" id="comment_replyId">
+			<textarea class="comment-content" name="comment_content" id="comment_content" placeholder="想对作者说点什么"></textarea>
+			<div class="opt-box"> <!-- d-flex -->
+				<div id="ubbtools" class="add_code">
+					<a href="#insertcode" code="code" target="_self"><i class="icon iconfont icon-daima"></i></a>
+				</div>
+				<input type="hidden" id="comment_replyId" name="comment_replyId">
+				<input type="hidden" id="article_id" name="article_id" value="86293038">
+				<input type="hidden" id="comment_userId" name="comment_userId" value="">
+				<input type="hidden" id="commentId" name="commentId" value="">
+				<div style="display: none;" class="csdn-tracking-statistics tracking-click" data-mod="popu_384"><a href="#" target="_blank" class="comment_area_btn">发表评论</a></div>
+				<div class="dropdown" id="myDrap">
+					<a class="dropdown-face d-flex align-items-center" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+					<div class="txt-selected text-truncate">添加代码片</div>
+					<svg class="icon d-block" aria-hidden="true">
+						<use xlink:href="#csdnc-triangledown"></use>
+					</svg>
+					</a>
+					<ul class="dropdown-menu" id="commentCode" aria-labelledby="drop4">
+						<li><a data-code="html">HTML/XML</a></li>
+						<li><a data-code="objc">objective-c</a></li>
+						<li><a data-code="ruby">Ruby</a></li>
+						<li><a data-code="php">PHP</a></li>
+						<li><a data-code="csharp">C</a></li>
+						<li><a data-code="cpp">C++</a></li>
+						<li><a data-code="javascript">JavaScript</a></li>
+						<li><a data-code="python">Python</a></li>
+						<li><a data-code="java">Java</a></li>
+						<li><a data-code="css">CSS</a></li>
+						<li><a data-code="sql">SQL</a></li>
+						<li><a data-code="plain">其它</a></li>
+					</ul>
+				</div>  
+				<div class="right-box">
+					<span id="tip_comment" class="tip">还能输入<em>1000</em>个字符</span>
+					<input type="submit" class="btn btn-sm btn-red btn-comment" value="发表评论">
+				</div>
+			</div>
+		</form>
+	</div>
+
+		<div class="comment-list-container">
+		<a id="comments"></a>
+		<div class="comment-list-box">
+		</div>
+		<div id="commentPage" class="pagination-box d-none"></div>
+		<div class="opt-box text-center">
+			<div class="btn btn-sm btn-link-blue" id="btnMoreComment"></div>
+		</div>
+	</div>
+</div>
+        <div class="recommend-box">
+                            <div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/wangshuailpp/article/details/78719531,BlogCommendFromThirdServiceAll_2"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/wangshuailpp/article/details/78719531" target="_blank" title="VINS理论与代码详解4——初始化">
+		<h4 class="text-truncate oneline">
+				VINS理论与<em>代码</em>详解4——<em>初始化</em>		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">12-05</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					6382</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/wangshuailpp/article/details/78719531" target="_blank" title="VINS理论与代码详解4——初始化">
+				<span class="desc oneline">VINS理论与代码详解4——初始化1.      基于滑动窗口的纯视觉单目初始化   在介绍纯视觉初始化前我们首先讲一讲为什么要初始化？初始化要做什么？以及初始化的作用？我们初始化的原因是单目惯性紧耦...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/wangshuailpp">来自：	<span class="blog_title"> wangshuailpp的博客</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/Darlingqiang/article/details/80689123,BlogCommendFromThirdServiceAll_0"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/Darlingqiang/article/details/80689123" target="_blank" title="VINS-mono详细解读与实现">
+		<h4 class="text-truncate oneline">
+				<em>VINS-mono</em>详细<em>解读</em>与实现		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">06-14</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					5873</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/Darlingqiang/article/details/80689123" target="_blank" title="VINS-mono详细解读与实现">
+				<span class="desc oneline">VINS-mono详细解读VINS-mono详细解读前言Vins-mono是香港科技大学开源的一个VIO算法，https://github.com/HKUST-Aerial-Robotics/VINS...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/Darlingqiang">来自：	<span class="blog_title"> Darlingqiang的博客</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/JH_233/article/details/80554281,BlogCommendFromThirdServiceAll_1"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/JH_233/article/details/80554281" target="_blank" title="VINS-详细解读（论文+代码）">
+		<h4 class="text-truncate oneline">
+				VINS-详细<em>解读</em>（论文+<em>代码</em>）		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">06-03</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					2056</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/JH_233/article/details/80554281" target="_blank" title="VINS-详细解读（论文+代码）">
+				<span class="desc oneline">VINS-初始化BVINS-非线性优化VINS-非线性优化-先验残差</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/JH_233">来自：	<span class="blog_title"> JH_233的博客</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/weixin_41074793/article/details/84863163,BlogCommendFromThirdServiceAll_3"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/weixin_41074793/article/details/84863163" target="_blank" title="Vins-Mono学习总结">
+		<h4 class="text-truncate oneline">
+				<em>Vins-Mono</em>学习总结		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">12-06</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					206</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/weixin_41074793/article/details/84863163" target="_blank" title="Vins-Mono学习总结">
+				<span class="desc oneline">资料总结：VINS-Mono详解及公式推导Vins-Mono注释代码vins技术路线与代码详解DSO中的WindowedOptimizationSLAM中的marginalization和Schurc...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/weixin_41074793">来自：	<span class="blog_title"> weixin_41074793的博客</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	<div class="recommend-item-box recommend-ad-box"><div id="kp_box_59" data-pid="59" data-track-view='{"mod":"kp_popu_59-78","con":",,"}' data-track-click='{"mod":"kp_popu_59-78","con":",,"}'><script type="text/javascript">
+    (function() {
+        var s = "_" + Math.random().toString(36).slice(2);
+        document.write('<div style="" id="' + s + '"></div>');
+        (window.slotbydup = window.slotbydup || []).push({
+            id: "u3491668",
+            container:  s
+        });
+    })();
+</script>
+<!-- 多条广告如下脚本只需引入一次 -->
+<script type="text/javascript" src="//cpro.baidustatic.com/cpro/ui/c.js" async="async" defer="defer" ></script></div></div>
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/LonerIt/article/details/47778389,BlogCommendFromThirdServiceAll_4"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/LonerIt/article/details/47778389" target="_blank" title="matlab_非线性优化">
+		<h4 class="text-truncate oneline">
+				matlab_<em>非线性</em><em>优化</em>		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">08-19</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					2578</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/LonerIt/article/details/47778389" target="_blank" title="matlab_非线性优化">
+				<span class="desc oneline">matlab求解非线性问题fmincon工具箱</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/LonerIt">来自：	<span class="blog_title"> LonerIt的博客</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/zwlq1314521/article/details/75214769,BlogCommendFromBaidu_5"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/zwlq1314521/article/details/75214769" target="_blank" title="VINS（四）estimator_node 数据对齐 imu预积分 vision">
+		<h4 class="text-truncate oneline">
+				VINS（四）<em>estimator</em>_node 数据对齐 imu预积分 vision		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">07-17</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					1651</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/zwlq1314521/article/details/75214769" target="_blank" title="VINS（四）estimator_node 数据对齐 imu预积分 vision">
+				<span class="desc oneline">首先通过vins_estimatormode监听几个Topic（频率2000Hz），将imu数据，feature数据，raw_image数据（用于回环检测）通过各自的回调函数封装起来ros::Subs...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/zwlq1314521">来自：	<span class="blog_title"> zwlq1314521的专栏</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/xuanyoumeng/article/details/49802769,BlogCommendFromBaidu_6"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/xuanyoumeng/article/details/49802769" target="_blank" title="P-CNN: Pose-based CNN Features for Action Recognition (CNN篇)">
+		<h4 class="text-truncate oneline">
+				P-CNN: Pose-based CNN Features for Action Recognition (CNN篇)		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">11-12</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					3893</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/xuanyoumeng/article/details/49802769" target="_blank" title="P-CNN: Pose-based CNN Features for Action Recognition (CNN篇)">
+				<span class="desc oneline">论文题目P-CNN:Pose-basedCNNFeaturesforActionRecognition, 链接之前看过在静态图像上做actionrecognition的论文,如GeorgiaGkiox...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/xuanyoumeng">来自：	<span class="blog_title"> _menglan_Zi</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/xyqzki/article/details/10553519,BlogCommendFromBaidu_7"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/xyqzki/article/details/10553519" target="_blank" title="参数估计的方法，MLE,MAP,Bayesian estimator">
+		<h4 class="text-truncate oneline">
+				参数<em>估计</em>的方法，MLE,MAP,Bayesian <em>estimator</em>		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">08-29</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					5590</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/xyqzki/article/details/10553519" target="_blank" title="参数估计的方法，MLE,MAP,Bayesian estimator">
+				<span class="desc oneline">Densityestimation是learning中常见的一个task,即估计该分布的参数θ。在有限的样本下，如何判定哪个估计最优，概率论中有两种常用的principle：MLE（Maximumli...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/xyqzki">来自：	<span class="blog_title"> xyqzki的专栏</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/houlianfeng/article/details/79525854,BlogCommendFromBaidu_8"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/houlianfeng/article/details/79525854" target="_blank" title="VINS-mono 解析 新特征">
+		<h4 class="text-truncate oneline">
+				<em>VINS-mono</em> 解析 新特征		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">03-12</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					1595</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/houlianfeng/article/details/79525854" target="_blank" title="VINS-mono 解析 新特征">
+				<span class="desc oneline">在17.12.29，VINS更新了代码加入了新的特征，包括mapmerge(地图合并),pose-graphreuse(位姿图重利用),onlinetemporalcalibrationfunctio...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/houlianfeng">来自：	<span class="blog_title"> Roby</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	<div class="recommend-item-box recommend-ad-box"><div id="kp_box_60" data-pid="60" data-track-view='{"mod":"kp_popu_60-894","con":"5587676554034700851,https://edu.csdn.net/course/detail/8620,"}' data-track-click='{"mod":"kp_popu_60-894","con":"5587676554034700851,https://edu.csdn.net/course/detail/8620,"}'><link rel="stylesheet" href="https://www.csdn.net/company/css/edu-recommend-1.0.1.css">
+  <div class="edu-ad-list">
+    <div class="recommend-item-box type_blog clearfix">
+      <div class="content">
+        <a href="https://edu.csdn.net/course/detail/8620?utm_source=baidutj" target="_blank" title="Webpack4.x实战教程|前端模块化工具CSS/JS前端资源打包器">
+          <h4 class="text-truncate oneline">Webpack4.x实战教程|前端模块化工具CSS/JS前端资源打包器</h4>
+        </a>
+        <p class="content">
+          <a href="https://edu.csdn.net/course/detail/8620?utm_source=baidutj" target="_blank" title="Webpack4.x实战教程|前端模块化工具CSS/JS前端资源打包器">
+            <span class="desc oneline">系统介绍了webpack4.0的基本概念，以及CSS资源、图片打包、WDS服务器、nodemon自启动等的相关配置方法和技巧，使学习者对webpack4.0实现系统理解，终达到独立配置和使用webpack的目标。</span>
+          </a>
+          <span class="blog_title_box oneline ">
+            <span class="type-show type-show-edu type-show-after">学院</span>
+            讲师： <span class="blog_title"> 王翠英</span>
+          </span>
+        </p>
+      </div>
+    </div>
+  </div></div></div>
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/huanghaihui_123/article/details/87361621,BlogCommendESEnWordWeight_9"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/huanghaihui_123/article/details/87361621" target="_blank" title="vins-fusion代码解读[三] vio非线性优化optimization()函数">
+		<h4 class="text-truncate oneline">
+				vins-fusion<em>代码</em><em>解读</em>[三] vio<em>非线性</em><em>优化</em>optimization()函数		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">02-15</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					252</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/huanghaihui_123/article/details/87361621" target="_blank" title="vins-fusion代码解读[三] vio非线性优化optimization()函数">
+				<span class="desc oneline">SLAM新手，欢迎讨论。这是以往自己写的关于vins_fusion的博客：1.初探：https://blog.csdn.net/huanghaihui_123/article/details/8651...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/huanghaihui_123">来自：	<span class="blog_title"> huanghaihui_123的博客</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	
+	
+	<div class="recommend-item-box  recommend-download-box clearfix"  data-track-click='{"mod":"popu_614","con":",https://download.csdn.net/download/qq_33319641/10553664,BlogCommendESEnWordWeight_10"}'>
+		<a href="https://download.csdn.net/download/qq_33319641/10553664" target="_blank">
+			<div class="content clearfix">
+				<div class="">
+					<h4 class="text-truncate oneline clearfix">
+						<em>VINS-Mono</em>算法梳理与<em>代码</em>介绍					</h4>
+					<span class="data float-right">07-20</span>
+				</div>
+				<div class="desc oneline">
+						对于VINS-Mono算法进行了梳理，结合算法对代码进行了简单介绍				</div>
+				<span class="type-show type-show-download">下载</span>
+			</div>
+		</a>
+	</div>
+
+	
+			<div class="recommend-item-box blog-expert-recommend-box">
+			<div class="d-flex">
+				<div class="blog-expert-recommend">
+					<div class="blog-expert">
+						<div class="blog-expert-flexbox"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/danmeng8068/article/details/79485085,BlogCommendFromQuerySearch_11"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/danmeng8068/article/details/79485085" target="_blank" title="VINS-Mono：一种稳健的单目视觉惯性状态估计器">
+		<h4 class="text-truncate oneline">
+				<em>VINS-Mono</em>：一种稳健的单目视觉惯性<em>状态</em><em>估计</em>器		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">03-08</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					1419</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/danmeng8068/article/details/79485085" target="_blank" title="VINS-Mono：一种稳健的单目视觉惯性状态估计器">
+				<span class="desc oneline">编者序：本文提出的紧耦合滑窗VINS状态估计算法，可在未知状态情况下稳健初始化，具有线外参标定、统一定义在球面上的重投影误差、闭环检测和4自由度位姿图优化的特点。本文是香港科技大学沈邵劼课题组的开源杰...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/danmeng8068">来自：	<span class="blog_title"> danmeng8068的博客</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/huanghaihui_123/article/details/87713083,BlogCommendFromQuerySearch_12"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/huanghaihui_123/article/details/87713083" target="_blank" title="vins-fusion代码解读[五] imu在vins里的理解">
+		<h4 class="text-truncate oneline">
+				vins-fusion<em>代码</em><em>解读</em>[五] imu在vins里的理解		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">02-25</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					368</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/huanghaihui_123/article/details/87713083" target="_blank" title="vins-fusion代码解读[五] imu在vins里的理解">
+				<span class="desc oneline">SLAM新手，欢迎讨论。这是以往自己写的关于vins_fusion的博客：1.初探：https://blog.csdn.net/huanghaihui_123/article/details/8651...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/huanghaihui_123">来自：	<span class="blog_title"> huanghaihui_123的博客</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/datase/article/details/78512345,BlogCommendFromQuerySearch_13"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/datase/article/details/78512345" target="_blank" title="VINS mono 系统学习 五">
+		<h4 class="text-truncate oneline">
+				VINS mono 系统学习 五		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">11-12</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					586</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/datase/article/details/78512345" target="_blank" title="VINS mono 系统学习 五">
+				<span class="desc oneline">转载：白眼哥哥目的：学习存档＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝vins是今年刚开源的vio系统，跑了数据集效果挺好的，所以看了paper和代码。视频地址：https:...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/datase">来自：	<span class="blog_title"> 天才樱木</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	<div class="recommend-item-box recommend-ad-box"><div id="kp_box_61" data-pid="61" data-track-view='{"mod":"kp_popu_61-809","con":",,"}' data-track-click='{"mod":"kp_popu_61-809","con":",,"}'><script
+    async="async"
+    charset="utf-8"
+    src="https://shared.ydstatic.com/js/yatdk/3.0.1/stream.js"
+    data-id="6cb24153a03289ff3597c7aab4b69fe9"
+    data-div-Style="width:100%;"
+data-tit-Style="margin-bottom: 6px; font-size: 18px; line-height: 24px; color: #3d3d3d;display: inline-block;font-weight:bold;"
+data-des-Style="font-size: 13px; line-height: 22px; white-space: normal; color: #999;"
+data-img-Style="float:left;margin-right:15px;width:90px;height:60px;">
+</script></div></div>
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/qq_31785865/article/details/75267221,BlogCommendFromQuerySearch_14"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/qq_31785865/article/details/75267221" target="_blank" title="港科VINS-Mono系统学习（4） 里程计">
+		<h4 class="text-truncate oneline">
+				港科<em>VINS-Mono</em>系统学习（4） 里程计		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">07-17</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					2699</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/qq_31785865/article/details/75267221" target="_blank" title="港科VINS-Mono系统学习（4） 里程计">
+				<span class="desc oneline">vins是今年刚开源的vio系统，跑了数据集效果挺好的，所以看了paper和代码。视频地址：https://www.youtube.com/watch?v=I4txdvGhT6Igithub：http...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/qq_31785865">来自：	<span class="blog_title"> qq_31785865的博客</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/qq_31785865/article/details/75220304,BlogCommendFromThirdServiceAll_15"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/qq_31785865/article/details/75220304" target="_blank" title="港科VINS-Mono系统学习（2） 预处理">
+		<h4 class="text-truncate oneline">
+				港科<em>VINS-Mono</em>系统学习（2） 预处理		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">07-17</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					4252</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/qq_31785865/article/details/75220304" target="_blank" title="港科VINS-Mono系统学习（2） 预处理">
+				<span class="desc oneline">vins是今年刚开源的vio系统，跑了数据集效果挺好的，所以看了paper和代码。视频地址：https://www.youtube.com/watch?v=I4txdvGhT6Igithub：http...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/qq_31785865">来自：	<span class="blog_title"> qq_31785865的博客</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/mov2012/article/details/73732004,BlogCommendFromThirdServiceAll_16"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/mov2012/article/details/73732004" target="_blank" title="非线性最小二乘法优化问题(1)">
+		<h4 class="text-truncate oneline">
+				<em>非线性</em>最小二乘法<em>优化</em>问题(1)		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">06-26</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					2790</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/mov2012/article/details/73732004" target="_blank" title="非线性最小二乘法优化问题(1)">
+				<span class="desc oneline">最近工作需要用到ceres，代码里面都直接给出了结果及很简单说明，在编程的过程中为了多了解一些，顺便网络查询了一些背景理论以及阅读一些数值优化方法的教材，随手记录了一下学习笔记，现计划分几篇分享到微信...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/mov2012">来自：	<span class="blog_title"> mov2012的专栏</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/weixin_38358435/article/details/82878038,BlogCommendFromThirdServiceAll_17"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/weixin_38358435/article/details/82878038" target="_blank" title="VINS代码笔记">
+		<h4 class="text-truncate oneline">
+				VINS<em>代码</em>笔记		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">09-29</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					807</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/weixin_38358435/article/details/82878038" target="_blank" title="VINS代码笔记">
+				<span class="desc oneline">        estimator_node.cpp系统入口        首先找到main函数,读取参数,设置参数, imu_callback: IMU测量的回调函数imu_msg[接受到的IMU消...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/weixin_38358435">来自：	<span class="blog_title"> xiaoshuiyisheng的博客</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/tony2278/article/details/80621382,BlogCommendFromThirdServiceAll_18"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/tony2278/article/details/80621382" target="_blank" title="贝叶斯估计（Bayesian estimation）">
+		<h4 class="text-truncate oneline">
+				贝叶斯<em>估计</em>（Bayesian estimation）		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">06-08</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					2466</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/tony2278/article/details/80621382" target="_blank" title="贝叶斯估计（Bayesian estimation）">
+				<span class="desc oneline">贝叶斯估计（Bayesianestimation）是利用贝斯定理结合新的证据及以前的先验概率，来得到新的概率。它提供了一种计算假设概率的方法，基于假设的先验概率、给定假设下观察到不同数据的概率以及观察...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/tony2278">来自：	<span class="blog_title"> tony2278的专栏</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	<div class="recommend-item-box recommend-ad-box"><div id="kp_box_62" data-pid="62" data-track-view='{"mod":"kp_popu_62-809","con":",,"}' data-track-click='{"mod":"kp_popu_62-809","con":",,"}'><script
+    async="async"
+    charset="utf-8"
+    src="https://shared.ydstatic.com/js/yatdk/3.0.1/stream.js"
+    data-id="6cb24153a03289ff3597c7aab4b69fe9"
+    data-div-Style="width:100%;"
+data-tit-Style="margin-bottom: 6px; font-size: 18px; line-height: 24px; color: #3d3d3d;display: inline-block;font-weight:bold;"
+data-des-Style="font-size: 13px; line-height: 22px; white-space: normal; color: #999;"
+data-img-Style="float:left;margin-right:15px;width:90px;height:60px;">
+</script></div></div>
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/huanghaihui_123/article/details/86610562,BlogCommendFromThirdServiceAll_19"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/huanghaihui_123/article/details/86610562" target="_blank" title="vins-fusion代码解读[一] vio主体">
+		<h4 class="text-truncate oneline">
+				vins-fusion<em>代码</em><em>解读</em>[一] vio主体		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">01-23</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					856</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/huanghaihui_123/article/details/86610562" target="_blank" title="vins-fusion代码解读[一] vio主体">
+				<span class="desc oneline">港科大vins-fusion代码解读[一]vins-fusion与vins-mono代码结构有很大相似性。这次先看看vins_estimator节点内的内容。1.程序入口：(1)vins_estima...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/huanghaihui_123">来自：	<span class="blog_title"> huanghaihui_123的博客</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/lly1122334/article/details/88345256,BlogCommendFromQuerySearch_20"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/lly1122334/article/details/88345256" target="_blank" title="超参数优化算法综述">
+		<h4 class="text-truncate oneline">
+				超参数<em>优化</em>算法综述		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">03-11</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					687</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/lly1122334/article/details/88345256" target="_blank" title="超参数优化算法综述">
+				<span class="desc oneline">AlgorithmsforHyper-ParameterOptimization原文：http://papers.nips.cc/paper/4443-algorithms-for-hyper-par...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/lly1122334">来自：	<span class="blog_title"> lly1122334的博客</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/weixin_38358435/article/details/82468980,BlogCommendFromQuerySearch_21"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/weixin_38358435/article/details/82468980" target="_blank" title="VINS初始化">
+		<h4 class="text-truncate oneline">
+				VINS<em>初始化</em>		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">09-07</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					272</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/weixin_38358435/article/details/82468980" target="_blank" title="VINS初始化">
+				<span class="desc oneline">     系统的初始化主要恢复出尺度、重力、速度以及IMU的bias.因为视觉(SFM)在初始化的过程中有着较好的表现，所以在初始化的过程中主要以SFM为主，然后将IMU的预积分结果与其对齐，即可得到...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/weixin_38358435">来自：	<span class="blog_title"> xiaoshuiyisheng的博客</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	
+	
+	<div class="recommend-item-box  recommend-download-box clearfix"  data-track-click='{"mod":"popu_614","con":",https://download.csdn.net/download/aggressive2015/10579502,BlogCommendFromQuerySearch_22"}'>
+		<a href="https://download.csdn.net/download/aggressive2015/10579502" target="_blank">
+			<div class="content clearfix">
+				<div class="">
+					<h4 class="text-truncate oneline clearfix">
+						西蒙—最优<em>状态</em><em>估计</em>,卡尔曼,H∞及<em>非线性</em>滤波(中、英PDF含<em>代码</em>)					</h4>
+					<span class="data float-right">08-02</span>
+				</div>
+				<div class="desc oneline">
+						系统介绍了最优估计所用矩阵、概率论知识，系统讲解了卡尔曼滤波及其变体，H无穷，非线性滤波				</div>
+				<span class="type-show type-show-download">下载</span>
+			</div>
+		</a>
+	</div>
+
+	
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/weixin_42825609/article/details/84934569,BlogCommendFromQuerySearch_23"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/weixin_42825609/article/details/84934569" target="_blank" title="【源码】非线性状态估计的扩展卡尔曼滤波器仿真">
+		<h4 class="text-truncate oneline">
+				【源码】<em>非线性</em><em>状态</em><em>估计</em>的扩展卡尔曼滤波器仿真		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">12-10</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					337</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/weixin_42825609/article/details/84934569" target="_blank" title="【源码】非线性状态估计的扩展卡尔曼滤波器仿真">
+				<span class="desc oneline">这是一个关于非线性扩展卡尔曼滤波器（EKF）的代码教程。ThisisatutorialonnonlinearextendedKalmanfilter(EKF).它使用标准的EKF仿真来实现非线性状态估...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/weixin_42825609">来自：	<span class="blog_title"> weixin_42825609的博客</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	<div class="recommend-item-box recommend-ad-box"><div id="kp_box_63" data-pid="63" data-track-view='{"mod":"kp_popu_63-809","con":",,"}' data-track-click='{"mod":"kp_popu_63-809","con":",,"}'><script
+    async="async"
+    charset="utf-8"
+    src="https://shared.ydstatic.com/js/yatdk/3.0.1/stream.js"
+    data-id="6cb24153a03289ff3597c7aab4b69fe9"
+    data-div-Style="width:100%;"
+data-tit-Style="margin-bottom: 6px; font-size: 18px; line-height: 24px; color: #3d3d3d;display: inline-block;font-weight:bold;"
+data-des-Style="font-size: 13px; line-height: 22px; white-space: normal; color: #999;"
+data-img-Style="float:left;margin-right:15px;width:90px;height:60px;">
+</script></div></div>
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/zhjm07054115/article/details/85531270,BlogCommendFromQuerySearch_24"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/zhjm07054115/article/details/85531270" target="_blank" title="机器学习 Python scikit-learn 中文文档（5）统计学习: 问题设置以及 scikit-learn 中的估计器对象(estimator object)¶">
+		<h4 class="text-truncate oneline">
+				机器学习 Python scikit-learn 中文文档（5）统计学习: 问题设置以及 scikit-learn 中的<em>估计</em>器对象(<em>estimator</em> object)¶		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">01-01</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					111</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/zhjm07054115/article/details/85531270" target="_blank" title="机器学习 Python scikit-learn 中文文档（5）统计学习: 问题设置以及 scikit-learn 中的估计器对象(estimator object)¶">
+				<span class="desc oneline">统计学习:问题设置以及scikit-learn中的估计器对象(estimatorobject)¶Logo首页安装文档案例ForkmeonGitHubPrevious用于科学数据处理的统计学习教程Nex...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/zhjm07054115">来自：	<span class="blog_title"> 海尔兄弟的博客</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/zwlq1314521/article/details/74171087,BlogCommendFromThirdServiceAll_25"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/zwlq1314521/article/details/74171087" target="_blank" title="VINS（一）简介与代码结构 视觉slam">
+		<h4 class="text-truncate oneline">
+				VINS（一）简介与<em>代码</em>结构 视觉slam		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">07-03</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					9423</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/zwlq1314521/article/details/74171087" target="_blank" title="VINS（一）简介与代码结构 视觉slam">
+				<span class="desc oneline">VINS（一）简介与代码结构VINS-Mono和VINS-Mobile是香港科技大学沈劭劼团队开源的单目视觉惯导SLAM方案。是基于优化和滑动窗口的VIO，使用IMU预积分构建紧耦合框架。并且具备自动...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/zwlq1314521">来自：	<span class="blog_title"> zwlq1314521的专栏</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/datase/article/details/78508072,BlogCommendFromThirdServiceAll_26"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/datase/article/details/78508072" target="_blank" title="vins mono 刚开始学习 一">
+		<h4 class="text-truncate oneline">
+				vins mono 刚开始学习 一		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">11-11</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					1447</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/datase/article/details/78508072" target="_blank" title="vins mono 刚开始学习 一">
+				<span class="desc oneline">简介VINS-Mono是香港科技大学开源的一个VIO,我简单的测试了，发现效果不错。做个简单的笔记，详细的内容等我毕设搞完再弄。代码主要分为前端(featuretracker),后端(slidingw...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/datase">来自：	<span class="blog_title"> 天才樱木</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/snnily/article/details/79947799,BlogCommendFromThirdServiceAll_27"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/snnily/article/details/79947799" target="_blank" title="港科VINS-Mono系统学习">
+		<h4 class="text-truncate oneline">
+				港科<em>VINS-Mono</em>系统学习		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">04-15</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					1612</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/snnily/article/details/79947799" target="_blank" title="港科VINS-Mono系统学习">
+				<span class="desc oneline">视频地址：https://www.youtube.com/watch?v=I4txdvGhT6Igithub：https://github.com/HKUST-Aerial-Robotics/VINS...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/snnily">来自：	<span class="blog_title"> snnily的博客</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/iamqianrenzhan/article/details/78577476,BlogCommendFromThirdServiceAll_28"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/iamqianrenzhan/article/details/78577476" target="_blank" title="PX4代码学习系列博客(7)——lpe代码分析">
+		<h4 class="text-truncate oneline">
+				PX4<em>代码</em>学习系列博客(7)——lpe<em>代码</em>分析		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">11-19</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					1139</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/iamqianrenzhan/article/details/78577476" target="_blank" title="PX4代码学习系列博客(7)——lpe代码分析">
+				<span class="desc oneline">本文主要介绍px4飞控的位置估计中的lpe。在笔者原先的博客中曾经写过可以把px4中的位置估计算法移植到桌面电脑，当时用的开发环境是vs。但是那篇文章并没有对lpe位置估计的数学原理和程序的具体执行流...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/iamqianrenzhan">来自：	<span class="blog_title"> 千人斩的博客</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	<div class="recommend-item-box recommend-ad-box"><div id="kp_box_64" data-pid="64" data-track-view='{"mod":"kp_popu_64-809","con":",,"}' data-track-click='{"mod":"kp_popu_64-809","con":",,"}'><script
+    async="async"
+    charset="utf-8"
+    src="https://shared.ydstatic.com/js/yatdk/3.0.1/stream.js"
+    data-id="6cb24153a03289ff3597c7aab4b69fe9"
+    data-div-Style="width:100%;"
+data-tit-Style="margin-bottom: 6px; font-size: 18px; line-height: 24px; color: #3d3d3d;display: inline-block;font-weight:bold;"
+data-des-Style="font-size: 13px; line-height: 22px; white-space: normal; color: #999;"
+data-img-Style="float:left;margin-right:15px;width:90px;height:60px;">
+</script></div></div>
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/pianzang5201/article/details/78057202,BlogCommendFromThirdServiceAll_29"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/pianzang5201/article/details/78057202" target="_blank" title="机器学习5：评估器estimator">
+		<h4 class="text-truncate oneline">
+				机器学习5：评估器<em>estimator</em>		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">09-21</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					2244</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/pianzang5201/article/details/78057202" target="_blank" title="机器学习5：评估器estimator">
+				<span class="desc oneline">要定义与tf.estimator一起使用的自定义模型，需要使用tf.estimator.Estimator。 tf.estimator.LinearRegressor()线性回归实际上是一个tf.es...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/pianzang5201">来自：	<span class="blog_title"> 观月执白</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	
+	
+	<div class="recommend-item-box  recommend-download-box clearfix"  data-track-click='{"mod":"popu_614","con":",https://download.csdn.net/download/czjsr/10664757,BlogCommendFromQuerySearch_30"}'>
+		<a href="https://download.csdn.net/download/czjsr/10664757" target="_blank">
+			<div class="content clearfix">
+				<div class="">
+					<h4 class="text-truncate oneline clearfix">
+						VINS论文推倒及<em>代码</em>解析					</h4>
+					<span class="data float-right">09-13</span>
+				</div>
+				<div class="desc oneline">
+						VINS 的功能模块可包括五个部分:数据预处理、初始化、后端非线性优化、闭环检测及闭环优化。代码中主要开启了四个线程,分别是:前端图像跟踪、后端非线性优化(其中初始化和 IMU 预积分在这个线程中)、闭环检测、闭环优化。				</div>
+				<span class="type-show type-show-download">下载</span>
+			</div>
+		</a>
+	</div>
+
+	
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/datase/article/details/78573674,BlogCommendFromQuerySearch_31"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/datase/article/details/78573674" target="_blank" title="OKvis整理">
+		<h4 class="text-truncate oneline">
+				OKvis整理		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">11-19</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					1527</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/datase/article/details/78573674" target="_blank" title="OKvis整理">
+				<span class="desc oneline">整理部分代码中公式OKVIS中的propagation代码公式版 http://blog.csdn.net/fuxingyin/article/details/53449465OKVIS中的propa...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/datase">来自：	<span class="blog_title"> 天才樱木</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/u014527548/article/details/86679686,BlogCommendFromQuerySearch_32"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/u014527548/article/details/86679686" target="_blank" title="VINS-Mono论文要点总结（三）——紧耦合单目VIO">
+		<h4 class="text-truncate oneline">
+				<em>VINS-Mono</em>论文要点总结（三）——紧耦合单目VIO		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">01-28</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					129</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/u014527548/article/details/86679686" target="_blank" title="VINS-Mono论文要点总结（三）——紧耦合单目VIO">
+				<span class="desc oneline">目录紧耦合单目VIOA.公式B.IMU模型C.视觉模型D.边缘化E.相机速率下的状态估计—只移动的视觉惯性BA优化F.IMU速率的状态估计—IMU前向传播G.失败检测与恢复......</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/u014527548">来自：	<span class="blog_title"> blowballs的专栏</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/qq_31785865/article/details/75267104,BlogCommendFromQuerySearch_33"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/qq_31785865/article/details/75267104" target="_blank" title="港科VINS-Mono系统学习（3） 初始化">
+		<h4 class="text-truncate oneline">
+				港科<em>VINS-Mono</em>系统学习（3） <em>初始化</em>		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">07-17</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					4277</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/qq_31785865/article/details/75267104" target="_blank" title="港科VINS-Mono系统学习（3） 初始化">
+				<span class="desc oneline">vins是今年刚开源的vio系统，跑了数据集效果挺好的，所以看了paper和代码。视频地址：https://www.youtube.com/watch?v=I4txdvGhT6Igithub：http...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/qq_31785865">来自：	<span class="blog_title"> qq_31785865的博客</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	<div class="recommend-item-box recommend-ad-box"><div id="kp_box_65" data-pid="65" data-track-view='{"mod":"kp_popu_65-809","con":",,"}' data-track-click='{"mod":"kp_popu_65-809","con":",,"}'><script
+    async="async"
+    charset="utf-8"
+    src="https://shared.ydstatic.com/js/yatdk/3.0.1/stream.js"
+    data-id="6cb24153a03289ff3597c7aab4b69fe9"
+    data-div-Style="width:100%;"
+data-tit-Style="margin-bottom: 6px; font-size: 18px; line-height: 24px; color: #3d3d3d;display: inline-block;font-weight:bold;"
+data-des-Style="font-size: 13px; line-height: 22px; white-space: normal; color: #999;"
+data-img-Style="float:left;margin-right:15px;width:90px;height:60px;">
+</script></div></div>
+	
+	<div class="recommend-item-box  recommend-download-box clearfix"  data-track-click='{"mod":"popu_614","con":",https://download.csdn.net/download/clq__fly/9697687,BlogCommendFromQuerySearch_34"}'>
+		<a href="https://download.csdn.net/download/clq__fly/9697687" target="_blank">
+			<div class="content clearfix">
+				<div class="">
+					<h4 class="text-truncate oneline clearfix">
+						最优<em>状态</em><em>估计</em> 卡尔曼，H∞及<em>非线性</em>滤波_中文版					</h4>
+					<span class="data float-right">11-30</span>
+				</div>
+				<div class="desc oneline">
+						最优状态估计 卡尔曼，H∞及非线性滤波_中文版				</div>
+				<span class="type-show type-show-download">下载</span>
+			</div>
+		</a>
+	</div>
+
+	
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/q597967420/article/details/76099425,BlogCommendFromThirdServiceAll_35"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/q597967420/article/details/76099425" target="_blank" title="VINS-Mono源码解析（二）前端：特征跟踪">
+		<h4 class="text-truncate oneline">
+				<em>VINS-Mono</em>源码解析（二）前端：特征跟踪		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">07-25</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					4574</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/q597967420/article/details/76099425" target="_blank" title="VINS-Mono源码解析（二）前端：特征跟踪">
+				<span class="desc oneline">VINS-Mono源码解析（二）前端：特征跟踪　　VINS-Mono中的前端处理在ROS节点feature_tracker_node中，具体实现是GoodFeatureToTrack+LK光流跟踪。1...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/q597967420">来自：	<span class="blog_title"> roboto</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/wangshuailpp/article/details/78719593,BlogCommendFromThirdServiceAll_36"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/wangshuailpp/article/details/78719593" target="_blank" title="VINS理论与代码详解5——基于滑动窗口的单目视觉紧耦合后端优化模型">
+		<h4 class="text-truncate oneline">
+				VINS理论与<em>代码</em>详解5——基于滑动窗口的单目视觉紧耦合后端<em>优化</em>模型		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">12-05</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					4678</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/wangshuailpp/article/details/78719593" target="_blank" title="VINS理论与代码详解5——基于滑动窗口的单目视觉紧耦合后端优化模型">
+				<span class="desc oneline">VINS理论与代码详解5——基于滑动窗口的单目视觉紧耦合后端优化模型   终于讲到了真正的视觉惯性紧耦合系统了，（在这里插一句，算是写博客和学习一个SLAM系统的心得吧，一开始我们可能抱着一个必胜的心...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/wangshuailpp">来自：	<span class="blog_title"> wangshuailpp的博客</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/ktigerhero3/article/details/85070500,BlogCommendFromThirdServiceAll_37"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/ktigerhero3/article/details/85070500" target="_blank" title="ceres非线性优化(分析推导雅克比矩阵例子)">
+		<h4 class="text-truncate oneline">
+				ceres<em>非线性</em><em>优化</em>(分析推导雅克比矩阵例子)		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">12-18</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					132</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/ktigerhero3/article/details/85070500" target="_blank" title="ceres非线性优化(分析推导雅克比矩阵例子)">
+				<span class="desc oneline">什么时候需要分析求导雅克比？总结了下主要考虑下面方面（1）自动求导不成功的时候（2）需要考虑求解效率的时候，有时采用代数求导速度会快于自动求导下面将ceres官方文档http://ceres-solv...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/ktigerhero3">来自：	<span class="blog_title"> 沧海一帆的专栏</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/xu1129005165/article/details/85003175,BlogCommendFromThirdServiceAll_38"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/xu1129005165/article/details/85003175" target="_blank" title="VINS-mono——一套Visual-Inertial融合定位算法">
+		<h4 class="text-truncate oneline">
+				<em>VINS-mono</em>——一套Visual-Inertial融合定位算法		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">12-14</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					305</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/xu1129005165/article/details/85003175" target="_blank" title="VINS-mono——一套Visual-Inertial融合定位算法">
+				<span class="desc oneline">期刊分享SLAMVINS-Mono：一种稳健的单目视觉惯性状态估计器上期刊分享SLAMVINS-Mono：一种稳健的单目视觉惯性状态估计器下1.VINS-Mono系统框架VINS-Mono的系统框架如...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/xu1129005165">来自：	<span class="blog_title"> 穿着帆布鞋也能走猫步</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	<div class="recommend-item-box recommend-ad-box"><div id="kp_box_66" data-pid="66" data-track-view='{"mod":"kp_popu_66-881","con":",,"}' data-track-click='{"mod":"kp_popu_66-881","con":",,"}'><script src="https://nbrecsys.4paradigm.com/resource/cus/csdn/sdk-csdn-render.js"></script>
+<div
+  id="_4paradigm_T38_render"
+  class="_paradigm_T_ads_render _4paradigm_box recommend-item-box clearfix"
+></div>
+<script>
+  //  渲染T38  传入 渲染位置的id和渲染位置的标记
+  p4CSDNRender_T("_4paradigm_T38_render", "T38");
+</script></div></div>
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/tina_ttl/article/details/56833251,BlogCommendFromThirdServiceAll_39"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/tina_ttl/article/details/56833251" target="_blank" title="最优化理论·非线性最小二乘">
+		<h4 class="text-truncate oneline">
+				最<em>优化</em>理论·<em>非线性</em>最小二乘		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">02-24</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					1万+</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/tina_ttl/article/details/56833251" target="_blank" title="最优化理论·非线性最小二乘">
+				<span class="desc oneline">最优化理论·非线性最小二乘标签（空格分隔）：数学非线性最小二乘问题是椭圆拟合中最易遇到的优化问题，本文主要对非线性二乘的基本分析做简单介绍1.什么是最小二乘问题目标函数能够写为m个函数平方和的优化问题...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/tina_ttl">来自：	<span class="blog_title"> tina的博客</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/redfivehit/article/details/77336415,BlogCommendFromQuerySearch_40"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/redfivehit/article/details/77336415" target="_blank" title="SLAM学习--非线性优化">
+		<h4 class="text-truncate oneline">
+				SLAM学习--<em>非线性</em><em>优化</em>		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">08-17</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					954</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/redfivehit/article/details/77336415" target="_blank" title="SLAM学习--非线性优化">
+				<span class="desc oneline">slam中经常遇到非线性优化问题：许多个误差项平方和组成的最小二乘问题，两个最常见的梯度下降方法-非线性优化方案：高斯牛顿法、裂纹伯格-马夸尔特方法两个c++的优化库：来自谷歌的ceres库和基于图优...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/redfivehit">来自：	<span class="blog_title"> redfivehit的专栏</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/qq_41127512/article/details/78670666,BlogCommendFromQuerySearch_41"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/qq_41127512/article/details/78670666" target="_blank" title="scikit-learn 中文文档-协方差估计-无监督学习|ApacheCN">
+		<h4 class="text-truncate oneline">
+				scikit-learn 中文文档-协方差<em>估计</em>-无监督学习|ApacheCN		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">11-29</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					807</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/qq_41127512/article/details/78670666" target="_blank" title="scikit-learn 中文文档-协方差估计-无监督学习|ApacheCN">
+				<span class="desc oneline">中文文档: http://sklearn.apachecn.org/cn/stable/modules/covariance.html英文文档: http://sklearn.apachecn.org...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/qq_41127512">来自：	<span class="blog_title"> 风风的博客</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	
+	
+	<div class="recommend-item-box  recommend-download-box clearfix"  data-track-click='{"mod":"popu_614","con":",https://download.csdn.net/download/qq_35901595/9978790,BlogCommendFromQuerySearch_42"}'>
+		<a href="https://download.csdn.net/download/qq_35901595/9978790" target="_blank">
+			<div class="content clearfix">
+				<div class="">
+					<h4 class="text-truncate oneline clearfix">
+						最优<em>状态</em><em>估计</em>:卡尔曼,H∞及<em>非线性</em>滤波					</h4>
+					<span class="data float-right">09-14</span>
+				</div>
+				<div class="desc oneline">
+						最优状态估计:卡尔曼,H∞及非线性滤波最优状态估计:卡尔曼,H∞及非线性滤波最优状态估计:卡尔曼,H∞及非线性滤波最优状态估计:卡尔曼,H∞及非线性滤波最优状态估计:卡尔曼,H∞及非线性滤波				</div>
+				<span class="type-show type-show-download">下载</span>
+			</div>
+		</a>
+	</div>
+
+	
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/zhengbq_seu/article/details/80817241,BlogCommendFromQuerySearch_43"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/zhengbq_seu/article/details/80817241" target="_blank" title="SLAM后端---状态估计　转变为　最小二乘法">
+		<h4 class="text-truncate oneline">
+				SLAM后端---<em>状态</em><em>估计</em>　转变为　最小二乘法		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">06-26</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					1211</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/zhengbq_seu/article/details/80817241" target="_blank" title="SLAM后端---状态估计　转变为　最小二乘法">
+				<span class="desc oneline">内容源自＜视觉slam十四讲＞最大后验和最大似然状态估计转换为Ｐ(x|z)公式，然后根据贝叶斯法则，删去无关的，再把Ｐ(x)干脆也省略了，最后相当于求解argmaxP(z|x)，也就是最大似然．整个过...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/zhengbq_seu">来自：	<span class="blog_title"> zhengbq_seu的博客</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	<div class="recommend-item-box recommend-ad-box"><div id="kp_box_67" data-pid="67" data-track-view='{"mod":"kp_popu_67-882","con":",,"}' data-track-click='{"mod":"kp_popu_67-882","con":",,"}'><script src="https://nbrecsys.4paradigm.com/resource/cus/csdn/sdk-csdn-render.js"></script>
+<div
+  id="_4paradigm_T43_render"
+  class="_paradigm_T_ads_render _4paradigm_box recommend-item-box clearfix"
+></div>
+<script>
+  //  渲染T43  传入 渲染位置的id和渲染位置的标记
+  p4CSDNRender_T("_4paradigm_T43_render", "T43");
+</script></div></div>
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/Charles_TheGod/article/details/84382944,BlogCommendFromQuerySearch_44"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/Charles_TheGod/article/details/84382944" target="_blank" title="机器学习之转换器和估计器">
+		<h4 class="text-truncate oneline">
+				机器学习之转换器和<em>估计</em>器		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">11-23</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					260</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/Charles_TheGod/article/details/84382944" target="_blank" title="机器学习之转换器和估计器">
+				<span class="desc oneline">1️⃣、转换器想一下之前做的特征工程的步骤？1实例化(实例化的是一个转换器类(Transformer))2调用fit_transform(对于文档建立分类词频矩阵，不能同时调用)我们把特征工程的接口称...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/Charles_TheGod">来自：	<span class="blog_title"> Charles_TheGod的博客</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/yu132563/article/details/81239276,BlogCommendFromThirdServiceAll_45"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/yu132563/article/details/81239276" target="_blank" title="到底什么是非线性优化？">
+		<h4 class="text-truncate oneline">
+				到底什么是<em>非线性</em><em>优化</em>？		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">07-27</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					4199</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/yu132563/article/details/81239276" target="_blank" title="到底什么是非线性优化？">
+				<span class="desc oneline">你是否也对非线性优化这个领域望而却步？​​​你是否也在思索非线性优化求解方法的根源？​​​你是否也苦恼于非线性优化到底在研究什么？如果你的回答是肯定的，说明我们是一样的。那么，让我们从这里开始，一起尝...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/yu132563">来自：	<span class="blog_title"> yu132563的专栏</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/wangshuailpp/article/details/78461171,BlogCommendFromThirdServiceAll_46"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/wangshuailpp/article/details/78461171" target="_blank" title="VINS技术路线与代码详解">
+		<h4 class="text-truncate oneline">
+				VINS技术路线与<em>代码</em>详解		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">11-06</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					2万+</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/wangshuailpp/article/details/78461171" target="_blank" title="VINS技术路线与代码详解">
+				<span class="desc oneline">VINS技术路线  写在前面：本文整和自己的思路，希望对学习VINS或者VIO的同学有所帮助，如果你觉得文章写的对你的理解有一点帮助，可以推荐给周围的小伙伴们，当然，如果你有任何问题想要交流，欢迎随时...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/wangshuailpp">来自：	<span class="blog_title"> wangshuailpp的博客</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/q597967420/article/details/76099409,BlogCommendFromThirdServiceAll_47"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/q597967420/article/details/76099409" target="_blank" title="VINS-Mono源码解析（一）系统框架">
+		<h4 class="text-truncate oneline">
+				<em>VINS-Mono</em>源码解析（一）系统框架		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">07-25</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					1万+</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/q597967420/article/details/76099409" target="_blank" title="VINS-Mono源码解析（一）系统框架">
+				<span class="desc oneline">VINS-Mono源码解析（一）系统框架1.VINS-Mono简介VINS-Mono是HKUST的ShenShaojie团队开源的一套Visual-Inertial融合定位算法.介绍见(https:/...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/q597967420">来自：	<span class="blog_title"> roboto</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/www_rsqdz_net/article/details/79765482,BlogCommendFromThirdServiceAll_48"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/www_rsqdz_net/article/details/79765482" target="_blank" title="Sklearn 使用方法—选择正确的评估器(estimator)">
+		<h4 class="text-truncate oneline">
+				Sklearn 使用方法—选择正确的评估器(<em>estimator</em>)		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">03-31</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					902</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/www_rsqdz_net/article/details/79765482" target="_blank" title="Sklearn 使用方法—选择正确的评估器(estimator)">
+				<span class="desc oneline">﻿﻿原文链接有点问题，对原图评估器对应的章节进行了标记。scikit-learn0.19.0英文文档scikit-learn0.19.0中文文档...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/www_rsqdz_net">来自：	<span class="blog_title"> 李世铭的博客</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	<div class="recommend-item-box recommend-ad-box"><div id="kp_box_68" data-pid="68" data-track-view='{"mod":"kp_popu_68-883","con":",,"}' data-track-click='{"mod":"kp_popu_68-883","con":",,"}'><!-- T48 位置 -->
+<script src="https://nbrecsys.4paradigm.com/resource/cus/csdn/sdk-csdn-render.js"></script>
+<div
+  id="_4paradigm_T48_render"
+  class="_paradigm_T_ads_render _4paradigm_box recommend-item-box clearfix"
+></div>
+<script>
+  //  渲染T48  传入 渲染位置的id和渲染位置的标记
+  p4CSDNRender_T("_4paradigm_T48_render", "T48");
+</script></div></div>
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/qq_31785865/article/details/75220003,BlogCommendFromThirdServiceAll_49"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/qq_31785865/article/details/75220003" target="_blank" title="港科VINS-Mono系统学习（1）">
+		<h4 class="text-truncate oneline">
+				港科<em>VINS-Mono</em>系统学习（1）		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">07-17</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					5331</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/qq_31785865/article/details/75220003" target="_blank" title="港科VINS-Mono系统学习（1）">
+				<span class="desc oneline">vins是今年刚开源的vio系统，跑了数据集效果挺好的，所以看了paper和代码。视频地址：https://www.youtube.com/watch?v=I4txdvGhT6Igithub：http...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/qq_31785865">来自：	<span class="blog_title"> qq_31785865的博客</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/longxinchen_ml/article/details/50749614,BlogCommendHotData_0"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/longxinchen_ml/article/details/50749614" target="_blank" title="机器学习系列(7)_机器学习路线图(附资料)">
+		<h4 class="text-truncate oneline">
+				机器学习系列(7)_机器学习路线图(附资料)		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">02-28</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					2万+</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/longxinchen_ml/article/details/50749614" target="_blank" title="机器学习系列(7)_机器学习路线图(附资料)">
+				<span class="desc oneline">1. 引言
+
+也许你和这个叫『机器学习』的家伙一点也不熟，但是你举起iphone手机拍照的时候，早已习惯它帮你框出人脸；也自然而言点开今日头条推给你的新闻；也习惯逛淘宝点了找相似之后货比三家；亦或喜闻...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/longxinchen_ml">来自：	<span class="blog_title"> 龙心尘</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/ymj7150697/article/details/7384126,BlogCommendHotData_1"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/ymj7150697/article/details/7384126" target="_blank" title="expat介绍文档翻译">
+		<h4 class="text-truncate oneline">
+				expat介绍文档翻译		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">03-22</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					5万+</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/ymj7150697/article/details/7384126" target="_blank" title="expat介绍文档翻译">
+				<span class="desc oneline">原文地址：http://www.xml.com/pub/a/1999/09/expat/index.html
+
+
+因为需要用，所以才翻译了这个文档。但总归赖于英语水平很有限，翻译出来的中文有可能...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/ymj7150697">来自：	<span class="blog_title"> ymj7150697的专栏</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/nininicrystal/article/details/78341894,BlogCommendHotData_2"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/nininicrystal/article/details/78341894" target="_blank" title="intellijIDEA手动安装Scala插件">
+		<h4 class="text-truncate oneline">
+				intellijIDEA手动安装Scala插件		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">10-25</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					1万+</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/nininicrystal/article/details/78341894" target="_blank" title="intellijIDEA手动安装Scala插件">
+				<span class="desc oneline">参考文章：http://blog.csdn.net/a2011480169/article/details/52712421
+IDEA软件本地安装Scala不成功，需要手动安装。
+
+1.首先找到...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/nininicrystal">来自：	<span class="blog_title"> nininicrystal的专栏</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/roguesir/article/details/77104246,BlogCommendHotData_3"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/roguesir/article/details/77104246" target="_blank" title="人脸检测工具face_recognition的安装与应用">
+		<h4 class="text-truncate oneline">
+				人脸检测工具face_recognition的安装与应用		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">08-11</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					7万+</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/roguesir/article/details/77104246" target="_blank" title="人脸检测工具face_recognition的安装与应用">
+				<span class="desc oneline">人脸检测工具face_recognition的安装与应用</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/roguesir">来自：	<span class="blog_title"> roguesir的博客</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/maoyuanming0806/article/details/78067446,BlogCommendHotData_4"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/maoyuanming0806/article/details/78067446" target="_blank" title="搭建图片服务器《二》-linux安装nginx">
+		<h4 class="text-truncate oneline">
+				搭建图片服务器《二》-linux安装nginx		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">09-22</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					6万+</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/maoyuanming0806/article/details/78067446" target="_blank" title="搭建图片服务器《二》-linux安装nginx">
+				<span class="desc oneline">nginx是个好东西，Nginx (engine x) 是一个高性能的HTTP和反向代理服务器，也是一个IMAP/POP3/SMTP服务器。Nginx是由伊戈尔·赛索耶夫为俄罗斯访问量第二的Rambl...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/maoyuanming0806">来自：	<span class="blog_title"> maoyuanming0806的博客</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/Edison_03/article/details/73699328,BlogCommendHotData_5"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/Edison_03/article/details/73699328" target="_blank" title="Tomcat安装与环境变量的配置">
+		<h4 class="text-truncate oneline">
+				Tomcat安装与环境变量的配置		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">06-25</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					13万+</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/Edison_03/article/details/73699328" target="_blank" title="Tomcat安装与环境变量的配置">
+				<span class="desc oneline">Tomacat的下载 
+去Tomcat官网下载，我使用的是apache-tomcat-7.0.78的版本。
+
+
+安装 
+下载完成之后，我们解压缩到相应的目录。这里我解压缩到d盘下面 
+
+
+
+
+ 
+
+
+...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/Edison_03">来自：	<span class="blog_title"> Edison_03的博客</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/qq_36892341/article/details/73918672,BlogCommendHotData_6"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/qq_36892341/article/details/73918672" target="_blank" title="linux上安装Docker(非常简单的安装方法)">
+		<h4 class="text-truncate oneline">
+				linux上安装Docker(非常简单的安装方法)		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">06-29</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					25万+</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/qq_36892341/article/details/73918672" target="_blank" title="linux上安装Docker(非常简单的安装方法)">
+				<span class="desc oneline">最近比较有空，大四出来实习几个月了，作为实习狗的我，被叫去研究Docker了，汗汗！
+
+Docker的三大核心概念：镜像、容器、仓库
+镜像：类似虚拟机的镜像、用俗话说就是安装文件。
+容器：类似一个轻量...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/qq_36892341">来自：	<span class="blog_title"> 我走小路的博客</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/flysharkym/article/details/51404730,BlogCommendHotData_7"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/flysharkym/article/details/51404730" target="_blank" title="mybatis一级缓存(session cache)引发的问题">
+		<h4 class="text-truncate oneline">
+				mybatis一级缓存(session cache)引发的问题		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">05-14</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					3万+</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/flysharkym/article/details/51404730" target="_blank" title="mybatis一级缓存(session cache)引发的问题">
+				<span class="desc oneline">mybatis一级缓存(session cache)引发的问题</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/flysharkym">来自：	<span class="blog_title"> flysharkym的专栏</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/yycdaizi/article/details/43341239,BlogCommendHotData_8"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/yycdaizi/article/details/43341239" target="_blank" title="Hive小文件合并">
+		<h4 class="text-truncate oneline">
+				Hive小文件合并		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">01-31</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					3万+</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/yycdaizi/article/details/43341239" target="_blank" title="Hive小文件合并">
+				<span class="desc oneline">Hive的后端存储是HDFS，它对大文件的处理是非常高效的，如果合理配置文件系统的块大小，NameNode可以支持很大的数据量。但是在数据仓库中，越是上层的表其汇总程度就越高，数据量也就越小。而且这些...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/yycdaizi">来自：	<span class="blog_title"> yycdaizi的专栏</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/silentpebble/article/details/41279285,BlogCommendHotData_9"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/silentpebble/article/details/41279285" target="_blank" title="centos 查看命令源码">
+		<h4 class="text-truncate oneline">
+				centos 查看命令源码		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">11-19</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					11万+</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/silentpebble/article/details/41279285" target="_blank" title="centos 查看命令源码">
+				<span class="desc oneline"># yum install yum-utils
+
+
+设置源:
+[base-src]
+name=CentOS-5.4 - Base src -
+baseurl=http://vault.ce...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/silentpebble">来自：	<span class="blog_title"> linux/unix</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/neonlight/article/details/5975764,BlogCommendHotData_10"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/neonlight/article/details/5975764" target="_blank" title="vsftpd匿名用户上传和下载的配置">
+		<h4 class="text-truncate oneline">
+				vsftpd匿名用户上传和下载的配置		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">10-30</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					1万+</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/neonlight/article/details/5975764" target="_blank" title="vsftpd匿名用户上传和下载的配置">
+				<span class="desc oneline">　　看到很多朋友配置vsftpd时不能使用匿名用户上传和下载（创建目录或删除、重命名文件夹），本文主要解决vsftpd的匿名用户权限配制问题。...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/neonlight">来自：	<span class="blog_title"> 九宫霓虹</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/leolewin/article/details/48653351,BlogCommendHotData_11"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/leolewin/article/details/48653351" target="_blank" title="加密算法介绍及加密算法的选择">
+		<h4 class="text-truncate oneline">
+				加密算法介绍及加密算法的选择		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">09-22</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					1万+</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/leolewin/article/details/48653351" target="_blank" title="加密算法介绍及加密算法的选择">
+				<span class="desc oneline">加密算法介绍
+
+一. 密码学简介
+据记载，公元前400年，古希腊人发明了置换密码。1881年世界上的第一个电话保密专利出现。在第二次世界大战期间，德国军方启用“恩尼格玛”密码机，密码学在战争中起...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/leolewin">来自：	<span class="blog_title"> leolewin的博客</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/yangpan011/article/details/51939731,BlogCommendHotData_12"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/yangpan011/article/details/51939731" target="_blank" title="解析力评测（1） MTF和SFR">
+		<h4 class="text-truncate oneline">
+				解析力评测（1） MTF和SFR		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">07-18</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					1万+</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/yangpan011/article/details/51939731" target="_blank" title="解析力评测（1） MTF和SFR">
+				<span class="desc oneline">成像系统的解析力一直是摄像头最关键的指标之一。所有用户拿到一张照片的时候首先看到的是照片清楚不清楚，图像的清楚说得就是解析力。但是如何评价一个成像系统的解析力也是大家一直在探讨的问题。目前主流的办法主...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/yangpan011">来自：	<span class="blog_title"> yangpan011的博客</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/Ape55/article/details/73530419,BlogCommendHotData_13"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/Ape55/article/details/73530419" target="_blank" title="plsql的命令（command）窗口与sql窗口有什么区别20170620">
+		<h4 class="text-truncate oneline">
+				plsql的命令（command）窗口与sql窗口有什么区别20170620		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">06-21</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					4万+</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/Ape55/article/details/73530419" target="_blank" title="plsql的命令（command）窗口与sql窗口有什么区别20170620">
+				<span class="desc oneline">command窗口是命令窗口，即为sqplus窗口，有命令提示符，识别sqlplus命令，基本的命令都可以执行
+sql仅可执行DDL、select、DML等...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/Ape55">来自：	<span class="blog_title"> Ape55的博客</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/gefangshuai/article/details/50328451,BlogCommendHotData_14"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/gefangshuai/article/details/50328451" target="_blank" title="关于SpringBoot bean无法注入的问题（与文件包位置有关）">
+		<h4 class="text-truncate oneline">
+				关于SpringBoot bean无法注入的问题（与文件包位置有关）		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">12-16</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					22万+</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/gefangshuai/article/details/50328451" target="_blank" title="关于SpringBoot bean无法注入的问题（与文件包位置有关）">
+				<span class="desc oneline">问题场景描述整个项目通过Maven构建，大致结构如下：
+核心Spring框架一个module spring-boot-base
+service和dao一个module server-core
+提供系统...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/gefangshuai">来自：	<span class="blog_title"> 开发随笔</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/qq574857122/article/details/16361033,BlogCommendHotData_15"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/qq574857122/article/details/16361033" target="_blank" title="强连通分量及缩点tarjan算法解析">
+		<h4 class="text-truncate oneline">
+				强连通分量及缩点tarjan算法解析		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">11-16</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					61万+</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/qq574857122/article/details/16361033" target="_blank" title="强连通分量及缩点tarjan算法解析">
+				<span class="desc oneline">强连通分量：
+简言之 就是找环（每条边只走一次，两两可达）
+孤立的一个点也是一个连通分量 
+ 
+使用tarjan算法 在嵌套的多个环中优先得到最大环( 最小环就是每个孤立点）
+ 
+定义：
+int Ti...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/qq574857122">来自：	<span class="blog_title"> 九野的博客</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/wuchengzeng/article/details/50037611,BlogCommendHotData_16"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/wuchengzeng/article/details/50037611" target="_blank" title="jquery/js实现一个网页同时调用多个倒计时(最新的)">
+		<h4 class="text-truncate oneline">
+				jquery/js实现一个网页同时调用多个倒计时(最新的)		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">11-25</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					50万+</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/wuchengzeng/article/details/50037611" target="_blank" title="jquery/js实现一个网页同时调用多个倒计时(最新的)">
+				<span class="desc oneline">jquery/js实现一个网页同时调用多个倒计时(最新的)
+
+最近需要网页添加多个倒计时. 查阅网络,基本上都是千遍一律的不好用. 自己按需写了个.希望对大家有用. 有用请赞一个哦!
+
+
+
+//js
+...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/wuchengzeng">来自：	<span class="blog_title"> Websites</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/yu_xiaofei/article/details/13287899,BlogCommendHotData_17"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/yu_xiaofei/article/details/13287899" target="_blank" title="SNMP协议详解&lt;二&gt;">
+		<h4 class="text-truncate oneline">
+				SNMP协议详解&lt;二&gt;		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">10-29</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					15万+</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/yu_xiaofei/article/details/13287899" target="_blank" title="SNMP协议详解&lt;二&gt;">
+				<span class="desc oneline">上一篇文章讲解了SNMP的基本架构，本篇文章将重点分析SNMP报文，并对不同版本（SNMPv1、v2c、v3）进行区别！
+
+四、SNMP协议数据单元
+
+在SNMP管理中，管理站（NMS）和代理（Age...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/yu_xiaofei">来自：	<span class="blog_title"> 假装在纽约</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/hero_fantao/article/details/34533533,BlogCommendHotData_18"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/hero_fantao/article/details/34533533" target="_blank" title="连续特征离散化和归一化">
+		<h4 class="text-truncate oneline">
+				连续特征离散化和归一化		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">06-25</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					5万+</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/hero_fantao/article/details/34533533" target="_blank" title="连续特征离散化和归一化">
+				<span class="desc oneline">连续特征进行离散化处理。</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/hero_fantao">来自：	<span class="blog_title"> hero_fantao的专栏</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/Mannver/article/details/51315540,BlogCommendHotData_19"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/Mannver/article/details/51315540" target="_blank" title="城市列表-根据拼音首字母排序">
+		<h4 class="text-truncate oneline">
+				城市列表-根据拼音首字母排序		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">05-04</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					9939</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/Mannver/article/details/51315540" target="_blank" title="城市列表-根据拼音首字母排序">
+				<span class="desc oneline">今天我们就简单的实现一下城市的排序   读取我们城市的信息并通过listview展示   首先看一下我们的布局文件...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/Mannver">来自：	<span class="blog_title"> Mannver的博客</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/Ideality_hunter/article/details/72876294,BlogCommendHotData_20"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/Ideality_hunter/article/details/72876294" target="_blank" title="前后端分离，html页面中怎么获取当前登录用户信息，并写入html页面的指定位置?">
+		<h4 class="text-truncate oneline">
+				前后端分离，html页面中怎么获取当前登录用户信息，并写入html页面的指定位置?		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">06-06</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					1万+</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/Ideality_hunter/article/details/72876294" target="_blank" title="前后端分离，html页面中怎么获取当前登录用户信息，并写入html页面的指定位置?">
+				<span class="desc oneline">前后端分离，html页面中怎么获取当前登录用户信息，并写入html页面的指定位置?
+以amazeui+vue框架为例：
+场景（前提是用户登录写入cookie，参考我的：http://blog.cs...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/Ideality_hunter">来自：	<span class="blog_title"> Ideality_hunter的专栏</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/qq_34417408/article/details/78563602,BlogCommendHotData_21"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/qq_34417408/article/details/78563602" target="_blank" title="开源Json解析器的浅述">
+		<h4 class="text-truncate oneline">
+				开源Json解析器的浅述		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">11-17</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					5208</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/qq_34417408/article/details/78563602" target="_blank" title="开源Json解析器的浅述">
+				<span class="desc oneline">之前在做项目中，Json 这种数据转换格式经常用，为什么呢？我认为是 
+1、它的易用性，跨平台性，它是JS(JavaScript)的子集，是一种对象字面量。 
+2、它与XML都是树结构的语法树； 
+同...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/qq_34417408">来自：	<span class="blog_title"> qq_34417408的博客</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/u013037007/article/details/50706291,BlogCommendHotData_22"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/u013037007/article/details/50706291" target="_blank" title="Android判断屏幕状态与屏幕解锁和锁定">
+		<h4 class="text-truncate oneline">
+				Android判断屏幕状态与屏幕解锁和锁定		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">02-20</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					2203</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/u013037007/article/details/50706291" target="_blank" title="Android判断屏幕状态与屏幕解锁和锁定">
+				<span class="desc oneline">主动判断屏幕是否亮着：
+
+public boolean isScreenOn(Context context) { 
+    PowerManager pm = (PowerManager) cont...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/u013037007">来自：	<span class="blog_title"> 安卓世界库</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/will4906/article/details/73723774,BlogCommendHotData_23"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/will4906/article/details/73723774" target="_blank" title="基于java spring的邮件群发简单方式">
+		<h4 class="text-truncate oneline">
+				基于java spring的邮件群发简单方式		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">06-25</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					1119</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/will4906/article/details/73723774" target="_blank" title="基于java spring的邮件群发简单方式">
+				<span class="desc oneline">使用环境
+maven
+spring
+mybatis
+mysql
+java mail
+qq邮箱
+准备工作
+使用maven将spring、mybatis、mysql、java mail所需要的包导入，具体...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/will4906">来自：	<span class="blog_title"> 一个简单的故事</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	
+	
+<div class="recommend-item-box type_blog clearfix"  data-track-click='{"mod":"popu_614","con":",https://blog.csdn.net/niaonao/article/details/51167533,BlogCommendHotData_24"}'>
+	<div class="content">
+		<a href="https://blog.csdn.net/niaonao/article/details/51167533" target="_blank" title="Java WEB 分页实现">
+		<h4 class="text-truncate oneline">
+				Java WEB 分页实现		</h4>
+		<div class="info-box d-flex align-content-center">
+			<p class="date-and-readNum oneline">
+				<span class="date hover-show">04-16</span>
+				<span class="read-num hover-hide">
+					阅读数 
+					2万+</span>
+				</p>
+			</div>
+		</a>
+		<p class="content">
+			<a href="https://blog.csdn.net/niaonao/article/details/51167533" target="_blank" title="Java WEB 分页实现">
+				<span class="desc oneline">分页实现的效果：
+     /**/
+组图0-1.分页实现效果图一
+      /**/
+组图0-2.分页实现效果图二
+一、从效果可以看出内容由两部分组成：
+1.学生信息
+    数据库中插入一些记录...</span>
+			</a>
+			<span class="blog_title_box oneline ">
+									<span class="type-show type-show-blog type-show-after">博文</span>
+											<a target="_blank" href="https://blog.csdn.net/niaonao">来自：	<span class="blog_title"> niaonao</span></a>
+												</span>
+		</p>
+	</div>
+	</div>
+
+	
+	
+                <div class="recommend-item-box type_hot_word">
+                                <div class="content clearfix">
+                    <div class="word float-left">
+                                                            <span>
+                        <a href="https://edu.csdn.net/course/play/5599/109604 " target="_blank">
+                        统计学稳健估计opencv函数                    </a></span>
+                                                                                <span>
+                        <a href="https://edu.csdn.net/combos/o363_l0_t " target="_blank">
+                        设计制作学习                    </a></span>
+                                                                                <span>
+                        <a href="https://edu.csdn.net/courses/o5329_s5330_k " target="_blank">
+                        机器学习教程                    </a></span>
+                                                                                <span>
+                        <a href="https://edu.csdn.net/courses/o280_s351_k " target="_blank">
+                        Objective-C培训                    </a></span>
+                                                                                <span>
+                        <a href="https://edu.csdn.net/combos/o7115_s388_l0_t " target="_blank">
+                        交互设计视频教程                    </a></span>
+                                                            </div>
+                </div>
+                                                <div class="content clearfix">
+                    <div class="float-left">
+                                        <span>
+                        <a href="https://www.csdn.net/gather_24/MtTaEg3sMDM5MS1ibG9n.html" target="_blank">
+                        mysql关联查询两次本表</a>
+                    </span>
+                                        <span>
+                        <a href="https://www.csdn.net/gather_10/MtjaIg3sMTUzMy1kb3dubG9hZAO0O0OO0O0O.html" target="_blank">
+                        native底部 react</a>
+                    </span>
+                                        <span>
+                        <a href="https://www.csdn.net/gather_1b/Ntzagg1sOTU3LWRvd25sb2Fk.html" target="_blank">
+                        extjs glyph 图标</a>
+                    </span>
+                                        <span>
+                        <a href="https://www.csdn.net/gather_4a/NtTaMg0sMDUtZWR1.html" target="_blank">
+                        大数据解读视频</a>
+                    </span>
+                                        <span>
+                        <a href="https://www.csdn.net/gather_4a/MtTaIgzsNjMtZWR1.html" target="_blank">
+                        区块链解读课程</a>
+                    </span>
+                                        </div>
+                </div>
+                                </div>
+                            <div class="recommend-loading-box">
+                <img src='https://csdnimg.cn/release/phoenix/images/feedLoading.gif'>
+            </div>
+            <div class="recommend-end-box">
+                <p class="text-center">没有更多推荐了，<a href="https://blog.csdn.net/" class="c-blue c-blue-hover c-blue-focus">返回首页</a></p>
+            </div>
+        </div>
+    </main>
+
+    <aside>
+		    <div id="asideProfile" class="aside-box">
+    <!-- <h3 class="aside-title">个人资料</h3> -->
+    <div class="profile-intro d-flex">
+        <div class="avatar-box d-flex justify-content-center flex-column">
+            <a href="https://blog.csdn.net/qq_41839222">
+              <img src="https://avatar.csdn.net/6/C/A/3_qq_41839222.jpg" class="avatar_pic">
+                              <img src="https://g.csdnimg.cn/static/user-reg-year/1x/1.png" class="user-years">
+                          </a>
+            
+        </div>
+        <div class="user-info d-flex justify-content-center flex-column">
+            <p class="name csdn-tracking-statistics tracking-click" data-mod="popu_379">
+                <a href="https://blog.csdn.net/qq_41839222" target="_blank" class="" id="uid">Manii</a>
+            </p>
+                    </div>
+                <div class="opt-box d-flex justify-content-center flex-column">
+            <span  class="csdn-tracking-statistics tracking-click" data-mod="popu_379">
+                <a class="btn btn-sm btn-red-hollow attention" id="btnAttent">关注</a>
+            </span>
+        </div>
+            </div>
+    <div class="data-info d-flex item-tiling">
+                <dl class="text-center" title="25">
+                        <dt><a href="https://blog.csdn.net/qq_41839222?t=1">原创</a></dt>
+            <dd><a href="https://blog.csdn.net/qq_41839222?t=1"><span class="count">25</span></a></dd>
+                    </dl>
+        <dl class="text-center" id="fanBox" title="61">
+            <dt>粉丝</dt>
+            <dd><span class="count" id="fan">61</span></dd>
+        </dl>
+        <dl class="text-center" title="26">
+            <dt>喜欢</dt>
+            <dd><span class="count">26</span></dd>
+        </dl>
+        <dl class="text-center" title="47">
+            <dt>评论</dt>
+            <dd><span class="count">47</span></dd>
+        </dl>
+    </div>
+    <div class="grade-box clearfix">
+        <dl>
+            <dt>等级：</dt>
+            <dd>
+                <a href="https://blog.csdn.net/home/help.html#level" title="2级,点击查看等级说明" target="_blank">
+                    <svg class="icon icon-level" aria-hidden="true">
+                        <use xlink:href="#csdnc-bloglevel-2"></use>
+                    </svg>
+                </a>
+            </dd>
+        </dl>
+        <dl>
+            <dt>访问：</dt>
+            <dd title="17717">
+                1万+            </dd>
+        </dl>
+        <dl>
+            <dt>积分：</dt>
+            <dd title="486">
+                486            </dd>
+        </dl>
+        <dl title="141298">
+            <dt>排名：</dt>
+            <dd>14万+</dd>
+        </dl>
+    </div>
+        <div class="badge-box d-flex">
+        <span>勋章：</span>
+        <div class="badge d-flex">
+                                                        <div class="icon-badge" title="Github">
+                       <div class="mouse-box">
+                          <img src="https://g.csdnimg.cn/static/user-medal/github.svg" alt="">
+                          <div class="icon-arrow"></div>
+                       </div>
+                       <div class="grade-detail-box">
+                           <div class="pos-box">
+                               <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                                    <img src="https://g.csdnimg.cn/static/user-medal/github.svg" alt="">
+                                   <p>Github</p>
+                               </div>
+                               <div class="right-box">
+                                   绑定github第三方账户获取                               </div>
+                           </div>
+                       </div>
+                   </div>
+                                                             <div class="icon-badge" title="专栏达人">
+                       <div class="mouse-box">
+                          <img src="https://g.csdnimg.cn/static/user-medal/zhuanlan.svg" alt="">
+                          <div class="icon-arrow"></div>
+                       </div>
+                       <div class="grade-detail-box">
+                           <div class="pos-box">
+                               <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                                    <img src="https://g.csdnimg.cn/static/user-medal/zhuanlan.svg" alt="">
+                                   <p>专栏达人</p>
+                               </div>
+                               <div class="right-box">
+                                   授予成功创建个人博客专栏的用户。专栏中添加五篇以上博文即可点亮！撰写博客专栏浓缩技术精华，专栏达人就是你！                               </div>
+                           </div>
+                       </div>
+                   </div>
+                                                             <div class="icon-badge" title="持之以恒">
+                       <div class="mouse-box">
+                          <img src="https://g.csdnimg.cn/static/user-medal/chizhiyiheng.svg" alt="">
+                          <div class="icon-arrow"></div>
+                       </div>
+                       <div class="grade-detail-box">
+                           <div class="pos-box">
+                               <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                                    <img src="https://g.csdnimg.cn/static/user-medal/chizhiyiheng.svg" alt="">
+                                   <p>持之以恒</p>
+                               </div>
+                               <div class="right-box">
+                                   授予每个自然月内发布4篇或4篇以上原创或翻译IT博文的用户。不积跬步无以至千里，不积小流无以成江海，程序人生的精彩需要坚持不懈地积累！                               </div>
+                           </div>
+                       </div>
+                   </div>
+                                                             <div class="icon-badge" title="勤写标兵Lv1">
+                       <div class="mouse-box">
+                          <img src="https://g.csdnimg.cn/static/user-medal/qinxiebiaobing_l1_t2.svg" alt="">
+                          <div class="icon-arrow"></div>
+                       </div>
+                       <div class="grade-detail-box">
+                           <div class="pos-box">
+                               <div class="left-box d-flex justify-content-center align-items-center flex-column">
+                                    <img src="https://g.csdnimg.cn/static/user-medal/qinxiebiaobing_l1_t2.svg" alt="">
+                                   <p>勤写标兵Lv1</p>
+                               </div>
+                               <div class="right-box">
+                                   授予每个自然周发布1篇到3篇原创IT博文的用户。本勋章将于次周上午根据用户上周的博文发布情况由系统自动颁发。                               </div>
+                           </div>
+                       </div>
+                   </div>
+                                             </div>
+        <script>
+            (function ($) {
+                setTimeout(function(){
+                    $('div.icon-badge.show-moment').removeClass('show-moment');
+                }, 5000);
+            })(window.jQuery)
+        </script>
+    </div>
+    </div>
+		    <div class="csdn-tracking-statistics mb8 box-shadow" data-pid="blog" data-mod="popu_4" style="height:250px;">
+    <div class="aside-content text-center" id="cpro_u2734133">
+      <div id="kp_box_56" data-pid="56" data-track-view='{"mod":"kp_popu_56-888","con":",,"}' data-track-click='{"mod":"kp_popu_56-888","con":",,"}'><a href="https://intel.csdn.net/" target="_blank">
+<div style="width:300px;height:250px;overflow:hidden;">
+
+
+<img src="http://img-ads.csdn.net/2019/201903221349182465.jpg">
+
+
+
+<div style=" margin: -25px 5px 5px 0px;float:right;z-index: 9999;position: relative;font-size: 7.5px;color: #eee;">广告</div>
+
+
+</div>
+
+</a></div>    </div>
+</div>
+		    <div id="asideNewArticle" class="aside-box">
+    <h3 class="aside-title">最新文章</h3>
+    <div class="aside-content">
+        <ul class="inf_list clearfix csdn-tracking-statistics tracking-click" data-mod="popu_382">
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/qq_41839222/article/details/89946719" target="_blank">视觉SLAM——二维三维几何、三维空间刚体变换</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/qq_41839222/article/details/89606859" target="_blank">apriltags2_ros应用实践——如何在realsense d435i上使用apriltags二维码实现定位</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/qq_41839222/article/details/89451212" target="_blank">【VIO论文笔记】A Benchmark Comparison of Monocular Visual-Inertial Odometry Algorithms for Flying Robots</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/qq_41839222/article/details/89106128" target="_blank">VINS-Mono理论学习——视觉惯性联合初始化与外参标定</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/qq_41839222/article/details/88942414" target="_blank">VINS-Mono代码解读——视觉惯性联合初始化 initialStructure sfm</a>
+            </li>
+                    </ul>
+    </div>
+</div>
+		    <div id="asideColumn" class="aside-box">
+    <h3 class="aside-title">博主专栏</h3>
+    <div class="aside-content">
+        <ul class="column-box csdn-tracking-statistics tracking-click" data-mod="popu_520" >
+                            <li class="clearfix">
+                    <div class="img-box float-left">
+                        <a class="d-flex align-items-center" href="https://blog.csdn.net/qq_41839222/column/info/34866">
+                            <img src="?imageView2/5/w/120/h/120" alt="">
+                        </a>
+                    </div>
+                    <div class="info">
+                        <p class="title"><a href="https://blog.csdn.net/qq_41839222/column/info/34866">VINS论文学习与代码解读</a></p>
+                        <div class="data">文章数：<span class="count">11 篇</span> 访问量：<span>134</span></div>
+                    </div>
+                </li>
+                    </ul>
+    </div>
+    </div>
+		    <div id="asideCategory" class="aside-box">
+    <h3 class="aside-title">个人分类</h3>
+    <div class="aside-content">
+        <ul>
+                        <li>
+                <a class="clearfix" href="https://blog.csdn.net/qq_41839222/article/category/8725060">
+                    <span class="title oneline">视觉SLAM</span>
+                    <span class="count float-right">6篇</span>
+                </a>
+            </li>
+                        <li>
+                <a class="clearfix" href="https://blog.csdn.net/qq_41839222/article/category/8732157">
+                    <span class="title oneline">VINS</span>
+                    <span class="count float-right">10篇</span>
+                </a>
+            </li>
+                        <li>
+                <a class="clearfix" href="https://blog.csdn.net/qq_41839222/article/category/8732162">
+                    <span class="title oneline">论文笔记</span>
+                    <span class="count float-right">5篇</span>
+                </a>
+            </li>
+                    </ul>
+    </div>
+    </div>
+		    <div id="asideArchive" class="aside-box">
+    <h3 class="aside-title">归档</h3>
+    <div class="aside-content">
+        <ul class="archive-list">
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/qq_41839222/article/month/2019/05">
+                    2019年5月                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/qq_41839222/article/month/2019/04">
+                    2019年4月                    <span class="count float-right">4篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/qq_41839222/article/month/2019/03">
+                    2019年3月                    <span class="count float-right">5篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/qq_41839222/article/month/2019/02">
+                    2019年2月                    <span class="count float-right">4篇</span>
+                </a>
+            </li>
+                        <!--归档统计-->
+            <li>
+                <a href="https://blog.csdn.net/qq_41839222/article/month/2019/01">
+                    2019年1月                    <span class="count float-right">11篇</span>
+                </a>
+            </li>
+                    </ul>
+    </div>
+    </div>
+		    <div id="asideHotArticle" class="aside-box">
+	<h3 class="aside-title">热门文章</h3>
+	<div class="aside-content">
+		<ul class="hotArticle-list csdn-tracking-statistics tracking-click" data-mod="popu_521">
+							<li>
+					<a href="https://blog.csdn.net/qq_41839222/article/details/85683373">【VINS论文翻译】VINS-Mono: A Robust and Versatile Monocular Visual-Inertial State Estimator</a>
+					<p class="read">阅读数 <span>2672</span></p>
+				</li>
+							<li>
+					<a href="https://blog.csdn.net/qq_41839222/article/details/86483071">视觉SLAM——特征点法与直接法对比以及主流开源方案对比 ORB LSD SVO DSO</a>
+					<p class="read">阅读数 <span>2526</span></p>
+				</li>
+							<li>
+					<a href="https://blog.csdn.net/qq_41839222/article/details/86503113">Realsense D435i 在ubuntu上安装SDK与ROS Wrapper 运行ORB-SLAM2、RTAB和VINS-Mono</a>
+					<p class="read">阅读数 <span>2281</span></p>
+				</li>
+							<li>
+					<a href="https://blog.csdn.net/qq_41839222/article/details/86552367">如何用Realsense D435i运行VINS-Mono等VIO算法 获取IMU同步数据</a>
+					<p class="read">阅读数 <span>2138</span></p>
+				</li>
+							<li>
+					<a href="https://blog.csdn.net/qq_41839222/article/details/85793998">VINS-Mono论文学习与代码解读——目录与参考</a>
+					<p class="read">阅读数 <span>1152</span></p>
+				</li>
+					</ul>
+	</div>
+</div>
+		    <div id="asideNewComments" class="aside-box">
+    <h3 class="aside-title">最新评论</h3>
+    <div class="aside-content">
+        <ul class="newcomment-list">
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/qq_41839222/article/details/86293038#comments">VINS-Mono代码解读——状态...</a>
+                <p class="comment ellipsis">
+                    <a href="https://my.csdn.net/qq_41839222" class="user-name" target="_blank">qq_41839222：</a>[reply]Li_Da_gang[/reply]
+你可以尝试一下，VINS对于关键帧的选择都是比较简单的条件（视差和跟踪点数量），且不像ORB那样会对关键帧进行剔除                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/qq_41839222/article/details/86293038#comments">VINS-Mono代码解读——状态...</a>
+                <p class="comment ellipsis">
+                    <a href="https://my.csdn.net/Li_Da_gang" class="user-name" target="_blank">Li_Da_gang：</a>您好，请问能否对关键帧的选择进行优化呢？                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/qq_41839222/article/details/86503113#comments">Realsense D435i 在...</a>
+                <p class="comment ellipsis">
+                    <a href="https://my.csdn.net/lindasharp1993" class="user-name" target="_blank">lindasharp1993：</a>博主你好，执行./scripts/patch-realsense-ubuntu-lts.sh的时候会卡死是因为什么？网的问题还是我环境配置不对？                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/qq_41839222/article/details/86290941#comments">VINS-Mono理论学习——IM...</a>
+                <p class="comment ellipsis">
+                    <a href="https://my.csdn.net/Li_Da_gang" class="user-name" target="_blank">Li_Da_gang：</a>大神您好，我有一些问题想向你请教，可以加您的私人联系方式吗？                </p>
+            </li>
+                        <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/qq_41839222/article/details/86552367#comments">如何用Realsense D435...</a>
+                <p class="comment ellipsis">
+                    <a href="https://my.csdn.net/qq_41839222" class="user-name" target="_blank">qq_41839222：</a>[reply]wgh5533388[/reply]
+rostopic echo /camera/imu 你看看里面有没有数据                </p>
+            </li>
+                    </ul>
+    </div>
+</div>
+		<div id="asideFooter">
+			
+		<div class="aside-box">
+			<div id="kp_box_57" data-pid="57" data-track-view='{"mod":"kp_popu_57-707","con":",,"}' data-track-click='{"mod":"kp_popu_57-707","con":",,"}'><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- 博客内页左下视窗-20181130 -->
+<ins class="adsbygoogle"
+     style="display:inline-block;width:300px;height:250px"
+     data-ad-client="ca-pub-1076724771190722"
+     data-ad-slot="1894159733"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script></div>		</div>
+				<div class="aside-box">
+			<div class="persion_article">
+			</div>
+		</div>
+	</div>
+</aside>
+<script src="https://csdnimg.cn/pubfooter/js/publib_footer-1.0.3.js" data-isfootertrack="false" type="text/javascript"></script>
+<script>
+	$("a.flexible-btn").click(function(){
+		$(this).parents('div.aside-box').removeClass('flexible-box');
+		$(this).remove();
+	})
+</script>
+</div>
+<div class="mask-dark"></div>
+<div class="tool-box">
+	<ul class="meau-list">
+		<li class="btn-like-box ">
+			<button class=" low-height hover-box btn-like " title="点赞">
+				<svg class="icon active hover-hide" aria-hidden="true">
+					<use xlink:href="#csdnc-thumbsup-ok"></use>
+				</svg>
+				<svg class="icon no-active hover-hide" aria-hidden="true">
+					<use xlink:href="#csdnc-thumbsup"></use>
+				</svg>
+				<span class="hover-show text-box text">
+					<span class="no-active">点赞</span>
+					<span class="active">取消点赞</span>
+				</span>
+				<p>0</p>
+			</button>
+		</li>
+		<li class="">
+						<a class="btn-comments long-height hover-box" title="写评论" href="#commentBox">
+				<svg class="icon hover-hide" aria-hidden="true">
+					<use xlink:href="#csdnc-comments"></use>
+				</svg>
+				<span class="hover-show text">评论</span>
+				<p class="">
+						2				</p>
+			</a>
+		</li>
+		<li class="toc-container-box" id="liTocBox">
+			<button class="btn-toc low-height hover-box" title="目录">
+				<svg class="icon hover-hide" aria-hidden="true">
+					<use xlink:href="#csdnc-contents"></use>
+				</svg>
+				<span class="hover-show text">目录</span>
+			</button>
+			<div class="toc-container">
+				<div class="pos-box">
+					<div class="icon-arrow"></div>
+					<div class="scroll-box">
+						<div class="toc-box"></div>
+					</div>
+				</div>
+				<div class="opt-box">
+					<button class="btn-opt prev nomore" title="向上">
+						<svg class="icon" aria-hidden="true">
+							<use xlink:href="#csdnc-chevronup"></use>
+						</svg>
+					</button>
+					<button class="btn-opt next">
+						<svg class="icon" aria-hidden="true">
+							<use xlink:href="#csdnc-chevrondown"></use>
+						</svg>
+					</button>
+				</div>
+			</div>
+		</li>
+		<li>
+			<button class="btn-bookmark low-height hover-box" title="收藏">
+				<svg class="icon active hover-hide" aria-hidden="true">
+					<use xlink:href="#csdnc-bookmark-ok"></use>
+				</svg>
+				<svg class="icon no-active hover-hide" aria-hidden="true">
+					<use xlink:href="#csdnc-bookmark"></use>
+				</svg>
+					<span class="hover-show text">收藏</span>
+				<!-- <span class="hover-show text-box text">
+					<span class="no-active">收藏</span>
+					<span class="active">取消收藏</span>
+				</span> -->
+			</button>
+		</li>
+		<li class="bdsharebuttonbox">
+			<div class="weixin-qr btn-comments low-height hover-box" >
+        <a href="#" class="bds_weixin clear-share-style" data-cmd="weixin" title="手机看"></a>
+				<svg class="icon hover-hide" aria-hidden="true">
+					<use xlink:href="#csdnc-usephone"></use>
+				</svg>
+				<span class="hover-show text text3">
+					手机看
+				</span>
+			</div>
+		</li>
+							<li class="widescreen-hide">
+				<a class="btn-comments low-height hover-box" href="https://blog.csdn.net/qq_41839222/article/details/86290941" title="VINS-Mono理论学习——IMU预积分 Pre-integration （Jacobian 协方差）">
+					<svg class="icon hover-hide" aria-hidden="true">
+						<use xlink:href="#csdnc-chevronleft"></use>
+					</svg>
+					<span class="hover-show text text3">上一篇</span>
+				</a>
+			</li>
+								<li class="widescreen-hide">
+			<a class="btn-comments hover-box low-height" href="https://blog.csdn.net/qq_41839222/article/details/86483071" title="视觉SLAM——特征点法与直接法对比以及主流开源方案对比 ORB LSD SVO DSO">
+				<svg class="icon hover-hide" aria-hidden="true">
+					<use xlink:href="#csdnc-chevronright"></use>
+				</svg>
+				<span class="hover-show text text3">下一篇</span>
+			</a>
+		</li>
+						<!-- 宽屏更多按钮 -->
+		<li class="widescreen-more">
+			<a class="btn-comments chat-ask-button low-height hover-box" title="快问" href="#chatqa">
+				<svg class="icon hover-hide" aria-hidden="true">
+					<use xlink:href="#csdnc-more"></use>
+				</svg>
+				<span class="hover-show text">更多</span>
+				
+			</a>
+			<ul class="widescreen-more-box">
+													<li class="widescreen-more">
+						<a class="btn-comments low-height hover-box" href="https://blog.csdn.net/qq_41839222/article/details/86290941" title="VINS-Mono理论学习——IMU预积分 Pre-integration （Jacobian 协方差）">
+							<svg class="icon hover-hide" aria-hidden="true">
+								<use xlink:href="#csdnc-chevronleft"></use>
+							</svg>
+							<span class="hover-show text text3">上一篇</span>
+						</a>
+					</li>
+																<li class="widescreen-more">
+					<a class="btn-comments hover-box low-height" href="https://blog.csdn.net/qq_41839222/article/details/86483071" title="视觉SLAM——特征点法与直接法对比以及主流开源方案对比 ORB LSD SVO DSO">
+						<svg class="icon hover-hide" aria-hidden="true">
+							<use xlink:href="#csdnc-chevronright"></use>
+						</svg>
+						<span class="hover-show text text3">下一篇</span>
+					</a>
+				</li>
+							</ul>
+		</li>
+	</ul>
+</div>
+<script>window._bd_share_config = { "common": { "bdSnsKey": {}, "bdText": "", "bdMini": "1", "bdMiniList": false, "bdPic": "", "bdStyle": "0", "bdSize": "16" }, "share": {} }; with (document) 0[(getElementsByTagName('head')[0] || body).appendChild(createElement('script')).src = 'https://csdnimg.cn/static/api/js/share.js?v=89860594'];</script>
+<script>
+    var recommendCount = 75;
+    recommendCount = recommendCount > 1 ? (recommendCount + (recommendCount>6 ? 2 : 1)) : recommendCount;
+    var articleTit = articleTitles;
+    var ChannelId = 28;
+    var articleId = "86293038";
+    var commentscount = 2;
+    var islock = false;
+    var curentUrl = "https://blog.csdn.net/qq_41839222/article/details/86293038";
+    var myUrl = "https://my.csdn.net/";
+    //1禁止评论，2正常
+    var commentAuth = 2;
+    //百度搜索
+    var baiduKey = "VINS-Mono代码解读——状态估计器流程 estimator 写在初始化和非线性优化前 - Manii";
+    var needInsertBaidu = true;
+    // 代码段样式
+    var codeStyle = 'atom-one-dark';
+		var highlight = ["vins-mono","\u4ee3\u7801","\u89e3\u8bfb","\u72b6\u6001","\u4f30\u8ba1","\u6d41\u7a0b","estimator","\u5199\u5728","\u521d\u59cb\u5316","\u975e\u7ebf\u6027","\u4f18\u5316"];//高亮数组
+		// 相关推荐博主数据
+    var RecommendBlogExpertList = [{"user_name":"abcjennifer","nick_name":"abcjennifer","avatar":"https:\/\/avatar.csdn.net\/1\/A\/0\/3_abcjennifer.jpg","is_expert":true,"article_count":516,"rank":"71"},{"user_name":"danmeng8068","nick_name":"danmeng8068","avatar":"https:\/\/avatar.csdn.net\/D\/8\/5\/3_danmeng8068.jpg","is_expert":false,"article_count":143,"rank":"\u5343\u91cc\u4e4b\u5916"},{"user_name":"huanghaihui_123","nick_name":"\u4e4c\u9f9f\u6293\u6c34\u6bcd","avatar":"https:\/\/avatar.csdn.net\/A\/6\/6\/3_huanghaihui_123.jpg","is_expert":false,"article_count":27,"rank":"\u5343\u91cc\u4e4b\u5916"},{"user_name":"datase","nick_name":"\u5b66\u4e4b\u4e4b\u535a\u672a\u82e5\u4e4b\u4e4b\u8981-\u77e5\u4e4b\u4e4b\u8981\u672a\u82e5\u884c\u4e4b\u4e4b\u5b9e","avatar":"https:\/\/avatar.csdn.net\/F\/E\/F\/3_datase.jpg","is_expert":false,"article_count":413,"rank":"9000+"},{"user_name":"qq_31785865","nick_name":"\u767d\u773c\u54e5\u54e5","avatar":"https:\/\/avatar.csdn.net\/8\/1\/D\/3_qq_31785865.jpg","is_expert":false,"article_count":20,"rank":"\u5343\u91cc\u4e4b\u5916"},{"user_name":"lly1122334","nick_name":"XerCis","avatar":"https:\/\/avatar.csdn.net\/1\/A\/2\/3_lly1122334.jpg","is_expert":false,"article_count":109,"rank":"\u5343\u91cc\u4e4b\u5916"},{"user_name":"weixin_38358435","nick_name":"xiaoshuiyisheng","avatar":"https:\/\/avatar.csdn.net\/2\/6\/7\/3_weixin_38358435.jpg","is_expert":false,"article_count":19,"rank":"\u5343\u91cc\u4e4b\u5916"},{"user_name":"weixin_42825609","nick_name":"\u6885\u82b1\u9999\u2014\u2014\u82e6\u5bd2\u6765","avatar":"https:\/\/avatar.csdn.net\/9\/C\/6\/3_weixin_42825609.jpg","is_expert":false,"article_count":989,"rank":"2000+"},{"user_name":"zhjm07054115","nick_name":"ScorpioDoctor","avatar":"https:\/\/avatar.csdn.net\/2\/D\/9\/3_zhjm07054115.jpg","is_expert":false,"article_count":88,"rank":"\u5343\u91cc\u4e4b\u5916"},{"user_name":"u014527548","nick_name":"blowballs","avatar":"https:\/\/avatar.csdn.net\/2\/C\/8\/3_u014527548.jpg","is_expert":false,"article_count":38,"rank":"\u5343\u91cc\u4e4b\u5916"}];
+	var articleType = 1;
+	var CopyrightContent = '';
+    var current_user_name = 'qq_35593140';
+</script>
+<script src="https://csdnimg.cn/public/sandalstrap/1.4/js/sandalstrap.min.js"></script>
+<script src="https://csdnimg.cn/release/phoenix/vendor/pagination/paging.js"></script>
+<script src="https://csdnimg.cn/public/common/gotop/js/goTop-v1.0.min.js?v201904241615"></script><script>
+    GoTop({
+        right: 8,
+        hasReport: true,
+        reportFun: function() {
+            showReport(false,articleTit);
+        }
+    })
+</script>
+</body>
+
+<!-- 高亮未与 markdown兼容  -->
+	<link rel="stylesheet" href="https://csdnimg.cn/release/blog_editor_html/release1.3.9/ckeditor/plugins/codesnippet/lib/highlight/styles/atom-one-dark.css">
+	<script type="text/javascript" src="https://csdnimg.cn/release/phoenix/production/pc_wap_common-ba4f146b41.js" /></script>
+	
+	<!-- <script type="text/javascript" src="https://csdnimg.cn/release/phoenix/production/markdownCopy-a758cc09ff.js" /></script> -->
+
+
+<script src="//g.csdnimg.cn/??login-box/1.0.5/login-box.js,login-box/1.0.5/login-auto.js?t=20190307095522"></script>
+<script src="https://csdnimg.cn/release/phoenix/template/js/common-0100d9c3da.min.js"></script>
+<script src="https://csdnimg.cn/release/phoenix/template/js/detail-8752043e22.min.js"></script>
+
+	<script src="https://csdnimg.cn/release/phoenix/themes/skin-yellow/skin-yellow-fc7383b956.min.js"></script>
+
+<script src="//g.csdnimg.cn/baidu-search/1.0.0/baidu-search.js"  type="text/javascript"></script>
+
+
+<!-- <script type="text/javascript" src="//g.csdnimg.cn/check-adb/1.0.2/check-adb.js"></script> -->
+
+<script type="text/javascript" src="https://csdnimg.cn/release/blog_mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+            "HTML-CSS": {
+                    linebreaks: { automatic: true, width: "94%container" },
+                    imageFont: null
+            },
+            tex2jax: {
+                preview: "none"
+            },
+            mml2jax: {
+                preview: 'none'
+            }
+    });
+</script>
+<script type="text/javascript">
+    </script>
+<script src="https://gh.bdstatic.com/static/gh/js/sdk/bword.min.js"></script>
+</html>

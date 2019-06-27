@@ -1,0 +1,1 @@
+document.write("<script language=\"javascript\" src=\"http://sso1.nlc.cn/sso/get-sso-ticket?server=center\"><\/script>")

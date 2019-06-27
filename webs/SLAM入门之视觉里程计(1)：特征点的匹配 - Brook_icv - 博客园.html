@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="zh-cn"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="origin">
+    <title>SLAM入门之视觉里程计(1)：特征点的匹配 - Brook_icv - 博客园</title>
+<meta property="og:description" content="SLAM 主要分为两个部分：前端和后端，前端也就是视觉里程计（VO），它根据相邻图像的信息粗略的估计出相机的运动，给后端提供较好的初始值。VO的实现方法可以根据是否需要提取特征分为两类：基于特征点的方">
+    <link type="text/css" rel="stylesheet" href="SLAM%E5%85%A5%E9%97%A8%E4%B9%8B%E8%A7%86%E8%A7%89%E9%87%8C%E7%A8%8B%E8%AE%A1(1)%EF%BC%9A%E7%89%B9%E5%BE%81%E7%82%B9%E7%9A%84%E5%8C%B9%E9%85%8D%20-%20Brook_icv%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/blog-common.css">
+<link id="MainCss" type="text/css" rel="stylesheet" href="SLAM%E5%85%A5%E9%97%A8%E4%B9%8B%E8%A7%86%E8%A7%89%E9%87%8C%E7%A8%8B%E8%AE%A1(1)%EF%BC%9A%E7%89%B9%E5%BE%81%E7%82%B9%E7%9A%84%E5%8C%B9%E9%85%8D%20-%20Brook_icv%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/bundle-darkgreentrip.css">
+<link type="text/css" rel="stylesheet" href="SLAM%E5%85%A5%E9%97%A8%E4%B9%8B%E8%A7%86%E8%A7%89%E9%87%8C%E7%A8%8B%E8%AE%A1(1)%EF%BC%9A%E7%89%B9%E5%BE%81%E7%82%B9%E7%9A%84%E5%8C%B9%E9%85%8D%20-%20Brook_icv%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/125951.css">
+<link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="SLAM%E5%85%A5%E9%97%A8%E4%B9%8B%E8%A7%86%E8%A7%89%E9%87%8C%E7%A8%8B%E8%AE%A1(1)%EF%BC%9A%E7%89%B9%E5%BE%81%E7%82%B9%E7%9A%84%E5%8C%B9%E9%85%8D%20-%20Brook_icv%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/bundle-darkgreentrip-mobile.css">
+    <link title="RSS" type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/wangguchangqing/rss">
+    <link title="RSD" type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/wangguchangqing/rsd.xml">
+<link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/wangguchangqing/wlwmanifest.xml">
+    <script src="SLAM%E5%85%A5%E9%97%A8%E4%B9%8B%E8%A7%86%E8%A7%89%E9%87%8C%E7%A8%8B%E8%AE%A1(1)%EF%BC%9A%E7%89%B9%E5%BE%81%E7%82%B9%E7%9A%84%E5%8C%B9%E9%85%8D%20-%20Brook_icv%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/amp4ads-host-v0.js"></script><script src="SLAM%E5%85%A5%E9%97%A8%E4%B9%8B%E8%A7%86%E8%A7%89%E9%87%8C%E7%A8%8B%E8%AE%A1(1)%EF%BC%9A%E7%89%B9%E5%BE%81%E7%82%B9%E7%9A%84%E5%8C%B9%E9%85%8D%20-%20Brook_icv%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/pubads_impl_rendering_2019050901.js"></script><script async="" src="SLAM%E5%85%A5%E9%97%A8%E4%B9%8B%E8%A7%86%E8%A7%89%E9%87%8C%E7%A8%8B%E8%AE%A1(1)%EF%BC%9A%E7%89%B9%E5%BE%81%E7%82%B9%E7%9A%84%E5%8C%B9%E9%85%8D%20-%20Brook_icv%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/analytics.js"></script><script src="SLAM%E5%85%A5%E9%97%A8%E4%B9%8B%E8%A7%86%E8%A7%89%E9%87%8C%E7%A8%8B%E8%AE%A1(1)%EF%BC%9A%E7%89%B9%E5%BE%81%E7%82%B9%E7%9A%84%E5%8C%B9%E9%85%8D%20-%20Brook_icv%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/hm.js"></script><script src="SLAM%E5%85%A5%E9%97%A8%E4%B9%8B%E8%A7%86%E8%A7%89%E9%87%8C%E7%A8%8B%E8%AE%A1(1)%EF%BC%9A%E7%89%B9%E5%BE%81%E7%82%B9%E7%9A%84%E5%8C%B9%E9%85%8D%20-%20Brook_icv%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/jquery-2.js"></script>
+    <script>var currentBlogId=125951;var currentBlogApp='wangguchangqing',cb_enable_mathjax=true;var isLogined=false;</script>
+    <script type="text/x-mathjax-config;executed=true">
+    MathJax.Hub.Config({
+        tex2jax: { inlineMath: [['$','$'], ['\\(','\\)']], processClass: 'math', processEscapes: true },
+        TeX: { 
+            equationNumbers: { autoNumber: ['AMS'], useLabelIds: true }, 
+            extensions: ['extpfeil.js'],
+            Macros: {bm: "\\boldsymbol"}
+        },
+        'HTML-CSS': { linebreaks: { automatic: true } },
+        SVG: { linebreaks: { automatic: true } }
+        });
+    </script><script src="SLAM%E5%85%A5%E9%97%A8%E4%B9%8B%E8%A7%86%E8%A7%89%E9%87%8C%E7%A8%8B%E8%AE%A1(1)%EF%BC%9A%E7%89%B9%E5%BE%81%E7%82%B9%E7%9A%84%E5%8C%B9%E9%85%8D%20-%20Brook_icv%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/MathJax.js"></script>
+<script src="SLAM%E5%85%A5%E9%97%A8%E4%B9%8B%E8%A7%86%E8%A7%89%E9%87%8C%E7%A8%8B%E8%AE%A1(1)%EF%BC%9A%E7%89%B9%E5%BE%81%E7%82%B9%E7%9A%84%E5%8C%B9%E9%85%8D%20-%20Brook_icv%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/blog-common.js" type="text/javascript"></script>
+<style type="text/css">.MathJax_Hover_Frame {border-radius: .25em; -webkit-border-radius: .25em; -moz-border-radius: .25em; -khtml-border-radius: .25em; box-shadow: 0px 0px 15px #83A; -webkit-box-shadow: 0px 0px 15px #83A; -moz-box-shadow: 0px 0px 15px #83A; -khtml-box-shadow: 0px 0px 15px #83A; border: 1px solid #A6D ! important; display: inline-block; position: absolute}
+.MathJax_Menu_Button .MathJax_Hover_Arrow {position: absolute; cursor: pointer; display: inline-block; border: 2px solid #AAA; border-radius: 4px; -webkit-border-radius: 4px; -moz-border-radius: 4px; -khtml-border-radius: 4px; font-family: 'Courier New',Courier; font-size: 9px; color: #F0F0F0}
+.MathJax_Menu_Button .MathJax_Hover_Arrow span {display: block; background-color: #AAA; border: 1px solid; border-radius: 3px; line-height: 0; padding: 4px}
+.MathJax_Hover_Arrow:hover {color: white!important; border: 2px solid #CCC!important}
+.MathJax_Hover_Arrow:hover span {background-color: #CCC!important}
+</style><style type="text/css">#MathJax_About {position: fixed; left: 50%; width: auto; text-align: center; border: 3px outset; padding: 1em 2em; background-color: #DDDDDD; color: black; cursor: default; font-family: message-box; font-size: 120%; font-style: normal; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; z-index: 201; border-radius: 15px; -webkit-border-radius: 15px; -moz-border-radius: 15px; -khtml-border-radius: 15px; box-shadow: 0px 10px 20px #808080; -webkit-box-shadow: 0px 10px 20px #808080; -moz-box-shadow: 0px 10px 20px #808080; -khtml-box-shadow: 0px 10px 20px #808080; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+#MathJax_About.MathJax_MousePost {outline: none}
+.MathJax_Menu {position: absolute; background-color: white; color: black; width: auto; padding: 5px 0px; border: 1px solid #CCCCCC; margin: 0; cursor: default; font: menu; text-align: left; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; z-index: 201; border-radius: 5px; -webkit-border-radius: 5px; -moz-border-radius: 5px; -khtml-border-radius: 5px; box-shadow: 0px 10px 20px #808080; -webkit-box-shadow: 0px 10px 20px #808080; -moz-box-shadow: 0px 10px 20px #808080; -khtml-box-shadow: 0px 10px 20px #808080; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+.MathJax_MenuItem {padding: 1px 2em; background: transparent}
+.MathJax_MenuArrow {position: absolute; right: .5em; padding-top: .25em; color: #666666; font-size: .75em}
+.MathJax_MenuActive .MathJax_MenuArrow {color: white}
+.MathJax_MenuArrow.RTL {left: .5em; right: auto}
+.MathJax_MenuCheck {position: absolute; left: .7em}
+.MathJax_MenuCheck.RTL {right: .7em; left: auto}
+.MathJax_MenuRadioCheck {position: absolute; left: .7em}
+.MathJax_MenuRadioCheck.RTL {right: .7em; left: auto}
+.MathJax_MenuLabel {padding: 1px 2em 3px 1.33em; font-style: italic}
+.MathJax_MenuRule {border-top: 1px solid #DDDDDD; margin: 4px 3px}
+.MathJax_MenuDisabled {color: GrayText}
+.MathJax_MenuActive {background-color: #606872; color: white}
+.MathJax_MenuDisabled:focus, .MathJax_MenuLabel:focus {background-color: #E8E8E8}
+.MathJax_ContextMenu:focus {outline: none}
+.MathJax_ContextMenu .MathJax_MenuItem:focus {outline: none}
+#MathJax_AboutClose {top: .2em; right: .2em}
+.MathJax_Menu .MathJax_MenuClose {top: -10px; left: -10px}
+.MathJax_MenuClose {position: absolute; cursor: pointer; display: inline-block; border: 2px solid #AAA; border-radius: 18px; -webkit-border-radius: 18px; -moz-border-radius: 18px; -khtml-border-radius: 18px; font-family: 'Courier New',Courier; font-size: 24px; color: #F0F0F0}
+.MathJax_MenuClose span {display: block; background-color: #AAA; border: 1.5px solid; border-radius: 18px; -webkit-border-radius: 18px; -moz-border-radius: 18px; -khtml-border-radius: 18px; line-height: 0; padding: 8px 0 6px}
+.MathJax_MenuClose:hover {color: white!important; border: 2px solid #CCC!important}
+.MathJax_MenuClose:hover span {background-color: #CCC!important}
+.MathJax_MenuClose:hover:focus {outline: none}
+</style><style type="text/css">.MathJax_Preview .MJXf-math {color: inherit!important}
+</style><style type="text/css">.MJX_Assistive_MathML {position: absolute!important; top: 0; left: 0; clip: rect(1px, 1px, 1px, 1px); padding: 1px 0 0 0!important; border: 0!important; height: 1px!important; width: 1px!important; overflow: hidden!important; display: block!important; -webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none}
+.MJX_Assistive_MathML.MJX_Assistive_MathML_Block {width: 100%!important}
+</style><style type="text/css">#MathJax_Zoom {position: absolute; background-color: #F0F0F0; overflow: auto; display: block; z-index: 301; padding: .5em; border: 1px solid black; margin: 0; font-weight: normal; font-style: normal; text-align: left; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; -webkit-box-sizing: content-box; -moz-box-sizing: content-box; box-sizing: content-box; box-shadow: 5px 5px 15px #AAAAAA; -webkit-box-shadow: 5px 5px 15px #AAAAAA; -moz-box-shadow: 5px 5px 15px #AAAAAA; -khtml-box-shadow: 5px 5px 15px #AAAAAA; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+#MathJax_ZoomOverlay {position: absolute; left: 0; top: 0; z-index: 300; display: inline-block; width: 100%; height: 100%; border: 0; padding: 0; margin: 0; background-color: white; opacity: 0; filter: alpha(opacity=0)}
+#MathJax_ZoomFrame {position: relative; display: inline-block; height: 0; width: 0}
+#MathJax_ZoomEventTrap {position: absolute; left: 0; top: 0; z-index: 302; display: inline-block; border: 0; padding: 0; margin: 0; background-color: white; opacity: 0; filter: alpha(opacity=0)}
+</style><style type="text/css">.MathJax_Preview {color: #888}
+#MathJax_Message {position: fixed; left: 1px; bottom: 2px; background-color: #E6E6E6; border: 1px solid #959595; margin: 0px; padding: 2px 8px; z-index: 102; color: black; font-size: 80%; width: auto; white-space: nowrap}
+#MathJax_MSIE_Frame {position: absolute; top: 0; left: 0; width: 0px; z-index: 101; border: 0px; margin: 0px; padding: 0px}
+.MathJax_Error {color: #CC0000; font-style: italic}
+</style><style type="text/css">.MJXp-script {font-size: .8em}
+.MJXp-right {-webkit-transform-origin: right; -moz-transform-origin: right; -ms-transform-origin: right; -o-transform-origin: right; transform-origin: right}
+.MJXp-bold {font-weight: bold}
+.MJXp-italic {font-style: italic}
+.MJXp-scr {font-family: MathJax_Script,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-frak {font-family: MathJax_Fraktur,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-sf {font-family: MathJax_SansSerif,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-cal {font-family: MathJax_Caligraphic,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-mono {font-family: MathJax_Typewriter,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-largeop {font-size: 150%}
+.MJXp-largeop.MJXp-int {vertical-align: -.2em}
+.MJXp-math {display: inline-block; line-height: 1.2; text-indent: 0; font-family: 'Times New Roman',Times,STIXGeneral,serif; white-space: nowrap; border-collapse: collapse}
+.MJXp-display {display: block; text-align: center; margin: 1em 0}
+.MJXp-math span {display: inline-block}
+.MJXp-box {display: block!important; text-align: center}
+.MJXp-box:after {content: " "}
+.MJXp-rule {display: block!important; margin-top: .1em}
+.MJXp-char {display: block!important}
+.MJXp-mo {margin: 0 .15em}
+.MJXp-mfrac {margin: 0 .125em; vertical-align: .25em}
+.MJXp-denom {display: inline-table!important; width: 100%}
+.MJXp-denom > * {display: table-row!important}
+.MJXp-surd {vertical-align: top}
+.MJXp-surd > * {display: block!important}
+.MJXp-script-box > *  {display: table!important; height: 50%}
+.MJXp-script-box > * > * {display: table-cell!important; vertical-align: top}
+.MJXp-script-box > *:last-child > * {vertical-align: bottom}
+.MJXp-script-box > * > * > * {display: block!important}
+.MJXp-mphantom {visibility: hidden}
+.MJXp-munderover {display: inline-table!important}
+.MJXp-over {display: inline-block!important; text-align: center}
+.MJXp-over > * {display: block!important}
+.MJXp-munderover > * {display: table-row!important}
+.MJXp-mtable {vertical-align: .25em; margin: 0 .125em}
+.MJXp-mtable > * {display: inline-table!important; vertical-align: middle}
+.MJXp-mtr {display: table-row!important}
+.MJXp-mtd {display: table-cell!important; text-align: center; padding: .5em 0 0 .5em}
+.MJXp-mtr > .MJXp-mtd:first-child {padding-left: 0}
+.MJXp-mtr:first-child > .MJXp-mtd {padding-top: 0}
+.MJXp-mlabeledtr {display: table-row!important}
+.MJXp-mlabeledtr > .MJXp-mtd:first-child {padding-left: 0}
+.MJXp-mlabeledtr:first-child > .MJXp-mtd {padding-top: 0}
+.MJXp-merror {background-color: #FFFF88; color: #CC0000; border: 1px solid #CC0000; padding: 1px 3px; font-style: normal; font-size: 90%}
+.MJXp-scale0 {-webkit-transform: scaleX(.0); -moz-transform: scaleX(.0); -ms-transform: scaleX(.0); -o-transform: scaleX(.0); transform: scaleX(.0)}
+.MJXp-scale1 {-webkit-transform: scaleX(.1); -moz-transform: scaleX(.1); -ms-transform: scaleX(.1); -o-transform: scaleX(.1); transform: scaleX(.1)}
+.MJXp-scale2 {-webkit-transform: scaleX(.2); -moz-transform: scaleX(.2); -ms-transform: scaleX(.2); -o-transform: scaleX(.2); transform: scaleX(.2)}
+.MJXp-scale3 {-webkit-transform: scaleX(.3); -moz-transform: scaleX(.3); -ms-transform: scaleX(.3); -o-transform: scaleX(.3); transform: scaleX(.3)}
+.MJXp-scale4 {-webkit-transform: scaleX(.4); -moz-transform: scaleX(.4); -ms-transform: scaleX(.4); -o-transform: scaleX(.4); transform: scaleX(.4)}
+.MJXp-scale5 {-webkit-transform: scaleX(.5); -moz-transform: scaleX(.5); -ms-transform: scaleX(.5); -o-transform: scaleX(.5); transform: scaleX(.5)}
+.MJXp-scale6 {-webkit-transform: scaleX(.6); -moz-transform: scaleX(.6); -ms-transform: scaleX(.6); -o-transform: scaleX(.6); transform: scaleX(.6)}
+.MJXp-scale7 {-webkit-transform: scaleX(.7); -moz-transform: scaleX(.7); -ms-transform: scaleX(.7); -o-transform: scaleX(.7); transform: scaleX(.7)}
+.MJXp-scale8 {-webkit-transform: scaleX(.8); -moz-transform: scaleX(.8); -ms-transform: scaleX(.8); -o-transform: scaleX(.8); transform: scaleX(.8)}
+.MJXp-scale9 {-webkit-transform: scaleX(.9); -moz-transform: scaleX(.9); -ms-transform: scaleX(.9); -o-transform: scaleX(.9); transform: scaleX(.9)}
+.MathJax_PHTML .noError {vertical-align: ; font-size: 90%; text-align: left; color: black; padding: 1px 3px; border: 1px solid}
+</style><style type="text/css">.MathJax_Display {text-align: center; margin: 1em 0em; position: relative; display: block!important; text-indent: 0; max-width: none; max-height: none; min-width: 0; min-height: 0; width: 100%}
+.MathJax .merror {background-color: #FFFF88; color: #CC0000; border: 1px solid #CC0000; padding: 1px 3px; font-style: normal; font-size: 90%}
+.MathJax .MJX-monospace {font-family: monospace}
+.MathJax .MJX-sans-serif {font-family: sans-serif}
+#MathJax_Tooltip {background-color: InfoBackground; color: InfoText; border: 1px solid black; box-shadow: 2px 2px 5px #AAAAAA; -webkit-box-shadow: 2px 2px 5px #AAAAAA; -moz-box-shadow: 2px 2px 5px #AAAAAA; -khtml-box-shadow: 2px 2px 5px #AAAAAA; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true'); padding: 3px 4px; z-index: 401; position: absolute; left: 0; top: 0; width: auto; height: auto; display: none}
+.MathJax {display: inline; font-style: normal; font-weight: normal; line-height: normal; font-size: 100%; font-size-adjust: none; text-indent: 0; text-align: left; text-transform: none; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; direction: ltr; max-width: none; max-height: none; min-width: 0; min-height: 0; border: 0; padding: 0; margin: 0}
+.MathJax:focus, body :focus .MathJax {display: inline-table}
+.MathJax.MathJax_FullWidth {text-align: center; display: table-cell!important; width: 10000em!important}
+.MathJax img, .MathJax nobr, .MathJax a {border: 0; padding: 0; margin: 0; max-width: none; max-height: none; min-width: 0; min-height: 0; vertical-align: 0; line-height: normal; text-decoration: none}
+img.MathJax_strut {border: 0!important; padding: 0!important; margin: 0!important; vertical-align: 0!important}
+.MathJax span {display: inline; position: static; border: 0; padding: 0; margin: 0; vertical-align: 0; line-height: normal; text-decoration: none}
+.MathJax nobr {white-space: nowrap!important}
+.MathJax img {display: inline!important; float: none!important}
+.MathJax * {transition: none; -webkit-transition: none; -moz-transition: none; -ms-transition: none; -o-transition: none}
+.MathJax_Processing {visibility: hidden; position: fixed; width: 0; height: 0; overflow: hidden}
+.MathJax_Processed {display: none!important}
+.MathJax_ExBox {display: block!important; overflow: hidden; width: 1px; height: 60ex; min-height: 0; max-height: none}
+.MathJax .MathJax_EmBox {display: block!important; overflow: hidden; width: 1px; height: 60em; min-height: 0; max-height: none}
+.MathJax_LineBox {display: table!important}
+.MathJax_LineBox span {display: table-cell!important; width: 10000em!important; min-width: 0; max-width: none; padding: 0; border: 0; margin: 0}
+.MathJax .MathJax_HitBox {cursor: text; background: white; opacity: 0; filter: alpha(opacity=0)}
+.MathJax .MathJax_HitBox * {filter: none; opacity: 1; background: transparent}
+#MathJax_Tooltip * {filter: none; opacity: 1; background: transparent}
+@font-face {font-family: MathJax_Main; src: url('https://mathjax.cnblogs.com/2_7_2/fonts/HTML-CSS/TeX/woff/MathJax_Main-Regular.woff?V=2.7.2') format('woff'), url('https://mathjax.cnblogs.com/2_7_2/fonts/HTML-CSS/TeX/otf/MathJax_Main-Regular.otf?V=2.7.2') format('opentype')}
+@font-face {font-family: MathJax_Main; src: url('https://mathjax.cnblogs.com/2_7_2/fonts/HTML-CSS/TeX/woff/MathJax_Main-Bold.woff?V=2.7.2') format('woff'), url('https://mathjax.cnblogs.com/2_7_2/fonts/HTML-CSS/TeX/otf/MathJax_Main-Bold.otf?V=2.7.2') format('opentype'); font-weight: bold}
+@font-face {font-family: MathJax_Main; src: url('https://mathjax.cnblogs.com/2_7_2/fonts/HTML-CSS/TeX/woff/MathJax_Main-Italic.woff?V=2.7.2') format('woff'), url('https://mathjax.cnblogs.com/2_7_2/fonts/HTML-CSS/TeX/otf/MathJax_Main-Italic.otf?V=2.7.2') format('opentype'); font-style: italic}
+@font-face {font-family: MathJax_Math; src: url('https://mathjax.cnblogs.com/2_7_2/fonts/HTML-CSS/TeX/woff/MathJax_Math-Italic.woff?V=2.7.2') format('woff'), url('https://mathjax.cnblogs.com/2_7_2/fonts/HTML-CSS/TeX/otf/MathJax_Math-Italic.otf?V=2.7.2') format('opentype'); font-style: italic}
+@font-face {font-family: MathJax_Caligraphic; src: url('https://mathjax.cnblogs.com/2_7_2/fonts/HTML-CSS/TeX/woff/MathJax_Caligraphic-Regular.woff?V=2.7.2') format('woff'), url('https://mathjax.cnblogs.com/2_7_2/fonts/HTML-CSS/TeX/otf/MathJax_Caligraphic-Regular.otf?V=2.7.2') format('opentype')}
+@font-face {font-family: MathJax_Size1; src: url('https://mathjax.cnblogs.com/2_7_2/fonts/HTML-CSS/TeX/woff/MathJax_Size1-Regular.woff?V=2.7.2') format('woff'), url('https://mathjax.cnblogs.com/2_7_2/fonts/HTML-CSS/TeX/otf/MathJax_Size1-Regular.otf?V=2.7.2') format('opentype')}
+@font-face {font-family: MathJax_Size2; src: url('https://mathjax.cnblogs.com/2_7_2/fonts/HTML-CSS/TeX/woff/MathJax_Size2-Regular.woff?V=2.7.2') format('woff'), url('https://mathjax.cnblogs.com/2_7_2/fonts/HTML-CSS/TeX/otf/MathJax_Size2-Regular.otf?V=2.7.2') format('opentype')}
+@font-face {font-family: MathJax_Size3; src: url('https://mathjax.cnblogs.com/2_7_2/fonts/HTML-CSS/TeX/woff/MathJax_Size3-Regular.woff?V=2.7.2') format('woff'), url('https://mathjax.cnblogs.com/2_7_2/fonts/HTML-CSS/TeX/otf/MathJax_Size3-Regular.otf?V=2.7.2') format('opentype')}
+@font-face {font-family: MathJax_Size4; src: url('https://mathjax.cnblogs.com/2_7_2/fonts/HTML-CSS/TeX/woff/MathJax_Size4-Regular.woff?V=2.7.2') format('woff'), url('https://mathjax.cnblogs.com/2_7_2/fonts/HTML-CSS/TeX/otf/MathJax_Size4-Regular.otf?V=2.7.2') format('opentype')}
+.MathJax .noError {vertical-align: ; font-size: 90%; text-align: left; color: black; padding: 1px 3px; border: 1px solid}
+</style><link rel="preload" href="SLAM%E5%85%A5%E9%97%A8%E4%B9%8B%E8%A7%86%E8%A7%89%E9%87%8C%E7%A8%8B%E8%AE%A1(1)%EF%BC%9A%E7%89%B9%E5%BE%81%E7%82%B9%E7%9A%84%E5%8C%B9%E9%85%8D%20-%20Brook_icv%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/integrator.js" as="script"><script type="text/javascript" src="SLAM%E5%85%A5%E9%97%A8%E4%B9%8B%E8%A7%86%E8%A7%89%E9%87%8C%E7%A8%8B%E8%AE%A1(1)%EF%BC%9A%E7%89%B9%E5%BE%81%E7%82%B9%E7%9A%84%E5%8C%B9%E9%85%8D%20-%20Brook_icv%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/integrator.js"></script><script src="SLAM%E5%85%A5%E9%97%A8%E4%B9%8B%E8%A7%86%E8%A7%89%E9%87%8C%E7%A8%8B%E8%AE%A1(1)%EF%BC%9A%E7%89%B9%E5%BE%81%E7%82%B9%E7%9A%84%E5%8C%B9%E9%85%8D%20-%20Brook_icv%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/pubads_impl_2019050901.js" async=""></script></head>
+<body><div style="visibility: hidden; overflow: hidden; position: absolute; top: 0px; height: 1px; width: auto; padding: 0px; border: 0px none; margin: 0px; text-align: left; text-indent: 0px; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal;"><div id="MathJax_Hidden"></div></div><div id="MathJax_Message" style="display: none;"></div>
+<a name="top"></a>
+
+<div id="page_begin_html"><script type="text/javascript">window['__document_write_ajax_callbacks__']['2']();</script><script>window['__document_write_ajax_callbacks__']['1']();</script>
+
+<!-- 添加Github链接 -->
+<a href="https://github.com/brookicv" target="_blank">
+　　<img style="position: fixed; top: 0; right: 0; border: 0;" src="SLAM%E5%85%A5%E9%97%A8%E4%B9%8B%E8%A7%86%E8%A7%89%E9%87%8C%E7%A8%8B%E8%AE%A1(1)%EF%BC%9A%E7%89%B9%E5%BE%81%E7%82%B9%E7%9A%84%E5%8C%B9%E9%85%8D%20-%20Brook_icv%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/o_github.png">
+</a></div><script>load_page_begin_html();</script>
+
+<!--done-->
+<div id="home">
+<div id="header">
+	<div id="blogTitle">
+	<a id="lnkBlogLogo" href="https://www.cnblogs.com/wangguchangqing/"><img id="blogLogo" src="SLAM%E5%85%A5%E9%97%A8%E4%B9%8B%E8%A7%86%E8%A7%89%E9%87%8C%E7%A8%8B%E8%AE%A1(1)%EF%BC%9A%E7%89%B9%E5%BE%81%E7%82%B9%E7%9A%84%E5%8C%B9%E9%85%8D%20-%20Brook_icv%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/logo.gif" alt="返回主页"></a>			
+		
+<!--done-->
+<h1><a id="Header1_HeaderTitle" class="headermaintitle" href="https://www.cnblogs.com/wangguchangqing/">Brook@CV</a></h1>
+<h2></h2>
+
+
+
+		
+	</div><!--end: blogTitle 博客的标题和副标题 -->
+	<div id="navigator">
+		
+<ul id="navList">
+<li><a id="blog_nav_sitehome" class="menu" href="https://www.cnblogs.com/">博客园</a></li>
+<li><a id="blog_nav_myhome" class="menu" href="https://www.cnblogs.com/wangguchangqing/">首页</a></li>
+<li><a id="blog_nav_newpost" class="menu" rel="nofollow" href="https://i.cnblogs.com/EditPosts.aspx?opt=1">新随笔</a></li>
+<li><a id="blog_nav_contact" class="menu" rel="nofollow" href="https://msg.cnblogs.com/send/Brook_icv">联系</a></li>
+<li><a id="blog_nav_rss" class="menu" href="https://www.cnblogs.com/wangguchangqing/rss">订阅</a>
+<!--<a id="blog_nav_rss_image" class="aHeaderXML" href="https://www.cnblogs.com/wangguchangqing/rss"><img src="//www.cnblogs.com/images/xml.gif" alt="订阅" /></a>--></li>
+<li><a id="blog_nav_admin" class="menu" rel="nofollow" href="https://i.cnblogs.com/">管理</a></li>
+</ul>
+		<div class="blogStats">
+			
+			<div id="blog_stats">
+<span id="stats_post_count">随笔 - 85&nbsp; </span>
+<span id="stats_article_count">文章 - 0&nbsp; </span>
+<span id="stats-comment_count">评论 - 182</span>
+</div>
+			
+		</div><!--end: blogStats -->
+	</div><!--end: navigator 博客导航栏 -->
+</div><!--end: header 头部 -->
+
+<div id="main">
+	<div id="mainContent">
+	<div class="forFlow">
+		
+        <div id="post_detail">
+<!--done-->
+<div id="topics">
+	<div class="post">
+		<h1 class="postTitle">
+			<a id="cb_post_title_url" class="postTitle2" href="https://www.cnblogs.com/wangguchangqing/p/8076061.html">SLAM入门之视觉里程计(1)：特征点的匹配</a>
+		</h1>
+		<div class="clear"></div>
+		<div class="postBody">
+			<div id="cnblogs_post_body" class="blogpost-body cnblogs-markdown"><p>SLAM
+ 
+主要分为两个部分：前端和后端，前端也就是视觉里程计（VO），它根据相邻图像的信息粗略的估计出相机的运动，给后端提供较好的初始值。VO的实现方法可
+以根据是否需要提取特征分为两类：基于特征点的方法，不使用特征点的直接方法。 基于特征点的VO运行稳定，对光照、动态物体不敏感。</p>
+<p>图像特征点的提取和匹配是计算机视觉中的一个基本问题，在视觉SLAM中就需要首先找到相邻图像对应点的组合，根据这些匹配的点对计算出相机的位姿（相对初始位置，相机的旋转和平移）。<br>
+本文对这段时间对特征点的学习做一个总结，主要有以下几方面的内容：</p>
+<ul>
+<li>特征点概述</li>
+<li>常用的特征点算法，如SIFT,SURF，FAST等</li>
+<li>OpenCV3中特征点的提取和匹配</li>
+</ul>
+<h3 id="autoid-0-0-0">特征点概述</h3>
+<p>如何高效且准确的匹配出两个不同视角的图像中的同一个物体，是许多计算机视觉应用中的第一步。虽然图像在计算机中是以灰度矩阵的形式存在的，但是利
+用图像的灰度并不能准确的找出两幅图像中的同一个物体。这是由于灰度受光照的影响，并且当图像视角变化后，同一个物体的灰度值也会跟着变化。所以，就需要
+找出一种能够在相机进行移动和旋转（视角发生变化），仍然能够保持不变的特征，利用这些不变的特征来找出不同视角的图像中的同一个物体。</p>
+<p>为了能够更好的进行图像匹配，需要在图像中选择具有代表性的区域，例如：图像中的角点、边缘和一些区块，但在图像识别出角点是最容易，也就是说角点的辨识度是最高的。所以，在很多的计算机视觉处理中，都是提取交掉作为特征，对图像进行匹配，例如SFM，视觉SLAM等。</p>
+<p>但是，单纯的角点并不能很好的满足我们的需求，例如：相机从远处得到的是角点，但是在近处就可能不是角点；或者，当相机旋转后，角点就发生了变化。
+为此，计算机视觉的研究者们设计了许多更为稳定的的特征点，这些特征点不会随着相机的移动，旋转或者光照的变化而变化。例如：SIFT,SURF,ORB
+等</p>
+<p>一个图像的特征点由两部分构成：关键点（Keypoint）和描述子（Descriptor）。 关键点指的是该特征点在图像中的位置，有些还具有方向、尺度信息；描述子通常是一个向量，按照人为的设计的方式，描述关键点周围像素的信息。通常描述子是按照<strong>外观相似的特征应该有相似的描述子</strong>设计的。因此，在匹配的时候，只要两个特征点的描述子在向量空间的距离相近，就可以认为它们是同一个特征点。</p>
+<p>特征点的匹配通常需要以下三个步骤：</p>
+<ul>
+<li>提取图像中的关键点，这部分是查找图像中具有某些特征（不同的算法有不同的）的像素</li>
+<li>根据得到的关键点位置，计算特征点的描述子</li>
+<li>根据特征点的描述子，进行匹配</li>
+</ul>
+<p>这里先介绍下特征点的描述子，一个好的描述子是准确匹配的基础，关键点的提取和特征点的匹配，在后面介绍。</p>
+<h3 id="autoid-0-1-0">特征点描述子</h3>
+<p>从图像中提取到特征的关键点信息，通常只是其在图像的位置信息（有可能包含尺度和方向信息），仅仅利用这些信息无法很好的进行特征点的匹配，所以就
+需要更详细的信息，将特征区分开来，这就是特征描述子。另外，通过特征描述子可以消除视角的变化带来图像的尺度和方向的变化，能够更好的在图像间匹配。</p>
+<p>特征的描述子通常是一个精心设计的向量，描述了关键点及其周围像素的信息。为了能够更好的匹配，一个好的描述子通常要具有以下特性：</p>
+<ul>
+<li>不变性 指特征不会随着图像的放大缩小旋转而改变。</li>
+<li>鲁棒性 对噪声、光照或者其他一些小的形变不敏感</li>
+<li>可区分性 每一个特征描述子都是独特的，具有排他性，尽可能减少彼此间的相似性。</li>
+</ul>
+<p>其中描述子的可区分性和其不变性是矛盾的，一个具有众多不变性的特征描述子，其区分局部图像内容的能力就比较稍弱；而如果一个很容易区分不同局部图像内容的特征描述子，其鲁棒性往往比较低。所以，在设计特征描述子的时候，就需要综合考虑这三个特性，找到三者之间的平衡。</p>
+<p>特征描述子的不变性主要体现在两个方面：</p>
+<ul>
+<li><strong>尺度不变性 Scale Invarient</strong><br>
+指的是同一个特征，在图像的不同的尺度空间保持不变。匹配在不同图像中的同一个特征点经常会有图像的尺度问题，不同尺度的图像中特征点的距离变得不同，物
+体的尺寸变得不同，而仅仅改变特征点的大小就有可能造成强度不匹配。如果描述子无法保证尺度不变性，那么同一个特征点在放大或者缩小的图像间，就不能很好
+的匹配。为了保持尺度的不变性，在计算特征点的描述子的时候，通常将图像变换到统一的尺度空间，再加上尺度因子。</li>
+<li><strong>旋转不变性 Rotation Invarient</strong><br>
+指的是同一个特征，在成像视角旋转后，特征仍然能够保持不变。和尺度不变性类似，为了保持旋转不变性，在计算特征点描述子的时候，要加上关键点的方向信息。</li>
+</ul>
+<p>为了有个更直观的理解，下面给出SIFT,SURF,BRIEF描述子计算方法对比<br>
+<img src="SLAM%E5%85%A5%E9%97%A8%E4%B9%8B%E8%A7%86%E8%A7%89%E9%87%8C%E7%A8%8B%E8%AE%A1(1)%EF%BC%9A%E7%89%B9%E5%BE%81%E7%82%B9%E7%9A%84%E5%8C%B9%E9%85%8D%20-%20Brook_icv%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/439761-20171220215116521-1110847369.png"></p>
+<p>从上表可以看出，SIFT,SURF和BRIEF描述子都是一个向量，只是维度不同。其中，SIFT和SURF在构建特征描述子的时候，保存了特征
+的方向和尺度特征，这样其特征描述子就具有尺度和旋转不变性；而BRIEF描述子并没有尺度和方向特征，不具备尺度和旋转不变性。</p>
+<h3 id="autoid-0-2-0">常用的特征点算法</h3>
+<p>上面提到图像的特征点包含两个部分：</p>
+<ul>
+<li>特征点的提取，在图像检测到特征点的位置</li>
+<li>特征点的描述，也就是描述子。</li>
+</ul>
+<p>在图像中提取到关键点的位置信息后，为了能够更有效的匹配（主要是保证尺度和旋转不变性），通常使用一个向量来描述关键点及其周围的信息。特征的描
+述子，在特征点的匹配中是非常重要的，上一小节中对其应该具有的性质做了介绍。但具体到一个算法来说，可能其既有特征点的提取算法也有特征点描述子的算
+法，也有可能其仅仅是一个特征点提取算法或者是特征点的描述子算法。在本小节就常用的特征点算法做一个简要的说明。</p>
+<h4 id="autoid-0-3-0">SIFT</h4>
+<p>提到特征点算法，首先就是大名鼎鼎的SIFT算法了。SIFT的全称是Scale Invariant Feature 
+Transform，尺度不变特征变换，2004年由加拿大教授David 
+G.Lowe提出的。SIFT特征对旋转、尺度缩放、亮度变化等保持不变性，是一种非常稳定的局部特征。<br>
+SIFT算法主要有以下几个步骤：</p>
+<ul>
+<li>高斯差分金字塔的构建<br>
+使用组和层的结构构建了一个具有线性关系的金字塔（尺度空间），这样可以在连续的高斯核尺度上查找图像的特征点；另外，它使用一阶的高斯差分来近似高斯的拉普拉斯核，大大的减少了运算量。</li>
+<li>尺度空间的极值检测及特征点的定位<br>
+搜索上一步建立的高斯尺度空间，通过高斯差分来识别潜在的对尺度和旋转不变的特征点。但是，在离散空间中，局部极值点可能并不是真正意义的极值点，真正的极值点有可能落在离散点的间隙中，SIFT通过尺度空间DoG函数进行曲线拟合寻找极值点。</li>
+<li>特征方向赋值<br>
+基于图像局部的梯度方向，分配给每个关键点位置一个或多个方向，后续的所有操作都是对于关键点的方向、尺度和位置进行变换，从而提供这些特征的不变性。</li>
+<li>特征描述子的生成<br>
+通过上面的步骤已经找到的SIFT特征点的位置、方向、尺度信息，最后使用一组向量来描述特征点及其周围邻域像素的信息。</li>
+</ul>
+<p>SIFT算法中及包含了特征点的提取算法，也有如何生成描述子的算法，更进一步的SIFT算法介绍可参看<a href="http://www.cnblogs.com/wangguchangqing/p/4853263.html" title="SIFT特征详解">SIFT特征详解</a></p>
+<h4 id="autoid-0-3-0">SURF</h4>
+<p>SURF全称 Speeded Up Robust Features，是在SIFT算法的基础上提出的，主要针对SIFT算法运算速度慢，计算量大的缺点进行了改进。<br>
+SURF的流程和SIFT比较类似，这些改进体现在以下几个方面：</p>
+<ul>
+<li>特征点检测是基于Hessian矩阵，依据Hessian矩阵行列式的极值来定位特征点的位置。并且将Hession特征计算与高斯平滑结合在一起，两个操作通过近似处理得到一个核模板。</li>
+<li>在构建尺度空间时，使用box filter与源图像卷积，而不是使用DoG算子。</li>
+<li>SURF使用一阶Haar小波在x、y两个方向的响应作为构建特征向量的分布信息。</li>
+</ul>
+<h4 id="autoid-0-3-0">FAST特征点提取算法</h4>
+<p>SIFT和SURF是非常好的，稳定的特征点算法，但运算速度是其一大弊端，无法做到实时的特征提取和匹配，其应用就有了很大的局限性。FAST特征提取算法弥补了这一局限，<strong>检测局部像素灰度变化明显的地方</strong>，
+以速度快而著称，其全称为：Features From Accelerated Segment 
+Test。在FAST算法的思想很简单：如果一个像素与周围邻域的像素差别较大（过亮或者过暗），那么可以认为该像素是一个角点。和其他的特征点提取算法
+相比，FAST算法只需要比较像素和其邻域像素的灰度值大小，十分便捷。<br>
+FAST算法提取角点的步骤：</p>
+<ul>
+<li>在图像中选择像素p，假设其灰度值为：<span class="math inline"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax" id="MathJax-Element-1-Frame" tabindex="0" style="position: relative;" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;msub&gt;&lt;mi&gt;I&lt;/mi&gt;&lt;mi&gt;p&lt;/mi&gt;&lt;/msub&gt;&lt;/math&gt;" role="presentation"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-1" style="width: 1.211em; display: inline-block;"><span style="display: inline-block; position: relative; width: 0.893em; height: 0px; font-size: 136%;"><span style="position: absolute; clip: rect(1.418em, 1000.89em, 2.703em, -1000em); top: -2.258em; left: 0em;"><span class="mrow" id="MathJax-Span-2"><span class="msubsup" id="MathJax-Span-3"><span style="display: inline-block; position: relative; width: 0.871em; height: 0px;"><span style="position: absolute; clip: rect(3.151em, 1000.5em, 4.149em, -1000em); top: -3.992em; left: 0em;"><span class="mi" id="MathJax-Span-4" style="font-family: MathJax_Math; font-style: italic;">I<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.064em;"></span></span><span style="display: inline-block; width: 0px; height: 3.992em;"></span></span><span style="position: absolute; top: -3.842em; left: 0.44em;"><span class="mi" id="MathJax-Span-5" style="font-size: 70.7%; font-family: MathJax_Math; font-style: italic;">p</span><span style="display: inline-block; width: 0px; height: 3.992em;"></span></span></span></span></span><span style="display: inline-block; width: 0px; height: 2.258em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.462em; border-left: 0px solid; width: 0px; height: 1.462em;"></span></span></nobr><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><msub><mi>I</mi><mi>p</mi></msub></math></span></span><script type="math/tex" id="MathJax-Element-1">I_p</script></span></li>
+<li>设置一个阈值T，例如：<span class="math inline"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax" id="MathJax-Element-2-Frame" tabindex="0" style="position: relative;" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;msub&gt;&lt;mi&gt;I&lt;/mi&gt;&lt;mi&gt;p&lt;/mi&gt;&lt;/msub&gt;&lt;/math&gt;" role="presentation"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-6" style="width: 1.211em; display: inline-block;"><span style="display: inline-block; position: relative; width: 0.893em; height: 0px; font-size: 136%;"><span style="position: absolute; clip: rect(1.418em, 1000.89em, 2.703em, -1000em); top: -2.258em; left: 0em;"><span class="mrow" id="MathJax-Span-7"><span class="msubsup" id="MathJax-Span-8"><span style="display: inline-block; position: relative; width: 0.871em; height: 0px;"><span style="position: absolute; clip: rect(3.151em, 1000.5em, 4.149em, -1000em); top: -3.992em; left: 0em;"><span class="mi" id="MathJax-Span-9" style="font-family: MathJax_Math; font-style: italic;">I<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.064em;"></span></span><span style="display: inline-block; width: 0px; height: 3.992em;"></span></span><span style="position: absolute; top: -3.842em; left: 0.44em;"><span class="mi" id="MathJax-Span-10" style="font-size: 70.7%; font-family: MathJax_Math; font-style: italic;">p</span><span style="display: inline-block; width: 0px; height: 3.992em;"></span></span></span></span></span><span style="display: inline-block; width: 0px; height: 2.258em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.462em; border-left: 0px solid; width: 0px; height: 1.462em;"></span></span></nobr><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><msub><mi>I</mi><mi>p</mi></msub></math></span></span><script type="math/tex" id="MathJax-Element-2">I_p</script></span>的20%</li>
+<li>选择p周围半径为3的圆上的16个像素，作为比较像素</li>
+<li>假设选取的圆上有连续的N个像素大于<span class="math inline"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax" id="MathJax-Element-3-Frame" tabindex="0" style="position: relative;" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;msub&gt;&lt;mi&gt;I&lt;/mi&gt;&lt;mi&gt;p&lt;/mi&gt;&lt;/msub&gt;&lt;mo&gt;+&lt;/mo&gt;&lt;mi&gt;T&lt;/mi&gt;&lt;/math&gt;" role="presentation"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-11" style="width: 3.784em; display: inline-block;"><span style="display: inline-block; position: relative; width: 2.784em; height: 0px; font-size: 136%;"><span style="position: absolute; clip: rect(1.47em, 1002.78em, 2.756em, -1000em); top: -2.311em; left: 0em;"><span class="mrow" id="MathJax-Span-12"><span class="msubsup" id="MathJax-Span-13"><span style="display: inline-block; position: relative; width: 0.871em; height: 0px;"><span style="position: absolute; clip: rect(3.151em, 1000.5em, 4.149em, -1000em); top: -3.992em; left: 0em;"><span class="mi" id="MathJax-Span-14" style="font-family: MathJax_Math; font-style: italic;">I<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.064em;"></span></span><span style="display: inline-block; width: 0px; height: 3.992em;"></span></span><span style="position: absolute; top: -3.842em; left: 0.44em;"><span class="mi" id="MathJax-Span-15" style="font-size: 70.7%; font-family: MathJax_Math; font-style: italic;">p</span><span style="display: inline-block; width: 0px; height: 3.992em;"></span></span></span></span><span class="mo" id="MathJax-Span-16" style="font-family: MathJax_Main; padding-left: 0.222em;">+</span><span class="mi" id="MathJax-Span-17" style="font-family: MathJax_Math; font-style: italic; padding-left: 0.222em;">T<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.12em;"></span></span></span><span style="display: inline-block; width: 0px; height: 2.311em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.462em; border-left: 0px solid; width: 0px; height: 1.462em;"></span></span></nobr><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><msub><mi>I</mi><mi>p</mi></msub><mo>+</mo><mi>T</mi></math></span></span><script type="math/tex" id="MathJax-Element-3">I_p + T</script></span>或者<span class="math inline"><span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax" id="MathJax-Element-4-Frame" tabindex="0" style="position: relative;" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;msub&gt;&lt;mi&gt;I&lt;/mi&gt;&lt;mi&gt;p&lt;/mi&gt;&lt;/msub&gt;&lt;mo&gt;&amp;#x2212;&lt;/mo&gt;&lt;mi&gt;T&lt;/mi&gt;&lt;/math&gt;" role="presentation"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-18" style="width: 3.784em; display: inline-block;"><span style="display: inline-block; position: relative; width: 2.784em; height: 0px; font-size: 136%;"><span style="position: absolute; clip: rect(1.47em, 1002.78em, 2.756em, -1000em); top: -2.311em; left: 0em;"><span class="mrow" id="MathJax-Span-19"><span class="msubsup" id="MathJax-Span-20"><span style="display: inline-block; position: relative; width: 0.871em; height: 0px;"><span style="position: absolute; clip: rect(3.151em, 1000.5em, 4.149em, -1000em); top: -3.992em; left: 0em;"><span class="mi" id="MathJax-Span-21" style="font-family: MathJax_Math; font-style: italic;">I<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.064em;"></span></span><span style="display: inline-block; width: 0px; height: 3.992em;"></span></span><span style="position: absolute; top: -3.842em; left: 0.44em;"><span class="mi" id="MathJax-Span-22" style="font-size: 70.7%; font-family: MathJax_Math; font-style: italic;">p</span><span style="display: inline-block; width: 0px; height: 3.992em;"></span></span></span></span><span class="mo" id="MathJax-Span-23" style="font-family: MathJax_Main; padding-left: 0.222em;">−</span><span class="mi" id="MathJax-Span-24" style="font-family: MathJax_Math; font-style: italic; padding-left: 0.222em;">T<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.12em;"></span></span></span><span style="display: inline-block; width: 0px; height: 2.311em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.462em; border-left: 0px solid; width: 0px; height: 1.462em;"></span></span></nobr><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><msub><mi>I</mi><mi>p</mi></msub><mo>−</mo><mi>T</mi></math></span></span><script type="math/tex" id="MathJax-Element-4">I_p - T</script></span>，那么可以认为像素p就是一个特征点。（N通常取12，即为FAST-12；常用的还有FAST-9,FAST-11）。</li>
+</ul>
+<p>FAST算法只检测像素的灰度值，其运算速度极快，同时不可避免的也有一些缺点</p>
+<ul>
+<li>检测到的特征点过多并且会出现“扎堆”的现象。这可以在第一遍检测完成后，使用非最大值抑制（Non-maximal suppression），在一定区域内仅保留响应极大值的角点，避免角点集中的情况。</li>
+<li>FAST提取到的角点没有方向和尺度信息</li>
+</ul>
+<p>上面的介绍的SIFT和SURF算法都包含有各自的特征点描述子的计算方法，而FAST不包含特征点描述子的计算，仅仅只有特征点的提取方法，这就需要一个特征点描述方法来描述FAST提取到的特征点，以方便特征点的匹配。下面介绍一个专门的特征点描述子的计算算法。</p>
+<h4 id="autoid-0-3-0">BRIEF描述子</h4>
+<p>BRIEF是一种二进制的描述子，其描述向量是0和1表示的二进制串。0和1表示特征点邻域内两个像素（p和q）灰度值的大小：如果p比q大则选择
+1，反正就取0。在特征点的周围选择128对这样的p和q的像素对，就得到了128维由0，1组成的向量。那么p和q的像素对是怎么选择的呢？通常都是按
+照某种概率来随机的挑选像素对的位置。<br>
+BRIEF使用随机选点的比较，速度很快，而且使用二进制串表示最终生成的描述子向量，在存储以及用于匹配的比较时都是非常方便的，其和FAST的搭配起来可以组成非常快速的特征点提取和描述算法。</p>
+<h4 id="autoid-0-3-0">ORB算法</h4>
+<p>ORB的全称是Oriented FAST and Rotated BRIEF，是目前来说非常好的能够进行的实时的图像特征提取和描述的算法，它改进了FAST特征提取算法，并使用速度极快的二进制描述子BRIEF。<br>
+针对FAST特征提取的算法的一些确定，ORB也做了相应的改进。</p>
+<ul>
+<li>使用非最大值抑制，在一定区域内仅仅保留响应极大值的角点，避免FAST提取到的角点过于集中。</li>
+<li>FAST提取到的角点数量过多且不是很稳定，ORB中可以指定需要提取到的角点的数量N，然后对FAST提取到的角点分别计算Harris响应值，选择前N个具有最大响应值的角点作为最终提取到的特征点集合。</li>
+<li>FAST提取到的角点不具有尺度信息，在ORB中使用图像金字塔，并且在每一层金字塔上检测角点，以此来保持尺度的不变性。</li>
+<li>FAST提取到的角点不具有方向信息，在ORB中使用灰度质心法(Intensity Centroid)来保持特征的旋转不变性。</li>
+</ul>
+<h3 id="autoid-0-3-0">OpenCV3中特征点的提取和匹配</h3>
+<p>OpenCV中封装了常用的特征点算法（如SIFT,SURF，ORB等），提供了统一的接口，便于调用。 下面代码是OpenCV中使用其feature 2D 模块的示例代码</p>
+<pre style="border-color: rgb(170, 170, 170) rgb(170, 170, 170) rgb(170, 170, 170) rgb(108, 226, 108); border-style: dashed dashed dashed solid; border-width: 1px 1px 1px 2px; border-image: none 100% / 1 / 0 stretch;"><code class="hljs cpp">    Mat img1 = imread(<span class="hljs-string">"F:\\image\\1.png"</span>);
+    Mat img2 = imread(<span class="hljs-string">"F:\\image\\2.png"</span>);
+
+    <span class="hljs-comment">// 1. 初始化</span>
+    <span class="hljs-built_in">vector</span>&lt;KeyPoint&gt; keypoints1, keypoints2;
+    Mat descriptors1, descriptors2;
+    Ptr&lt;ORB&gt; orb = ORB::create();
+
+    <span class="hljs-comment">// 2. 提取特征点</span>
+    orb-&gt;detect(img1, keypoints1);
+    orb-&gt;detect(img2, keypoints2);
+
+    <span class="hljs-comment">// 3. 计算特征描述符</span>
+    orb-&gt;compute(img1, keypoints1, descriptors1);
+    orb-&gt;compute(img2, keypoints2, descriptors2);
+    
+    <span class="hljs-comment">// 4. 对两幅图像的BRIEF描述符进行匹配，使用BFMatch，Hamming距离作为参考</span>
+    <span class="hljs-built_in">vector</span>&lt;DMatch&gt; matches;
+    <span class="hljs-function">BFMatcher <span class="hljs-title">bfMatcher</span><span class="hljs-params">(NORM_HAMMING)</span></span>;
+    bfMatcher.match(descriptors1, descriptors2, matches);</code></pre>
+<ol>
+<li>获取检测器的实例<br>
+在OpenCV3中重新的封装了特征提取的接口，可统一的使用<code>Ptr&lt;FeatureDetector&gt; detector = FeatureDetector::create()</code>来得到特征提取器的一个实例，所有的参数都提供了默认值，也可以根据具体的需要传入相应的参数。</li>
+<li>在得到特征检测器的实例后，可调用的<code>detect</code>方法检测图像中的特征点的具体位置，检测的结果保存在<code>vector&lt;KeyPoint&gt;</code>向量中。</li>
+<li>有了特征点的位置后，调用<code>compute</code>方法来计算特征点的描述子，描述子通常是一个向量，保存在<code>Mat</code>中。</li>
+<li>得到了描述子后，可调用匹配算法进行特征点的匹配。上面代码中，使用了opencv中封装后的<em>暴力匹配算法</em><code>BFMatcher</code>，该算法在向量空间中，将特征点的描述子一一比较，选择距离（上面代码中使用的是Hamming距离）较小的一对作为匹配点。</li>
+</ol>
+<p>上面代码匹配后的结果如下：<br>
+<img src="SLAM%E5%85%A5%E9%97%A8%E4%B9%8B%E8%A7%86%E8%A7%89%E9%87%8C%E7%A8%8B%E8%AE%A1(1)%EF%BC%9A%E7%89%B9%E5%BE%81%E7%82%B9%E7%9A%84%E5%8C%B9%E9%85%8D%20-%20Brook_icv%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/439761-20171220215154240-855351628.jpg"></p>
+<h4 id="autoid-0-4-0">特征点的匹配后的优化</h4>
+<p>特征的匹配是针对特征描述子的进行的，上面提到特征描述子通常是一个向量，两个特征描述子的之间的距离可以反应出其相似的程度，也就是这两个特征点
+是不是同一个。根据描述子的不同，可以选择不同的距离度量。如果是浮点类型的描述子，可以使用其欧式距离；对于二进制的描述子（BRIEF）可以使用其汉
+明距离（两个不同二进制之间的汉明距离指的是两个二进制串不同位的个数）。</p>
+<p>有了计算描述子相似度的方法，那么在特征点的集合中如何寻找和其最相似的特征点，这就是特征点的匹配了。最简单直观的方法就是上面使用的：暴力匹配
+方法(Brute-Froce 
+Matcher)，计算某一个特征点描述子与其他所有特征点描述子之间的距离，然后将得到的距离进行排序，取距离最近的一个作为匹配点。这种方法简单粗
+暴，其结果也是显而易见的，通过上面的匹配结果，也可以看出有大量的错误匹配，这就需要使用一些机制来过滤掉错误的匹配。</p>
+<ul>
+<li>汉明距离小于最小距离的两倍<br>
+选择已经匹配的点对的汉明距离小于最小距离的两倍作为判断依据，如果小于该值则认为是一个错误的匹配，过滤掉；大于该值则认为是一个正确的匹配。其实现代码也很简单，如下：</li>
+</ul>
+<pre style="border-color: rgb(170, 170, 170) rgb(170, 170, 170) rgb(170, 170, 170) rgb(108, 226, 108); border-style: dashed dashed dashed solid; border-width: 1px 1px 1px 2px; border-image: none 100% / 1 / 0 stretch;"><code class="hljs verilog">    <span class="hljs-comment">// 匹配对筛选</span>
+    double min_dist = <span class="hljs-number">1000</span>, max_dist = <span class="hljs-number">0</span>;
+    <span class="hljs-comment">// 找出所有匹配之间的最大值和最小值</span>
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; descriptors1<span class="hljs-variable">.rows</span>; i++)
+    {
+        double <span class="hljs-keyword">dist</span> = <span class="hljs-keyword">matches</span>[i]<span class="hljs-variable">.distance</span>;
+        <span class="hljs-keyword">if</span> (<span class="hljs-keyword">dist</span> &lt; min_dist) min_dist = <span class="hljs-keyword">dist</span>;
+        <span class="hljs-keyword">if</span> (<span class="hljs-keyword">dist</span> &gt; max_dist) max_dist = <span class="hljs-keyword">dist</span>;
+    }
+    <span class="hljs-comment">// 当描述子之间的匹配大于2倍的最小距离时，即认为该匹配是一个错误的匹配。</span>
+    <span class="hljs-comment">// 但有时描述子之间的最小距离非常小，可以设置一个经验值作为下限</span>
+    vector&lt;DMatch&gt; good_matches;
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; descriptors1<span class="hljs-variable">.rows</span>; i++)
+    {
+        <span class="hljs-keyword">if</span> (<span class="hljs-keyword">matches</span>[i]<span class="hljs-variable">.distance</span> &lt;= max(<span class="hljs-number">2</span> * min_dist, <span class="hljs-number">30</span><span class="hljs-variable">.0</span>))
+            good_matches<span class="hljs-variable">.push_back</span>(<span class="hljs-keyword">matches</span>[i]);
+    }</code></pre>
+<p>结果如下：<br>
+<img src="SLAM%E5%85%A5%E9%97%A8%E4%B9%8B%E8%A7%86%E8%A7%89%E9%87%8C%E7%A8%8B%E8%AE%A1(1)%EF%BC%9A%E7%89%B9%E5%BE%81%E7%82%B9%E7%9A%84%E5%8C%B9%E9%85%8D%20-%20Brook_icv%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/439761-20171220215245146-476222421.jpg"></p>
+<p>对比只是用暴力匹配的方法，进行过滤后的匹配效果好了很多。</p>
+<ul>
+<li><p>交叉匹配<br>
+针对暴力匹配，可以使用交叉匹配的方法来过滤错误的匹配。交叉过滤的是想很简单，再进行一次匹配，反过来使用被匹配到的点进行匹配，如果匹配到的仍然是第
+一次匹配的点的话，就认为这是一个正确的匹配。举例来说就是，假如第一次特征点A使用暴力匹配的方法，匹配到的特征点是特征点B；反过来，使用特征点B进
+行匹配，如果匹配到的仍然是特征点A，则就认为这是一个正确的匹配，否则就是一个错误的匹配。OpenCV中<code>BFMatcher</code>已经封装了该方法，创建<code>BFMatcher</code>的实例时，第二个参数传入<code>true</code>即可，<code>BFMatcher bfMatcher(NORM_HAMMING,true)</code>。</p></li>
+<li>KNN匹配<br>
+K近邻匹配，在匹配的时候选择K个和特征点最相似的点，如果这K个点之间的区别足够大，则选择最相似的那个点作为匹配点，通常选择K = 
+2，也就是最近邻匹配。对每个匹配返回两个最近邻的匹配，如果第一匹配和第二匹配距离比率足够大（向量距离足够远），则认为这是一个正确的匹配，比率的阈
+值通常在2左右。<br>
+OpenCV中的匹配器中封装了该方法，上面的代码可以调用<code>bfMatcher-&gt;knnMatch(descriptors1, descriptors2, knnMatches, 2);</code>具体实现的代码如下：</li>
+</ul>
+<pre style="border-color: rgb(170, 170, 170) rgb(170, 170, 170) rgb(170, 170, 170) rgb(108, 226, 108); border-style: dashed dashed dashed solid; border-width: 1px 1px 1px 2px; border-image: none 100% / 1 / 0 stretch;"><code class="hljs cpp">    <span class="hljs-keyword">const</span> <span class="hljs-keyword">float</span> minRatio = <span class="hljs-number">1.f</span> / <span class="hljs-number">1.5f</span>;
+    <span class="hljs-keyword">const</span> <span class="hljs-keyword">int</span> k = <span class="hljs-number">2</span>;
+
+    <span class="hljs-built_in">vector</span>&lt;<span class="hljs-built_in">vector</span>&lt;DMatch&gt;&gt; knnMatches;
+    matcher-&gt;knnMatch(leftPattern-&gt;descriptors, rightPattern-&gt;descriptors, knnMatches, k);
+
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">size_t</span> i = <span class="hljs-number">0</span>; i &lt; knnMatches.size(); i++) {
+        <span class="hljs-keyword">const</span> DMatch&amp; bestMatch = knnMatches[i][<span class="hljs-number">0</span>];
+        <span class="hljs-keyword">const</span> DMatch&amp; betterMatch = knnMatches[i][<span class="hljs-number">1</span>];
+
+        <span class="hljs-keyword">float</span>  distanceRatio = bestMatch.distance / betterMatch.distance;
+        <span class="hljs-keyword">if</span> (distanceRatio &lt; minRatio)
+            matches.push_back(bestMatch);
+    }<span class="hljs-keyword">const</span>  <span class="hljs-keyword">float</span> minRatio =  <span class="hljs-number">1.f</span>  /  <span class="hljs-number">1.5f</span>;
+    <span class="hljs-keyword">const</span>  <span class="hljs-keyword">int</span> k =  <span class="hljs-number">2</span>;
+
+    <span class="hljs-built_in">vector</span>&lt;<span class="hljs-built_in">vector</span>&lt;DMatch&gt;&gt; knnMatches;
+    matcher-&gt;knnMatch(leftPattern-&gt;descriptors, rightPattern-&gt;descriptors, knnMatches, <span class="hljs-number">2</span>);
+
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">size_t</span> i =  <span class="hljs-number">0</span>; i &lt; knnMatches.size(); i++) {
+        <span class="hljs-keyword">const</span> DMatch&amp; bestMatch = knnMatches[i][<span class="hljs-number">0</span>];
+        <span class="hljs-keyword">const</span> DMatch&amp; betterMatch = knnMatches[i][<span class="hljs-number">1</span>];
+        <span class="hljs-keyword">float</span> distanceRatio = bestMatch.distance  / betterMatch.distance;
+        <span class="hljs-keyword">if</span> (distanceRatio &lt; minRatio)
+            matches.push_back(bestMatch);
+    }</code></pre>
+<p>将不满足的<strong>最近邻的匹配之间距离比率大于设定的阈值（1/1.5）</strong>匹配剔除。</p>
+<ul>
+<li>RANSAC<br>
+另外还可采用随机采样一致性（RANSAC）来过滤掉错误的匹配，该方法利用匹配点计算两个图像之间<strong>单应矩阵</strong>，然后利用重投影误差来判定某一个匹配是不是正确的匹配。OpenCV中封装了求解单应矩阵的方法<code>findHomography</code>,可以为该方法设定一个<strong>重投影误差的阈值</strong>，可以得到一个向量mask来指定那些是符合该重投影误差的匹配点对，以此来剔除错误的匹配，代码如下：</li>
+</ul>
+<pre style="border-color: rgb(170, 170, 170) rgb(170, 170, 170) rgb(170, 170, 170) rgb(108, 226, 108); border-style: dashed dashed dashed solid; border-width: 1px 1px 1px 2px; border-image: none 100% / 1 / 0 stretch;"><code class="hljs cpp"><span class="hljs-keyword">const</span> <span class="hljs-keyword">int</span> minNumbermatchesAllowed = <span class="hljs-number">8</span>;
+    <span class="hljs-keyword">if</span> (matches.size() &lt; minNumbermatchesAllowed)
+        <span class="hljs-keyword">return</span>;
+
+    <span class="hljs-comment">//Prepare data for findHomography</span>
+    <span class="hljs-built_in">vector</span>&lt;Point2f&gt; srcPoints(matches.size());
+    <span class="hljs-built_in">vector</span>&lt;Point2f&gt; dstPoints(matches.size());
+
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">size_t</span> i = <span class="hljs-number">0</span>; i &lt; matches.size(); i++) {
+        srcPoints[i] = rightPattern-&gt;keypoints[matches[i].trainIdx].pt;
+        dstPoints[i] = leftPattern-&gt;keypoints[matches[i].queryIdx].pt;
+    }
+
+    <span class="hljs-comment">//find homography matrix and get inliers mask</span>
+    <span class="hljs-built_in">vector</span>&lt;uchar&gt; inliersMask(srcPoints.size());
+    homography = findHomography(srcPoints, dstPoints, CV_FM_RANSAC, reprojectionThreshold, inliersMask);
+
+    <span class="hljs-built_in">vector</span>&lt;DMatch&gt; inliers;
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">size_t</span> i = <span class="hljs-number">0</span>; i &lt; inliersMask.size(); i++){
+        <span class="hljs-keyword">if</span> (inliersMask[i])
+            inliers.push_back(matches[i]);
+    }
+    matches.swap(inliers);<span class="hljs-keyword">const</span>  <span class="hljs-keyword">int</span> minNumbermatchesAllowed =  <span class="hljs-number">8</span>;
+    <span class="hljs-keyword">if</span> (matches.size() &lt; minNumbermatchesAllowed)
+        <span class="hljs-keyword">return</span>;
+
+    <span class="hljs-comment">//Prepare data for findHomography</span>
+    <span class="hljs-built_in">vector</span>&lt;Point2f&gt;  srcPoints(matches.size());
+    <span class="hljs-built_in">vector</span>&lt;Point2f&gt;  dstPoints(matches.size());
+
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">size_t</span> i =  <span class="hljs-number">0</span>; i &lt; matches.size(); i++) {
+        srcPoints[i] = rightPattern-&gt;keypoints[matches[i].trainIdx].pt;
+        dstPoints[i] = leftPattern-&gt;keypoints[matches[i].queryIdx].pt;
+    }
+
+    <span class="hljs-comment">//find homography matrix and get inliers mask</span>
+    <span class="hljs-built_in">vector</span>&lt;uchar&gt;  inliersMask(srcPoints.size());
+    homography =  findHomography(srcPoints, dstPoints, CV_FM_RANSAC, reprojectionThreshold, inliersMask);
+
+    <span class="hljs-built_in">vector</span>&lt;DMatch&gt; inliers;
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">size_t</span> i =  <span class="hljs-number">0</span>; i &lt; inliersMask.size(); i++){
+        <span class="hljs-keyword">if</span> (inliersMask[i])
+            inliers.push_back(matches[i]);
+    }
+    matches.swap(inliers);</code></pre>
+<p>之前写过一篇OpenCV的特征点匹配及一些剔除错误匹配的文章，<a href="http://www.cnblogs.com/wangguchangqing/p/4333873.html" title="OpenCV2:特征匹配及其优化">OpenCV2:特征匹配及其优化</a>，
+使用的是OpenCV2，在OpenCV3中更新了特征点检测和匹配的接口，不过大体还是差不多的。上一篇的文末附有练习代码的下载链接，不要直接打开
+sln或者project文件，有可能vs版本不一样打不开，本文的测试代码还没有整理，等有时间好好打理下github，练习的代码随手都丢了，到想用
+的时候又找不到了。</p>
+<h3 id="autoid-0-4-0">后记</h3>
+<p>翻了下，上一篇博客还是6月30号发布的，而今已是12月底，半年6个月时间就这样过去了。而我，好像没有什么成长啊，工资还是那么多，调试bug
+的技术倒是积累了很多，知道多线程程序调试;多进程通信;学会了用Windebug:分析dump文件，在无代码环境中attach到执行文件中分析问题
+或者拿着pdb文件和源代码在现场环境中进行调试...;实实在在的感受到了C++的内存泄漏和空指针导致的各种奇葩问题；知道了使用未初始化的变量的不
+稳定性；知道了项目设计中扩展性的重要的...<br>
+写之前觉得自己虚度了半年，总结下来，这半年下来时间还是成长了不少的，心里的愧疚感降低了不少。不过以后还是要坚持写博客记录下学习的过程...</p>
+<br><hr><pre>如果您觉得阅读本文对您有帮助，请点一下“<b>推荐</b>”按钮，您的<b>“推荐”</b>将是我最大的写作动力！欢迎各位转载，但是未经作者本人同意，转载文章之后<b>必须在文章页面明显位置给出作者和原文连接</b>，否则保留追究法律责任的权利。</pre></div><div id="MySignature"></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+<div id="BlogPostCategory">分类: <a href="https://www.cnblogs.com/wangguchangqing/category/1134664.html" target="_blank">03-SLAM</a></div>
+<div id="EntryTag"></div>
+<div id="blog_post_info"><div id="green_channel">
+        <a href="javascript:void(0);" id="green_channel_digg" onclick="DiggIt(8076061,cb_blogId,1);green_channel_success(this,'谢谢推荐！');">好文要顶</a>
+            <a id="green_channel_follow" onclick="follow('45bdfcc5-68eb-e111-aa3f-842b2b196315');" href="javascript:void(0);">关注我</a>
+    <a id="green_channel_favorite" onclick="AddToWz(cb_entryId);return false;" href="javascript:void(0);">收藏该文</a>
+    <a id="green_channel_weibo" href="javascript:void(0);" title="分享至新浪微博" onclick="ShareToTsina()"><img src="SLAM%E5%85%A5%E9%97%A8%E4%B9%8B%E8%A7%86%E8%A7%89%E9%87%8C%E7%A8%8B%E8%AE%A1(1)%EF%BC%9A%E7%89%B9%E5%BE%81%E7%82%B9%E7%9A%84%E5%8C%B9%E9%85%8D%20-%20Brook_icv%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/icon_weibo_24.png" alt=""></a>
+    <a id="green_channel_wechat" href="javascript:void(0);" title="分享至微信" onclick="shareOnWechat()"><img src="SLAM%E5%85%A5%E9%97%A8%E4%B9%8B%E8%A7%86%E8%A7%89%E9%87%8C%E7%A8%8B%E8%AE%A1(1)%EF%BC%9A%E7%89%B9%E5%BE%81%E7%82%B9%E7%9A%84%E5%8C%B9%E9%85%8D%20-%20Brook_icv%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/wechat.png" alt=""></a>
+</div>
+<div id="author_profile">
+    <div id="author_profile_info" class="author_profile_info">
+            <a href="http://home.cnblogs.com/u/wangguchangqing/" target="_blank"><img src="SLAM%E5%85%A5%E9%97%A8%E4%B9%8B%E8%A7%86%E8%A7%89%E9%87%8C%E7%A8%8B%E8%AE%A1(1)%EF%BC%9A%E7%89%B9%E5%BE%81%E7%82%B9%E7%9A%84%E5%8C%B9%E9%85%8D%20-%20Brook_icv%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/20181220223626.png" class="author_avatar" alt=""></a>
+        <div id="author_profile_detail" class="author_profile_info">
+            <a href="http://home.cnblogs.com/u/wangguchangqing/">Brook_icv</a><br>
+            <a href="http://home.cnblogs.com/u/wangguchangqing/followees">关注 - 7</a><br>
+            <a href="http://home.cnblogs.com/u/wangguchangqing/followers">粉丝 - 474</a>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div id="author_profile_honor"></div>
+    <div id="author_profile_follow">
+                <a href="javascript:void(0);" onclick="follow('45bdfcc5-68eb-e111-aa3f-842b2b196315');return false;">+加关注</a>
+    </div>
+</div>
+<div id="div_digg"><div style="padding-bottom: 5px"><span class="icon_favorite" style="padding-top: 2px"></span><a onclick="cnblogs.UserManager.FollowBlogger('45bdfcc5-68eb-e111-aa3f-842b2b196315');" href="javascript:void(0);" style="font-weight: bold; padding-left:5px;">关注一下楼主吧</a> </div>
+    <div class="diggit" onclick="votePost(8076061,'Digg')">
+        <span class="diggnum" id="digg_count">20</span>
+    </div>
+    <div class="buryit" onclick="votePost(8076061,'Bury')">
+        <span class="burynum" id="bury_count">0</span>
+    </div>
+    <div class="clear"></div>
+    <div class="diggword" id="digg_tips">
+    </div>
+</div>
+<script type="text/javascript">
+    currentDiggType = 0;
+</script></div>
+<div class="clear"></div>
+<div id="post_next_prev"><a href="https://www.cnblogs.com/wangguchangqing/p/7098213.html" class="p_n_p_prefix">« </a> 上一篇：<a href="https://www.cnblogs.com/wangguchangqing/p/7098213.html" title="发布于2017-06-30 11:57">图像处理基础(8)：图像的灰度直方图、直方图均衡化、直方图规定化（匹配）</a><br><a href="https://www.cnblogs.com/wangguchangqing/p/8126333.html" class="p_n_p_prefix">» </a> 下一篇：<a href="https://www.cnblogs.com/wangguchangqing/p/8126333.html" title="发布于2017-12-27 16:12">SLAM入门之视觉里程计(2)：相机模型（内参数，外参数）</a><br></div>
+</div>
+
+
+		</div>
+		<div class="postDesc">posted @ <span id="post-date">2017-12-20 22:01</span> <a href="https://www.cnblogs.com/wangguchangqing/">Brook_icv</a> 阅读(<span id="post_view_count">16093</span>) 评论(<span id="post_comment_count">8</span>)  <a href="https://i.cnblogs.com/EditPosts.aspx?postid=8076061" rel="nofollow">编辑</a> <a href="#" onclick="AddToWz(8076061);return false;">收藏</a></div>
+	</div>
+	<script src="SLAM%E5%85%A5%E9%97%A8%E4%B9%8B%E8%A7%86%E8%A7%89%E9%87%8C%E7%A8%8B%E8%AE%A1(1)%EF%BC%9A%E7%89%B9%E5%BE%81%E7%82%B9%E7%9A%84%E5%8C%B9%E9%85%8D%20-%20Brook_icv%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/highlight.js"></script><script>markdown_highlight();</script><script type="text/javascript">var allowComments=true,cb_blogId=125951,cb_entryId=8076061,cb_blogApp=currentBlogApp,cb_blogUserGuid='45bdfcc5-68eb-e111-aa3f-842b2b196315',cb_entryCreatedDate='2017/12/20 22:01:00';loadViewCount(cb_entryId);var cb_postType=1;var isMarkdown=true;</script>
+	
+</div><!--end: topics 文章、评论容器-->
+</div><a name="!comments"></a><div id="blog-comments-placeholder"><div id="comments_pager_top"></div>
+<br>
+<div class="feedback_area_title">评论列表</div>
+<div class="feedbackNoItems"></div>	
+
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="#3889749" class="layer">#1楼</a><a name="3889749" id="comment_anchor_3889749"></a>  <span class="comment_date">2018-01-16 09:22</span> <a id="a_comment_author_3889749" href="http://home.cnblogs.com/u/1319183/" target="_blank">yqyds</a> <a href="http://msg.cnblogs.com/send/yqyds" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon clearfix">
+				<div class="body_right" style="float: left;"><a target="_blank" href="http://home.cnblogs.com/u/1319183/"><img src="SLAM%E5%85%A5%E9%97%A8%E4%B9%8B%E8%A7%86%E8%A7%89%E9%87%8C%E7%A8%8B%E8%AE%A1(1)%EF%BC%9A%E7%89%B9%E5%BE%81%E7%82%B9%E7%9A%84%E5%8C%B9%E9%85%8D%20-%20Brook_icv%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/sample_face.gif"></a></div><div id="comment_body_3889749" class="blog_comment_body">您好，我想问您一下有关内存的问题，我的也是提取opencv的sift特征，但是数据一多就崩溃了，您能指导一下吗 多谢 qq1171462284<span class="bot"></span>                         <span class="top"></span></div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3889749,'Digg',this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3889749,'Bury',this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="#3898498" class="layer">#2楼</a><a name="3898498" id="comment_anchor_3898498"></a>  <span class="comment_date">2018-01-27 09:27</span> <a id="a_comment_author_3898498" href="http://home.cnblogs.com/u/1320305/" target="_blank">风里雨李</a> <a href="http://msg.cnblogs.com/send/%E9%A3%8E%E9%87%8C%E9%9B%A8%E6%9D%8E" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon clearfix">
+				<div class="body_right" style="float: left;"><a target="_blank" href="http://home.cnblogs.com/u/1320305/"><img src="SLAM%E5%85%A5%E9%97%A8%E4%B9%8B%E8%A7%86%E8%A7%89%E9%87%8C%E7%A8%8B%E8%AE%A1(1)%EF%BC%9A%E7%89%B9%E5%BE%81%E7%82%B9%E7%9A%84%E5%8C%B9%E9%85%8D%20-%20Brook_icv%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/sample_face.gif"></a></div><div id="comment_body_3898498" class="blog_comment_body">您好，问一下这个Knn匹配和RANSAC的结果好不好？还有就是如果我在其中一张图片上随机用鼠标点一个点，另一张图片可以匹配出来吗？用那种方法好，<span class="bot"></span>                         <span class="top"></span></div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3898498,'Digg',this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3898498,'Bury',this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="#3899163" class="layer">#3楼</a><a name="3899163" id="comment_anchor_3899163"></a>[<span class="louzhu">楼主</span>]  <span class="comment_date">2018-01-28 23:29</span> <a id="a_comment_author_3899163" href="https://www.cnblogs.com/wangguchangqing/" target="_blank">Brook_icv</a> <a href="http://msg.cnblogs.com/send/Brook_icv" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon clearfix">
+				<div class="body_right" style="float: left;"><a target="_blank" href="https://www.cnblogs.com/wangguchangqing/"><img src="SLAM%E5%85%A5%E9%97%A8%E4%B9%8B%E8%A7%86%E8%A7%89%E9%87%8C%E7%A8%8B%E8%AE%A1(1)%EF%BC%9A%E7%89%B9%E5%BE%81%E7%82%B9%E7%9A%84%E5%8C%B9%E9%85%8D%20-%20Brook_icv%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/20181220223626_002.png"></a></div><div id="comment_body_3899163" class="blog_comment_body"><a href="#3898498" title="查看所回复的评论" onclick="commentManager.renderComments(0,50,3898498);">@</a>
+风里雨李<br>没有具体对比过，猜测RANSAC效果好些。  <br>我在其中一张图片上随机用鼠标点一个点，另一张图片可以匹配出来吗 ？<br> <br>这个匹配是什么需求，随便点一个点，是把这个点作为特征点，然后在另一幅图像上查找和其对应的点么？这样的话，可以试试基础矩阵，因为根据两视图几何，一幅图像上的像点和另一幅图像的极线有映射关系。<br><br>如果仅仅是找该点在另一个幅图像的对应的坐标，可以试试单应矩阵。 <br><br>具体可以参考，我总结其他两篇文章：基础矩阵和单应矩阵<span class="bot"></span>                         <span class="top"></span></div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3899163,'Digg',this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3899163,'Bury',this)">反对(0)</a></div><span id="comment_3899163_avatar" style="display:none;">http://pic.cnblogs.com/face/439761/20181220223626.png</span>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="#3899273" class="layer">#4楼</a><a name="3899273" id="comment_anchor_3899273"></a>  <span class="comment_date">2018-01-29 09:54</span> <a id="a_comment_author_3899273" href="http://home.cnblogs.com/u/1320305/" target="_blank">风里雨李</a> <a href="http://msg.cnblogs.com/send/%E9%A3%8E%E9%87%8C%E9%9B%A8%E6%9D%8E" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon clearfix">
+				<div class="body_right" style="float: left;"><a target="_blank" href="http://home.cnblogs.com/u/1320305/"><img src="SLAM%E5%85%A5%E9%97%A8%E4%B9%8B%E8%A7%86%E8%A7%89%E9%87%8C%E7%A8%8B%E8%AE%A1(1)%EF%BC%9A%E7%89%B9%E5%BE%81%E7%82%B9%E7%9A%84%E5%8C%B9%E9%85%8D%20-%20Brook_icv%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/sample_face.gif"></a></div><div id="comment_body_3899273" class="blog_comment_body"><a href="#3899163" title="查看所回复的评论" onclick="commentManager.renderComments(0,50,3899163);">@</a>
+Brook_icv<br>好的，谢谢<span class="bot"></span>                         <span class="top"></span></div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3899273,'Digg',this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3899273,'Bury',this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="#3899276" class="layer">#5楼</a><a name="3899276" id="comment_anchor_3899276"></a>  <span class="comment_date">2018-01-29 09:56</span> <a id="a_comment_author_3899276" href="http://home.cnblogs.com/u/1320305/" target="_blank">风里雨李</a> <a href="http://msg.cnblogs.com/send/%E9%A3%8E%E9%87%8C%E9%9B%A8%E6%9D%8E" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon clearfix">
+				<div class="body_right" style="float: left;"><a target="_blank" href="http://home.cnblogs.com/u/1320305/"><img src="SLAM%E5%85%A5%E9%97%A8%E4%B9%8B%E8%A7%86%E8%A7%89%E9%87%8C%E7%A8%8B%E8%AE%A1(1)%EF%BC%9A%E7%89%B9%E5%BE%81%E7%82%B9%E7%9A%84%E5%8C%B9%E9%85%8D%20-%20Brook_icv%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/sample_face.gif"></a></div><div id="comment_body_3899276" class="blog_comment_body"><a href="#3899163" title="查看所回复的评论" onclick="commentManager.renderComments(0,50,3899163);">@</a>
+Brook_icv<br>匹配是准备做双目测距的，保证精确，所以才问的<span class="bot"></span>                         <span class="top"></span></div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3899276,'Digg',this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3899276,'Bury',this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="#3942115" class="layer">#6楼</a><a name="3942115" id="comment_anchor_3942115"></a>  <span class="comment_date">2018-04-04 09:55</span> <a id="a_comment_author_3942115" href="http://home.cnblogs.com/u/742942/" target="_blank">liangyuweizhuo</a> <a href="http://msg.cnblogs.com/send/liangyuweizhuo" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon clearfix">
+				<div class="body_right" style="float: left;"><a target="_blank" href="http://home.cnblogs.com/u/742942/"><img src="SLAM%E5%85%A5%E9%97%A8%E4%B9%8B%E8%A7%86%E8%A7%89%E9%87%8C%E7%A8%8B%E8%AE%A1(1)%EF%BC%9A%E7%89%B9%E5%BE%81%E7%82%B9%E7%9A%84%E5%8C%B9%E9%85%8D%20-%20Brook_icv%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/sample_face.gif"></a></div><div id="comment_body_3942115" class="blog_comment_body">写的很详细呀，谢谢大神了，加油<span class="bot"></span>                         <span class="top"></span></div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3942115,'Digg',this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3942115,'Bury',this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="#4139663" class="layer">#7楼</a><a name="4139663" id="comment_anchor_4139663"></a>  <span class="comment_date">2018-12-15 12:14</span> <a id="a_comment_author_4139663" href="http://home.cnblogs.com/u/1559833/" target="_blank">巧克力蛋糕</a> <a href="http://msg.cnblogs.com/send/%E5%B7%A7%E5%85%8B%E5%8A%9B%E8%9B%8B%E7%B3%95" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon clearfix">
+				<div class="body_right" style="float: left;"><a target="_blank" href="http://home.cnblogs.com/u/1559833/"><img src="SLAM%E5%85%A5%E9%97%A8%E4%B9%8B%E8%A7%86%E8%A7%89%E9%87%8C%E7%A8%8B%E8%AE%A1(1)%EF%BC%9A%E7%89%B9%E5%BE%81%E7%82%B9%E7%9A%84%E5%8C%B9%E9%85%8D%20-%20Brook_icv%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/sample_face.gif"></a></div><div id="comment_body_4139663" class="blog_comment_body">博主您好，这篇文章：《基于光束法平差的 RGB-D 视觉里程计》使用了和您相同的配图，但没有引用，且发表时间晚于您的博文。请问您和此文章的作者有关联吗？如果没有可以考虑存在侵权问题。<span class="bot"></span>                         <span class="top"></span></div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4139663,'Digg',this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4139663,'Bury',this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="#4140774" class="layer">#8楼</a><a name="4140774" id="comment_anchor_4140774"></a>[<span class="louzhu">楼主</span>]<span id="comment-maxId" style="display:none;">4140774</span><span id="comment-maxDate" style="display:none;">2018/12/17 15:42:48</span>  <span class="comment_date">2018-12-17 15:42</span> <a id="a_comment_author_4140774" href="https://www.cnblogs.com/wangguchangqing/" target="_blank">Brook_icv</a> <a href="http://msg.cnblogs.com/send/Brook_icv" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon clearfix">
+				<div class="body_right" style="float: left;"><a target="_blank" href="https://www.cnblogs.com/wangguchangqing/"><img src="SLAM%E5%85%A5%E9%97%A8%E4%B9%8B%E8%A7%86%E8%A7%89%E9%87%8C%E7%A8%8B%E8%AE%A1(1)%EF%BC%9A%E7%89%B9%E5%BE%81%E7%82%B9%E7%9A%84%E5%8C%B9%E9%85%8D%20-%20Brook_icv%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/20181220223626_002.png"></a></div><div id="comment_body_4140774" class="blog_comment_body"><a href="#4139663" title="查看所回复的评论" onclick="commentManager.renderComments(0,50,4139663);">@</a>
+巧克力蛋糕<br><br>那篇文章和我没有啥关系，<br><br>做特征提取使用的原图是高翔的 《SLAM 十四讲》 <a href="https://book.douban.com/subject/27028215/" target="_blank">https://book.douban.com/subject/27028215/</a>  ， 中的示例图片。<span class="bot"></span>                         <span class="top"></span></div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4140774,'Digg',this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4140774,'Bury',this)">反对(0)</a></div><span id="comment_4140774_avatar" style="display:none;">http://pic.cnblogs.com/face/439761/20181220223626.png</span>
+			</div>
+		</div>
+	<div id="comments_pager_bottom"></div></div><script type="text/javascript">var commentManager = new blogCommentManager();commentManager.renderComments(0);</script>
+<div id="comment_form" class="commentform">
+<a name="commentform"></a>
+<div id="divCommentShow"></div>
+<div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="#" onclick="return RefreshPage();">刷新页面</a><a href="#top">返回顶部</a></div>
+<div id="comment_form_container"><div class="login_tips">注册用户登录后才能发表评论，请 <a rel="nofollow" href="javascript:void(0);" class="underline" onclick="return login('commentform');">登录</a> 或 <a rel="nofollow" href="javascript:void(0);" class="underline" onclick="return register();">注册</a>，<a href="http://www.cnblogs.com/">访问</a>网站首页。</div></div>
+<div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+<div id="ad_t2"><a href="http://www.ucancode.com/index.htm" target="_blank" onclick="ga('send', 'event', 'Link', 'click', 'T2-工控')">【推荐】超50万C++/C#源码: 大型实时仿真组态图形源码</a><br><a href="https://www.bagevent.com/event/2195041?bag_track=13072958" target="_blank" onclick="ga('send', 'event', 'Link', 'click', 'T2-看雪')">【活动】看雪2019安全开发者峰会，共话安全领域焦点</a><br><a href="https://ke.qq.com/adActivity.html?name=xiangxueketang2" target="_blank" onclick="ga('send', 'event', 'Link', 'click', 'T2-享学')">【培训】Java程序员年薪40W，他1年走了别人5年的路</a><br></div>
+<div id="opt_under_post"></div>
+<script async="async" src="SLAM%E5%85%A5%E9%97%A8%E4%B9%8B%E8%A7%86%E8%A7%89%E9%87%8C%E7%A8%8B%E8%AE%A1(1)%EF%BC%9A%E7%89%B9%E5%BE%81%E7%82%B9%E7%9A%84%E5%8C%B9%E9%85%8D%20-%20Brook_icv%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/gpt.js"></script>
+<script>
+  var googletag = googletag || {};
+  googletag.cmd = googletag.cmd || [];
+</script>
+<script>
+  googletag.cmd.push(function() {
+        googletag.defineSlot('/1090369/C1', [300, 250], 'div-gpt-ad-1546353474406-0').addService(googletag.pubads());
+        googletag.defineSlot('/1090369/C2', [468, 60], 'div-gpt-ad-1539008685004-0').addService(googletag.pubads());
+        googletag.pubads().enableSingleRequest();
+        googletag.enableServices();
+  });
+</script>
+<div id="cnblogs_c1" class="c_ad_block">
+    <div id="div-gpt-ad-1546353474406-0" style="height:250px; width:300px;" data-google-query-id="CPjMx5ODneICFR0bKgodUZgNAg"><div id="google_ads_iframe_/1090369/C1_0__container__" style="border: 0pt none;"><iframe id="google_ads_iframe_/1090369/C1_0" title="3rd party ad content" name="google_ads_iframe_/1090369/C1_0" scrolling="no" marginwidth="0" marginheight="0" style="border: 0px none; vertical-align: bottom;" srcdoc="" data-google-container-id="1" data-load-complete="true" width="300" height="250" frameborder="0"></iframe></div></div>
+</div>
+<div id="under_post_news"><div class="itnews c_ad_block"><b>相关博文：</b><br>·  <a href="https://www.cnblogs.com/ChrisCoder/p/10035556.html" target="_blank" onclick="clickRecomItmem(10035556)">《视觉slam十四讲》之第7讲－特征提取与匹配</a><br>·  <a href="https://www.cnblogs.com/lifengfan/p/5410952.html" target="_blank" onclick="clickRecomItmem(5410952)">[读书笔记] 计算机视觉与算法应用 Chapter 4.1 特征检测与匹配--点和块</a><br>·  <a href="https://www.cnblogs.com/yujing611033/p/6011690.html" target="_blank" onclick="clickRecomItmem(6011690)">图像匹配</a><br>·  <a href="https://www.cnblogs.com/mtcnn/p/9411960.html" target="_blank" onclick="clickRecomItmem(9411960)">Sift算子特征点提取、描述及匹配全流程解析</a><br>·  <a href="https://www.cnblogs.com/mtcnn/p/9411957.html" target="_blank" onclick="clickRecomItmem(9411957)">Surf算法特征点检测与匹配</a><br></div></div>
+<div id="cnblogs_c2" class="c_ad_block">
+    <div id="div-gpt-ad-1539008685004-0" style="height:60px; width:468px;" data-google-query-id="CPnMx5ODneICFR0bKgodUZgNAg"><div id="google_ads_iframe_/1090369/C2_0__container__" style="border: 0pt none;"><iframe id="google_ads_iframe_/1090369/C2_0" title="3rd party ad content" name="google_ads_iframe_/1090369/C2_0" scrolling="no" marginwidth="0" marginheight="0" style="border: 0px none; vertical-align: bottom;" srcdoc="" data-google-container-id="2" data-load-complete="true" width="468" height="60" frameborder="0"></iframe></div></div>
+</div>
+<div id="under_post_kb"><div class="itnews c_ad_block"><b>最新新闻</b>：<br> ·  <a href="https://news.cnblogs.com/n/625332/" target="_blank">日本显示器公司连续第五年亏损 宣布裁员1000人</a><br> ·  <a href="https://news.cnblogs.com/n/625331/" target="_blank">深网|万达百货更名苏宁易购广场 改造店5月底亮相</a><br> ·  <a href="https://news.cnblogs.com/n/625330/" target="_blank">圈重点！腾讯全球数字生态大会带来不一样的智慧医疗</a><br> ·  <a href="https://news.cnblogs.com/n/625329/" target="_blank">3岁娃成“社交万人迷”？别再被天价“情商培训班”忽悠了</a><br> ·  <a href="https://news.cnblogs.com/n/625328/" target="_blank">国产手机十年厮杀过后，为何只剩下华为带着米OV?</a><br>» <a href="http://news.cnblogs.com/" title="IT新闻" target="_blank">更多新闻...</a></div></div>
+<div id="HistoryToday" class="c_ad_block"></div>
+<script type="text/javascript">
+ if(enablePostBottom()) {
+    codeHighlight();
+    fixPostBody();
+    setTimeout(function () { incrementViewCount(cb_entryId); }, 50);
+    deliverT2();
+    deliverC1();
+    deliverC2();    
+    loadNewsAndKb();
+    loadBlogSignature();
+    LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+    GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+    loadOptUnderPost();
+    GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);  
+}
+</script>
+</div>
+
+    
+	</div><!--end: forFlow -->
+	</div><!--end: mainContent 主体内容容器-->
+
+	<div id="sideBar">
+		<div id="sideBarMain">
+			
+<!--done-->
+<div class="newsItem">
+<h3 class="catListTitle">公告</h3>
+	<div id="blog-news"><div id="profile_block">昵称：<a href="https://home.cnblogs.com/u/wangguchangqing/">Brook_icv</a><br>园龄：<a href="https://home.cnblogs.com/u/wangguchangqing/" title="入园时间：2012-08-21">6年8个月</a><br>粉丝：<a href="https://home.cnblogs.com/u/wangguchangqing/followers/">474</a><br>关注：<a href="https://home.cnblogs.com/u/wangguchangqing/followees/">7</a><div id="p_b_follow"><a href="javascript:void(0);" onclick="follow('45bdfcc5-68eb-e111-aa3f-842b2b196315')">+加关注</a></div><script>getFollowStatus('45bdfcc5-68eb-e111-aa3f-842b2b196315')</script></div></div><script type="text/javascript">loadBlogNews();</script>
+</div>
+
+			<div id="blog-calendar" style=""><table id="blogCalendar" class="Cal" title="Calendar" cellspacing="0" cellpadding="0">
+	<tbody><tr><td colspan="7"><table class="CalTitle" cellspacing="0">
+		<tbody><tr><td class="CalNextPrev"><a href="javascript:void(0);" onclick="loadBlogCalendar('2019/04/01');return false;">&lt;</a></td><td align="center">2019年5月</td><td class="CalNextPrev" align="right"><a href="javascript:void(0);" onclick="loadBlogCalendar('2019/06/01');return false;">&gt;</a></td></tr>
+	</tbody></table></td></tr><tr><th class="CalDayHeader" abbr="日" scope="col" align="center">日</th><th class="CalDayHeader" abbr="一" scope="col" align="center">一</th><th class="CalDayHeader" abbr="二" scope="col" align="center">二</th><th class="CalDayHeader" abbr="三" scope="col" align="center">三</th><th class="CalDayHeader" abbr="四" scope="col" align="center">四</th><th class="CalDayHeader" abbr="五" scope="col" align="center">五</th><th class="CalDayHeader" abbr="六" scope="col" align="center">六</th></tr><tr><td class="CalOtherMonthDay" align="center">28</td><td class="CalOtherMonthDay" align="center">29</td><td class="CalOtherMonthDay" align="center">30</td><td align="center">1</td><td align="center">2</td><td align="center">3</td><td class="CalWeekendDay" align="center">4</td></tr><tr><td class="CalWeekendDay" align="center">5</td><td align="center">6</td><td align="center">7</td><td align="center">8</td><td align="center">9</td><td align="center">10</td><td class="CalWeekendDay" align="center">11</td></tr><tr><td class="CalWeekendDay" align="center">12</td><td align="center">13</td><td align="center">14</td><td class="CalTodayDay" align="center">15</td><td align="center">16</td><td align="center">17</td><td class="CalWeekendDay" align="center">18</td></tr><tr><td class="CalWeekendDay" align="center">19</td><td align="center">20</td><td align="center">21</td><td align="center">22</td><td align="center">23</td><td align="center">24</td><td class="CalWeekendDay" align="center">25</td></tr><tr><td class="CalWeekendDay" align="center">26</td><td align="center">27</td><td align="center">28</td><td align="center">29</td><td align="center">30</td><td align="center">31</td><td class="CalOtherMonthDay" align="center">1</td></tr><tr><td class="CalOtherMonthDay" align="center">2</td><td class="CalOtherMonthDay" align="center">3</td><td class="CalOtherMonthDay" align="center">4</td><td class="CalOtherMonthDay" align="center">5</td><td class="CalOtherMonthDay" align="center">6</td><td class="CalOtherMonthDay" align="center">7</td><td class="CalOtherMonthDay" align="center">8</td></tr>
+</tbody></table></div><script type="text/javascript">loadBlogDefaultCalendar();</script>
+			
+			<div id="leftcontentcontainer">
+				<div id="blog-sidecolumn"><div id="sidebar_search" class="sidebar-block"></div><div id="sidebar_toptags" class="sidebar-block">
+<div class="catListTag">
+<h3 class="catListTitle">我的标签</h3>
+<ul>
+<li><a href="https://www.cnblogs.com/wangguchangqing/tag/C%2B%2B/">C++</a>(8)</li><li><a href="https://www.cnblogs.com/wangguchangqing/tag/FFmpeg/">FFmpeg</a>(5)</li><li><a href="https://www.cnblogs.com/wangguchangqing/tag/OpenCV/">OpenCV</a>(3)</li><li><a href="https://www.cnblogs.com/wangguchangqing/tag/optimization/">optimization</a>(2)</li><li><a href="https://www.cnblogs.com/wangguchangqing/tag/image%20retrieval/">image retrieval</a>(2)</li><li><a href="https://www.cnblogs.com/wangguchangqing/tag/DIP/">DIP</a>(2)</li><li><a href="https://www.cnblogs.com/wangguchangqing/tag/dx9/">dx9</a>(1)</li><li><a href="https://www.cnblogs.com/wangguchangqing/tag/%E5%85%B6%E4%BB%96/">其他</a>(1)</li>
+</ul>
+</div></div><div id="sidebar_categories">
+<div id="sidebar_postcategory" class="catListPostCategory sidebar-block">
+<h3 class="catListTitle">随笔分类<span style="font-size:11px;font-weight:normal">(77)</span></h3>
+
+<ul>
+
+<li><a id="CatList_LinkList_0_Link_0" href="https://www.cnblogs.com/wangguchangqing/category/1372618.html">00-深度学习与计算机视觉(12)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_1" href="https://www.cnblogs.com/wangguchangqing/category/569442.html">01-OpenCV(10)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_2" href="https://www.cnblogs.com/wangguchangqing/category/1241422.html">02-ImageRetrieval(7)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_3" href="https://www.cnblogs.com/wangguchangqing/category/1134664.html">03-SLAM(6)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_4" href="https://www.cnblogs.com/wangguchangqing/category/860702.html">04-FFmpeg(10)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_5" href="https://www.cnblogs.com/wangguchangqing/category/740760.html">05-图像处理(14)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_6" href="https://www.cnblogs.com/wangguchangqing/category/553845.html">09-C++(10)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_7" href="https://www.cnblogs.com/wangguchangqing/category/822567.html">Optimization(2)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_8" href="https://www.cnblogs.com/wangguchangqing/category/1134665.html">Other(6)</a> </li>
+
+</ul>
+
+</div>
+
+</div><div id="sidebar_scorerank" class="sidebar-block">
+<div class="catListBlogRank">
+<h3 class="catListTitle">积分与排名</h3>
+<ul>
+	<li class="liScore">
+		积分 -	192310
+	</li>
+	<li class="liRank">
+		排名 -	1861
+	</li>
+</ul>
+</div>
+
+
+</div><div id="sidebar_recentcomments" class="sidebar-block"><div id="recent_comments_wrap">
+<div class="catListComment">
+<h3 class="catListTitle">最新评论</h3>
+
+	<div id="RecentCommentsBlock"><ul>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/wangguchangqing/p/8151128.html#4253134">1. Re:SLAM入门之视觉里程计(3)：两视图对极约束 基础矩阵</a></li>
+        <li class="recent_comment_body">极线l‘怎么能表示为 l' = e' x x'？过两点的直线不应该是 l' = e' - x' 吗？</li>
+        <li class="recent_comment_author">--不爱起名</li>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/wangguchangqing/p/5957531.html#4247095">2. Re:RIFF和WAVE音频文件格式</a></li>
+        <li class="recent_comment_body">学习学习</li>
+        <li class="recent_comment_author">--Gwenpi</li>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/wangguchangqing/p/5900426.html#4244401">3. Re:FFmpeg学习6：视音频同步</a></li>
+        <li class="recent_comment_body">您好博主,为什么"audio缓冲区的可能还有未播放的数据，需要减去这部分的时间"</li>
+        <li class="recent_comment_author">--wsygyb</li>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/wangguchangqing/p/6134635.html#4234501">4. Re:C++ 11 多线程--线程管理</a></li>
+        <li class="recent_comment_body">半年过去了，再坚持半年就上道</li>
+        <li class="recent_comment_author">--郝姬友</li>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/wangguchangqing/p/6407717.html#4232275">5. Re:图像处理基础(4)：高斯滤波器详解</a></li>
+        <li class="recent_comment_body">1.二维高斯分布函数的系数少写了，<br>2.3*3高斯卷积核的x水平向右为正向，y竖直向上为正向。</li>
+        <li class="recent_comment_author">--牛虻爱吃饭</li>
+</ul>
+</div>
+</div>
+</div></div><div id="sidebar_topviewedposts" class="sidebar-block"><div id="topview_posts_wrap">
+<div class="catListView">
+<h3 class="catListTitle">阅读排行榜</h3>
+	<div id="TopViewPostsBlock"><ul><li><a href="https://www.cnblogs.com/wangguchangqing/p/6134635.html">1. C++ 11 多线程--线程管理(79254)</a></li><li><a href="https://www.cnblogs.com/wangguchangqing/p/4853263.html">2. SIFT特征详解(72567)</a></li><li><a href="https://www.cnblogs.com/wangguchangqing/p/4333873.html">3. OpenCV2:特征匹配及其优化(54361)</a></li><li><a href="https://www.cnblogs.com/wangguchangqing/p/6407717.html">4. 图像处理基础(4)：高斯滤波器详解(48637)</a></li><li><a href="https://www.cnblogs.com/wangguchangqing/p/7098213.html">5. 图像处理基础(8)：图像的灰度直方图、直方图均衡化、直方图规定化（匹配）(46738)</a></li></ul></div>
+</div>
+</div></div><div id="sidebar_topcommentedposts" class="sidebar-block"><div id="topfeedback_posts_wrap">
+<div class="catListFeedback">
+<h3 class="catListTitle">评论排行榜</h3>
+	<div id="TopFeedbackPostsBlock"><ul><li><a href="https://www.cnblogs.com/wangguchangqing/p/4333873.html">1. OpenCV2:特征匹配及其优化(16)</a></li><li><a href="https://www.cnblogs.com/wangguchangqing/p/4425745.html">2. OpenGL超级宝典visual studio 2013开发环境配置，GLTools(11)</a></li><li><a href="https://www.cnblogs.com/wangguchangqing/p/5788805.html">3. FFmpeg学习3：播放音频(9)</a></li><li><a href="https://www.cnblogs.com/wangguchangqing/p/4039095.html">4. OpenCV2:图像的几何变换,平移、镜像、缩放、旋转(1)(8)</a></li><li><a href="https://www.cnblogs.com/wangguchangqing/p/8076061.html">5. SLAM入门之视觉里程计(1)：特征点的匹配(8)</a></li></ul></div>
+</div>
+</div></div><div id="sidebar_topdiggedposts" class="sidebar-block"><div id="topdigg_posts_wrap">
+<div class="catListView">
+<h3 class="catListTitle">推荐排行榜</h3>
+<div id="TopDiggPostsBlock"><ul><li><a href="https://www.cnblogs.com/wangguchangqing/p/4853263.html">1. SIFT特征详解(82)</a></li><li><a href="https://www.cnblogs.com/wangguchangqing/p/6134635.html">2. C++ 11 多线程--线程管理(50)</a></li><li><a href="https://www.cnblogs.com/wangguchangqing/p/6407717.html">3. 图像处理基础(4)：高斯滤波器详解(32)</a></li><li><a href="https://www.cnblogs.com/wangguchangqing/p/6141743.html">4. C++ 拷贝构造函数和赋值运算符(24)</a></li><li><a href="https://www.cnblogs.com/wangguchangqing/p/8076061.html">5. SLAM入门之视觉里程计(1)：特征点的匹配(20)</a></li></ul></div>
+</div></div></div></div><script type="text/javascript">loadBlogSideColumn();</script>
+			</div>
+			
+		</div><!--end: sideBarMain -->
+	</div><!--end: sideBar 侧边栏容器 -->
+	<div class="clear"></div>
+	</div><!--end: main -->
+	<div class="clear"></div>
+	<div id="footer">
+		
+<!--done-->
+Copyright ©2019 Brook_icv
+	</div><!--end: footer -->
+</div><!--end: home 自定义的最大容器 -->
+
+<!--PageEndHtml Block Begin-->
+<!-- 评论带图像 -->
+<script type="text/javascript" src="SLAM%E5%85%A5%E9%97%A8%E4%B9%8B%E8%A7%86%E8%A7%89%E9%87%8C%E7%A8%8B%E8%AE%A1(1)%EF%BC%9A%E7%89%B9%E5%BE%81%E7%82%B9%E7%9A%84%E5%8C%B9%E9%85%8D%20-%20Brook_icv%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/Comments.js"></script><script type="text/javascript">
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?a51f340817973e3ea2265acaa5fae31f";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+<!-- 关注 -->
+<script type="text/javascript" language="javascript"> 
+//为右下角推荐推荐区域添加关注按钮
+window.onload = function () {
+    $('#div_digg').prepend('<div style="padding-bottom: 5px"><span class="icon_favorite" style="padding-top: 2px"></span><a onclick="cnblogs.UserManager.FollowBlogger(\'45bdfcc5-68eb-e111-aa3f-842b2b196315\');" href="javascript:void(0);" style="font-weight: bold; padding-left:5px;">关注一下楼主吧</a> </div>');
+}
+</script>
+
+<!-- 添加目录 -->
+<script src="SLAM%E5%85%A5%E9%97%A8%E4%B9%8B%E8%A7%86%E8%A7%89%E9%87%8C%E7%A8%8B%E8%AE%A1(1)%EF%BC%9A%E7%89%B9%E5%BE%81%E7%82%B9%E7%9A%84%E5%8C%B9%E9%85%8D%20-%20Brook_icv%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/bootstrap.js"></script>
+<link href="SLAM%E5%85%A5%E9%97%A8%E4%B9%8B%E8%A7%86%E8%A7%89%E9%87%8C%E7%A8%8B%E8%AE%A1(1)%EF%BC%9A%E7%89%B9%E5%BE%81%E7%82%B9%E7%9A%84%E5%8C%B9%E9%85%8D%20-%20Brook_icv%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/marvin.css" rel="stylesheet">
+<script type="text/javascript" src="SLAM%E5%85%A5%E9%97%A8%E4%B9%8B%E8%A7%86%E8%A7%89%E9%87%8C%E7%A8%8B%E8%AE%A1(1)%EF%BC%9A%E7%89%B9%E5%BE%81%E7%82%B9%E7%9A%84%E5%8C%B9%E9%85%8D%20-%20Brook_icv%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/marvin.js"></script>
+<script type="text/javascript" src="SLAM%E5%85%A5%E9%97%A8%E4%B9%8B%E8%A7%86%E8%A7%89%E9%87%8C%E7%A8%8B%E8%AE%A1(1)%EF%BC%9A%E7%89%B9%E5%BE%81%E7%82%B9%E7%9A%84%E5%8C%B9%E9%85%8D%20-%20Brook_icv%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/marvin_002.js"></script>
+<!--PageEndHtml Block End-->
+
+
+<div id="sideToolbar" style="display:none;"><div class="sideCatalogBg" id="sideCatalog"><div id="sideCatalog-sidebar"><div class="sideCatalog-sidebar-top"></div><div class="sideCatalog-sidebar-bottom"></div></div><div id="sideCatalog-catalog"><ul class="nav" style="width:300px;zoom:1"><li><span style="font-size: 14pt;">本文目录</span></li><li class="h2Offset"><a href="#autoid-0-0-0" title="特征点概述">特征点概述</a></li><li class="h2Offset"><a href="#autoid-0-1-0" title="特征点描述子">特征点描述子</a></li><li class="h2Offset"><a href="#autoid-0-2-0" title="常用的特征点算法">常用的特征点算法</a></li><li class="h2Offset"><a href="#autoid-0-3-0" title="OpenCV3中特征点的提取和匹配">OpenCV3中特征点的提取和...</a></li><li class="h2Offset"><a href="#autoid-0-4-0" title="后记">后记</a></li></ul></div></div><a href="javascript:void(0);" id="sideCatalogBtn" class="sideCatalogBtnDisable"></a></div><div id="toTop" style="zoom:0;"></div><div style="position: absolute; width: 0px; height: 0px; overflow: hidden; padding: 0px; border: 0px none; margin: 0px;"><div id="MathJax_Font_Test" style="position: absolute; visibility: hidden; top: 0px; left: 0px; width: auto; padding: 0px; border: 0px none; margin: 0px; white-space: nowrap; text-align: left; text-indent: 0px; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; font-size: 40px; font-weight: normal; font-style: normal; font-size-adjust: none; font-family: MathJax_Main, sans-serif;"></div></div></body></html>

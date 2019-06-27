@@ -1,0 +1,2023 @@
+<!DOCTYPE html>
+<!--[if IE 6]><html class="ie lt-ie8"><![endif]-->
+<!--[if IE 7]><html class="ie lt-ie8"><![endif]-->
+<!--[if IE 8]><html class="ie ie8"><![endif]-->
+<!--[if IE 9]><html class="ie ie9"><![endif]-->
+<!--[if !IE]><!-->
+<html><!--<![endif]--><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no">
+
+  <!-- Start of Baidu Transcode -->
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta name="applicable-device" content="pc,mobile">
+  <meta name="MobileOptimized" content="width">
+  <meta name="HandheldFriendly" content="true">
+  <meta name="mobile-agent" content="format=html5;url=https://www.jianshu.com/p/efffeb1e20aa">
+  <!-- End of Baidu Transcode -->
+
+    <meta name="description" content="[深入浅出多旋翼飞控开发][姿态篇][一][初识姿态估计] 作者：王伟韵QQ : 352707983Github 一.什么是姿态 在学习姿态估计之前，我们先来了解一下，什么是“姿态”。 想象一架飞机准备起飞，于是它在机场跑道上进行一段加速助跑，达到一定速度后，机头抬升15度，腾空而起，离开了地面。然而由于起飞时的方向和目标方向相差甚大，于是飞机调转机头，最终往北偏东30度的方向飞去。 这个过...">
+
+  <meta name="360-site-verification" content="604a14b53c6b871206001285921e81d8">
+  <meta property="wb:webmaster" content="294ec9de89e7fadb">
+  <meta property="qc:admins" content="104102651453316562112116375">
+  <meta property="qc:admins" content="11635613706305617">
+  <meta property="qc:admins" content="1163561616621163056375">
+  <meta name="google-site-verification" content="cV4-qkUJZR6gmFeajx_UyPe47GW9vY6cnCrYtCHYNh4">
+  <meta name="google-site-verification" content="HF7lfF8YEGs1qtCE-kPml8Z469e2RHhGajy6JPVy5XI">
+  <meta http-equiv="mobile-agent" content="format=html5; url=https://www.jianshu.com/p/efffeb1e20aa">
+
+  <!-- Apple -->
+  <meta name="apple-mobile-web-app-title" content="简书">
+
+    <!--  Meta for Smart App Banner -->
+  <meta name="apple-itunes-app" content="app-id=888237539, app-argument=jianshu://notes/32153386">
+  <!-- End -->
+
+  <!--  Meta for Twitter Card -->
+  <meta content="summary" property="twitter:card">
+  <meta content="@jianshucom" property="twitter:site">
+  <meta content="姿态篇：一.初识姿态估计" property="twitter:title">
+  <meta content="[深入浅出多旋翼飞控开发][姿态篇][一][初识姿态估计] 作者：王伟韵QQ : 352707983Github 一.什么是姿态 在学习姿态估计之前，我们先来了解一下，什么是..." property="twitter:description">
+  <meta content="https://www.jianshu.com/p/efffeb1e20aa" property="twitter:url">
+  <!-- End -->
+
+  <!--  Meta for OpenGraph -->
+  <meta property="fb:app_id" content="865829053512461">
+  <meta property="og:site_name" content="简书">
+  <meta property="og:title" content="姿态篇：一.初识姿态估计">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://www.jianshu.com/p/efffeb1e20aa">
+  <meta property="og:description" content="[深入浅出多旋翼飞控开发][姿态篇][一][初识姿态估计] 作者：王伟韵QQ : 352707983Github 一.什么是姿态 在学习姿态估计之前，我们先来了解一下，什么是“姿态”。 想象一架...">
+  <!-- End -->
+
+  <!--  Meta for Facebook Applinks -->
+  <meta property="al:ios:url" content="jianshu://notes/32153386">
+  <meta property="al:ios:app_store_id" content="888237539">
+  <meta property="al:ios:app_name" content="简书">
+
+  <meta property="al:android:url" content="jianshu://notes/32153386">
+  <meta property="al:android:package" content="com.jianshu.haruki">
+  <meta property="al:android:app_name" content="简书">
+  <!-- End -->
+
+
+    <title>姿态篇：一.初识姿态估计 - 简书</title>
+
+  <meta name="csrf-param" content="authenticity_token">
+<meta name="csrf-token" content="CJ8QECnZM2CCuFAgXKjGoKHMipIXary3LOfQZmQNGST1GH893rq2NScyq5oY3AqHvl/Rl5jjeoa2xgugRRGBsQ==">
+
+  <link rel="stylesheet" media="all" href="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/web-d8f364aa94534f48835a.css">
+  
+  <link rel="stylesheet" media="all" href="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/entry-aa75deb505b1b600256a.css">
+
+  <link href="https://cdn2.jianshu.io/assets/favicons/favicon-e743bfb1821442341c3ab15bdbe804f7ad97676bd07a770ccc9483473aa76f06.ico" rel="shortcut icon" type="image/x-icon">
+      <link rel="apple-touch-icon-precomposed" href="https://cdn2.jianshu.io/assets/apple-touch-icons/57-a6f1f1ee62ace44f6dc2f6a08575abd3c3b163288881c78dd8d75247682a4b27.png" sizes="57x57">
+      <link rel="apple-touch-icon-precomposed" href="https://cdn2.jianshu.io/assets/apple-touch-icons/72-fb9834bcfce738fd7b9c5e31363e79443e09a81a8e931170b58bc815387c1562.png" sizes="72x72">
+      <link rel="apple-touch-icon-precomposed" href="https://cdn2.jianshu.io/assets/apple-touch-icons/76-49d88e539ff2489475d603994988d871219141ecaa0b1a7a9a1914f4fe3182d6.png" sizes="76x76">
+      <link rel="apple-touch-icon-precomposed" href="https://cdn2.jianshu.io/assets/apple-touch-icons/114-24252fe693524ed3a9d0905e49bff3cbd0228f25a320aa09053c2ebb4955de97.png" sizes="114x114">
+      <link rel="apple-touch-icon-precomposed" href="https://cdn2.jianshu.io/assets/apple-touch-icons/120-1bb7371f5e87f93ce780a5f1a05ff1b176828ee0d1d130e768575918a2e05834.png" sizes="120x120">
+      <link rel="apple-touch-icon-precomposed" href="https://cdn2.jianshu.io/assets/apple-touch-icons/152-bf209460fc1c17bfd3e2b84c8e758bc11ca3e570fd411c3bbd84149b97453b99.png" sizes="152x152">
+
+  <!-- Start of 访问统计 -->
+    <script src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/push.js"></script><script src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/hm.js"></script><script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?0c0e9d9b1e7d617b3e6842e85b9fb068";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+  <!-- End of 访问统计 -->
+<style type="text/css">@charset "UTF-8";.image-package .image-container{position:relative;z-index:2;background-color:#eee;-webkit-transition:background-color .1s linear;-o-transition:background-color .1s linear;transition:background-color .1s linear;margin:0 auto}body.reader-night-mode .image-package .image-container{background-color:#545454}.image-package .image-container-fill{z-index:1}.image-package .image-container .image-view{position:absolute;top:0;left:0;width:100%;height:100%;overflow:hidden}.image-package .image-container .image-view-error:after{content:"图片获取失败，请点击重试";position:absolute;top:50%;left:50%;width:100%;-webkit-transform:translate(-50%,-50%);-ms-transform:translate(-50%,-50%);transform:translate(-50%,-50%);color:#888;font-size:14px}.image-package .image-container .image-view img.image-loading{opacity:.3}.image-package .image-container .image-view img{-webkit-transition:all .15s linear;-o-transition:all .15s linear;transition:all .15s linear;z-index:2;opacity:1}</style><style type="text/css">fieldset[disabled] .multiselect {
+  pointer-events: none;
+}
+
+.multiselect__spinner {
+  position: absolute;
+  right: 1px;
+  top: 1px;
+  width: 48px;
+  height: 35px;
+  background: #fff;
+  display: block;
+}
+
+.multiselect__spinner:after,
+.multiselect__spinner:before {
+  position: absolute;
+  content: "";
+  top: 50%;
+  left: 50%;
+  margin: -8px 0 0 -8px;
+  width: 16px;
+  height: 16px;
+  border-radius: 100%;
+  border-color: #41b883 transparent transparent;
+  border-style: solid;
+  border-width: 2px;
+  box-shadow: 0 0 0 1px transparent;
+}
+
+.multiselect__spinner:before {
+  animation: a 2.4s cubic-bezier(.41,.26,.2,.62);
+  animation-iteration-count: infinite;
+}
+
+.multiselect__spinner:after {
+  animation: a 2.4s cubic-bezier(.51,.09,.21,.8);
+  animation-iteration-count: infinite;
+}
+
+.multiselect__loading-enter-active,
+.multiselect__loading-leave-active {
+  transition: opacity .4s ease-in-out;
+  opacity: 1;
+}
+
+.multiselect__loading-enter,
+.multiselect__loading-leave-active {
+  opacity: 0;
+}
+
+.multiselect,
+.multiselect__input,
+.multiselect__single {
+  font-family: inherit;
+  font-size: 14px;
+  -ms-touch-action: manipulation;
+  touch-action: manipulation;
+}
+
+.multiselect {
+  box-sizing: content-box;
+  display: block;
+  position: relative;
+  width: 100%;
+  min-height: 40px;
+  text-align: left;
+  color: #35495e;
+}
+
+.multiselect * {
+  box-sizing: border-box;
+}
+
+.multiselect:focus {
+  outline: none;
+}
+
+.multiselect--disabled {
+  opacity: .6;
+}
+
+.multiselect--active {
+  z-index: 1;
+}
+
+.multiselect--active:not(.multiselect--above) .multiselect__current,
+.multiselect--active:not(.multiselect--above) .multiselect__input,
+.multiselect--active:not(.multiselect--above) .multiselect__tags {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.multiselect--active .multiselect__select {
+  transform: rotate(180deg);
+}
+
+.multiselect--above.multiselect--active .multiselect__current,
+.multiselect--above.multiselect--active .multiselect__input,
+.multiselect--above.multiselect--active .multiselect__tags {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.multiselect__input,
+.multiselect__single {
+  position: relative;
+  display: inline-block;
+  min-height: 20px;
+  line-height: 20px;
+  border: none;
+  border-radius: 5px;
+  background: #fff;
+  padding: 0 0 0 5px;
+  width: 100%;
+  transition: border .1s ease;
+  box-sizing: border-box;
+  margin-bottom: 8px;
+  vertical-align: top;
+}
+
+.multiselect__tag~.multiselect__input,
+.multiselect__tag~.multiselect__single {
+  width: auto;
+}
+
+.multiselect__input:hover,
+.multiselect__single:hover {
+  border-color: #cfcfcf;
+}
+
+.multiselect__input:focus,
+.multiselect__single:focus {
+  border-color: #a8a8a8;
+  outline: none;
+}
+
+.multiselect__single {
+  padding-left: 6px;
+  margin-bottom: 8px;
+}
+
+.multiselect__tags-wrap {
+  display: inline;
+}
+
+.multiselect__tags {
+  min-height: 40px;
+  display: block;
+  padding: 8px 40px 0 8px;
+  border-radius: 5px;
+  border: 1px solid #e8e8e8;
+  background: #fff;
+}
+
+.multiselect__tag {
+  position: relative;
+  display: inline-block;
+  padding: 4px 26px 4px 10px;
+  border-radius: 5px;
+  margin-right: 10px;
+  color: #fff;
+  line-height: 1;
+  background: #41b883;
+  margin-bottom: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 100%;
+  text-overflow: ellipsis;
+}
+
+.multiselect__tag-icon {
+  cursor: pointer;
+  margin-left: 7px;
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  font-weight: 700;
+  font-style: normal;
+  width: 22px;
+  text-align: center;
+  line-height: 22px;
+  transition: all .2s ease;
+  border-radius: 5px;
+}
+
+.multiselect__tag-icon:after {
+  content: "\D7";
+  color: #266d4d;
+  font-size: 14px;
+}
+
+.multiselect__tag-icon:focus,
+.multiselect__tag-icon:hover {
+  background: #369a6e;
+}
+
+.multiselect__tag-icon:focus:after,
+.multiselect__tag-icon:hover:after {
+  color: #fff;
+}
+
+.multiselect__current {
+  min-height: 40px;
+  overflow: hidden;
+  padding: 8px 12px 0;
+  padding-right: 30px;
+  white-space: nowrap;
+  border-radius: 5px;
+  border: 1px solid #e8e8e8;
+}
+
+.multiselect__current,
+.multiselect__select {
+  line-height: 16px;
+  box-sizing: border-box;
+  display: block;
+  margin: 0;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.multiselect__select {
+  position: absolute;
+  width: 40px;
+  height: 38px;
+  right: 1px;
+  top: 1px;
+  padding: 4px 8px;
+  text-align: center;
+  transition: transform .2s ease;
+}
+
+.multiselect__select:before {
+  position: relative;
+  right: 0;
+  top: 65%;
+  color: #999;
+  margin-top: 4px;
+  border-style: solid;
+  border-width: 5px 5px 0;
+  border-color: #999 transparent transparent;
+  content: "";
+}
+
+.multiselect__placeholder {
+  color: #adadad;
+  display: inline-block;
+  margin-bottom: 10px;
+  padding-top: 2px;
+}
+
+.multiselect--active .multiselect__placeholder {
+  display: none;
+}
+
+.multiselect__content-wrapper {
+  position: absolute;
+  display: block;
+  background: #fff;
+  width: 100%;
+  max-height: 240px;
+  overflow: auto;
+  border: 1px solid #e8e8e8;
+  border-top: none;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+  z-index: 1;
+  -webkit-overflow-scrolling: touch;
+}
+
+.multiselect__content {
+  list-style: none;
+  display: inline-block;
+  padding: 0;
+  margin: 0;
+  min-width: 100%;
+  vertical-align: top;
+}
+
+.multiselect--above .multiselect__content-wrapper {
+  bottom: 100%;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  border-bottom: none;
+  border-top: 1px solid #e8e8e8;
+}
+
+.multiselect__content::webkit-scrollbar {
+  display: none;
+}
+
+.multiselect__element {
+  display: block;
+}
+
+.multiselect__option {
+  display: block;
+  padding: 12px;
+  min-height: 40px;
+  line-height: 16px;
+  text-decoration: none;
+  text-transform: none;
+  vertical-align: middle;
+  position: relative;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.multiselect__option:after {
+  top: 0;
+  right: 0;
+  position: absolute;
+  line-height: 40px;
+  padding-right: 12px;
+  padding-left: 20px;
+}
+
+.multiselect__option--highlight {
+  background: #41b883;
+  outline: none;
+  color: #fff;
+}
+
+.multiselect__option--highlight:after {
+  content: attr(data-select);
+  background: #41b883;
+  color: #fff;
+}
+
+.multiselect__option--selected {
+  background: #f3f3f3;
+  color: #35495e;
+  font-weight: 700;
+}
+
+.multiselect__option--selected:after {
+  content: attr(data-selected);
+  color: silver;
+}
+
+.multiselect__option--selected.multiselect__option--highlight {
+  background: #ff6a6a;
+  color: #fff;
+}
+
+.multiselect__option--selected.multiselect__option--highlight:after {
+  background: #ff6a6a;
+  content: attr(data-deselect);
+  color: #fff;
+}
+
+.multiselect--disabled {
+  background: #ededed;
+  pointer-events: none;
+}
+
+.multiselect--disabled .multiselect__current,
+.multiselect--disabled .multiselect__select,
+.multiselect__option--disabled {
+  background: #ededed;
+  color: #a6a6a6;
+}
+
+.multiselect__option--disabled {
+  cursor: text;
+  pointer-events: none;
+}
+
+.multiselect__option--disabled.multiselect__option--highlight {
+  background: #dedede!important;
+}
+
+.multiselect-enter-active,
+.multiselect-leave-active {
+  transition: all .15s ease;
+}
+
+.multiselect-enter,
+.multiselect-leave-active {
+  opacity: 0;
+}
+
+.multiselect__strong {
+  margin-bottom: 8px;
+  line-height: 20px;
+  display: inline-block;
+  vertical-align: top;
+}
+
+[dir=rtl] .multiselect {
+  text-align: right;
+}
+
+[dir=rtl] .multiselect__select {
+  right: auto;
+  left: 1px;
+}
+
+[dir=rtl] .multiselect__tags {
+  padding: 8px 8px 0 40px;
+}
+
+[dir=rtl] .multiselect__content {
+  text-align: right;
+}
+
+[dir=rtl] .multiselect__option:after {
+  right: auto;
+  left: 0;
+}
+
+[dir=rtl] .multiselect__clear {
+  right: auto;
+  left: 12px;
+}
+
+[dir=rtl] .multiselect__spinner {
+  right: auto;
+  left: 1px;
+}
+
+@keyframes a {
+  0% {
+    transform: rotate(0);
+  }
+
+  to {
+    transform: rotate(2turn);
+  }
+}</style><style type="text/css">
+#free-reward-panel .reward-users-modal main {
+  padding: 0;
+}
+</style><style type="text/css">
+@charset "UTF-8";
+/*
+ * 变量
+*/
+.reward-note-modal .v-modal {
+  width: 620px;
+  text-align: center;
+}
+.reward-note-modal .v-modal form {
+    margin: 0 auto 25px auto;
+    padding: 0 40px;
+}
+.reward-note-modal .v-modal .reward-intro {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    font-size: 16px;
+}
+.reward-note-modal .v-modal .reward-intro .avatar {
+      cursor: default !important;
+      width: 36px;
+      height: 36px;
+      margin-right: 10px;
+      display: inline-block;
+}
+.reward-note-modal .v-modal .reward-intro .intro {
+      margin-right: 5px;
+      font-weight: bold;
+      vertical-align: middle;
+}
+.reward-note-modal .v-modal .reward-intro i {
+      color: #EA6F5A;
+      vertical-align: middle;
+}
+.reward-note-modal .v-modal .main-inputs {
+    margin: 25px 0;
+}
+.reward-note-modal .v-modal .main-inputs .amount-group {
+      margin: 0 -5px;
+}
+.reward-note-modal .v-modal .main-inputs .amount-group input {
+        display: none;
+}
+.reward-note-modal .v-modal .main-inputs .amount-group input:checked + .option {
+        color: #EA6F5A;
+        border-color: #EA6F5A;
+}
+.reward-note-modal .v-modal .main-inputs .amount-group .custom-amount:checked + .option .custom-text {
+        opacity: 0;
+}
+.reward-note-modal .v-modal .main-inputs .amount-group .custom-amount:checked + .option .custom-amount-input {
+        opacity: 1;
+}
+.reward-note-modal .v-modal .main-inputs .amount-group .option {
+        position: relative;
+        margin: 0 5px 15px;
+        width: 156px;
+        height: 56px;
+        line-height: 54px;
+        border: 1px solid #E6E6E6;
+        border-radius: 4px;
+        font-weight: normal;
+        color: #999999;
+        cursor: pointer;
+}
+.reward-note-modal .v-modal .main-inputs .amount-group .option i {
+          font-size: 16px;
+          vertical-align: middle;
+}
+.reward-note-modal .v-modal .main-inputs .amount-group .option .amount {
+          font-size: 28px;
+          vertical-align: middle;
+}
+.reward-note-modal .v-modal .main-inputs .amount-group .option .piece {
+          font-size: 13px;
+          vertical-align: sub;
+}
+.reward-note-modal .v-modal .main-inputs .amount-group .option .custom-amount-input {
+          position: absolute;
+          top: 0;
+          z-index: -1;
+          width: 100%;
+          opacity: 0;
+}
+.reward-note-modal .v-modal .main-inputs .amount-group .option .custom-amount-input i {
+            position: absolute;
+            top: 0;
+            left: 10px;
+}
+.reward-note-modal .v-modal .main-inputs .amount-group .option .custom-amount-input .piece {
+            position: absolute;
+            top: 4px;
+            right: 10px;
+}
+.reward-note-modal .v-modal .main-inputs .amount-group .option .custom-amount-input input {
+            display: block;
+            margin: 0 auto;
+            width: 80px;
+            height: 54px;
+            line-height: 54px;
+            border: none;
+            font-size: 28px;
+            text-align: center;
+            background: transparent;
+            -moz-appearance: textfield;
+}
+.reward-note-modal .v-modal .main-inputs .amount-group .option .custom-amount-input input::-webkit-outer-spin-button, .reward-note-modal .v-modal .main-inputs .amount-group .option .custom-amount-input input::-webkit-inner-spin-button {
+              -webkit-appearance: none !important;
+}
+.reward-note-modal .v-modal .main-inputs .message {
+      padding: 15px 20px;
+      margin-bottom: 0;
+      font-size: 14px;
+      border: 1px solid #E6E6E6;
+      color: #333333;
+      border-radius: 4px;
+      background-color: rgba(180, 180, 180, 0.1);
+}
+.reward-note-modal .v-modal .main-inputs .message textarea {
+        width: 100%;
+        height: 44px;
+        padding: 0;
+        margin: 0;
+        resize: none;
+        background: none !important;
+        border: none !important;
+        -webkit-box-sizing: border-box;
+                box-sizing: border-box;
+        -webkit-box-shadow: none;
+                box-shadow: none;
+}
+.reward-note-modal .v-modal .main-inputs .message textarea:focus {
+          outline: none;
+}
+.reward-note-modal .v-modal .reward-info .amount {
+    font-size: 28px;
+    font-weight: bold;
+    color: #EA6F5A;
+}
+.reward-note-modal .v-modal .reward-info .pay-method {
+    font-size: 14px;
+}
+.reward-note-modal .v-modal .reward-info .pay-method a {
+      color: #3194D0;
+}
+.reward-note-modal .v-modal .choose-pay {
+    margin: 0 -5px;
+}
+.reward-note-modal .v-modal .choose-pay input {
+      display: none;
+}
+.reward-note-modal .v-modal .choose-pay input:checked + .option {
+      color: #EA6F5A;
+      border-color: #EA6F5A;
+}
+.reward-note-modal .v-modal .choose-pay .option {
+      margin: 20px 5px 10px;
+      width: 156px;
+      height: 56px;
+      line-height: 54px;
+      text-align: center;
+      border: 1px solid #E6E6E6;
+      border-radius: 4px;
+      cursor: pointer;
+}
+.reward-note-modal .v-modal .choose-pay .option img {
+        height: 30px;
+}
+.reward-note-modal .v-modal .choose-pay .option img.day.alipay, .reward-note-modal .v-modal .choose-pay .option img.night.alipay {
+        min-width: 85px;
+}
+.reward-note-modal .v-modal .choose-pay .option img.day.wechat, .reward-note-modal .v-modal .choose-pay .option img.night.wechat {
+        min-width: 112px;
+}
+.reward-note-modal .v-modal .choose-pay .option img.night {
+        display: none;
+}
+body.reader-night-mode .reward-note-modal .v-modal .choose-pay .option img.night {
+        display: inline-block;
+}
+body.reader-night-mode .reward-note-modal .v-modal .choose-pay .option img.day {
+        display: none;
+}
+.reward-note-modal .v-modal .choose-pay .tooltip {
+      width: 230px;
+}
+.reward-note-modal .v-modal .modal-footer {
+    padding: 0 15px 20px;
+    border: none;
+    background-color: transparent;
+    text-align: center;
+}
+.reward-note-modal .v-modal .modal-footer .btn {
+      padding: 8px 45px;
+      font-size: 24px;
+}
+.reward-note-modal .v-modal .btn-pay {
+    padding: 8px 25px;
+    font-size: 16px;
+    color: #ffffff;
+    background-color: #F5A623;
+}
+.weixin-pay, .success-pay {
+  text-align: center;
+}
+.weixin-pay .v-modal, .success-pay .v-modal {
+    width: 350px;
+}
+.weixin-pay .ic-successed, .success-pay .ic-successed {
+    font-size: 60px;
+    color: #3db922;
+}
+.weixin-pay h2, .weixin-pay h3, .success-pay h2, .success-pay h3 {
+    margin-bottom: 20px;
+    color: #333333;
+}
+.weixin-pay h2, .success-pay h2 {
+    margin: 0 0 40px 0;
+    font-size: 24px;
+}
+.weixin-pay .bind-text, .success-pay .bind-text {
+    position: relative;
+    margin-bottom: 30px;
+    font-size: 14px;
+    color: #999999;
+}
+.weixin-pay .bind-text:before, .weixin-pay .bind-text:after, .success-pay .bind-text:before, .success-pay .bind-text:after {
+      content: "";
+      border-top: 1px solid #999;
+      display: block;
+      position: absolute;
+      width: 40px;
+      top: 8px;
+}
+.weixin-pay .bind-text:before, .success-pay .bind-text:before {
+      left: 30px;
+}
+.weixin-pay .bind-text:after, .success-pay .bind-text:after {
+      right: 30px;
+}
+.weixin-pay .share-bind, .success-pay .share-bind {
+    display: block;
+    margin-bottom: 30px;
+}
+.weixin-pay .share-bind i, .success-pay .share-bind i {
+      margin-right: 4px;
+      font-size: 22px;
+      vertical-align: middle;
+}
+.weixin-pay .share-bind.wechat i, .success-pay .share-bind.wechat i {
+      color: #00BB29;
+}
+.weixin-pay .share-bind.weibo i, .success-pay .share-bind.weibo i {
+      color: #E05244;
+}
+.weixin-pay .wx-qr-code, .success-pay .wx-qr-code {
+    display: inline-block;
+}
+.weixin-pay .wx-qr-code img, .success-pay .wx-qr-code img {
+      margin: 0 auto;
+      padding: 10px;
+      width: 200px;
+      background-color: #ffffff;
+}
+.weixin-pay .pay-amount, .success-pay .pay-amount {
+    margin: 20px 0;
+    color: #787878;
+}
+.weixin-pay .pay-amount span, .success-pay .pay-amount span {
+      color: #F5A623;
+}
+</style><style type="text/css">
+@charset "UTF-8";
+/*
+ * 变量
+*/
+.v-modal-wrap {
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+  background-color: transparent;
+}
+.v-modal-wrap.modal-leave-active {
+    -webkit-transition: opacity 0.3s;
+    -o-transition: opacity 0.3s;
+    transition: opacity 0.3s;
+}
+.v-modal-wrap.modal-enter-active .v-modal-mask, .v-modal-wrap.modal-leave-active .v-modal-mask {
+    opacity: 0;
+}
+.v-modal-wrap.modal-enter-active .v-modal, .v-modal-wrap.modal-leave-active .v-modal {
+    -webkit-transform: translate(-50%, -70%);
+        -ms-transform: translate(-50%, -70%);
+            transform: translate(-50%, -70%);
+    opacity: 0;
+}
+.v-modal-wrap .v-modal-mask {
+    background-color: rgba(255, 255, 255, 0.7);
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    -webkit-transition: opacity 0.3s;
+    -o-transition: opacity 0.3s;
+    transition: opacity 0.3s;
+    opacity: 1;
+}
+.v-modal-wrap .v-modal {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    -webkit-transform: translate(-50%, -50%);
+        -ms-transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%);
+    border-radius: 6px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    -webkit-box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+    -webkit-transition: opacity 0.3s, -webkit-transform 0.3s;
+    transition: opacity 0.3s, -webkit-transform 0.3s;
+    -o-transition: opacity 0.3s, transform 0.3s;
+    transition: opacity 0.3s, transform 0.3s;
+    transition: opacity 0.3s, transform 0.3s, -webkit-transform 0.3s;
+    opacity: 1;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-flex-direction: column;
+        -ms-flex-direction: column;
+            flex-direction: column;
+    overflow: hidden;
+}
+.v-modal-wrap .v-modal > header:before, .v-modal-wrap .v-modal > header:after, .v-modal-wrap .v-modal > main:before, .v-modal-wrap .v-modal > main:after, .v-modal-wrap .v-modal > footer:before, .v-modal-wrap .v-modal > footer:after {
+      content: '';
+      clear: both;
+      display: table;
+}
+.v-modal-wrap .v-modal > header {
+      padding: 20px;
+      border-bottom: 1px solid #F0F0F0;
+}
+.v-modal-wrap .v-modal > header h4 {
+        margin: 0;
+        color: #333;
+        text-align: left;
+}
+.v-modal-wrap .v-modal .close {
+      position: absolute;
+      right: 16px;
+      top: 20px;
+      font-size: 26px;
+      line-height: 20px;
+      color: rgba(0, 0, 0, 0.8);
+}
+.v-modal-wrap .v-modal .close:hover {
+        color: #000000;
+}
+.v-modal-wrap .v-modal > main {
+      padding: 20px 20px 20px 20px;
+      font-size: 15px;
+      color: #333;
+      -webkit-box-flex: 1;
+      -webkit-flex-grow: 1;
+          -ms-flex-positive: 1;
+              flex-grow: 1;
+      overflow-x: hidden;
+      overflow-y: auto;
+}
+.v-modal-wrap .v-modal > footer {
+      padding: 20px;
+      background-color: #fff;
+}
+.v-modal-wrap .v-modal > footer button {
+        padding: 0;
+        margin: 0;
+        background-color: transparent;
+        border: 0;
+        float: right;
+}
+.v-modal-wrap .v-modal > footer button:focus {
+          outline: 0;
+}
+.v-modal-wrap .v-modal > footer .submit {
+        padding: 4px 12px;
+        border: 1px solid;
+        border-radius: 20px;
+}
+.v-modal-wrap .v-modal > footer .cancel {
+        margin-top: 5px;
+}
+.v-modal-wrap .v-modal > footer .cancel:hover {
+          color: #333333;
+}
+.reader-night-mode .v-modal-wrap .v-modal-mask {
+  background-color: rgba(63, 63, 63, 0.7);
+}
+.reader-night-mode .v-modal-wrap .v-modal {
+  background-color: #3f3f3f;
+}
+.reader-night-mode .v-modal-wrap .v-modal header {
+    border-color: #2F2F2F;
+}
+.reader-night-mode .v-modal-wrap .v-modal header h4 {
+      color: #C8C8C8;
+}
+.reader-night-mode .v-modal-wrap .v-modal .close {
+    color: #C8C8C8;
+}
+.reader-night-mode .v-modal-wrap .v-modal .close:hover {
+      color: #ffffff;
+}
+.reader-night-mode .v-modal-wrap .v-modal main {
+    color: #C8C8C8;
+}
+.reader-night-mode .v-modal-wrap .v-modal footer {
+    background-color: #3f3f3f;
+}
+.reader-night-mode .v-modal-wrap .v-modal footer .cancel:hover {
+      color: #C8C8C8;
+}
+</style><style type="text/css">
+.nqzzJ71pC-jOnJKAfdtr6_0 {
+  float: right;
+  height: 55px;
+  padding: 15px 0px;
+  margin: 0 15px;
+}
+._3tScN0zmSdGLaUAH4SxTbM_0 {
+    width: 100%;
+    height: 100%;
+}
+.nqzzJ71pC-jOnJKAfdtr6_0 ._3f806byixOPpOPWnx8HiQP_0 {
+    height: 25px;
+}
+.nqzzJ71pC-jOnJKAfdtr6_0 ._2MIQ6sBppQZAKea91We0qf_0 {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #000;
+    opacity: 0.6;
+    z-index: 1000;
+}
+.nqzzJ71pC-jOnJKAfdtr6_0 ._1RppgOJ_CQiXgzd3ke-sbJ_0 {
+    position: fixed;
+    left: -webkit-calc( 50% - 190px);
+    left: calc( 50% - 190px);
+    top: -webkit-calc( 50% - 300px);
+    top: calc( 50% - 300px);
+    width: 380px;
+    height: 425px;
+    background-color: #fff;
+    padding: 40px 72px 0;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+        -ms-flex-align: center;
+            align-items: center;
+    -webkit-box-pack: center;
+    -webkit-justify-content: center;
+        -ms-flex-pack: center;
+            justify-content: center;
+    z-index: 1000;
+    text-align: center;
+}
+body.reader-night-mode .nqzzJ71pC-jOnJKAfdtr6_0 ._1RppgOJ_CQiXgzd3ke-sbJ_0 {
+      background-color: #3f3f3f;
+      color: #c8c8c8;
+}
+.nqzzJ71pC-jOnJKAfdtr6_0 ._1RppgOJ_CQiXgzd3ke-sbJ_0 h4 {
+      margin: 0;
+      line-height: 25px;
+}
+.nqzzJ71pC-jOnJKAfdtr6_0 ._1RppgOJ_CQiXgzd3ke-sbJ_0 h4 span {
+        color: #e9634c;
+}
+.nqzzJ71pC-jOnJKAfdtr6_0 ._1RppgOJ_CQiXgzd3ke-sbJ_0 img {
+      width: 190px;
+      height: 190px;
+      margin: 12px 0 8px 0;
+}
+.nqzzJ71pC-jOnJKAfdtr6_0 ._1RppgOJ_CQiXgzd3ke-sbJ_0 p {
+      font-size: 14px;
+      line-height: 20px;
+      margin: 0;
+}
+.nqzzJ71pC-jOnJKAfdtr6_0 ._1RppgOJ_CQiXgzd3ke-sbJ_0 ._2WUz9DZJO5DIC_O5sD1kac_0 {
+      background-color: #e9634c;
+      color: #fff;
+      margin: 25px auto 0;
+      width: 190px;
+      height: 40px;
+      border-radius: 20px;
+      line-height: 40px;
+      font-size: 14px;
+      cursor: pointer;
+      -webkit-user-select: none;
+         -moz-user-select: none;
+          -ms-user-select: none;
+              user-select: none;
+}
+</style><style type="text/css">
+@charset "UTF-8";
+/*
+ * 变量
+*/
+.youdao-fixed-ad {
+  display: block;
+  position: relative;
+  width: 180px;
+  height: 180px;
+  border: 1px solid #e8eae9;
+}
+.youdao-fixed-ad .img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+}
+.youdao-fixed-ad .ad-badge {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    display: block;
+    font-size: 12px;
+    padding: 2px 5px 0 6px;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    cursor: pointer;
+}
+.qingteng-ads {
+  border: 1px solid #e8e8e8;
+  width: 180px;
+}
+</style><style type="text/css">
+.yuxi-fixed-ad {
+  position: relative;
+  width: 180px;
+  height: 180px;
+}
+.yuxi-fixed-ad .img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    background-image: url(//cdn2.jianshu.io/assets/web/yuxi-ads-d73b364baf42dfeca32d518c819a0136.jpg);
+}
+.yuxi-fixed-ad .ad-badge {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    display: block;
+    font-size: 12px;
+    padding: 2px 5px 0 6px;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    cursor: pointer;
+}
+</style><style type="text/css">
+@charset "UTF-8";
+/*
+ * 变量
+*/
+.like[data-v-6ddd02c6] {
+  display: inline-block;
+}
+.like .like-group[data-v-6ddd02c6] {
+    position: relative;
+    padding: 13px 0 15px 0;
+    font-size: 0;
+    border: 1px solid #EA6F5A;
+    border-radius: 40px;
+}
+.like .like-group[data-v-6ddd02c6]:hover {
+      background-color: rgba(236, 97, 73, 0.05);
+}
+.like .like-group .btn-like[data-v-6ddd02c6] {
+      display: inline-block;
+      font-size: 19px;
+}
+.like .like-group .btn-like[data-v-6ddd02c6]:before {
+        content: '';
+        position: absolute;
+        left: 12px;
+        top: 2px;
+        width: 50px;
+        height: 50px;
+        background-image: url(//cdn2.jianshu.io/assets/web/like_animation_steps-62a00a7b52377d3069927cdb8e61fd34.png);
+        background-position: left;
+        background-repeat: no-repeat;
+        background-size: 1000px 50px;
+}
+.like .like-group .btn-like a[data-v-6ddd02c6] {
+        position: relative;
+        padding: 18px 30px 18px 55px;
+        color: #EA6F5A;
+}
+.like .like-group .modal-wrap[data-v-6ddd02c6] {
+      font-size: 18px;
+      border-left: 1px solid rgba(236, 97, 73, 0.4);
+      display: inline-block;
+      margin-left: -15px;
+}
+.like .like-group .modal-wrap a[data-v-6ddd02c6] {
+        color: #EA6F5A;
+        padding: 18px 26px 18px 18px;
+}
+.like .like-group.like-animation[data-v-6ddd02c6], .like .like-group.active[data-v-6ddd02c6] {
+      background-color: #EA6F5A;
+}
+.like .like-group.like-animation .btn-like a[data-v-6ddd02c6], .like .like-group.active .btn-like a[data-v-6ddd02c6] {
+        color: white;
+}
+.like .like-group.like-animation .modal-wrap[data-v-6ddd02c6], .like .like-group.active .modal-wrap[data-v-6ddd02c6] {
+        border-left: 1px solid white;
+}
+.like .like-group.like-animation .modal-wrap a[data-v-6ddd02c6], .like .like-group.active .modal-wrap a[data-v-6ddd02c6] {
+          color: white;
+}
+.like .like-group.like-animation .btn-like[data-v-6ddd02c6]:before {
+      -webkit-animation: likeBlast-data-v-6ddd02c6 0.6s 1 steps(19);
+              animation: likeBlast-data-v-6ddd02c6 0.6s 1 steps(19);
+      background-position: right;
+}
+@-webkit-keyframes likeBlast {
+0% {
+    background-position: left;
+}
+100% {
+    background-position: right;
+}
+}
+@keyframes likeBlast-data-v-6ddd02c6 {
+0% {
+    background-position: left;
+}
+100% {
+    background-position: right;
+}
+}
+.like .like-group.active .btn-like[data-v-6ddd02c6]:before {
+      background-position: right;
+}
+</style><style type="text/css">
+@charset "UTF-8";
+/*
+ * 变量
+*/
+.main {
+  position: relative;
+  margin: 0 auto;
+  padding: 0 0 30px 0;
+  width: 620px;
+}
+.main .title {
+    padding-left: 8px;
+    border-left: 3px solid #EA6F5A;
+    line-height: 1;
+    font-size: 15px;
+}
+.main .collection-settings {
+    position: absolute;
+    top: 2px;
+    right: 0;
+    font-size: 13px;
+    color: #A0A0A0;
+}
+.main .collection-settings span {
+      padding-left: 4px;
+}
+.main .include-collection {
+    width: 100%;
+    padding-top: 20px;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+    -webkit-flex-direction: row;
+        -ms-flex-direction: row;
+            flex-direction: row;
+    -webkit-box-pack: start;
+    -webkit-justify-content: flex-start;
+        -ms-flex-pack: start;
+            justify-content: flex-start;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+        -ms-flex-align: center;
+            align-items: center;
+    -webkit-flex-wrap: wrap;
+        -ms-flex-wrap: wrap;
+            flex-wrap: wrap;
+}
+.main .include-collection .item {
+      display: inline-block;
+      margin: 0 12px 12px 0;
+      min-height: 32px;
+      background-color: white;
+      border: 1px solid #DCDCDC;
+      border-radius: 4px;
+      vertical-align: top;
+      overflow: hidden;
+}
+.main .include-collection .item img {
+        width: 32px;
+        height: 32px;
+}
+.main .include-collection .item .name {
+        display: inline-block;
+        padding: 0 10px;
+        font-size: 14px;
+}
+.main .include-collection .add-collection-wrap {
+      margin: 0 12px 12px 0;
+}
+.main .include-collection .add-collection {
+      padding: 8px 12px;
+      font-size: 14px;
+      border: 1px solid #DCDCDC;
+      border-radius: 4px;
+}
+.main .include-collection .add-collection i {
+        margin-right: 4px;
+        color: #969696;
+}
+.main .recommend-note a {
+    position: relative;
+    margin: 20px 2px 0 0;
+    width: 200px;
+    height: 160px;
+    display: inline-block;
+}
+.main .recommend-note a:after {
+      content: "";
+      position: absolute;
+      width: 200px;
+      height: 160px;
+      border-radius: 0 0 4px 4px;
+      -webkit-box-shadow: inset 0px -80px 50px -22px rgba(0, 0, 0, 0.6);
+              box-shadow: inset 0px -80px 50px -22px rgba(0, 0, 0, 0.6);
+      top: 0;
+      left: 0;
+      z-index: 1;
+}
+.main .recommend-note .name {
+    position: absolute;
+    bottom: 40px;
+    left: 10px;
+    right: 10px;
+    font-size: 17px;
+    font-weight: bold;
+    color: #ffffff;
+    z-index: 2;
+}
+.main .recommend-note .author {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    right: 10px;
+    z-index: 2;
+}
+.main .recommend-note .avatar {
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+}
+.main .recommend-note .avatar img {
+      border-radius: 50%;
+}
+.main .recommend-note .author-name {
+    font-size: 12px;
+    color: #ffffff;
+    display: inline-block;
+    vertical-align: -1px;
+}
+.main .show-more {
+    margin: 0 12px 12px 0;
+    font-size: 14px;
+    color: #A0A0A0;
+}
+</style></head>
+
+  <!-- 只给10%的用户添加代码 -->
+  <!-- ###第四范式-智能推荐：代码直接复制 无需修改参数### -->
+  <!-- ###功能：上报内容并反馈用户行为### -->
+  <!--
+  -->
+  <body class="reader-black-font" lang="zh-CN">
+    <!-- 全局顶部导航栏 -->
+<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+  <div class="width-limit">
+    <!-- 左上方 Logo -->
+    <a class="logo" href="https://www.jianshu.com/"><img src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/nav-logo-4c7bbafe27adc892f3046e6978459bac.png" alt="Nav logo"></a>
+
+    <!-- 右上角 -->
+      <!-- 未登录显示登录/注册/写文章 -->
+      <a class="btn write-btn" target="_blank" href="https://www.jianshu.com/writer#/">
+        <i class="iconfont ic-write"></i>写文章
+</a>      <a class="btn sign-up" id="sign_up" href="https://www.jianshu.com/sign_up">注册</a>
+      <a class="btn log-in" id="sign_in" href="https://www.jianshu.com/sign_in">登录</a>
+
+    <!-- 如果用户登录，显示下拉菜单 -->
+
+    <div class="nqzzJ71pC-jOnJKAfdtr6_0"><a class="_3tScN0zmSdGLaUAH4SxTbM_0"><img src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/nav_jsds_beta-eeb44d165b8ba37680fdb7e65ae17ae4.png" class="_3f806byixOPpOPWnx8HiQP_0"></a> <!----></div>
+
+    <div class="style-mode"><a class="style-mode-btn"><i class="iconfont ic-navigation-mode"></i></a> <div class="popover-modal" style="left: 0px; display: none;"><div class="meta"><i class="iconfont ic-navigation-night"></i><span>夜间模式</span></div> <div class="switch day-night-group"><a class="switch-btn">开</a> <a class="switch-btn active">关</a></div> <hr> <div class="switch font-family-group"><a class="switch-btn font-song">宋体</a> <a class="switch-btn font-hei active">黑体</a></div> <div class="switch"><a class="switch-btn active">简</a> <a class="switch-btn">繁</a></div></div></div>
+    <div class="container">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#menu" aria-expanded="false">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+      </div>
+      <div class="collapse navbar-collapse" id="menu">
+        <ul class="nav navbar-nav">
+            <li class="tab ">
+              <a href="https://www.jianshu.com/">
+                <span class="menu-text">首页</span><i class="iconfont ic-navigation-discover menu-icon"></i>
+</a>            </li>
+            <li class="tab ">
+              <a id="web-nav-app-download-btn" class="app-download-btn" href="https://www.jianshu.com/apps?utm_medium=desktop&amp;utm_source=navbar-apps"><span class="menu-text">下载App</span><i class="iconfont ic-navigation-download menu-icon"></i></a>
+            </li>
+          <li class="search">
+            <form target="_blank" action="/search" accept-charset="UTF-8" method="get"><input name="utf8" value="✓" type="hidden">
+              <input name="q" id="q" autocomplete="off" placeholder="搜索" class="search-input" type="text">
+              <a class="search-btn" href="javascript:void(null)"><i class="iconfont ic-search"></i></a>
+</form>          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</nav>
+
+    
+<div class="note">
+  <div id="note-fixed-ad-container">
+    <div id="fixed-ad-container">
+      <div style="display: block;"><a target="_blank" href="https://www.jianshu.com/apps/redirect?utm_source=side-banner-click" id="web-note-ad-fixed"><span class="close">×</span></a></div>
+      <div><a href="https://dsp-click.youdao.com/clk/request.s?slot=30edd91dd8637d9f645baa8448ba90b3&amp;k=%2FCIg7cLHpNL31urp2YEyTk4KxR0lVn5L2EZHvDQl8ufXxo%2BoRxcJpjjAgKuViCqvIxCHqA9N%2F2c%2F9Be%2FcwcSr0uqYgCH%2FjxF5cJz%2FIWfQ9EJWGroY0zRk6GqLW6FO7sDiwuauNWdMdxArU1QHrO93Wz5e2EPyQPIKkBx5NOacn4FeGRyUzC2c0O28sEmaM8CdQ6xzCHA6LbCjhJesRfNbrBB%2B%2FsQXwKVl54XVE7fdVcrYeYhn6D7pat9vXoe89QSSfw8EzOdbocVm1S%2Bs9X8PXUOh6RyqG6Eek4VgNfkGmuGpGUWhROEByf9m5%2FBhkb7CqZIfzsZdBqI78r8u1xr21NSiu7R%2FGglmFCjKZ7g3fNzMVAcyTI0%2Bz04ZLMQNvVBZKBmfGCn2JFyK93kk937FP1hYSZtJhigo%2FIh%2Ba1CxbXiBJmsDPjrhfSXfG84YQ9sAOw4iMr29gGpEb0yOTHq%2FuSdrOLT8251auBICLMft21%2FhFREZ%2B98XaOhtUIEI0RZJyP54jW41%2F%2Bc3Uo6Ql%2Bo6WcnqjemuMS%2F1uWqA59RP%2Fqm6UAK%2FW%2F1ML2qEvqNveI%2BS1JPeO%2Bxk%2BIDQMdOIXLhlpUPOFURd0LeSU5YguCApmRAQZAd1QCKEtO0IjavDTrOjQXS6lfj2pulhtZeNggtLZO%2F%2Fq16WbtfS%2F7KZR0MVDLYSLI1IQX%2FzfDTxDOG63cORqBIPxXHWWLsrpc4%2BCyCS2ab0otpUabyzCFmzMm%2FgF4fmDyUBwqITvi0%2Fnid0tAANKHxALm4kSasIGdKsD0S7CBLeh%2BmVnkxyDgdc0oFxic4di3ClLQh7nTXqxhyiy3Z0IDFidJxSDPksi%2ByAj00X2VdCLVDOkla6eZZDfANJrSven8cVvI28HRWWIDL3daeGBdVVLQ5j6KE7eNSVfTVwyGs0twmaa7RSNUkXncAeWXrP34LqHOBtGWTF4ZRpKggeAofksmWWFjgwRULvGHoFrDgqwqMrg9u0BYmZGPDOtMjP7drQY67VgVfBejoBqy%2BvTcKVrbNvHxASM6PIbntp5AowoVGad2%2Bqpk%2FY3VBX3fXxo%2BoRxcJpjjAgKuViCqv18aPqEcXCaY4wICrlYgqrzDdWzNdiq2XMTlO6vZf0Qc0gdnblUCCzJgkw%2FzSql7Y&amp;youdao_bid=8cf9e6b0-e88f-46bf-9ae5-a09679da9f52&amp;iid=%7B%224446413614521923781%22%3A4%7D&amp;sid=17024" target="_blank" class="youdao-fixed-ad"><div class="img" style="background-image: url(&quot;https://oimagec8.ydstatic.com/image?id=4446413614521923781&amp;product=adpublish&amp;w=360&amp;h=360&amp;sc=0&amp;rm=2&amp;gsb=0&amp;gsbd=60&quot;);"></div> <span class="ad-badge">广告</span></a> <!----></div>
+      <a href="http://e.cn.miaozhen.com/r/k=2110413&amp;p=7L9Gn&amp;dx=__IPDX__&amp;rt=2&amp;ns=__IP__&amp;ni=__IESID__&amp;v=__LOC__&amp;xa=__ADPLATFORM__&amp;tr=__REQUESTID__&amp;mo=__OS__&amp;m0=__OPENUDID__&amp;m0a=__DUID__&amp;m1=__ANDROIDID1__&amp;m1a=__ANDROIDID__&amp;m2=__IMEI__&amp;m4=__AAID__&amp;m5=__IDFA__&amp;m6=__MAC1__&amp;m6a=__MAC__&amp;vo=3f2e070eb&amp;vr=2&amp;o=https%3A%2F%2Fwww.jianshu.com%2Fp%2Fee05f7eff678" target="_blank" class="yuxi-fixed-ad" style="display: none;"><div class="img"></div> <span class="ad-badge">广告</span></a>
+      <div id="_so_pdsBy_0"></div>
+    </div>
+  </div>
+  <div class="post">
+    <div class="article">
+        <h1 class="title">姿态篇：一.初识姿态估计</h1>
+
+        <!-- 作者区域 -->
+        <div class="author">
+          <a class="avatar" href="https://www.jianshu.com/u/f72e5a592db5">
+            <img src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/757a1117-6e22-41f3-b2bd-9937391c99e8_002.png" alt="96">
+</a>          <div class="info">
+            <span class="name"><a href="https://www.jianshu.com/u/f72e5a592db5">王伟韵</a></span>
+            <!-- 关注用户按钮 -->
+            <a class="btn btn-success follow"><i class="iconfont ic-follow"></i><span>关注</span></a>
+            <!-- 文章数据信息 -->
+            <div class="meta">
+              <!-- 简书钻 -->
+                <span class="jsd-meta">
+                  <i class="iconfont ic-paid1"></i> 0.1
+                </span>
+              <!-- 如果文章更新时间大于发布时间，那么使用 tooltip 显示更新时间 -->
+                <span class="publish-time" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="最后编辑于 2019.03.30 16:40">2018.08.16 18:15*</span>
+              <span class="wordage">字数 7269</span>
+            <span class="views-count">阅读 2787</span><span class="comments-count">评论 0</span><span class="likes-count">喜欢 2</span></div>
+          </div>
+          <!-- 如果是当前作者，加入编辑按钮 -->
+        </div>
+
+
+        <!-- 文章内容 -->
+        <div data-note-content="" class="show-content">
+          <div class="show-content-free">
+            <p><strong>[深入浅出多旋翼飞控开发][姿态篇][一][初识姿态估计]</strong></p>
+<blockquote>
+<p>作者：王伟韵<br>
+QQ : 352707983<br>
+<a href="https://links.jianshu.com/go?to=http%3A%2F%2Fgithub.com%2Floveuav%2FBlueSkyFlightControl" target="_blank" rel="nofollow"><strong>Github</strong></a></p>
+</blockquote>
+<h1>一.什么是姿态</h1>
+<p>在学习姿态估计之前，我们先来了解一下，什么是<strong>“姿态”</strong>。</p>
+<p>想象一架飞机准备起飞，于是它在机场跑道上进行一段加速助跑，达到一定速度后，机头抬升15度，腾空而起，离开了地面。然而由于起飞时的方向和目标方向相差甚大，于是飞机调转机头，最终往北偏东30度的方向飞去。</p>
+<p>这个过程中，根据日常生活经验，我们如此说明飞机在起飞过程中的发生的变化：“抬升15度”，“北偏东30度”。也就是说，通常我们会使用<strong>“角度”</strong>，来表示一个物体的姿态。那这个角度大小是如何得来的？其中，“15度”指飞机机身与水平地面的夹角，“北偏东30度”则指飞行方向与正北方向的夹角。<strong>也就是说，日常生活中我们描述物体的姿态，是以脚下的大地作为参考的。</strong>通常人类在太空中会失去方向感，是因为地球上的重力加速度的存在让我们始终能够以大地作为参考物，而失重环境下失去了参考物，我们便无法感知自身以及周围物体的姿态了。</p>
+<p>为了方便描述物体之间的方位关系，我们定义了<strong>坐标系</strong>。在上面的例子中，我们可以定义成两个坐标系，如图1：</p>
+<ul>
+<li><strong>大地坐标系O-xyz</strong></li>
+<li><strong>机体坐标系P-vuw</strong></li>
+</ul>
+<div class="image-package">
+<div class="image-container" style="max-width: 603px; max-height: 451px; background-color: transparent;">
+<div class="image-container-fill" style="padding-bottom: 74.79%;"></div>
+<div class="image-view" data-width="603" data-height="451"><img data-original-src="//upload-images.jianshu.io/upload_images/13428042-973e56f5f5d4bc2f.png" data-original-width="603" data-original-height="451" data-original-format="image/png" data-original-filesize="35225" style="cursor: zoom-in;" class="" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/13428042-973e56f5f5d4bc2f.png"></div>
+</div>
+<div class="image-caption">图1 坐标系定义</div>
+</div>
+<p>于是，我们将姿态定义为：</p>
+<blockquote>
+<p><strong>姿态</strong>，即表示O-xyz与P-vuw两个坐标系之间的关系。</p>
+</blockquote>
+<p>通常，坐标系会有多个，但必须选择一个坐标系作为参考系，大部分时候我们会选取大地坐标系作为参考系，比较符合人类的直觉与习惯。</p>
+<p>了解了姿态的定义后，我们又面临着一个问题，如何使用数学方式来描述姿态，以便下一步的计算？</p>
+<h1>二.欧拉角</h1>
+<p>欧拉角是最直观的一种姿态描述方式，其定义为：</p>
+<blockquote>
+<p>一个坐标系到另一个坐标系的变换，可以通过绕不同坐标轴的3次连续转动来实现。这三次的转动角度统一称之为<strong>欧拉角</strong></p>
+</blockquote>
+<p><strong>但有一点值得注意的是，欧拉角并不直接等同于我们常说的姿态角。</strong></p>
+<p>欧拉角由三次绕轴旋转组成，而这三次转动顺序任意，且转动轴可以是参考系的，也可以是机体系的，因此共有24种转动方式。</p>
+<p>而通常飞控上所使用的姿态角，指的是航空领域主要应用的航空次序欧拉角，也叫卡尔丹角（Tait-Bryan angles），定义欧拉角的转动顺序为<strong>Z-Y-X</strong>。其中绕Z轴转动为偏航角（Yaw），绕Y轴转动为俯仰角（Pitch），绕X轴转动为横滚角（Roll），其具体意义如下：</p>
+<ul>
+<li><p><strong>偏航角（Yaw）</strong><br>
+机体系x轴投影到水平面与参考系x轴的夹角，顺时针旋转为正。</p></li>
+<li><p><strong>俯仰角（Pitch）</strong><br>
+机体系x轴与水平面的夹角，抬头为正。</p></li>
+<li><p><strong>横滚角（Roll）</strong><br>
+机体坐标系z轴与通过机体系x轴的铅垂面间的夹角，机体右旋为正。</p></li>
+</ul>
+<p>图2表示了姿态欧拉角的转动方向</p>
+<br>
+<div class="image-package">
+<div class="image-container" style="max-width: 700px; max-height: 600px;">
+<div class="image-container-fill" style="padding-bottom: 75.0%;"></div>
+<div class="image-view" data-width="800" data-height="600"><img data-original-src="//upload-images.jianshu.io/upload_images/13428042-b3fdfe2704481318.png" data-original-width="800" data-original-height="600" data-original-format="image/png" data-original-filesize="230806" style="cursor: zoom-in;" class="image-loading"></div>
+</div>
+<div class="image-caption">图2 Z-Y-X次序欧拉角</div>
+</div>
+<p>上面提到了，欧拉角意义上并不直接等于姿态角，它只是描述了三次绕轴转动。而我们使用的姿态角：偏航角、横滚角与俯仰角实际上是机体坐标系与参考坐标系（大地坐标系）之间关系的表述。大致清楚姿态角的概念后，接下来便了解一下，如何使用传感器测量姿态角。</p>
+<h1>三.姿态的测量</h1>
+<h2>1.加速度计测量俯仰与横滚角</h2>
+<p>假设飞控处于静止状态，此时加速度计仅受到重力的作用。当飞控与水平面完全平行时，此时加速度计的输出理论值为<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_074.svg" alt="[0,0,g]" mathimg="1">（g为重力加速度的大小）。而当飞控以一定角度倾斜于水平面时，其输出值可能为<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_061.svg" alt="[0.37g,-0.5g,0.78g]" mathimg="1">，且其模值为1g。实际上，静止状态下飞控倾斜时，加速度计所测量到的数据，便是重力加速度在机体坐标系下的投影。</p>
+<p>于是根据加速度计的测量值与三角函数关系，我们便能计算出飞控的姿态角。不过由于偏航角定义为机体系x轴投影到水平面与参考系x轴的夹角，而重力加速度正好完全正交于水平面，因此加速度计测量值中并没有包含偏航角信息。</p>
+<div class="image-package">
+<div class="image-container" style="max-width: 449px; max-height: 282px;">
+<div class="image-container-fill" style="padding-bottom: 62.81%;"></div>
+<div class="image-view" data-width="449" data-height="282"><img data-original-src="//upload-images.jianshu.io/upload_images/13428042-92de0468e3ea9a9b.png" data-original-width="449" data-original-height="282" data-original-format="image/png" data-original-filesize="23137" style="cursor: zoom-in;" class="image-loading"></div>
+</div>
+<div class="image-caption">加速度与姿态角之间的三角函数关系</div>
+</div>
+<p>姿态角与重力加速度投影之间的三角函数关系，这里就不具体解释了，直接给出结论，在本文的下一节中我们再从数学的角度来推导出姿态角公式。</p>
+<p>设当前有归一化的加速度向量<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_048.svg" alt="a=[a_x,a_y,a_z]" mathimg="1">，飞机横滚角为<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_080.svg" alt="angle_x" mathimg="1">，俯仰角为<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_073.svg" alt="angle_y" mathimg="1">，有如下关系：<br>
+<img class="math-block" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_056.svg" alt="\begin{cases} angle_x = -arcsin(a_y)\\ angle_y = arctan2(a_x, a_z) \end{cases}" mathimg="1"></p>
+<p>在天穹飞控的<a href="https://links.jianshu.com/go?to=https%3A%2F%2Fgithub.com%2Floveuav%2FBlueSkyFlightControl%2Fblob%2Fmaster%2FSRC%2FMATH%2Fvector3.c" target="_blank" rel="nofollow">vector3.c</a>文件中定义了<strong>AccVectorToRollPitchAngle</strong>函数来实现该转换：</p>
+<pre class="hljs cpp"><code class="cpp"><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">AccVectorToRollPitchAngle</span><span class="hljs-params">(Vector3f_t* angle, Vector3f_t <span class="hljs-built_in">vector</span>)</span>
+</span>{
+    angle-&gt;x = -asinf(<span class="hljs-built_in">vector</span>.y);            <span class="hljs-comment">//横滚角</span>
+    angle-&gt;y = atan2f(<span class="hljs-built_in">vector</span>.x, <span class="hljs-built_in">vector</span>.z);  <span class="hljs-comment">//俯仰角</span>
+}
+</code></pre>
+<h2>2.磁力计测量偏航角</h2>
+<p>上面我们利用加速度计测得飞机的横滚与俯仰姿态角，但还有一个偏航角是未知的。偏航角有许多方式可以获得，但是最简单和最低成本的方式，还是通过磁力计进行测量。</p>
+<p>假设当前有磁力计测量得到的磁场强度向量<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_077.svg" alt="m=[m_x, m_y, m_z]" mathimg="1">，然后计算得到其在大地坐标系下的投影<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_039.svg" alt="m_n=[m_{nx}, m_{ny}, m_{nz}]" mathimg="1">（具体的转换方式请阅下一节）。</p>
+<p>设飞机的偏航角为<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_065.svg" alt="angle_z" mathimg="1">，有：<br>
+<img class="math-block" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_049.svg" alt="angle_z = -arctan2(m_{ny}, m_{nx})" mathimg="1"></p>
+<p>该公式的推导请参阅下节。同样，在天穹飞控中定义了<strong>MagVectorToYawAngle</strong>函数来实现该转换：</p>
+<pre class="hljs cpp"><code class="cpp"><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">MagVectorToYawAngle</span><span class="hljs-params">(Vector3f_t* angle, Vector3f_t <span class="hljs-built_in">vector</span>)</span>
+</span>{
+    angle-&gt;z = -atan2f(<span class="hljs-built_in">vector</span>.y, <span class="hljs-built_in">vector</span>.x);     <span class="hljs-comment">//偏航角</span>
+}
+</code></pre>
+<h2>3.关于陀螺仪</h2>
+<p>至此，我们已经了解完毕如何使用加速度计和磁力计来测量飞机的姿态角。但你可能发现，飞控中最重要的一个传感器：陀螺仪，还没有登场。既然使用上述两个传感器就已经能得到飞机的姿态，那还需要陀螺仪做什么呢？</p>
+<p>实际上，使用加速度计和磁力计计算姿态的前提是，飞机处于一个理想的静止状态下。然而现实中这是不可能的，那么当飞机处于飞行状态时，加速度计测量
+得到的数据，便不仅仅是重力加速度了，可能还包含了飞行过程中所产生的运动加速度，以及一些有害加速度，通常由于机身震动，还会引入额外的震动噪声（也属
+于线性加速度）。此时直接使用加速度数据计算姿态，最终得到的是带有了巨大误差以及噪声的值，对于飞控来说是完全不可用的。同样，磁力计的实际测量噪声一
+般也比较大，而且在许多环境下还会存在磁场干扰，从而导致直接使用磁力计计算出来的偏航角存在大量误差而不可用。</p>
+<p>而陀螺仪是一种可以测量旋转角速度的传感器，对角速度值进行离散化数值积分，便得到某段时间内的姿态变化量，这就是我们使用陀螺仪来计算飞机姿态的
+方式。但需要注意，使用陀螺仪只能计算出飞机姿态的相对变化量，而无法直接测量绝对姿态值，因此使用陀螺仪来更新飞机姿态时，必须先得知初始姿态值。</p>
+<p>相比加速度计和磁力计，陀螺仪几乎不受外界环境干扰，且对线性加速度（震动）不敏感，这些特性使得陀螺仪成为了飞行器中最核心的传感器，甚至在某些
+极端情况下（比如火箭的起飞加速阶段），只有陀螺仪可用，这时陀螺仪的精度便至关重要了。实际上，尽管陀螺仪拥有如此优秀的特性，却也不是完美的，自身会
+存在各种误差，而在角速度积分阶段，陀螺仪误差会被累积，从而使得姿态逐渐偏离真实值。</p>
+<p>经验告诉我们，使用单一传感器来计算获取飞机的姿态是不现实的，所以实际应用中，需要同时使用多种传感器来计算姿态。上面我们已经了解了使用加速度
+计和磁力计来计算姿态角的方法，下面便接着学习如何使用陀螺仪来更新姿态。在这之前，必须要先介绍姿态的另一种描述方式：方向余弦矩阵。</p>
+<h1>四.方向余弦矩阵</h1>
+<h2>1.方向余弦矩阵的定义</h2>
+<p>第二节中我们定义姿态欧拉角的转动顺序为<strong>Z-Y-X</strong>。</p>
+<p>将姿态角的单次转动转化为矩阵的形式，有：</p>
+<ul>
+<li>绕Z轴转动（偏航角<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_045.svg" alt="z" mathimg="1">）的旋转矩阵</li>
+</ul>
+<p><img class="math-block" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_033.svg" alt="C_z=\left[ \begin{matrix} cosz&amp;sinz&amp;0&amp;\\ -sinz&amp;cosz&amp;0&amp;\\ 0&amp;0&amp;1&amp;\\ \end{matrix} \right]" mathimg="1"></p>
+<ul>
+<li>绕Y轴转动（俯仰角<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_053.svg" alt="y" mathimg="1">）的旋转矩阵</li>
+</ul>
+<p><img class="math-block" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_046.svg" alt="C_y=\left[ \begin{matrix} cosy&amp;0&amp;siny&amp;\\ 0&amp;1&amp;0&amp;\\ -siny&amp;0&amp;cosy&amp;\\ \end{matrix} \right]" mathimg="1"></p>
+<ul>
+<li>绕X轴转动（横滚角<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_059.svg" alt="x" mathimg="1">）的旋转矩阵<br>
+<img class="math-block" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_042.svg" alt="C_x=\left[ \begin{matrix} 1&amp;0&amp;0&amp;\\ 0&amp;cosx&amp;-sinx&amp;\\ 0&amp;sinx&amp;cosx&amp;\\ \end{matrix} \right]" mathimg="1">
+</li>
+</ul>
+<p>将上面的3个旋转矩阵以Z-Y-X的转动顺序进行连乘，我们便得到了一个可以表示此次欧拉转动的旋转矩阵<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_055.svg" alt="C" mathimg="1">，计算过程如下：</p>
+<p><img class="math-block" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_054.svg" alt="C=C_z* C_y* C_x" mathimg="1"><br>
+<img class="math-block" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_084.svg" alt="=\left[ \begin{matrix} cosz&amp;sinz&amp;0&amp;\\ -sinz&amp;cosz&amp;0&amp;\\ 0&amp;0&amp;1&amp;\\ \end{matrix} \right] \left[ \begin{matrix} cosy&amp;0&amp;siny&amp;\\ 0&amp;1&amp;0&amp;\\ -siny&amp;0&amp;cosy&amp;\\ \end{matrix} \right] \left[ \begin{matrix} 1&amp;0&amp;0&amp;\\ 0&amp;cosx&amp;-sinx&amp;\\ 0&amp;sinx&amp;cosx&amp;\\ \end{matrix} \right]" mathimg="1"><br>
+<img class="math-block" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_035.svg" alt="=\left[ \begin{matrix} coszcosy&amp;sinz&amp;coszsiny&amp;\\ -sinzcosy&amp;cosz&amp;-sinzsiny&amp;\\ -siny&amp;0&amp;cosy&amp;\\ \end{matrix} \right] \left[ \begin{matrix} 1&amp;0&amp;0&amp;\\ 0&amp;cosx&amp;-sinx&amp;\\ 0&amp;sinx&amp;cosx&amp;\\ \end{matrix} \right]" mathimg="1"><br>
+<img class="math-block" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_075.svg" alt="=\left[ \begin{matrix} cosycosz&amp;sinzcosx+sinxsinycosz&amp;-sinxsinz+sinycosxcosz&amp;\\ -sinzcosy&amp;cosxcosz-sinxsinysinz&amp;-sinxcosz-sinysinzcosx&amp;\\ -siny&amp;sinxcosy&amp;cosxcosy&amp;\\ \end{matrix} \right]" mathimg="1"></p>
+<p>旋转矩阵<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_055.svg" alt="C" mathimg="1">，也被称之为<strong>方向余弦矩阵</strong>（Direction Cosine Matrix，简称DCM），同样可用于表示两个坐标系之间的关系。这里的方向余弦矩阵<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_055.svg" alt="C" mathimg="1">，实际上描述了从参考系到机体系的转动。</p>
+<p>由于转动顺序以及转动轴的不一致，DCM的最终表示形式会有很多种，所以在网上看到的DCM公式各不一致，实际使用中要根据坐标系的定义及欧拉角的旋转次序来计算DCM。</p>
+<h3>利用小角度近似简化方向余弦矩阵</h3>
+<p>当旋转角足够小时，根据三角函数的小角度近似关系，有：<br>
+<img class="math-block" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_064.svg" alt="\begin{cases} sin\theta \approx \theta\\ cos\theta \approx 1 \end{cases}" mathimg="1"><br>
+并忽略小角度连乘，可以得到方向余弦矩阵的简化形式<br>
+<img class="math-block" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_047.svg" alt="C= \left[ \begin{matrix} 1&amp;z&amp;y&amp;\\ -z&amp;1&amp;-x&amp;\\ -y&amp;x&amp;1&amp;\\ \end{matrix} \right]" mathimg="1"></p>
+<p>当然这样会损失一定的计算精度，且只能在角度变化量较小时使用。过去由于单片机资源有限，运行速度较慢，因此在许多8位机上会选择使用该简化版的DCM，以节省大量运算时间（三角函数运算比较费时）。而现在飞控主控的运行速度已经足够快，这种用法已经很少见了。</p>
+<h3>欧拉角转换为方向余弦矩阵</h3>
+<p>在方向余弦矩阵的定义中可以得到使用欧拉角转化为方向余弦矩阵的计算公式。在<a href="https://links.jianshu.com/go?to=http%3A%2F%2Fbbs.loveuav.com%2Fforum-68-1.html" target="_blank" rel="nofollow">天穹飞控</a>中，定义了<strong><a href="https://links.jianshu.com/go?to=https%3A%2F%2Fgithub.com%2Floveuav%2FBlueSkyFlightControl%2Fblob%2Fmaster%2FSRC%2FMATH%2Fvector3.c" target="_blank" rel="nofollow">EulerAngleToDCM</a></strong>函数：</p>
+<pre class="hljs cpp"><code class="cpp"><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">EulerAngleToDCM</span><span class="hljs-params">(Vector3f_t angle, <span class="hljs-keyword">float</span>* dcM)</span>
+</span>{
+    Vector3f_t <span class="hljs-built_in">cos</span>, <span class="hljs-built_in">sin</span>;
+    
+    <span class="hljs-built_in">cos</span>.x = cosf(angle.x);
+    <span class="hljs-built_in">cos</span>.y = cosf(angle.y);
+    <span class="hljs-built_in">cos</span>.z = cosf(angle.z);   
+    <span class="hljs-built_in">sin</span>.x = sinf(angle.x);
+    <span class="hljs-built_in">sin</span>.y = sinf(angle.y);
+    <span class="hljs-built_in">sin</span>.z = sinf(angle.z);    
+
+    dcM[<span class="hljs-number">0</span>] = <span class="hljs-built_in">cos</span>.y * <span class="hljs-built_in">cos</span>.z; 
+    dcM[<span class="hljs-number">1</span>] = <span class="hljs-built_in">sin</span>.z * <span class="hljs-built_in">cos</span>.x + <span class="hljs-built_in">sin</span>.x * <span class="hljs-built_in">sin</span>.y * <span class="hljs-built_in">cos</span>.z; 
+    dcM[<span class="hljs-number">2</span>] = -<span class="hljs-built_in">sin</span>.x * <span class="hljs-built_in">sin</span>.z + <span class="hljs-built_in">sin</span>.y * <span class="hljs-built_in">cos</span>.x * <span class="hljs-built_in">cos</span>.z; 
+    dcM[<span class="hljs-number">3</span>] = -<span class="hljs-built_in">sin</span>.z * <span class="hljs-built_in">cos</span>.y;
+    dcM[<span class="hljs-number">4</span>] = <span class="hljs-built_in">cos</span>.x * <span class="hljs-built_in">cos</span>.z - <span class="hljs-built_in">sin</span>.x * <span class="hljs-built_in">sin</span>.y * <span class="hljs-built_in">sin</span>.z;
+    dcM[<span class="hljs-number">5</span>] = -<span class="hljs-built_in">sin</span>.x * <span class="hljs-built_in">cos</span>.z - <span class="hljs-built_in">sin</span>.y * <span class="hljs-built_in">sin</span>.z * <span class="hljs-built_in">cos</span>.x; 
+    dcM[<span class="hljs-number">6</span>] = -<span class="hljs-built_in">sin</span>.y;
+    dcM[<span class="hljs-number">7</span>] = <span class="hljs-built_in">sin</span>.x * <span class="hljs-built_in">cos</span>.y;
+    dcM[<span class="hljs-number">8</span>] = <span class="hljs-built_in">cos</span>.x * <span class="hljs-built_in">cos</span>.y;
+}
+
+</code></pre>
+<p>该函数将欧拉角转换为了方向余弦矩阵，其角度输入值可以是某段时间内的由陀螺仪测量到的角度变化量，也可以是当前飞机的姿态角。</p>
+<h2>2.方向余弦矩阵的使用举例</h2>
+<h3>从参考系到机体系</h3>
+<p>已知参考系下的加速度向量<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_038.svg" alt="A_n=[0,0,g]^T" mathimg="1">，当前飞机姿态角分别为<br>
+<img class="math-block" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_041.svg" alt="\begin{cases} x （横滚角）\\ y（俯仰角）\\ z（偏航角） \end{cases}" mathimg="1"></p>
+<p>定义表示从参考系旋转到机体系的方向余弦矩阵为<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_037.svg" alt="C_n^b" mathimg="1">，那么我们便能计算得到参考系加速度向量在机体系下的投影<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_043.svg" alt="A_b" mathimg="1">：<br>
+<img class="math-block" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_057.svg" alt="A_b = C_n^b * A_n" mathimg="1"></p>
+<p>其中<br>
+<img class="math-block" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_081.svg" alt="C_n^b=\left[ \begin{matrix} cosycosz&amp;sinzcosx+sinxsinycosz&amp;-sinxsinz+sinycosxcosz&amp;\\ -sinzcosy&amp;cosxcosz-sinxsinysinz&amp;-sinxcosz-sinysinzcosx&amp;\\ -siny&amp;sinxcosy&amp;cosxcosy&amp;\\ \end{matrix} \right]" mathimg="1"></p>
+<p>同样在天穹飞控的<a href="https://links.jianshu.com/go?to=https%3A%2F%2Fgithub.com%2Floveuav%2FBlueSkyFlightControl%2Fblob%2Fmaster%2FSRC%2FMATH%2Fvector3.c" target="_blank" rel="nofollow">vector3.c</a>文件中，定义了<strong>VectorRotateToBodyFrame</strong>函数，用于转换向量至机体坐标系：</p>
+<pre class="hljs cpp"><code class="cpp"><span class="hljs-function">Vector3f_t <span class="hljs-title">VectorRotateToBodyFrame</span><span class="hljs-params">(Vector3f_t <span class="hljs-built_in">vector</span>, Vector3f_t deltaAngle)</span>
+</span>{
+    <span class="hljs-keyword">float</span> dcMat[<span class="hljs-number">9</span>];
+
+    <span class="hljs-comment">//欧拉角转为方向余弦矩阵</span>
+    EulerAngleToDCM(deltaAngle, dcMat);
+
+    <span class="hljs-comment">//方向余弦矩阵乘以向量，得到旋转后的新向量</span>
+    <span class="hljs-keyword">return</span> Matrix3MulVector3(dcMat, <span class="hljs-built_in">vector</span>);
+}
+</code></pre>
+<h3>从机体系到参考系</h3>
+<p>已知参考系的加速度向量在机体下的投影<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_050.svg" alt="A_b=[0.2g,0.3g,0.9g]^T" mathimg="1">（在飞控中即为加速度传感器的测量值），当前飞机姿态角为<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_051.svg" alt="x,y,z" mathimg="1">，定义表示从机体系旋转到参考系的方向余弦矩阵为<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_083.svg" alt="C_b^n" mathimg="1">，因此可以计算得到原参考系下的加速度向量<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_068.svg" alt="A_n" mathimg="1">：<br>
+<img class="math-block" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_088.svg" alt="A_n = C_b^n * A_b" mathimg="1"></p>
+<p>可以看出，<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_083.svg" alt="C_b^n" mathimg="1">等于从参考系旋转到机体系的方向余弦矩阵<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_037.svg" alt="C_n^b" mathimg="1">的转置，即：<br>
+<img class="math-block" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_082.svg" alt="C_b^n = (C_n^b)^T" mathimg="1"><br>
+<img class="math-block" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_052.svg" alt="=\left[ \begin{matrix} cosycosz&amp;-sinzcosy&amp;-siny&amp;\\ sinzcosx+sinxsinycosz&amp;cosxcosz-sinxsinysinz&amp;sinxcosy&amp;\\ -sinxsinz+sinycosxcosz&amp;-sinxcosz-sinysinzcosx&amp;cosxcosy&amp;\\ \end{matrix} \right]" mathimg="1"></p>
+<p>在vector3.c中，定义了函数<strong>VectorRotateToEarthFrame</strong>，用于转换向量至参考系（大地坐标系）：</p>
+<pre class="hljs cpp"><code class="cpp"><span class="hljs-function">Vector3f_t <span class="hljs-title">VectorRotateToEarthFrame</span><span class="hljs-params">(Vector3f_t <span class="hljs-built_in">vector</span>, Vector3f_t deltaAngle)</span>
+</span>{
+    <span class="hljs-keyword">float</span> dcMat[<span class="hljs-number">9</span>];
+
+    <span class="hljs-comment">//欧拉角转为方向余弦矩阵</span>
+    EulerAngleToDCM_T(deltaAngle, dcMat);
+
+    <span class="hljs-comment">//方向余弦矩阵乘以向量，得到旋转后的新向量</span>
+    <span class="hljs-keyword">return</span> Matrix3MulVector3(dcMat, <span class="hljs-built_in">vector</span>);
+}
+</code></pre>
+<p>注意函数中使用的是欧拉角构建的方向余弦矩阵的转置。</p>
+<h2>3.利用方向余弦矩阵推导姿态角公式</h2>
+<h3>横滚与俯仰角</h3>
+<p>设静止状态下加速度计测量到的加速度向量为<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_043.svg" alt="A_b" mathimg="1">，并对其归一化，有<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_040.svg" alt="A_b=[a_x,a_y,a_z]^T" mathimg="1">，<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_068.svg" alt="A_n" mathimg="1">为参考系下的归一化重力加速度向量，有<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_066.svg" alt="A_n=[0,0,1]^T" mathimg="1">，由第二小节中的方向余弦矩阵旋转关系，即：<br>
+<img class="math-block" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_057.svg" alt="A_b = C_n^b * A_n" mathimg="1"><br>
+可得：<br>
+<img class="math-block" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_063.svg" alt="\left[ \begin{matrix} a_x\\ a_y\\ a_z\\ \end{matrix} \right] = \left[ \begin{matrix} cosycosz&amp;sinzcosx+sinxsinycosz&amp;-sinxsinz+sinycosxcosz&amp;\\ -sinzcosy&amp;cosxcosz-sinxsinysinz&amp;-sinxcosz-sinysinzcosx&amp;\\ -siny&amp;sinxcosy&amp;cosxcosy&amp;\\ \end{matrix} \right] \left[ \begin{matrix} 0\\ 0\\ 1\\ \end{matrix} \right]" mathimg="1"></p>
+<p>从而得到以下关系：<br>
+<img class="math-block" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_060.svg" alt="\begin{cases} a_x=-sinxsinz+sinycosxcosz\\ a_y=-sinxcosz-sinysinzcosx\\ a_z=cosxcosy \end{cases}" mathimg="1"><br>
+其中，z（偏航角）为无关变量（绕z轴的任意旋转都不会改变重力加速度向量），因此<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_089.svg" alt="z=0" mathimg="1">，对上式化简可得：<br>
+<img class="math-block" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_034.svg" alt="\begin{cases} a_x=sinycosx\\ a_y=-sinx\\ a_z=cosxcosy \end{cases}" mathimg="1"></p>
+<p>即：<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_072.svg" alt="a_x/a_z = tany" mathimg="1">，<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_031.svg" alt="a_y = -sinx" mathimg="1">，于是我们得到了横滚与俯仰角的计算公式：<br>
+<img class="math-block" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_056.svg" alt="\begin{cases} angle_x = -arcsin(a_y)\\ angle_y = arctan2(a_x, a_z) \end{cases}" mathimg="1"></p>
+<h3>偏航角</h3>
+<p>推导方式类似，不同的是参考系下的归一化地磁场向量为<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_062.svg" alt="M_n=[1,0,0]^T" mathimg="1">，利用同样的转换关系，可以得到：<br>
+<img class="math-block" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_032.svg" alt="\begin{cases} m_{nx}=cosycosz\\ m_{ny}=-sinzcosy\\ m_{nz}=-siny \end{cases}" mathimg="1"></p>
+<p>即：<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_067.svg" alt="m_y/m_x = -tanz" mathimg="1">，从而得出偏航角的计算公式为：<br>
+<img class="math-block" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_076.svg" alt="angle_z = -arctan2(m_y, m_x)" mathimg="1"></p>
+<p>到这里便结束了？并没有。<br>
+与使用加速度向量计算横滚俯仰角不一样的是，上面计算所使用的<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_003.svg" alt="m_{nx},m_{ny},m_{nz}" mathimg="1">，并非磁力计的原始测量数据。原因是在姿态角的旋转顺序定义Z-Y-X中，偏航角是最先发生旋转的，此时地磁场向量仍与水平面平行，即该向量实则为机体系磁场向量在水平面上的投影，设为<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_087.svg" alt="m_n" mathimg="1">，设机体系下的地磁场向量为<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_070.svg" alt="m" mathimg="1">（磁力计的测量值），有如下关系：<br>
+<img class="math-block" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_086.svg" alt="m_n = C_b^n * m = (C_n^b)^T * m" mathimg="1"><br>
+其中<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_037.svg" alt="C_n^b" mathimg="1"> 为由当前姿态角<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_051.svg" alt="x,y,z" mathimg="1">（z=0）构成的方向余弦矩阵。这一步实则为地磁场向量的坐标系转换，在网上的许多相关资料中被描述为“倾斜补偿”。</p>
+<h1>五.姿态更新</h1>
+<p>上一节中我们了解了方向余弦矩阵的基本定义及其使用方法，本节中将重点讲解，如何通过方向余弦矩阵的方式，使用陀螺仪数据进行姿态更新。</p>
+<h2>1.数值积分</h2>
+<p>学习过高中物理的童鞋，对积分的概念肯定比较熟悉。已知一个速度<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_069.svg" alt="v" mathimg="1">与时间<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_058.svg" alt="t" mathimg="1">的相关函数<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_085.svg" alt="f(v,t)" mathimg="1">，在某时间段内对其积分，有<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_044.svg" alt="s=\int_{t0}^{t1} f(v,t)" mathimg="1">，s即为t0到t1时刻的位移。在该式子中，我们需要求得<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_085.svg" alt="f(v,t)" mathimg="1">的定积分公式，然后代入<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_078.svg" alt="t_0" mathimg="1">和<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_071.svg" alt="t_1" mathimg="1">，求出s。</p>
+<p>然而在现实中，绝大部分函数是无法得出其定积分公式的，所以通常我们使用数值逼近的方法来计算给定函数的定积分值。</p>
+<h3>一阶矩形积分</h3>
+<p>设有一角度函数<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_036.svg" alt="\theta" mathimg="1">，其微分方程为：<br>
+<img class="math-block" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_079.svg" alt="\theta^\prime = f(\omega,t)" mathimg="1"><br>
+<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_002.svg" alt="f(\omega,t)" mathimg="1">即为角速度<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_024.svg" alt="\omega" mathimg="1">对时间<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_058.svg" alt="t" mathimg="1">的相关函数。</p>
+<p>从微积分学中得知微分方程的定义可以被近似为：<br>
+<img class="math-block" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_028.svg" alt="\theta^\prime = f(\omega,t)=\frac{\theta(t+h) - \theta(t)}{h} = \frac{\theta_k - \theta_{k-1}}{h} （当h足够小时）" mathimg="1"><br>
+重新整理形式，可得：<br>
+<img class="math-block" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_025.svg" alt="\theta_k = \theta_{k-1} + h*f(\omega,t)" mathimg="1"><br>
+这便是一阶积分的公式，其几何意义如下图。可以看出，一阶积分实际上等同于将原函数分解成无数个宽度为固定时间间隔<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_009.svg" alt="h" mathimg="1">，高度为<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_002.svg" alt="f(\omega,t)" mathimg="1">的矩形，然后计算这些矩形的面积并求和，从而得到了原函数的积分近似值。选取的时间间隔<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_009.svg" alt="h" mathimg="1">越小，积分精度越高。<br>
+</p><div class="image-package">
+<div class="image-container" style="max-width: 492px; max-height: 325px;">
+<div class="image-container-fill" style="padding-bottom: 66.06%;"></div>
+<div class="image-view" data-width="492" data-height="325"><img data-original-src="//upload-images.jianshu.io/upload_images/13428042-9c8253cf96b1e2eb.jpg" data-original-width="492" data-original-height="325" data-original-format="image/jpeg" data-original-filesize="16633" style="cursor: zoom-in;" class="image-loading"></div>
+</div>
+<div class="image-caption">一阶矩形积分的几何意义</div>
+</div><p></p>
+<h3>二阶梯形积分</h3>
+<p>对于上述例子，可以得到另一种微分方程的近似形式：<br>
+<img class="math-block" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_012.svg" alt="\theta_k = \theta_{k-1} + 0.5*h*(f(\omega,t)+f(\omega,t+h))" mathimg="1"><br>
+其几何意义如下图。<br>
+</p><div class="image-package">
+<div class="image-container" style="max-width: 544px; max-height: 343px;">
+<div class="image-container-fill" style="padding-bottom: 63.05%;"></div>
+<div class="image-view" data-width="544" data-height="343"><img data-original-src="//upload-images.jianshu.io/upload_images/13428042-d1c047eef71d12b2.png" data-original-width="544" data-original-height="343" data-original-format="image/png" data-original-filesize="37716" style="cursor: zoom-in;" class="image-loading"></div>
+</div>
+<div class="image-caption">二阶梯形积分的几何意义</div>
+</div><p></p>
+<p>明显可以看出这种对梯形求面积的二阶积分方式的精度要高于一阶矩形积分。</p>
+<h3>积分方式的选择</h3>
+<p>上面我们了解到了两种数值积分方式：一阶矩形积分和二阶梯形积分。实际上它们还有另一种叫法：一阶龙格库塔积分和二阶龙格库塔积分，往上还有更高阶数的龙格库塔积分算法。</p>
+<p>显然，对于特定方程以及同等积分步长<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_009.svg" alt="h" mathimg="1">，使用高阶数的龙格库塔法可以得到更高的积分精度。然而在天穹飞控中，我们选择使用一阶积分，这是因为使用较高的积分频率（积分步长<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_009.svg" alt="h" mathimg="1">很小）如1000Hz时，其积分效果实测基本完全一致。原因是此时传感器自身的误差已经远远大于不同积分算法所带来的误差。</p>
+<h2>2.使用陀螺仪更新姿态</h2>
+<p>设有陀螺仪在某时刻的角速度采样值<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_007.svg" alt="\omega=(\omega_x,\omega_y,\omega_z)" mathimg="1">，采样时间间隔为<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_020.svg" alt="\Delta t" mathimg="1">，使用一阶积分算法，可以得到<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_020.svg" alt="\Delta t" mathimg="1">间隔内的角度变化量为：<br>
+<img class="math-block" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_013.svg" alt="\begin{cases} \Delta x=\omega_x * \Delta t\\ \Delta y=\omega_y * \Delta t\\ \Delta z=\omega_z * \Delta t \end{cases}" mathimg="1"></p>
+<p>于是可以得到一个描述物体在<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_020.svg" alt="\Delta t" mathimg="1">间隔内的转动的方向余弦矩阵<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_023.svg" alt="C_{\Delta t}" mathimg="1">：<br>
+<img class="math-block" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_022.svg" alt="C_{\Delta t}=\left[ \begin{matrix} cos\Delta ycos\Delta z&amp;sin\Delta zcos\Delta x+sin\Delta xsin\Delta ycos\Delta z&amp;-sin\Delta xsin\Delta z+sin\Delta ycos\Delta xcos\Delta z&amp;\\ -sin\Delta zcos\Delta y&amp;cos\Delta xcos\Delta z-sin\Delta xsin\Delta ysin\Delta z&amp;-sin\Delta xcos\Delta z-sin\Delta ysin\Delta zcos\Delta x&amp;\\ -sin\Delta y&amp;sin\Delta xcos\Delta y&amp;cos\Delta xcos\Delta y&amp;\\ \end{matrix} \right]" mathimg="1"></p>
+<p>有上节中方向余弦矩阵的使用方式得知，我们可以使用<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_023.svg" alt="C_{\Delta t}" mathimg="1">对一个三维向量或者描述当前姿态的方向余弦矩阵进行更新，从而实现了使用陀螺仪测量得到的角速度数据对姿态进行更新这一目的。</p>
+<p>例如：</p>
+<p>设<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_014.svg" alt="A_t=[a_x,a_y,a_z]^T" mathimg="1"> 为t时刻重力加速度向量在机体坐标系下的投影，在<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_020.svg" alt="\Delta t" mathimg="1">间隔内发送了一次转动，得到了下一时刻的重力加速度向量投影<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_010.svg" alt="A_{t+1}" mathimg="1"> ，即：<br>
+<img class="math-block" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_027.svg" alt="A_{t+1} = C_{\Delta t} * A_t" mathimg="1"></p>
+<p>该式即为姿态的迭代公式，使用每一个新时刻地角速度数据进行迭代计算，便能不断地获取到新的姿态值。不过这里的<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_011.svg" alt="A_t" mathimg="1">只包含了俯仰与横滚角信息，同理如果我们需要得到偏航角，只需定义一个向量为地磁场向量投影，然后使用<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_023.svg" alt="C_{\Delta t}" mathimg="1">对其进行迭代更新即可。</p>
+<p>下面给出一个使用陀螺仪更新姿态的代码示例：</p>
+<pre class="hljs cpp"><code class="cpp"><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">AttitudeUpdate</span><span class="hljs-params">(Vector3f_t gyro, <span class="hljs-keyword">float</span> deltaT)</span>
+</span>{
+    Vector3f_t deltaAngle;   
+    <span class="hljs-keyword">static</span> Vector3f_t vectorG = {<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>};     <span class="hljs-comment">//定义重力加速度向量投影并初始化</span>
+    <span class="hljs-keyword">static</span> Vector3f_t vectorM = {<span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>};     <span class="hljs-comment">//定义地磁场向量投影并初始化  </span>
+    <span class="hljs-keyword">float</span>  dcMat[<span class="hljs-number">9</span>];                           <span class="hljs-comment">//方向余弦矩阵</span>
+    <span class="hljs-keyword">static</span> Vector3f_t angle;                   <span class="hljs-comment">//姿态角</span>
+    
+    <span class="hljs-comment">//一阶积分计算角度变化量，单位为弧度</span>
+    <span class="hljs-comment">//gyro为角速度数据，单位为°/s，deltaT为该函数的运行时间间隔，单位为s</span>
+    deltaAngle.x = Radians(gyro.x * deltaT); 
+    deltaAngle.y = Radians(gyro.y * deltaT); 
+    deltaAngle.z = Radians(gyro.z * deltaT); 
+    
+    <span class="hljs-comment">//角度变化量转换为方向余弦矩阵</span>
+    EulerAngleToDCM(deltaAngle, dcMat);
+    
+    <span class="hljs-comment">//更新姿态向量 vector = DCM * vector</span>
+    vectorG = Matrix3MulVector3(dcMat, vectorG);
+    vectorM = Matrix3MulVector3(dcMat, vectorM);
+    
+    <span class="hljs-comment">//计算俯仰与横滚角，并由弧度制转为角度制</span>
+    AccVectorToRollPitchAngle(&amp;angle, vectorG);   
+    angle.x = Degrees(angle.x);
+    angle.y = Degrees(angle.y);    
+
+    <span class="hljs-comment">//转换地磁场向量投影到参考系的水平面</span>
+    Vector3f_t vectorM_Ef;
+    BodyFrameToEarthFrame(angle, vectorM, &amp;vectorM_Ef);
+    
+    <span class="hljs-comment">//计算偏航角，并由弧度制转为角度制</span>
+    MagVectorToYawAngle(&amp;angle, vectorM_Ef);
+    angle.z = Degrees(angle.z);    
+    
+    <span class="hljs-comment">//将偏航角限制为0-360°</span>
+    angle.z = WrapDegree360(angle.z);    
+}
+</code></pre>
+<h2>3.姿态的初始对准</h2>
+<p>前面提过，使用陀螺仪更新姿态，有一个前提是需要先获得姿态的初始值。在上面的代码实例中，我们直接在变量初始化中给了一个初始值，假定初始状态为
+机体系与参考系完全贴合。但实际应用中，在飞控刚上电时，我们必须对姿态的状态量进行初始化。最简单直接的方法便是多次读取加速度计与磁力计的值，然后求
+平均值，把最终得到的数据作为姿态的初始值。</p>
+<p>在天穹飞控中定义了<strong><a href="https://links.jianshu.com/go?to=https%3A%2F%2Fgithub.com%2Floveuav%2FBlueSkyFlightControl%2Fblob%2Fmaster%2FSRC%2FNAVIGATION%2Fahrs.c" target="_blank" rel="nofollow">AttitudeInitAlignment</a></strong>函数用于姿态初始化。</p>
+<h2>4.传感器校准</h2>
+<p>在飞控中运行第二小节中给出的姿态更新示例，你会发现，尽管计算出来的姿态值能够很好的反映飞控的真实姿态变化，但依然存在着一个很大的问题：当飞控静止不动时，姿态值仍然在不断变化，随着时间的增加，姿态值与飞控的真实姿态之间的误差会越来越大。</p>
+<p>这是因为陀螺仪传感器本身存在着误差。飞控静止时，理论上陀螺仪的输出为0，即角速度为0，姿态不变。但实际上即使在静止状态，陀螺仪依然会有输出，这称之为陀螺仪的零偏误差，姿态更新过程中，零偏误差也会不断被累积，最终误差越来越大，使得姿态值逐渐偏离真实值。</p>
+<p>为了解决这个问题，需要对传感器进行校准，减小甚至消除其误差。对于陀螺仪来说，校准零偏误差的最简单方式，便是将飞控静止放置，在一定时间内连续读取其输出，然后取平均值，得到的数据即为零偏误差。在后面的姿态更新中，角速度值减去该零偏误差即可。</p>
+<p>实际上陀螺仪的误差组成并非如此简单，要取得较好的校准效果需要花费很多功夫，且要有额外设备的支持。另外其余传感器如加速度计和磁力计，也均需要校准，其具体校准实现颇为复杂，这里不便展开，在本教程的【姿态篇】的第四篇中，将进行详细讲述。有兴趣的童鞋可前往查看：<a href="https://links.jianshu.com/go?to=https%3A%2F%2Fblog.csdn.net%2Floveuav%2Farticle%2Fdetails%2F81592870" target="_blank" rel="nofollow">姿态篇：四.非线性最小二乘与飞控传感器校准</a>。</p>
+<p>经过校准后，陀螺仪误差将极大减小，但是并非代表完全不存在误差。事实上，陀螺仪的零偏误差并不会固定不变，而是会随着环境、温度、时间等因素的变
+化而变化，这就带来了很多麻烦。另外通常多旋翼飞控上使用的均为低成本MEMS陀螺仪，其随机噪声误差也非常大。这就表示，陀螺仪没有误差的理想情况在现
+实中是不可能存在的。因此单独使用陀螺仪来更新姿态，其误差会逐渐累积，无法长时间保证姿态值的准确。</p>
+<p>下一节中，我们将介绍如何使用多传感器融合的方式，计算出尽可能准确的姿态值。</p>
+<h1>六.姿态估计与互补滤波</h1>
+<p><strong>估计</strong>，其意为对事物做出大致的推断。某一天下班后路过一个水果摊，突然想买点龙眼解解馋，可是囊中羞涩，支付宝上的余额大约只能买2到3斤。于是找老板要了个袋子，挑了许多龙眼，大概用手感觉了一下，应该有2斤。这时候我对龙眼重量的猜测，便是<strong>估计值</strong>。然后给老板放到秤上一秤，2.3斤，这是<strong>真实值</strong>。而2.3 - 2 = 0.3，则是这个过程中的<strong>估计误差</strong>。</p>
+<p>而对于飞控而言的姿态估计，便是计算出一个最接近真实值的姿态值，也就是让估计误差最小。姿态的测量与计算，离不开传感器，但是各种传感器均存在不同的优缺点，其中：</p>
+<ul>
+<li><p><strong>陀螺仪</strong>可用于姿态的连续更新，优点是精度较高且几乎不受外界因素干扰，缺点是自身存在误差，在积分阶段会因为误差不断累积从而使得计算结果不准确。</p></li>
+<li><p><strong>加速度计</strong>和<strong>磁力计</strong>可直接用于姿态的测量，优点是绝对准确，不存在累积误差，但缺点也很明显，容易受到干扰。另外加速度计容易受到震动影响，并且对姿态的测量结果仅在静止或者物体匀速运动时才准确。</p></li>
+</ul>
+<p>单一使用任何传感器，都无法得到有效准确的姿态信息。因此，我们需要同时使用多个传感器，结合各自优缺点，将其数据进行融合，从而得到最准确的估计。</p>
+<p>其中，多传感器信息融合的最有效的一种方式为<strong>加权融合</strong>。而通常用于融合的多个传感器之间存在性质互补的情况，所以我们也称之为<strong>互补滤波</strong>。尽管名字中带有“滤波”两字，却完全不同于传统意义上的对某信号特定频域上进行滤除操作的滤波，实则上它是一种最优估计方法。</p>
+<p>定义如下式子：<br>
+<img class="math-block" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_008.svg" alt="angle_{t+1} = (1-k)*(angle_t + \omega _t * \Delta t) + k * angle_{measure}" mathimg="1"></p>
+<p>这就是一个简单的使用互补滤波更新姿态的示例。其中<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_016.svg" alt="angle_t" mathimg="1">和<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_006.svg" alt="angle_{t+1}" mathimg="1">分别为<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_058.svg" alt="t" mathimg="1">，<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_026.svg" alt="t+1" mathimg="1">时刻的姿态角估计值，<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_030.svg" alt="\omega _t" mathimg="1">为<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_058.svg" alt="t" mathimg="1">时刻的角速度，<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_005.svg" alt="angle_{measure}" mathimg="1">为<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_058.svg" alt="t" mathimg="1">时刻来至于加速度计或磁力计的姿态测量值。</p>
+<p>其中的<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_029.svg" alt="k" mathimg="1">，便是最核心的权重因子了。它的大小决定了<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_058.svg" alt="t" mathimg="1">时刻的估计中，我们相信哪个传感器的数据多一点。比如<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math.svg" alt="k=0.001" mathimg="1">，则有<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_021.svg" alt="1-k=0.999" mathimg="1">，
+意味着在每一次估计中，角速度所更新的姿态值要远比来自加速度（或磁力计）的姿态测量值准确，但同时还是使用了姿态测量值对姿态进行修正，以消除角速度积
+分带来的累积误差。这样，我们便得到了一个相对而言更准确的姿态估计：对外界环境因素的干扰不敏感，也不会因为角速度积分累积误差而逐渐偏离真实值。</p>
+<p>对上式进行分解和变换，可以得到：<br>
+<img class="math-block" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_004.svg" alt="\begin{cases} angle_t = angle_t + \omega _t * \Delta t\\ angle_{t+1} = angle_t + k * (angle_{measure} - angle_t ) \end{cases}" mathimg="1"></p>
+<p>即先使用角速度数据更新姿态，然后使用姿态观测值对姿态估计值进行修正，修正速度取决于<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_029.svg" alt="k" mathimg="1">的大小。</p>
+<p>在上节使用角速度更新姿态的例子中，有：<br>
+<img class="math-block" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_027.svg" alt="A_{t+1} = C_{\Delta t} * A_t" mathimg="1"></p>
+<p>定义t时刻的加速度观测为<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_015.svg" alt="a_t" mathimg="1">，可以得到：<br>
+<img class="math-block" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_018.svg" alt="\begin{cases} A_t^- = C_{\Delta t} * A_t\\ A_{t+1} = A_t^- + K * (a_t - A_t^-) \end{cases}" mathimg="1"></p>
+<p>其中<img class="math-inline" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_017.svg" alt="K" mathimg="1">是一个对角线元素为权重因子的3x3矩阵，即：<br>
+<img class="math-block" src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/math_019.svg" alt="K=\left[ \begin{matrix} k_1&amp;0&amp;0&amp;\\ 0&amp;k_2&amp;0&amp;\\ 0&amp;0&amp;k_3&amp;\\ \end{matrix} \right]" mathimg="1"></p>
+<p>下面贴上在上一节的角速度更新姿态代码基础上加入互补滤波的程序实例：</p>
+<pre class="hljs cpp"><code class="cpp"><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">AttitudeUpdateByComplementaryFilter</span><span class="hljs-params">(Vector3f_t gyro, Vector3f_t acc, Vector3f_t mag, <span class="hljs-keyword">float</span> deltaT)</span>
+</span>{
+    Vector3f_t deltaAngle;   
+    <span class="hljs-keyword">static</span> Vector3f_t vectorG = {<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>};     <span class="hljs-comment">//定义重力加速度向量投影并初始化</span>
+    <span class="hljs-keyword">static</span> Vector3f_t vectorM = {<span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>};     <span class="hljs-comment">//定义地磁场向量投影并初始化  </span>
+    <span class="hljs-keyword">float</span>  dcMat[<span class="hljs-number">9</span>];                           <span class="hljs-comment">//方向余弦矩阵</span>
+    <span class="hljs-keyword">static</span> Vector3f_t angle;                   <span class="hljs-comment">//姿态角</span>
+    
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">float</span> K_G[<span class="hljs-number">9</span>] = {<span class="hljs-number">0.0003</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0.0003</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0.0003</span>};  <span class="hljs-comment">//重力加速度向量的互补滤波权重矩阵</span>
+    <span class="hljs-keyword">static</span> <span class="hljs-keyword">float</span> K_M[<span class="hljs-number">9</span>] = {<span class="hljs-number">0.001</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0.001</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0.001</span>};     <span class="hljs-comment">//地磁场向量的互补滤波权重矩阵</span>
+    
+    <span class="hljs-comment">//一阶积分计算角度变化量，单位为弧度</span>
+    <span class="hljs-comment">//gyro为角速度数据，单位为°/s，deltaT为该函数的运行时间间隔，单位为s</span>
+    deltaAngle.x = Radians(gyro.x * deltaT); 
+    deltaAngle.y = Radians(gyro.y * deltaT); 
+    deltaAngle.z = Radians(gyro.z * deltaT); 
+    
+    <span class="hljs-comment">//角度变化量转换为方向余弦矩阵</span>
+    EulerAngleToDCM(deltaAngle, dcMat);
+    
+    <span class="hljs-comment">//更新姿态向量 vector = DCM * vector</span>
+    vectorG = Matrix3MulVector3(dcMat, vectorG);
+    vectorM = Matrix3MulVector3(dcMat, vectorM);
+    
+    <span class="hljs-comment">//使用互补滤波对姿态估计量进行修正</span>
+    <span class="hljs-comment">//acc为加速度计测量值，mag为磁力计测量值</span>
+    vectorG = Vector3f_Add(vectorG, Matrix3MulVector3(K_G, Vector3f_Sub(acc, vectorG)));
+    vectorM = Vector3f_Add(vectorM, Matrix3MulVector3(K_M, Vector3f_Sub(mag, vectorM)));
+    
+    <span class="hljs-comment">//计算俯仰与横滚角，并由弧度制转为角度制</span>
+    AccVectorToRollPitchAngle(&amp;angle, vectorG);   
+    angle.x = Degrees(angle.x);
+    angle.y = Degrees(angle.y);    
+
+    <span class="hljs-comment">//转换地磁场向量投影到参考系的水平面</span>
+    Vector3f_t vectorM_Ef;
+    BodyFrameToEarthFrame(angle, vectorM, &amp;vectorM_Ef);
+    
+    <span class="hljs-comment">//计算偏航角，并由弧度制转为角度制</span>
+    MagVectorToYawAngle(&amp;angle, vectorM_Ef);
+    angle.z = Degrees(angle.z);    
+    
+    <span class="hljs-comment">//将偏航角限制为0-360°</span>
+    angle.z = WrapDegree360(angle.z);    
+}
+</code></pre>
+<p>其中Vector3f_Add和Matrix3MulVector3为天穹飞控中定义的各类向量及矩阵运算函数，详情请参阅Math文件夹下的代码：<a href="https://links.jianshu.com/go?to=https%3A%2F%2Fgithub.com%2Floveuav%2FBlueSkyFlightControl%2Ftree%2Fmaster%2FSRC%2FMATH" target="_blank" rel="nofollow">天穹飞控</a></p>
+<h1>七.代码与工程实例</h1>
+<p>本节中将给出一个具体的工程实例，可以直接在天穹飞控的硬件上进行运行和调试，帮助初学者对本篇内容的学习和理解。</p>
+<p>后续再更新。</p>
+<h1>八.总结</h1>
+<p>本篇文章介绍了姿态的基本定义和表示方式，并讲解了多种传感器计算姿态的方法，以及使用多传感器融合估计姿态的一种基本算法。结合有大量代码实例，
+可以帮助初学者入门，如果依然有不明白的地方，可以上论坛或者Q群提问，也可以同时结合Github上的天穹飞控的代码进行学习。</p>
+<p>这里是传送门：</p>
+<blockquote>
+<p><a href="https://links.jianshu.com/go?to=https%3A%2F%2Fgithub.com%2Floveuav%2FBlueSkyFlightControl" target="_blank" rel="nofollow">天穹飞控</a><br>
+<a href="https://links.jianshu.com/go?to=http%3A%2F%2Fbbs.loveuav.com%2Fforum-68-1.html" target="_blank" rel="nofollow">飞控交流论坛</a><br>
+飞控交流Q群：472648354</p>
+</blockquote>
+<p>作为本教程姿态篇的开篇及入门篇，仅仅是介绍了一些基本概念及算法，然而实际环境颇为复杂，需要考虑的因素非常多，要提高姿态估计的精度，还有很长
+的路要走。最后用于多传感器融合的互补滤波算法中，其权重因子通常依靠调试和经验给出。而下一节我们将会学习卡尔曼滤波，一种从理论角度计算融合权重的最
+优估计方法，顺便介绍另一种常见的姿态表示方式：四元数。</p>
+
+          </div>
+        </div>
+    </div>
+
+    <!-- 如果是付费文章，未购买，则显示购买按钮 -->
+
+    <!-- 连载目录项 -->
+
+    <!-- 如果是付费文章 -->
+      <!-- 如果是付费连载，已购买，且作者允许赞赏，则显示付费信息和赞赏 -->
+        <div id="free-reward-panel" class="support-author"><p>小礼物走一走，来简书关注我</p> <div class="btn btn-pay">赞赏支持</div> <div class="supporter"><ul class="support-list"></ul> <!----></div> <!----> <!----></div>
+
+      <div class="show-foot">
+        <a class="notebook" href="https://www.jianshu.com/nb/28145833">
+          <i class="iconfont ic-search-notebook"></i>
+          <span>深入浅出多旋翼飞控开发</span>
+</a>        <div class="copyright" data-toggle="tooltip" data-html="true" data-original-title="转载请联系作者获得授权，并标注“简书作者”。">
+          © 著作权归作者所有
+        </div>
+        <div class="modal-wrap" data-report-note="">
+          <a id="report-modal">举报文章</a>
+        </div>
+      </div>
+
+      <!-- 文章底部作者信息 -->
+        <div class="follow-detail">
+          <div class="info">
+            <a class="avatar" href="https://www.jianshu.com/u/f72e5a592db5">
+              <img src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/757a1117-6e22-41f3-b2bd-9937391c99e8_002.png" alt="96">
+</a>            <a class="btn btn-success follow"><i class="iconfont ic-follow"></i><span>关注</span></a>
+            <a class="title" href="https://www.jianshu.com/u/f72e5a592db5">王伟韵</a>
+              <i class="iconfont ic-man"></i>
+          <p>写了 36840 字，被 31 人关注，获得了 11 个喜欢</p></div>
+        </div>
+
+    <div class="meta-bottom">
+      <div data-v-6ddd02c6="" class="like"><div data-v-6ddd02c6="" class="btn like-group"><div data-v-6ddd02c6="" class="btn-like"><a data-v-6ddd02c6="">喜欢</a></div> <div data-v-6ddd02c6="" class="modal-wrap"><a data-v-6ddd02c6="">2</a></div></div> <!----></div>
+      <div class="share-group">
+        <a class="share-circle" data-action="weixin-share" data-toggle="tooltip" data-original-title="分享到微信">
+          <i class="iconfont ic-wechat"></i>
+        </a>
+        <a class="share-circle" data-action="weibo-share" data-toggle="tooltip" href="javascript:void((function(s,d,e,r,l,p,t,z,c){var%20f='http://v.t.sina.com.cn/share/share.php?appkey=1881139527',u=z||d.location,p=['&amp;url=',e(u),'&amp;title=',e(t||d.title),'&amp;source=',e(r),'&amp;sourceUrl=',e(l),'&amp;content=',c||'gb2312','&amp;pic=',e(p||'')].join('');function%20a(){if(!window.open([f,p].join(''),'mb',['toolbar=0,status=0,resizable=1,width=440,height=430,left=',(s.width-440)/2,',top=',(s.height-430)/2].join('')))u.href=[f,p].join('');};if(/Firefox/.test(navigator.userAgent))setTimeout(a,0);else%20a();})(screen,document,encodeURIComponent,'','','',%20'%E6%8E%A8%E8%8D%90%20%E7%8E%8B%E4%BC%9F%E9%9F%B5%20%E7%9A%84%E6%96%87%E7%AB%A0%E3%80%8A%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%E3%80%8B%EF%BC%88%20%E5%88%86%E4%BA%AB%E8%87%AA%20@%E7%AE%80%E4%B9%A6%20%EF%BC%89','https://www.jianshu.com/p/efffeb1e20aa?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=reader_share&amp;utm_source=weibo','%E9%A1%B5%E9%9D%A2%E7%BC%96%E7%A0%81gb2312|utf-8%E9%BB%98%E8%AE%A4gb2312'));" data-original-title="分享到微博">
+          <i class="iconfont ic-weibo"></i>
+        </a>
+        <a class="share-circle" data-toggle="tooltip" id="longshare" target="_blank" data-original-title="" title="">
+            <div class="qrcode" id="qrcode">
+             <img src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/download-index-side-qrcode-cb13fc9106a478795f8d10f9f632fccf.png" alt="Download index side qrcode">
+             <p>下载app生成长微博图片</p>
+             </div>
+          <i class="iconfont ic-picture"></i>
+        </a>
+        <a class="share-circle more-share" tabindex="0" data-toggle="popover" data-placement="top" data-html="true" data-trigger="focus" href="javascript:void(0);" data-content="
+          &lt;ul class=&quot;share-list&quot;&gt;
+            &lt;li&gt;&lt;a href=&quot;javascript:void(function(){var d=document,e=encodeURIComponent,r='http://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url='+e('https://www.jianshu.com/p/efffeb1e20aa?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=reader_share&amp;utm_source=qzone')+'&amp;title='+e('推荐 王伟韵 的文章《姿态篇：一.初识姿态估计》'),x=function(){if(!window.open(r,'qzone','toolbar=0,resizable=1,scrollbars=yes,status=1,width=600,height=600'))location.href=r};if(/Firefox/.test(navigator.userAgent)){setTimeout(x,0)}else{x()}})();&quot;&gt;&lt;i class=&quot;social-icon-sprite social-icon-zone&quot;&gt;&lt;/i&gt;&lt;span&gt;分享到QQ空间&lt;/span&gt;&lt;/a&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;a href=&quot;javascript:void(function(){var d=document,e=encodeURIComponent,r='https://twitter.com/share?url='+e('https://www.jianshu.com/p/efffeb1e20aa?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=reader_share&amp;utm_source=twitter')+'&amp;text='+e('推荐 王伟韵 的文章《姿态篇：一.初识姿态估计》（ 分享自 @jianshucom ）')+'&amp;related='+e('jianshucom'),x=function(){if(!window.open(r,'twitter','toolbar=0,resizable=1,scrollbars=yes,status=1,width=600,height=600'))location.href=r};if(/Firefox/.test(navigator.userAgent)){setTimeout(x,0)}else{x()}})();&quot;&gt;&lt;i class=&quot;social-icon-sprite social-icon-twitter&quot;&gt;&lt;/i&gt;&lt;span&gt;分享到Twitter&lt;/span&gt;&lt;/a&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;a href=&quot;javascript:void(function(){var d=document,e=encodeURIComponent,r='https://www.facebook.com/dialog/share?app_id=483126645039390&amp;display=popup&amp;href=https://www.jianshu.com/p/efffeb1e20aa?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=reader_share&amp;utm_source=facebook',x=function(){if(!window.open(r,'facebook','toolbar=0,resizable=1,scrollbars=yes,status=1,width=450,height=330'))location.href=r};if(/Firefox/.test(navigator.userAgent)){setTimeout(x,0)}else{x()}})();&quot;&gt;&lt;i class=&quot;social-icon-sprite social-icon-facebook&quot;&gt;&lt;/i&gt;&lt;span&gt;分享到Facebook&lt;/span&gt;&lt;/a&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;a href=&quot;javascript:void(function(){var d=document,e=encodeURIComponent,r='https://plus.google.com/share?url='+e('https://www.jianshu.com/p/efffeb1e20aa?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=reader_share&amp;utm_source=google_plus'),x=function(){if(!window.open(r,'google_plus','toolbar=0,resizable=1,scrollbars=yes,status=1,width=450,height=330'))location.href=r};if(/Firefox/.test(navigator.userAgent)){setTimeout(x,0)}else{x()}})();&quot;&gt;&lt;i class=&quot;social-icon-sprite social-icon-google&quot;&gt;&lt;/i&gt;&lt;span&gt;分享到Google+&lt;/span&gt;&lt;/a&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;a href=&quot;javascript:void(function(){var d=document,e=encodeURIComponent,s1=window.getSelection,s2=d.getSelection,s3=d.selection,s=s1?s1():s2?s2():s3?s3.createRange().text:'',r='http://www.douban.com/recommend/?url='+e('https://www.jianshu.com/p/efffeb1e20aa?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=reader_share&amp;utm_source=douban')+'&amp;title='+e('姿态篇：一.初识姿态估计')+'&amp;sel='+e(s)+'&amp;v=1',x=function(){if(!window.open(r,'douban','toolbar=0,resizable=1,scrollbars=yes,status=1,width=450,height=330'))location.href=r+'&amp;r=1'};if(/Firefox/.test(navigator.userAgent)){setTimeout(x,0)}else{x()}})()&quot;&gt;&lt;i class=&quot;social-icon-sprite social-icon-douban&quot;&gt;&lt;/i&gt;&lt;span&gt;分享到豆瓣&lt;/span&gt;&lt;/a&gt;&lt;/li&gt;
+          &lt;/ul&gt;
+        " data-original-title="" title="">更多分享</a>
+      </div>
+    </div>
+
+      <a id="web-note-ad-1" target="_blank" href="https://www.jianshu.com/apps/redirect?utm_source=note-bottom-click"><img src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/web-note-ad-1-c2e1746859dbf03abe49248893c9bea4.png" alt="Web note ad 1"></a>
+
+    <!--
+    <div id="note-comment-above-ad-container">
+      <span id="youdao-comment-ad" class="ad-badge">广告</span>
+    </div>
+    -->
+    <div id="vue_comment"></div>
+  </div>
+
+  <div class="side-tool"><ul><li data-placement="left" data-toggle="tooltip" data-container="body" data-original-title="回到顶部" style="display: none;"><a class="function-button"><i class="iconfont ic-backtop"></i></a></li> <!----> <!----> <!----> <!----> <li data-placement="left" data-toggle="tooltip" data-container="body" data-original-title="分享文章" id="share"><a tabindex="0" role="button" data-toggle="popover" data-placement="left" data-html="true" data-trigger="focus" href="javascript:void(0);" data-content="&lt;ul class='share-list' style=&quot;width:220px&quot;&gt;
+                  &lt;li&gt;&lt;a class=&quot;weixin-share&quot;&gt;&lt;i class=&quot;social-icon-sprite social-icon-weixin&quot;&gt;&lt;/i&gt;&lt;span&gt;分享到微信&lt;/span&gt;&lt;/a&gt;&lt;/li&gt;
+                  &lt;li&gt;&lt;a href=&quot;javascript:void((function(s,d,e,r,l,p,t,z,c){var%20f='http://v.t.sina.com.cn/share/share.php?appkey=1881139527',u=z||d.location,p=['&amp;url=',e(u),'&amp;title=',e(t||d.title),'&amp;source=',e(r),'&amp;sourceUrl=',e(l),'&amp;content=',c||'gb2312','&amp;pic=',e(p||'')].join('');function%20a(){if(!window.open([f,p].join(''),'mb',['toolbar=0,status=0,resizable=1,width=440,height=430,left=',(s.width-440)/2,',top=',(s.height-430)/2].join('')))u.href=[f,p].join('');};if(/Firefox/.test(navigator.userAgent))setTimeout(a,0);else%20a();})(screen,document,encodeURIComponent,'','','', '推荐 王伟韵 的文章《姿态篇：一.初识姿态估计》（ 分享自 @简书 ）','https://www.jianshu.com/p/efffeb1e20aa?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=reader_share&amp;utm_source=weibo','页面编码gb2312|utf-8默认gb2312'));&quot;&gt;&lt;i class='social-icon-sprite social-icon-weibo'&gt;&lt;/i&gt;&lt;span&gt;分享到微博&lt;/span&gt;&lt;/a&gt;&lt;/li&gt;
+                  
+                  &lt;li&gt;&lt;a href=&quot;javascript:void(function(){var d=document,e=encodeURIComponent,r='http://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url='+e('https://www.jianshu.com/p/efffeb1e20aa?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=reader_share&amp;utm_source=qzone')+'&amp;title='+e('推荐 王伟韵 的文章《姿态篇：一.初识姿态估计》'),x=function(){if(!window.open(r,'qzone','toolbar=0,resizable=1,scrollbars=yes,status=1,width=600,height=600'))location.href=r};if(/Firefox/.test(navigator.userAgent)){setTimeout(x,0)}else{x()}})();&quot;&gt;&lt;i class='social-icon-sprite social-icon-zone'&gt;&lt;/i&gt;&lt;span&gt;分享到QQ空间&lt;/span&gt;&lt;/a&gt;&lt;/li&gt;
+                  &lt;li&gt;&lt;a href=&quot;javascript:void(function(){var d=document,e=encodeURIComponent,r='https://twitter.com/share?url='+e('https://www.jianshu.com/p/efffeb1e20aa?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=reader_share&amp;utm_source=twitter')+'&amp;text='+e('推荐 王伟韵 的文章《姿态篇：一.初识姿态估计》（ 分享自 @jianshucom ）')+'&amp;related='+e('jianshucom'),x=function(){if(!window.open(r,'twitter','toolbar=0,resizable=1,scrollbars=yes,status=1,width=600,height=600'))location.href=r};if(/Firefox/.test(navigator.userAgent)){setTimeout(x,0)}else{x()}})();&quot;&gt;&lt;i class='social-icon-sprite social-icon-twitter'&gt;&lt;/i&gt;&lt;span&gt;分享到Twitter&lt;/span&gt;&lt;/a&gt;&lt;/li&gt;
+                  &lt;li&gt;&lt;a href=&quot;javascript:void(function(){var d=document,e=encodeURIComponent,r='https://www.facebook.com/dialog/share?app_id=483126645039390&amp;display=popup&amp;href=https://www.jianshu.com/p/efffeb1e20aa?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=reader_share&amp;utm_source=facebook',x=function(){if(!window.open(r,'facebook','toolbar=0,resizable=1,scrollbars=yes,status=1,width=450,height=330'))location.href=r};if(/Firefox/.test(navigator.userAgent)){setTimeout(x,0)}else{x()}})();&quot;&gt;&lt;i class='social-icon-sprite social-icon-facebook'&gt;&lt;/i&gt;&lt;span&gt;分享到Facebook&lt;/span&gt;&lt;/a&gt;&lt;/li&gt;
+                  &lt;li&gt;&lt;a href=&quot;javascript:void(function(){var d=document,e=encodeURIComponent,r='https://plus.google.com/share?url='+e('https://www.jianshu.com/p/efffeb1e20aa?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=reader_share&amp;utm_source=google_plus'),x=function(){if(!window.open(r,'google_plus','toolbar=0,resizable=1,scrollbars=yes,status=1,width=450,height=330'))location.href=r};if(/Firefox/.test(navigator.userAgent)){setTimeout(x,0)}else{x()}})();&quot;&gt;&lt;i class='social-icon-sprite social-icon-google'&gt;&lt;/i&gt;&lt;span&gt;分享到Google+&lt;/span&gt;&lt;/a&gt;&lt;/li&gt;
+                  &lt;li&gt;&lt;a href=&quot;javascript:void(function(){var d=document,e=encodeURIComponent,s1=window.getSelection,s2=d.getSelection,s3=d.selection,s=s1?s1():s2?s2():s3?s3.createRange().text:'',r='http://www.douban.com/recommend/?url='+e('https://www.jianshu.com/p/efffeb1e20aa?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=reader_share&amp;utm_source=douban')+'&amp;title='+e('姿态篇：一.初识姿态估计')+'&amp;sel='+e(s)+'&amp;v=1',x=function(){if(!window.open(r,'douban','toolbar=0,resizable=1,scrollbars=yes,status=1,width=450,height=330'))location.href=r+'&amp;r=1'};if(/Firefox/.test(navigator.userAgent)){setTimeout(x,0)}else{x()}})()&quot;&gt;&lt;i class='social-icon-sprite social-icon-douban'&gt;&lt;/i&gt;&lt;span&gt;分享到豆瓣&lt;/span&gt;&lt;/a&gt;&lt;/li&gt;
+                &lt;/ul&gt;" data-original-title="" title="" class="function-button"><i class="iconfont ic-share"></i></a> <!----></li> <!----></ul></div>
+</div>
+<div class="note-bottom">
+  <!---->
+  <div data-vcomp="recommended-notes" data-note-id="32153386"></div>
+
+  <!-- 相关文章 -->
+      <!-- 未登录用户 -->
+      <div class="seo-recommended-notes">
+
+            <div class="note have-img">
+              <a class="cover" target="_blank" href="https://www.jianshu.com/p/adbdf93585ac?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=seo_notes&amp;utm_source=recommendation">
+                <img src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/1704608-0fcd5a82115fee8c.png" alt="240">
+</a>              <a class="title" target="_blank" href="https://www.jianshu.com/p/adbdf93585ac?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=seo_notes&amp;utm_source=recommendation">四旋翼姿态解算</a>
+              <p class="description">现在通用的姿态传感器是MPU6050，这种传感器能输出三个加速度acc
+和三个转动gyro。 有了这几个数据就可以通过数学解算得到飞行器的姿态。 欧拉角 欧拉角wiki 
+对于任何参考系，一个刚体的取向，是依照顺序，从这参考系，做三个欧拉角的旋转而设定的。所以，刚体的取向可以用...</p>
+              <a class="author" target="_blank" href="https://www.jianshu.com/u/e81a8bf51553?utm_campaign=maleskine&amp;utm_content=user&amp;utm_medium=seo_notes&amp;utm_source=recommendation">
+                <div class="avatar">
+                  <img src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/ec03c97e15f4.jpg" alt="48">
+                </div>
+                <span class="name">AwesomeAshe</span>
+</a>            </div>
+
+            <div class="note have-img">
+              <a class="cover" target="_blank" href="https://www.jianshu.com/p/28c22fd7b94d?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=seo_notes&amp;utm_source=recommendation">
+                <img src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/2761157-fabb2bc0522c710f.png" alt="240">
+</a>              <a class="title" target="_blank" href="https://www.jianshu.com/p/28c22fd7b94d?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=seo_notes&amp;utm_source=recommendation">地磁融合纠正四元素计算姿态</a>
+              <p class="description">花了整整一天时间在地磁融合计算姿态上，看了很多论坛，发现都是同一篇文
+章，但是一直理解不了，后来发现就是这些笔者全部都是一字不差照搬照抄，而最初的博主又没有说清楚导致。我还是结合原文加上我自己通俗的理解来解释一下 
+首先给出x-IMU关于陀螺仪、加速度计、地磁计的融合代码： 相...</p>
+              <a class="author" target="_blank" href="https://www.jianshu.com/u/e3ebe5536ff4?utm_campaign=maleskine&amp;utm_content=user&amp;utm_medium=seo_notes&amp;utm_source=recommendation">
+                <div class="avatar">
+                  <img src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/7c20030179bb.png" alt="48">
+                </div>
+                <span class="name">marine0131</span>
+</a>            </div>
+
+            <div class="note have-img">
+              <a class="cover" target="_blank" href="https://www.jianshu.com/p/5c1c9c1dde04?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=seo_notes&amp;utm_source=recommendation">
+                <img src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/13428042-055893d2df9de2b0.jpg" alt="240">
+</a>              <a class="title" target="_blank" href="https://www.jianshu.com/p/5c1c9c1dde04?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=seo_notes&amp;utm_source=recommendation">姿态篇：四.非线性最小二乘与飞控传感器校准</a>
+              <p class="description">[深入浅出多旋翼飞控开发][姿态篇][四][非线性最小二乘与飞控传感器
+校准] 作者：王伟韵QQ : 352707983Github 前言 搞好了传感器，那意味着飞控已经完成了一半。 
+不用猜了，这句话正是鄙人说的:)。飞控的软硬件相关工作，绝大部分是围绕传感器展开的，它们的重...</p>
+              <a class="author" target="_blank" href="https://www.jianshu.com/u/f72e5a592db5?utm_campaign=maleskine&amp;utm_content=user&amp;utm_medium=seo_notes&amp;utm_source=recommendation">
+                <div class="avatar">
+                  <img src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/757a1117-6e22-41f3-b2bd-9937391c99e8.png" alt="48">
+                </div>
+                <span class="name">王伟韵</span>
+</a>            </div>
+
+            <div class="note ">
+                            <a class="title" target="_blank" href="https://www.jianshu.com/p/f3855180965e?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=seo_notes&amp;utm_source=recommendation">里昂的2017与2018</a>
+              <p class="description">2017年对于我来说是重要的一年，因为我这一年里我自己的思维发生了几次
+转变，这不是外显的，但是对于我来说很重要，因此在这个辞旧迎新的时刻，我需要对自己进行总结和盘点。 2017年关键词：自我赋能 
+1、2017年年初因为对管理心理学、职业发展心理学和儿童心理学的兴趣，报名了心...</p>
+              <a class="author" target="_blank" href="https://www.jianshu.com/u/855a9c3a91b7?utm_campaign=maleskine&amp;utm_content=user&amp;utm_medium=seo_notes&amp;utm_source=recommendation">
+                <div class="avatar">
+                  <img src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/cbe62277-26e2-4a1a-8fd5-e647194f82aa.jpeg" alt="48">
+                </div>
+                <span class="name">金语梁言</span>
+</a>            </div>
+
+            <div class="note have-img">
+              <a class="cover" target="_blank" href="https://www.jianshu.com/p/5ebaa10a5bb1?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=seo_notes&amp;utm_source=recommendation">
+                <img src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/11219963-e29dacbb9f142853.jpeg" alt="240">
+</a>              <a class="title" target="_blank" href="https://www.jianshu.com/p/5ebaa10a5bb1?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=seo_notes&amp;utm_source=recommendation">在北极圈里开价值2500万+的豪车自驾游是怎样的感觉？</a>
+              <p class="description">文章来源于网络 
+没有亲自到北极圈你是无法理解这种寒冷的，没有亲自参与旅拍豪车的人更体会不到在北极圈自驾游的感觉！作为价值超过2500万+豪车的BUGATTI威航
+旅拍摄影师，我就是这么幸运！ 瑞典北部的冬天，给我的感觉是太阳根本舍不得升起来，而白天最温暖的时候也仅有零下18摄...</p>
+              <a class="author" target="_blank" href="https://www.jianshu.com/u/4dd4d5bd8d8c?utm_campaign=maleskine&amp;utm_content=user&amp;utm_medium=seo_notes&amp;utm_source=recommendation">
+                <div class="avatar">
+                  <img src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/fb9a80a2-5768-4402-bf17-5331533dcfe8.png" alt="48">
+                </div>
+                <span class="name">普达斯PUDASI</span>
+</a>            </div>
+
+            <div class="note ">
+                            <a class="title" target="_blank" href="https://www.jianshu.com/p/26d574617ac9?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=seo_notes&amp;utm_source=recommendation">知识管理系统构建训练营结营总结</a>
+              <p class="description">  
+五天时间非常短暂，但却解决了我几年来关于信息收集，使用的困惑。通过运营组全体人员的精心准备，特别是几位老师的倾情讲座，让我从一种混沌状态走向了知
+行合一的方向。特别是面对自己收集的大量信息处于混乱的状态，那种想要改变却无从做起的茫然和焦虑逐渐磨灭了自己学习的积极性，这种状...</p>
+              <a class="author" target="_blank" href="https://www.jianshu.com/u/651f0990c02c?utm_campaign=maleskine&amp;utm_content=user&amp;utm_medium=seo_notes&amp;utm_source=recommendation">
+                <div class="avatar">
+                  <img src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/2d0b5460-4cb3-4445-8f0f-da6e438df4a1.jpg" alt="48">
+                </div>
+                <span class="name">向阳花开我心飞翔</span>
+</a>            </div>
+      </div>
+</div>
+
+    <script type="application/json" data-name="page-data">{"user_signed_in":false,"locale":"zh-CN","os":"linux","read_mode":"day","read_font":"font2","note_show":{"is_author":false,"is_following_author":false,"is_liked_note":false,"follow_state":0,"uuid":"63f03709-6da6-46b1-aa3f-7b2f716d150c"},"note":{"id":32153386,"slug":"efffeb1e20aa","user_id":13428042,"notebook_id":28145833,"commentable":true,"likes_count":2,"views_count":2787,"public_wordage":7269,"comments_count":0,"featured_comments_count":0,"total_rewards_count":0,"is_author":false,"paid_type":"free","paid":false,"paid_content_accessible":false,"author":{"nickname":"王伟韵","total_wordage":36840,"followers_count":31,"total_likes_count":11}}}</script>
+    
+    <script src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/babel-polyfill-d171e3dec4b6c15634dd.js" crossorigin="anonymous"></script>
+    <script src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/web-base-e0abbe02a2a3751b5d82.js" crossorigin="anonymous"></script>
+<script src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/web-3fc97417af1d4231de85.js" crossorigin="anonymous"></script>
+    
+    <script src="%E5%A7%BF%E6%80%81%E7%AF%87%EF%BC%9A%E4%B8%80.%E5%88%9D%E8%AF%86%E5%A7%BF%E6%80%81%E4%BC%B0%E8%AE%A1%20-%20%E7%AE%80%E4%B9%A6_files/entry-423d96b5f72345cfc64c.js" crossorigin="anonymous"></script>
+    <script>
+  (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      if (curProtocol === 'https') {
+          bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+      }
+      else {
+          bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+      }
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+  })();
+</script>
+
+  
+
+<!----><!----></body></html>

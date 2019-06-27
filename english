@@ -1,0 +1,9 @@
+VIO（visual-inertial odometr）：视觉惯性里程计
+vins:视觉惯性导航系统
+preprocess：预处理
+detection：检测
+optimization：优化
+closure：关闭
+retrieval：检索，恢复，取回
+alignment:对齐
+benchmark：基准

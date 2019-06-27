@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="zh-cn"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="origin">
+    <title>python中的矩阵运算 - chamie - 博客园</title>
+<meta property="og:description" content="摘自：http://m.blog.csdn.net/blog/taxueguilai1992/46581861python的numpy库提供矩阵运算的功能，因此我们在需要矩阵运算的时候，需要导入num">
+    <link type="text/css" rel="stylesheet" href="python%E4%B8%AD%E7%9A%84%E7%9F%A9%E9%98%B5%E8%BF%90%E7%AE%97%20-%20chamie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/blog-common.css">
+<link id="MainCss" type="text/css" rel="stylesheet" href="python%E4%B8%AD%E7%9A%84%E7%9F%A9%E9%98%B5%E8%BF%90%E7%AE%97%20-%20chamie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/bundle-arrow.css">
+<link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="python%E4%B8%AD%E7%9A%84%E7%9F%A9%E9%98%B5%E8%BF%90%E7%AE%97%20-%20chamie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/bundle-arrow-mobile.css">
+    <link title="RSS" type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/chamie/rss">
+    <link title="RSD" type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/chamie/rsd.xml">
+<link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/chamie/wlwmanifest.xml">
+    <script src="python%E4%B8%AD%E7%9A%84%E7%9F%A9%E9%98%B5%E8%BF%90%E7%AE%97%20-%20chamie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/osd.js"></script><script src="python%E4%B8%AD%E7%9A%84%E7%9F%A9%E9%98%B5%E8%BF%90%E7%AE%97%20-%20chamie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/pubads_impl_rendering_2019050901.js"></script><script async="" src="python%E4%B8%AD%E7%9A%84%E7%9F%A9%E9%98%B5%E8%BF%90%E7%AE%97%20-%20chamie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/analytics.js"></script><script type="text/javascript" src="python%E4%B8%AD%E7%9A%84%E7%9F%A9%E9%98%B5%E8%BF%90%E7%AE%97%20-%20chamie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/encoder.js"></script><script src="python%E4%B8%AD%E7%9A%84%E7%9F%A9%E9%98%B5%E8%BF%90%E7%AE%97%20-%20chamie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/jquery-2.js"></script>
+    <script>var currentBlogId=204957;var currentBlogApp='chamie',cb_enable_mathjax=false;var isLogined=false;</script>
+    <script src="python%E4%B8%AD%E7%9A%84%E7%9F%A9%E9%98%B5%E8%BF%90%E7%AE%97%20-%20chamie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/blog-common.js" type="text/javascript"></script>
+<link rel="preload" href="python%E4%B8%AD%E7%9A%84%E7%9F%A9%E9%98%B5%E8%BF%90%E7%AE%97%20-%20chamie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/integrator.js" as="script"><script type="text/javascript" src="python%E4%B8%AD%E7%9A%84%E7%9F%A9%E9%98%B5%E8%BF%90%E7%AE%97%20-%20chamie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/integrator.js"></script><script src="python%E4%B8%AD%E7%9A%84%E7%9F%A9%E9%98%B5%E8%BF%90%E7%AE%97%20-%20chamie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/pubads_impl_2019050901.js" async=""></script></head>
+<body>
+<a name="top"></a>
+
+
+<!--done-->
+<div id="header">
+	
+<!--done-->
+<div class="header">
+	<div class="headerText">
+		<a id="Header1_HeaderTitle" class="headermaintitle" href="https://www.cnblogs.com/chamie/">Phd Way-深度学习之三维重建</a><br>
+		吾亦无他,唯手熟尔
+	</div>
+</div>
+
+</div>
+<div id="mylinks">
+<!--done-->
+<a id="blog_nav_sitehome" class="menu" href="https://www.cnblogs.com/">博客园</a>&nbsp;&nbsp;&nbsp;
+<a id="blog_nav_myhome" class="menu" href="https://www.cnblogs.com/chamie/">首页</a>&nbsp;&nbsp;&nbsp;
+<a id="blog_nav_newpost" class="menu" rel="nofollow" href="https://i.cnblogs.com/EditPosts.aspx?opt=1">新随笔</a>&nbsp;&nbsp;&nbsp;
+<a id="blog_nav_contact" accesskey="9" class="menu" rel="nofollow" href="https://msg.cnblogs.com/send/chamie">联系</a>&nbsp;&nbsp;&nbsp;
+<a id="blog_nav_rss" class="menu" href="https://www.cnblogs.com/chamie/rss">订阅</a><a id="blog_nav_rss_image" href="https://www.cnblogs.com/chamie/rss"><img src="python%E4%B8%AD%E7%9A%84%E7%9F%A9%E9%98%B5%E8%BF%90%E7%AE%97%20-%20chamie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/xml.gif" alt="订阅"></a>&nbsp;&nbsp;&nbsp;
+<a id="blog_nav_admin" class="menu" rel="nofollow" href="https://i.cnblogs.com/">管理</a>
+</div>
+<div id="mytopmenu">
+	
+		<div id="blog_stats">
+<div class="blogStats">随笔 - 355&nbsp;
+文章 - 1&nbsp;评论 - 17&nbsp;trackbacks - 0
+</div></div>
+	
+</div>
+<div id="leftcontent">
+	
+		<div id="leftcontentcontainer">
+			<div id="blog-calendar" style=""><table id="blogCalendar" class="Cal" title="Calendar" cellspacing="0" cellpadding="0">
+	<tbody><tr><td colspan="7"><table class="CalTitle" cellspacing="0">
+		<tbody><tr><td class="CalNextPrev"><a href="javascript:void(0);" onclick="loadBlogCalendar('2019/04/01');return false;">&lt;</a></td><td align="center">2019年5月</td><td class="CalNextPrev" align="right"><a href="javascript:void(0);" onclick="loadBlogCalendar('2019/06/01');return false;">&gt;</a></td></tr>
+	</tbody></table></td></tr><tr><th class="CalDayHeader" abbr="日" scope="col" align="center">日</th><th class="CalDayHeader" abbr="一" scope="col" align="center">一</th><th class="CalDayHeader" abbr="二" scope="col" align="center">二</th><th class="CalDayHeader" abbr="三" scope="col" align="center">三</th><th class="CalDayHeader" abbr="四" scope="col" align="center">四</th><th class="CalDayHeader" abbr="五" scope="col" align="center">五</th><th class="CalDayHeader" abbr="六" scope="col" align="center">六</th></tr><tr><td class="CalOtherMonthDay" align="center">28</td><td class="CalOtherMonthDay" align="center">29</td><td class="CalOtherMonthDay" align="center">30</td><td align="center">1</td><td align="center">2</td><td align="center">3</td><td class="CalWeekendDay" align="center">4</td></tr><tr><td class="CalWeekendDay" align="center">5</td><td align="center">6</td><td align="center">7</td><td align="center">8</td><td align="center">9</td><td align="center">10</td><td class="CalWeekendDay" align="center">11</td></tr><tr><td class="CalWeekendDay" align="center">12</td><td align="center">13</td><td align="center">14</td><td class="CalTodayDay" align="center">15</td><td align="center">16</td><td align="center">17</td><td class="CalWeekendDay" align="center">18</td></tr><tr><td class="CalWeekendDay" align="center">19</td><td align="center">20</td><td align="center">21</td><td align="center">22</td><td align="center">23</td><td align="center">24</td><td class="CalWeekendDay" align="center">25</td></tr><tr><td class="CalWeekendDay" align="center">26</td><td align="center">27</td><td align="center">28</td><td align="center">29</td><td align="center">30</td><td align="center">31</td><td class="CalOtherMonthDay" align="center">1</td></tr><tr><td class="CalOtherMonthDay" align="center">2</td><td class="CalOtherMonthDay" align="center">3</td><td class="CalOtherMonthDay" align="center">4</td><td class="CalOtherMonthDay" align="center">5</td><td class="CalOtherMonthDay" align="center">6</td><td class="CalOtherMonthDay" align="center">7</td><td class="CalOtherMonthDay" align="center">8</td></tr>
+</tbody></table></div><script type="text/javascript">loadBlogDefaultCalendar();</script><br>
+			
+<!--done-->
+<div class="newsItem">
+	<div id="blog-news"><div id="profile_block">昵称：<a href="https://home.cnblogs.com/u/chamie/">chamie</a><br>园龄：<a href="https://home.cnblogs.com/u/chamie/" title="入园时间：2014-11-14">4年6个月</a><br>粉丝：<a href="https://home.cnblogs.com/u/chamie/followers/">59</a><br>关注：<a href="https://home.cnblogs.com/u/chamie/followees/">34</a><div id="p_b_follow"><a href="javascript:void(0);" onclick="follow('cfd2fef8-f16b-e411-b908-9dcfd8948a71')">+加关注</a></div><script>getFollowStatus('cfd2fef8-f16b-e411-b908-9dcfd8948a71')</script></div></div><script type="text/javascript">loadBlogNews();</script>
+</div>
+
+			<div id="blog-sidecolumn"><div id="sidebar_search" class="sidebar-block">
+<div id="sidebar_search" class="mySearch">
+<h3 class="catListTitle">搜索</h3>
+<div id="sidebar_search_box">
+<div id="widget_my_zzk" class="div_my_zzk"><input id="q" onkeydown="return zzk_go_enter(event);" class="input_my_zzk" type="text">&nbsp;<input onclick="zzk_go()" value="找找看" id="btnZzk" class="btn_my_zzk" type="button"></div>
+<div id="widget_my_google" class="div_my_zzk"><input name="google_q" id="google_q" onkeydown="return google_go_enter(event)" class="input_my_zzk" type="text">&nbsp;<input onclick="google_go()" value="谷歌搜索" class="btn_my_zzk" type="button"></div>
+</div>
+</div>
+
+</div><div id="sidebar_shortcut" class="sidebar-block">
+<h3 class="catListTitle">常用链接</h3>
+<ul>
+<li><a href="https://www.cnblogs.com/chamie/p/" title="我的博客的随笔列表">我的随笔</a></li><li><a href="https://www.cnblogs.com/chamie/MyComments.html" title="我发表过的评论列表">我的评论</a></li><li><a href="https://www.cnblogs.com/chamie/OtherPosts.html" title="我评论过的随笔列表">我的参与</a></li><li><a href="https://www.cnblogs.com/chamie/RecentComments.html" title="我的博客的评论列表">最新评论</a></li><li><a href="https://www.cnblogs.com/chamie/tag/" title="我的博客的标签列表">我的标签</a></li>
+</ul>
+<div id="itemListLin_con" style="display:none;">
+
+</div></div><div id="sidebar_toptags" class="sidebar-block">
+<h3 class="catListTitle">我的标签</h3>
+<div id="MyTag">
+<ul>
+<li><a href="https://www.cnblogs.com/chamie/tag/J2SE/">J2SE</a>(56)</li><li><a href="https://www.cnblogs.com/chamie/tag/python/">python</a>(21)</li><li><a href="https://www.cnblogs.com/chamie/tag/%E8%BF%9E%E8%BD%BD%E5%B0%8F%E8%AF%B4/">连载小说</a>(13)</li><li><a href="https://www.cnblogs.com/chamie/tag/%E3%80%90Machine%20Learning%20in%20Action%E3%80%91/">【Machine Learning in Action】</a>(11)</li><li><a href="https://www.cnblogs.com/chamie/tag/tensorflow%E5%AE%89%E8%A3%85/">tensorflow安装</a>(11)</li><li><a href="https://www.cnblogs.com/chamie/tag/servlet/">servlet</a>(8)</li><li><a href="https://www.cnblogs.com/chamie/tag/centos/">centos</a>(5)</li><li><a href="https://www.cnblogs.com/chamie/tag/%E3%80%90python%E9%97%AE%E9%A2%98%E7%B3%BB%E5%88%97%E3%80%91/">【python问题系列】</a>(4)</li><li><a href="https://www.cnblogs.com/chamie/tag/HBase/">HBase</a>(4)</li><li><a href="https://www.cnblogs.com/chamie/tag/%E3%80%90Python%E7%88%AC%E8%99%AB%E5%AE%9E%E6%88%98%E3%80%91/">【Python爬虫实战】</a>(3)</li><li><a href="https://www.cnblogs.com/chamie/tag/">更多</a></li>
+</ul>
+</div></div><div id="sidebar_categories">
+<!--done-->
+
+		<h1 class="catListTitle">随笔分类</h1>
+		
+				<ul class="catList">
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_0" class="listitem" href="https://www.cnblogs.com/chamie/category/692403.html"> Searching Engine(3)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_1" class="listitem" href="https://www.cnblogs.com/chamie/category/1193568.html">3Dreconstruction(10)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_2" class="listitem" href="https://www.cnblogs.com/chamie/category/728278.html">Big Data(2)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_3" class="listitem" href="https://www.cnblogs.com/chamie/category/1332287.html">Blender(2)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_4" class="listitem" href="https://www.cnblogs.com/chamie/category/707716.html">caffe(1)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_5" class="listitem" href="https://www.cnblogs.com/chamie/category/692404.html">Computer(16)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_6" class="listitem" href="https://www.cnblogs.com/chamie/category/683479.html">Data Mining,Machine learning(29)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_7" class="listitem" href="https://www.cnblogs.com/chamie/category/734777.html">Data Structures</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_8" class="listitem" href="https://www.cnblogs.com/chamie/category/725598.html">Database(2)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_9" class="listitem" href="https://www.cnblogs.com/chamie/category/920222.html">Deep Learning(6)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_10" class="listitem" href="https://www.cnblogs.com/chamie/category/752329.html">Echarts(1)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_11" class="listitem" href="https://www.cnblogs.com/chamie/category/692779.html">English(1)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_12" class="listitem" href="https://www.cnblogs.com/chamie/category/822489.html">Excel(1)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_13" class="listitem" href="https://www.cnblogs.com/chamie/category/696404.html">Hadoop(20)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_14" class="listitem" href="https://www.cnblogs.com/chamie/category/699016.html">Image Processing</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_15" class="listitem" href="https://www.cnblogs.com/chamie/category/720819.html">Java EE(11)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_16" class="listitem" href="https://www.cnblogs.com/chamie/category/683481.html">Java SE(57)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_17" class="listitem" href="https://www.cnblogs.com/chamie/category/698078.html">Linux(36)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_18" class="listitem" href="https://www.cnblogs.com/chamie/category/746597.html">Mathematical(4)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_19" class="listitem" href="https://www.cnblogs.com/chamie/category/740100.html">Matlab(21)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_20" class="listitem" href="https://www.cnblogs.com/chamie/category/1296788.html">Operational Research(运筹学)(1)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_21" class="listitem" href="https://www.cnblogs.com/chamie/category/747103.html">PyCharm(4)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_22" class="listitem" href="https://www.cnblogs.com/chamie/category/723033.html">Python(49)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_23" class="listitem" href="https://www.cnblogs.com/chamie/category/692789.html">Recommendation System(1)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_24" class="listitem" href="https://www.cnblogs.com/chamie/category/731418.html">Resume(1)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_25" class="listitem" href="https://www.cnblogs.com/chamie/category/717387.html">R语言(5)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_26" class="listitem" href="https://www.cnblogs.com/chamie/category/797123.html">shell(windows)(2)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_27" class="listitem" href="https://www.cnblogs.com/chamie/category/1149413.html">Tensorflow(25)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_28" class="listitem" href="https://www.cnblogs.com/chamie/category/726405.html">weka(3)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_29" class="listitem" href="https://www.cnblogs.com/chamie/category/683483.html">论文期刊(9)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_30" class="listitem" href="https://www.cnblogs.com/chamie/category/713527.html">生活百科(2)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_31" class="listitem" href="https://www.cnblogs.com/chamie/category/698079.html">视觉SLAM十四讲(2)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_32" class="listitem" href="https://www.cnblogs.com/chamie/category/1149410.html">文献阅读(1)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_33" class="listitem" href="https://www.cnblogs.com/chamie/category/754187.html">我的人生(23)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_34" class="listitem" href="https://www.cnblogs.com/chamie/category/718409.html">业务(1)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_35" class="listitem" href="https://www.cnblogs.com/chamie/category/704237.html">影视书经典语录(27)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_36" class="listitem" href="https://www.cnblogs.com/chamie/category/1217569.html">优化算法(1)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_0_Link_37" class="listitem" href="https://www.cnblogs.com/chamie/category/718411.html">优秀网站合集(1)</a></li>
+			
+				</ul>
+			
+	
+		<h1 class="catListTitle">随笔档案</h1>
+		
+				<ul class="catList">
+			
+				<li class="catListItem"> <a id="CatList_LinkList_1_Link_0" class="listitem" href="https://www.cnblogs.com/chamie/archive/2019/04.html">2019年4月 (2)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_1_Link_1" class="listitem" href="https://www.cnblogs.com/chamie/archive/2019/03.html">2019年3月 (3)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_1_Link_2" class="listitem" href="https://www.cnblogs.com/chamie/archive/2019/01.html">2019年1月 (3)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_1_Link_3" class="listitem" href="https://www.cnblogs.com/chamie/archive/2018/12.html">2018年12月 (2)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_1_Link_4" class="listitem" href="https://www.cnblogs.com/chamie/archive/2018/11.html">2018年11月 (5)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_1_Link_5" class="listitem" href="https://www.cnblogs.com/chamie/archive/2018/10.html">2018年10月 (5)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_1_Link_6" class="listitem" href="https://www.cnblogs.com/chamie/archive/2018/09.html">2018年9月 (4)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_1_Link_7" class="listitem" href="https://www.cnblogs.com/chamie/archive/2018/08.html">2018年8月 (1)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_1_Link_8" class="listitem" href="https://www.cnblogs.com/chamie/archive/2018/06.html">2018年6月 (14)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_1_Link_9" class="listitem" href="https://www.cnblogs.com/chamie/archive/2018/05.html">2018年5月 (3)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_1_Link_10" class="listitem" href="https://www.cnblogs.com/chamie/archive/2018/04.html">2018年4月 (22)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_1_Link_11" class="listitem" href="https://www.cnblogs.com/chamie/archive/2018/03.html">2018年3月 (19)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_1_Link_12" class="listitem" href="https://www.cnblogs.com/chamie/archive/2018/02.html">2018年2月 (1)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_1_Link_13" class="listitem" href="https://www.cnblogs.com/chamie/archive/2018/01.html">2018年1月 (7)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_1_Link_14" class="listitem" href="https://www.cnblogs.com/chamie/archive/2017/11.html">2017年11月 (1)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_1_Link_15" class="listitem" href="https://www.cnblogs.com/chamie/archive/2017/09.html">2017年9月 (2)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_1_Link_16" class="listitem" href="https://www.cnblogs.com/chamie/archive/2017/05.html">2017年5月 (2)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_1_Link_17" class="listitem" href="https://www.cnblogs.com/chamie/archive/2017/03.html">2017年3月 (1)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_1_Link_18" class="listitem" href="https://www.cnblogs.com/chamie/archive/2017/01.html">2017年1月 (1)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_1_Link_19" class="listitem" href="https://www.cnblogs.com/chamie/archive/2016/12.html">2016年12月 (8)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_1_Link_20" class="listitem" href="https://www.cnblogs.com/chamie/archive/2016/09.html">2016年9月 (5)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_1_Link_21" class="listitem" href="https://www.cnblogs.com/chamie/archive/2016/08.html">2016年8月 (11)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_1_Link_22" class="listitem" href="https://www.cnblogs.com/chamie/archive/2016/06.html">2016年6月 (6)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_1_Link_23" class="listitem" href="https://www.cnblogs.com/chamie/archive/2016/05.html">2016年5月 (8)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_1_Link_24" class="listitem" href="https://www.cnblogs.com/chamie/archive/2016/04.html">2016年4月 (4)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_1_Link_25" class="listitem" href="https://www.cnblogs.com/chamie/archive/2016/03.html">2016年3月 (4)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_1_Link_26" class="listitem" href="https://www.cnblogs.com/chamie/archive/2016/02.html">2016年2月 (1)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_1_Link_27" class="listitem" href="https://www.cnblogs.com/chamie/archive/2016/01.html">2016年1月 (1)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_1_Link_28" class="listitem" href="https://www.cnblogs.com/chamie/archive/2015/11.html">2015年11月 (9)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_1_Link_29" class="listitem" href="https://www.cnblogs.com/chamie/archive/2015/10.html">2015年10月 (23)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_1_Link_30" class="listitem" href="https://www.cnblogs.com/chamie/archive/2015/09.html">2015年9月 (31)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_1_Link_31" class="listitem" href="https://www.cnblogs.com/chamie/archive/2015/08.html">2015年8月 (57)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_1_Link_32" class="listitem" href="https://www.cnblogs.com/chamie/archive/2015/07.html">2015年7月 (19)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_1_Link_33" class="listitem" href="https://www.cnblogs.com/chamie/archive/2015/06.html">2015年6月 (18)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_1_Link_34" class="listitem" href="https://www.cnblogs.com/chamie/archive/2015/05.html">2015年5月 (27)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_1_Link_35" class="listitem" href="https://www.cnblogs.com/chamie/archive/2015/04.html">2015年4月 (19)</a></li>
+			
+				<li class="catListItem"> <a id="CatList_LinkList_1_Link_36" class="listitem" href="https://www.cnblogs.com/chamie/archive/2015/03.html">2015年3月 (6)</a></li>
+			
+				</ul>
+			
+	
+</div><div id="sidebar_recentcomments" class="sidebar-block"><div id="recent_comments_wrap">
+<h3 class="catListTitle">最新评论</h3>
+<div class="RecentComment" id="RecentComments">
+	<div id="RecentCommentsBlock"><ul>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/chamie/p/4859288.html#4156475">1. Re:【Machine Learning in Action --4】朴素贝叶斯电子邮件垃圾过滤</a></li>
+        <li class="recent_comment_body">@chamie谢谢大佬 送您花花...</li>
+        <li class="recent_comment_author">--丿尛丶熊</li>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/chamie/p/4859288.html#4156473">2. Re:【Machine Learning in Action --4】朴素贝叶斯电子邮件垃圾过滤</a></li>
+        <li class="recent_comment_body">@丿尛丶熊 您好，我把《机器学习实战》这本书里相关的代码链接分享给您，您查看第四章-email-ham里有没有您 需要的文件。链接地址：链接： 提取码：7mf6...</li>
+        <li class="recent_comment_author">--chamie</li>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/chamie/p/4859288.html#4156459">3. Re:【Machine Learning in Action --4】朴素贝叶斯电子邮件垃圾过滤</a></li>
+        <li class="recent_comment_body">博主  你知道The file named 6.txt in the ham folder is quite long  这里面的6.txt文件在哪里下载嘛?  跪求</li>
+        <li class="recent_comment_author">--丿尛丶熊</li>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/chamie/p/4551514.html#4075475">4. Re:weka简介</a></li>
+        <li class="recent_comment_body">最近在研究weka knowledge flow，现在有一些问题，想请教一下，能不能加一下您的微信。我的微信：15171411335，谢谢！</li>
+        <li class="recent_comment_author">--ly_rabbit</li>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/chamie/p/4821651.html#4032507">5. Re:【Python爬虫实战--1】深入理解urllib;urllib2;requests</a></li>
+        <li class="recent_comment_body">写的不错，收获匪浅。发现一个用requests+lxml写的小型爬虫，包含爬虫各个模块。<a href="" target="_blank"></a></li>
+        <li class="recent_comment_author">--hbswyb</li>
+</ul>
+</div>
+</div>
+</div></div><div id="sidebar_topviewedposts" class="sidebar-block"><div id="topview_posts_wrap">
+<h3 class="catListTitle">阅读排行榜</h3>
+<div class="RecentComment" id="TopViewPosts"> 
+	<div id="TopViewPostsBlock"><ul><li><a href="https://www.cnblogs.com/chamie/p/4870078.html">1. python中的矩阵运算(122254)</a></li><li><a href="https://www.cnblogs.com/chamie/p/4678409.html">2. 数据挖掘十大经典算法(30360)</a></li><li><a href="https://www.cnblogs.com/chamie/p/4917820.html">3. python--随机函数（random,uniform,randint,randrange,shuffle,sample）(30328)</a></li><li><a href="https://www.cnblogs.com/chamie/p/4737423.html">4. Hadoop生态上几个技术的关系与区别：hive、pig、hbase 关系与区别(19420)</a></li><li><a href="https://www.cnblogs.com/chamie/p/4856023.html">5. python--zeros函数和ones函数(10597)</a></li></ul></div>
+</div>
+</div></div><div id="sidebar_topcommentedposts" class="sidebar-block"><div id="topfeedback_posts_wrap">
+<h3 class="catListTitle">评论排行榜</h3>
+<div class="RecentComment" id="TopCommentsPosts">
+	<div id="TopFeedbackPostsBlock"><ul><li><a href="https://www.cnblogs.com/chamie/p/4859288.html">1. 【Machine Learning in Action --4】朴素贝叶斯电子邮件垃圾过滤(3)</a></li><li><a href="https://www.cnblogs.com/chamie/p/4536280.html">2. Eclipse中配置weka，以及添加算法(2)</a></li><li><a href="https://www.cnblogs.com/chamie/p/4874708.html">3. 【Machine Learning in Action --5】逻辑回归（LogisticRegression）(2)</a></li><li><a href="https://www.cnblogs.com/chamie/p/4955481.html">4. 第二章 快乐的童年(2)</a></li><li><a href="https://www.cnblogs.com/chamie/p/4551514.html">5. weka简介(1)</a></li></ul></div>
+</div></div></div><div id="sidebar_topdiggedposts" class="sidebar-block"><div id="topdigg_posts_wrap">
+<h3 class="catListTitle">推荐排行榜</h3>
+<div class="RecentComment">
+	<div id="TopDiggPostsBlock"><ul><li><a href="https://www.cnblogs.com/chamie/p/4870078.html">1. python中的矩阵运算(3)</a></li><li><a href="https://www.cnblogs.com/chamie/p/4737423.html">2. Hadoop生态上几个技术的关系与区别：hive、pig、hbase 关系与区别(3)</a></li><li><a href="https://www.cnblogs.com/chamie/p/4581945.html">3. 第13章 Swing程序设计----JDialog窗体(2)</a></li><li><a href="https://www.cnblogs.com/chamie/p/4536280.html">4. Eclipse中配置weka，以及添加算法(1)</a></li><li><a href="https://www.cnblogs.com/chamie/p/4874708.html">5. 【Machine Learning in Action --5】逻辑回归（LogisticRegression）(1)</a></li></ul></div>
+</div></div></div></div><script type="text/javascript">loadBlogSideColumn();</script></div>		
+	
+</div>
+<div id="centercontent">
+	
+        <div id="post_detail">
+<!--done-->
+<div class="post">
+	<div class="postTitle">
+		<h1><a id="cb_post_title_url" class="postTitle2" href="https://www.cnblogs.com/chamie/p/4870078.html">python中的矩阵运算</a></h1>
+	</div>
+	<div id="cnblogs_post_body" class="blogpost-body"><div class="content">摘自：<a href="http://m.blog.csdn.net/blog/taxueguilai1992/46581861" target="_blank">http://m.blog.csdn.net/blog/taxueguilai1992/46581861</a>
+<div id="articlecontent">
+<p>python的numpy库提供矩阵运算的功能，因此我们在需要矩阵运算的时候，需要导入numpy的包。</p>
+<h3 id="1numpy的导入和使用">1.numpy的导入和使用</h3>
+<div class="cnblogs_code">
+<pre><span style="color: #0000ff;">from</span> numpy <span style="color: #0000ff;">import</span> *;<span style="color: #008000;">#</span><span style="color: #008000;">导入numpy的库函数</span>
+<span style="color: #0000ff;">import</span> numpy as np; <span style="color: #008000;">#</span><span style="color: #008000;">这个方式使用numpy的函数时，需要以np.开头。</span></pre>
+</div>
+<h3 id="2矩阵的创建">2.矩阵的创建</h3>
+<p>由一维或二维数据创建矩阵</p>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="python%E4%B8%AD%E7%9A%84%E7%9F%A9%E9%98%B5%E8%BF%90%E7%AE%97%20-%20chamie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/copycode.gif" alt="复制代码"></a></span></div>
+<pre>&gt;&gt;&gt; from numpy import *<br><span style="background-color: #cc99ff;">&gt;&gt;&gt; a1=array([1,2,3])</span><br>&gt;&gt;&gt; a1<br>array([1, 2, 3])<br><span style="background-color: #cc99ff;">&gt;&gt;&gt; a1=mat(a1)</span><br>&gt;&gt;&gt; a1<br>matrix([[1, 2, 3]])<br>&gt;&gt;&gt; shape(a1)<br>(1, 3)<br><span style="background-color: #cc99ff;">&gt;&gt;&gt; b=matrix([1,2,3])</span><br>&gt;&gt;&gt; shape(b)<br>(1, 3)</pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="python%E4%B8%AD%E7%9A%84%E7%9F%A9%E9%98%B5%E8%BF%90%E7%AE%97%20-%20chamie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/copycode.gif" alt="复制代码"></a></span></div></div>
+<p>创建常见的矩阵</p>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="python%E4%B8%AD%E7%9A%84%E7%9F%A9%E9%98%B5%E8%BF%90%E7%AE%97%20-%20chamie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/copycode.gif" alt="复制代码"></a></span></div>
+<pre><span style="background-color: #cc99ff;">&gt;&gt;&gt;data1=mat(zeros((3,3)))</span> <span style="color: #008000;">#</span><span style="color: #008000;">创建一个3*3的零矩阵，矩阵这里zeros函数的参数是一个tuple类型(3,3)</span>
+&gt;&gt;&gt;<span style="color: #000000;"> data1
+matrix([[ 0.,  0.,  0.],
+        [ 0.,  0.,  0.],
+        [ 0.,  0.,  0.]])
+</span><span style="background-color: #cc99ff;">&gt;&gt;&gt;data2=mat(ones((2,4)))</span> <span style="color: #008000;">#</span><span style="color: #008000;">创建一个2*4的1矩阵，默认是浮点型的数据，如果需要时int类型，可以使用dtype=int</span>
+&gt;&gt;&gt;<span style="color: #000000;"> data2
+matrix([[ </span>1.,  1.,  1.,  1<span style="color: #000000;">.],
+        [ </span>1.,  1.,  1.,  1<span style="color: #000000;">.]])
+</span><span style="background-color: #cc99ff;">&gt;&gt;&gt;data3=mat(random.rand(2,2))</span> <span style="color: #008000;">#</span><span style="color: #008000;">这里的random模块使用的是numpy中的random模块，random.rand(2,2)创建的是一个二维数组，需要将其转换成#matrix</span>
+&gt;&gt;&gt;<span style="color: #000000;"> data3
+matrix([[ </span>0.57341802,  0.51016034<span style="color: #000000;">],
+        [ </span>0.56438599,  0.70515605<span style="color: #000000;">]])
+</span><span style="background-color: #cc99ff;">&gt;&gt;&gt;data4=mat(random.randint(10,size=(3,3)))</span> <span style="color: #008000;">#</span><span style="color: #008000;">生成一个3*3的0-10之间的随机整数矩阵，如果需要指定下界则可以多加一个参数</span>
+&gt;&gt;&gt;<span style="color: #000000;"> data4
+matrix([[</span>9, 5, 6<span style="color: #000000;">],
+        [</span>3, 0, 4<span style="color: #000000;">],
+        [</span>6, 0, 7<span style="color: #000000;">]])
+</span><span style="background-color: #cc99ff;">&gt;&gt;&gt;data5=mat(random.randint(2,8,size=(2,5)))</span> <span style="color: #008000;">#</span><span style="color: #008000;">产生一个2-8之间的随机整数矩阵</span>
+&gt;&gt;&gt;<span style="color: #000000;"> data5
+matrix([[</span>5, 4, 6, 3, 7<span style="color: #000000;">],
+        [</span>5, 3, 3, 4, 6<span style="color: #000000;">]])
+</span><span style="background-color: #cc99ff;">&gt;&gt;&gt;data6=mat(eye(2,2,dtype=int))</span> <span style="color: #008000;">#</span><span style="color: #008000;">产生一个2*2的对角矩阵</span>
+&gt;&gt;&gt;<span style="color: #000000;"> data6
+matrix([[</span>1<span style="color: #000000;">, 0],
+        [0, </span>1<span style="color: #000000;">]])
+
+<span style="background-color: #ffffff;">a1</span></span><span style="background-color: #cc99ff;"><span style="background-color: #ffffff;">=[1,2,3</span><span style="color: #000000;"><span style="background-color: #ffffff;">]</span>
+a2</span>=mat(diag(a1))</span> <span style="color: #008000;">#</span><span style="color: #008000;">生成一个对角线为1、2、3的对角矩阵</span>
+&gt;&gt;&gt;<span style="color: #000000;"> a2
+matrix([[</span>1<span style="color: #000000;">, 0, 0],
+        [0, </span>2<span style="color: #000000;">, 0],
+        [0, 0, </span>3]])</pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="python%E4%B8%AD%E7%9A%84%E7%9F%A9%E9%98%B5%E8%BF%90%E7%AE%97%20-%20chamie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/copycode.gif" alt="复制代码"></a></span></div></div>
+<h3 id="3常见的矩阵运算">3.常见的矩阵运算</h3>
+<p><strong>1. 矩阵相乘</strong></p>
+<div class="cnblogs_code">
+<pre>&gt;&gt;&gt;a1=mat([1,2<span style="color: #000000;">]);      
+&gt;&gt;&gt;a2</span>=mat([[1],[2<span style="color: #000000;">]]);
+<span style="background-color: #cc99ff;">&gt;&gt;&gt;a3</span></span><span style="background-color: #cc99ff;">=a1*</span><span style="color: #000000;"><span style="background-color: #cc99ff;">a2</span> </span><span style="color: #008000;">#</span><span style="color: #008000;">1*2的矩阵乘以2*1的矩阵，得到1*1的矩阵<br><span style="color: #000000;">&gt;&gt;&gt; a3</span><br><span style="color: #000000;">matrix([[5]])</span><br></span></pre>
+</div>
+<p><strong>2. 矩阵点乘</strong></p>
+<p>矩阵对应元素相乘</p>
+<div class="cnblogs_code">
+<pre>&gt;&gt;&gt;a1=mat([1,1<span style="color: #000000;">]);
+</span>&gt;&gt;&gt;a2=mat([2,2<span style="color: #000000;">]);
+</span><span style="background-color: #cc99ff;">&gt;&gt;&gt;a3=<span style="color: #000000;">multiply(a1,a2)
+</span></span>&gt;&gt;&gt;<span style="color: #000000;"> a3
+matrix([[</span>2, 2]])</pre>
+</div>
+<p>矩阵点乘</p>
+<div class="cnblogs_code">
+<pre>&gt;&gt;&gt;a1=mat([2,2<span style="color: #000000;">]);
+</span><span style="background-color: #cc99ff;">&gt;&gt;&gt;a2=a1*2</span>&gt;&gt;&gt;<span style="color: #000000;">a2
+matrix([[</span>4, 4]])</pre>
+</div>
+<p><strong>3.矩阵求逆，转置</strong> <br>
+矩阵求逆</p>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="python%E4%B8%AD%E7%9A%84%E7%9F%A9%E9%98%B5%E8%BF%90%E7%AE%97%20-%20chamie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/copycode.gif" alt="复制代码"></a></span></div>
+<pre><span style="background-color: #cc99ff;">&gt;&gt;&gt;a1=mat(eye(2,2)*0.5</span><span style="color: #000000;"><span style="background-color: #cc99ff;">)</span>
+</span>&gt;&gt;&gt;<span style="color: #000000;"> a1
+matrix([[ </span>0.5<span style="color: #000000;">,  0. ],
+        [ 0. ,  </span>0.5<span style="color: #000000;">]])
+</span><span style="background-color: #cc99ff;">&gt;&gt;&gt;a2=a1.I</span>  <span style="color: #008000;">#</span><span style="color: #008000;">求矩阵matrix([[0.5,0],[0,0.5]])的逆矩阵</span>
+&gt;&gt;&gt;<span style="color: #000000;"> a2
+matrix([[ </span>2<span style="color: #000000;">.,  0.],
+        [ 0.,  </span>2.]])</pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="python%E4%B8%AD%E7%9A%84%E7%9F%A9%E9%98%B5%E8%BF%90%E7%AE%97%20-%20chamie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/copycode.gif" alt="复制代码"></a></span></div></div>
+<p>矩阵转置</p>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="python%E4%B8%AD%E7%9A%84%E7%9F%A9%E9%98%B5%E8%BF%90%E7%AE%97%20-%20chamie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/copycode.gif" alt="复制代码"></a></span></div>
+<pre><span style="background-color: #cc99ff;">&gt;&gt;&gt; a1=mat([[1,1<span style="color: #000000;">],[0,0]])
+</span></span>&gt;&gt;&gt;<span style="color: #000000;"> a1
+matrix([[</span>1, 1<span style="color: #000000;">],
+        [0, 0]])
+</span><span style="background-color: #cc99ff;">&gt;&gt;&gt; a2=<span style="color: #000000;">a1.T
+</span></span>&gt;&gt;&gt;<span style="color: #000000;"> a2
+matrix([[</span>1<span style="color: #000000;">, 0],
+        [</span>1, 0]])</pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="python%E4%B8%AD%E7%9A%84%E7%9F%A9%E9%98%B5%E8%BF%90%E7%AE%97%20-%20chamie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/copycode.gif" alt="复制代码"></a></span></div></div>
+<p><strong>4.计算矩阵对应行列的最大、最小值、和。</strong></p>
+<div class="cnblogs_code">
+<pre>3&gt;&gt;&gt;a1=mat([[1,1],[2,3],[4,2]])<br>&gt;&gt;&gt; a1<br>matrix([[1, 1],<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [2, 3],<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [4, 2]])</pre>
+</div>
+<p>计算每一列、行的和</p>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="python%E4%B8%AD%E7%9A%84%E7%9F%A9%E9%98%B5%E8%BF%90%E7%AE%97%20-%20chamie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/copycode.gif" alt="复制代码"></a></span></div>
+<pre><span style="background-color: #cc99ff;">&gt;&gt;&gt;a2=a1.sum(axis=0)</span> #列和，这里得到的是1*<span style="color: #000000;">2的矩阵
+</span>&gt;&gt;&gt;<span style="color: #000000;"> a2
+matrix([[</span>7, 6<span style="color: #000000;">]])
+</span><span style="background-color: #cc99ff;">&gt;&gt;&gt;a3=a1.sum(axis=1)</span> #行和，这里得到的是3*<span style="color: #000000;">1的矩阵
+</span>&gt;&gt;&gt;<span style="color: #000000;"> a3
+matrix([[</span>2<span style="color: #000000;">],
+        [</span>5<span style="color: #000000;">],
+        [</span>6<span style="color: #000000;">]])
+</span><span style="background-color: #cc99ff;">&gt;&gt;&gt;a4=sum(a1[1,:])</span>&nbsp; #<span style="color: #000000;">计算第一行所有列的和，这里得到的是一个数值
+</span>&gt;&gt;&gt;<span style="color: #000000;"> a4
+</span>5 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;#第0行：1+1；第2行：2+3；第3行：4+2</pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="python%E4%B8%AD%E7%9A%84%E7%9F%A9%E9%98%B5%E8%BF%90%E7%AE%97%20-%20chamie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/copycode.gif" alt="复制代码"></a></span></div></div>
+<p>计算最大、最小值和索引</p>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="python%E4%B8%AD%E7%9A%84%E7%9F%A9%E9%98%B5%E8%BF%90%E7%AE%97%20-%20chamie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/copycode.gif" alt="复制代码"></a></span></div>
+<pre><span style="background-color: #cc99ff;">&gt;&gt;&gt;a1.max()</span> &nbsp; #<span style="color: #000000;">计算a1矩阵中所有元素的最大值,这里得到的结果是一个数值
+</span>4
+<span style="background-color: #cc99ff;">&gt;&gt;&gt;a2=max(a1[:,1])</span> #计算第二列的最大值，这里得到的是一个1*<span style="color: #000000;">1的矩阵
+</span>&gt;&gt;&gt;<span style="color: #000000;"> a2
+matrix([[</span>3<span style="color: #000000;">]])
+</span><span style="background-color: #cc99ff;">&gt;&gt;&gt;a1[1,:].max()</span> &nbsp;#<span style="color: #000000;">计算第二行的最大值，这里得到的是一个一个数值
+</span>3
+<span style="background-color: #cc99ff;">&gt;&gt;&gt;np.max(a1,0)</span> &nbsp;#<span style="color: #000000;">计算所有列的最大值，这里使用的是numpy中的max函数<br>matrix([[4, 3]])
+</span><span style="background-color: #cc99ff;">&gt;&gt;&gt;np.max(a1,1)</span> &nbsp;#<span style="color: #000000;">计算所有行的最大值，这里得到是一个矩阵
+matrix([[1],<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [3],<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [4]])
+</span><span style="background-color: #cc99ff;">&gt;&gt;&gt;np.argmax(a1,0)</span> #<span style="color: #000000;">计算所有列的最大值对应在该列中的索引<br>matrix([[2, 1]])
+</span><span style="background-color: #cc99ff;">&gt;&gt;&gt;np.argmax(a1[1,:])</span> &nbsp;#计算第二行中最大值对应在该行的索引<br>1</pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="python%E4%B8%AD%E7%9A%84%E7%9F%A9%E9%98%B5%E8%BF%90%E7%AE%97%20-%20chamie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/copycode.gif" alt="复制代码"></a></span></div></div>
+<p><strong>5.矩阵的分隔和合并</strong> <br>
+矩阵的分隔，同列表和数组的分隔一致。</p>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="python%E4%B8%AD%E7%9A%84%E7%9F%A9%E9%98%B5%E8%BF%90%E7%AE%97%20-%20chamie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/copycode.gif" alt="复制代码"></a></span></div>
+<pre><span style="background-color: #cc99ff;">&gt;&gt;&gt;a=mat(ones((3,3<span style="color: #000000;">)))
+</span></span>&gt;&gt;&gt;<span style="color: #000000;"> a
+matrix([[ </span>1.,  1.,  1<span style="color: #000000;">.],
+        [ </span>1.,  1.,  1<span style="color: #000000;">.],
+        [ </span>1.,  1.,  1<span style="color: #000000;">.]])
+</span><span style="background-color: #cc99ff;">&gt;&gt;&gt;b=a[1:,1:]</span>  <span style="color: #008000;">#</span><span style="color: #008000;">分割出第二行以后的行和第二列以后的列的所有元素</span>
+&gt;&gt;&gt;<span style="color: #000000;"> b
+matrix([[ </span>1.,  1<span style="color: #000000;">.],
+        [ </span>1.,  1.]])</pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="python%E4%B8%AD%E7%9A%84%E7%9F%A9%E9%98%B5%E8%BF%90%E7%AE%97%20-%20chamie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/copycode.gif" alt="复制代码"></a></span></div></div>
+<p>矩阵的合并</p>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="python%E4%B8%AD%E7%9A%84%E7%9F%A9%E9%98%B5%E8%BF%90%E7%AE%97%20-%20chamie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/copycode.gif" alt="复制代码"></a></span></div>
+<pre><span style="background-color: #cc99ff;">&gt;&gt;&gt;a=mat(ones((2,2<span style="color: #000000;">)))
+</span></span>&gt;&gt;&gt;<span style="color: #000000;"> a
+matrix([[ </span>1.,  1<span style="color: #000000;">.],
+        [ </span>1.,  1<span style="color: #000000;">.]])
+</span><span style="background-color: #cc99ff;">&gt;&gt;&gt;b=mat(eye(2<span style="color: #000000;">))
+</span></span>&gt;&gt;&gt;<span style="color: #000000;"> b
+matrix([[ </span>1<span style="color: #000000;">.,  0.],
+        [ 0.,  </span>1<span style="color: #000000;">.]])
+</span><span style="background-color: #cc99ff;">&gt;&gt;&gt;c=vstack((a,b))</span>  <span style="color: #008000;">#</span><span style="color: #008000;">按列合并，即增加行数</span>
+&gt;&gt;&gt;<span style="color: #000000;"> c
+matrix([[ </span>1.,  1<span style="color: #000000;">.],
+        [ </span>1.,  1<span style="color: #000000;">.],
+        [ </span>1<span style="color: #000000;">.,  0.],
+        [ 0.,  </span>1<span style="color: #000000;">.]])
+</span><span style="background-color: #cc99ff;">&gt;&gt;&gt;d=hstack((a,b))</span>  <span style="color: #008000;">#</span><span style="color: #008000;">按行合并，即行数不变，扩展列数</span>
+&gt;&gt;&gt;<span style="color: #000000;"> d
+matrix([[ </span>1.,  1.,  1<span style="color: #000000;">.,  0.],
+        [ </span>1.,  1.,  0.,  1.]])</pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="python%E4%B8%AD%E7%9A%84%E7%9F%A9%E9%98%B5%E8%BF%90%E7%AE%97%20-%20chamie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/copycode.gif" alt="复制代码"></a></span></div></div>
+<h3 id="4矩阵列表数组的转换">4.矩阵、列表、数组的转换</h3>
+<p>列表可以修改，并且列表中元素可以使不同类型的数据，如下：</p>
+<div class="cnblogs_code">
+<pre>l1=[[1],<span style="color: #800000;">'</span><span style="color: #800000;">hello</span><span style="color: #800000;">'</span>,3];</pre>
+</div>
+<p>numpy中数组，同一个数组中所有元素必须为同一个类型，有几个常见的属性：</p>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="python%E4%B8%AD%E7%9A%84%E7%9F%A9%E9%98%B5%E8%BF%90%E7%AE%97%20-%20chamie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/copycode.gif" alt="复制代码"></a></span></div>
+<pre><span style="background-color: #cc99ff;">&gt;&gt;&gt;a=array([[2],[1<span style="color: #000000;">]])
+</span></span>&gt;&gt;&gt;<span style="color: #000000;"> a
+array([[</span>2<span style="color: #000000;">],
+       [</span>1<span style="color: #000000;">]])
+</span><span style="background-color: #cc99ff;">&gt;&gt;&gt;dimension=<span style="color: #000000;">a.ndim
+</span></span>&gt;&gt;&gt;<span style="color: #000000;"> dimension
+</span>2
+<span style="background-color: #cc99ff;">&gt;&gt;&gt;m,n=<span style="color: #000000;">a.shape
+</span></span>&gt;&gt;&gt;<span style="color: #000000;"> m
+</span>2
+&gt;&gt;&gt;<span style="color: #000000;"> n
+</span>1
+<span style="background-color: #cc99ff;">&gt;&gt;&gt;number=a.size</span> <span style="color: #008000;">#</span><span style="color: #008000;">元素总个数</span>
+&gt;&gt;&gt;<span style="color: #000000;"> number
+</span>2
+<span style="background-color: #cc99ff;">&gt;&gt;&gt;str=a.dtype</span> <span style="color: #008000;">#</span><span style="color: #008000;">元素的类型</span>
+&gt;&gt;&gt;<span style="color: #000000;"> str
+dtype(</span><span style="color: #800000;">'</span><span style="color: #800000;">int64</span><span style="color: #800000;">'</span>)</pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="python%E4%B8%AD%E7%9A%84%E7%9F%A9%E9%98%B5%E8%BF%90%E7%AE%97%20-%20chamie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/copycode.gif" alt="复制代码"></a></span></div></div>
+<p>numpy中的矩阵也有与数组常见的几个属性。 <br>
+它们之间的转换：</p>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="python%E4%B8%AD%E7%9A%84%E7%9F%A9%E9%98%B5%E8%BF%90%E7%AE%97%20-%20chamie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/copycode.gif" alt="复制代码"></a></span></div>
+<pre><span style="background-color: #cc99ff;">&gt;&gt;&gt;a1=[[1,2],[3,2],[5,2]]</span>  <span style="color: #008000;">#</span><span style="color: #008000;">列表</span>
+&gt;&gt;&gt;<span style="color: #000000;"> a1
+[[</span>1, 2], [3, 2], [5, 2<span style="color: #000000;">]]
+</span><span style="background-color: #cc99ff;">&gt;&gt;&gt;a2=array(a1)</span>  <span style="color: #008000;">#</span><span style="color: #008000;">将列表转换成二维数组</span>
+&gt;&gt;&gt;<span style="color: #000000;"> a2
+array([[</span>1, 2<span style="color: #000000;">],
+       [</span>3, 2<span style="color: #000000;">],
+       [</span>5, 2<span style="color: #000000;">]])
+</span><span style="background-color: #cc99ff;">&gt;&gt;&gt;a3=mat(a1)</span>  <span style="color: #008000;">#</span><span style="color: #008000;">将列表转化成矩阵</span>
+&gt;&gt;&gt;<span style="color: #000000;"> a3
+matrix([[</span>1, 2<span style="color: #000000;">],
+        [</span>3, 2<span style="color: #000000;">],
+        [</span>5, 2<span style="color: #000000;">]])
+</span><span style="background-color: #cc99ff;">&gt;&gt;&gt;a4=array(a3)</span>  <span style="color: #008000;">#</span><span style="color: #008000;">将矩阵转换成数组</span>
+&gt;&gt;&gt;<span style="color: #000000;"> a4
+array([[</span>1, 2<span style="color: #000000;">],
+       [</span>3, 2<span style="color: #000000;">],
+       [</span>5, 2<span style="color: #000000;">]])<br><span style="background-color: #cc99ff;">&gt;&gt;&gt;a41=a3.getA() <span style="background-color: #ffffff;"> #将矩阵转换成数组</span></span><br>&gt;&gt;&gt;a41<br>array([[1,2]<br>&nbsp; &nbsp; &nbsp; &nbsp;[3,2]<br>&nbsp; &nbsp; &nbsp; &nbsp;[5,2]])
+</span><span style="background-color: #cc99ff;">&gt;&gt;&gt;a5=a3.tolist()</span>  <span style="color: #008000;">#</span><span style="color: #008000;">将矩阵转换成列表</span>
+&gt;&gt;&gt;<span style="color: #000000;"> a5
+[[</span>1, 2], [3, 2], [5, 2<span style="color: #000000;">]]
+</span><span style="background-color: #cc99ff;">&gt;&gt;&gt;a6=a2.tolist()</span>  <span style="color: #008000;">#</span><span style="color: #008000;">将数组转换成列表</span>
+&gt;&gt;&gt;<span style="color: #000000;"> a6
+[[</span>1, 2], [3, 2], [5, 2]]<br><br></pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="python%E4%B8%AD%E7%9A%84%E7%9F%A9%E9%98%B5%E8%BF%90%E7%AE%97%20-%20chamie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/copycode.gif" alt="复制代码"></a></span></div></div>
+<p>这里可以发现三者之间的转换是非常简单的，这里需要注意的是，当列表是一维的时候，将它转换成数组和矩阵后，再通过tolist()转换成列表是不相同的，需要做一些小小的修改。如下：</p>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="python%E4%B8%AD%E7%9A%84%E7%9F%A9%E9%98%B5%E8%BF%90%E7%AE%97%20-%20chamie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/copycode.gif" alt="复制代码"></a></span></div>
+<pre><span style="background-color: #ffffff;">&gt;&gt;&gt;a1=[1,2,3]</span>   <span style="color: #008000;">#</span><span style="color: #008000;">列表</span>
+<span style="background-color: #cc99ff;">&gt;&gt;&gt;a2=<span style="color: #000000;">array(a1)
+</span></span>&gt;&gt;&gt;<span style="color: #000000;"> a2
+array([</span>1, 2, 3<span style="color: #000000;">])
+</span><span style="background-color: #cc99ff;">&gt;&gt;&gt;a3=<span style="color: #000000;">mat(a1)
+</span></span>&gt;&gt;&gt;<span style="color: #000000;"> a3
+matrix([[</span>1, 2, 3<span style="color: #000000;">]])
+</span><span style="background-color: #cc99ff;">&gt;&gt;&gt; a4=<span style="color: #000000;">a2.tolist()
+</span></span>&gt;&gt;&gt;<span style="color: #000000;"> a4
+[</span>1, 2, 3<span style="color: #000000;">]
+</span><span style="background-color: #cc99ff;">&gt;&gt;&gt; a5=<span style="color: #000000;">a3.tolist()
+</span></span>&gt;&gt;&gt;<span style="color: #000000;"> a5
+[[</span>1, 2, 3<span style="color: #000000;">]]
+</span><span style="background-color: #cc99ff;">&gt;&gt;&gt; a6=(a4==<span style="color: #000000;">a5)
+</span></span>&gt;&gt;&gt;<span style="color: #000000;"> a6
+False
+</span><span style="background-color: #cc99ff;">&gt;&gt;&gt; a7=(a4 <span style="color: #0000ff;">is</span><span style="color: #000000;"> a5[0])
+</span></span>&gt;&gt;&gt;<span style="color: #000000;"> a7
+True</span></pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="python%E4%B8%AD%E7%9A%84%E7%9F%A9%E9%98%B5%E8%BF%90%E7%AE%97%20-%20chamie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/copycode.gif" alt="复制代码"></a></span></div></div>
+<p>矩阵转换成数值，存在以下一种情况：</p>
+<div class="cnblogs_code">
+<pre>&gt;&gt;&gt; dataMat=mat([1<span style="color: #000000;">])
+</span>&gt;&gt;&gt; val=dataMat[0,0]  <span style="color: #008000;">#</span><span style="color: #008000;">这个时候获取的就是矩阵的元素的数值，而不再是矩阵的类型</span>
+&gt;&gt;&gt;<span style="color: #000000;"> val
+</span>1</pre>
+</div>
+<pre class="prettyprint"><code class=" hljs fsharp">&nbsp;</code></pre>
+</div>
+</div></div><div id="MySignature"></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+<div id="BlogPostCategory">分类: <a href="https://www.cnblogs.com/chamie/category/723033.html" target="_blank">Python</a></div>
+<div id="EntryTag">标签: <a href="https://www.cnblogs.com/chamie/tag/python/">python</a></div>
+<div id="blog_post_info"><div id="green_channel">
+        <a href="javascript:void(0);" id="green_channel_digg" onclick="DiggIt(4870078,cb_blogId,1);green_channel_success(this,'谢谢推荐！');">好文要顶</a>
+            <a id="green_channel_follow" onclick="follow('cfd2fef8-f16b-e411-b908-9dcfd8948a71');" href="javascript:void(0);">关注我</a>
+    <a id="green_channel_favorite" onclick="AddToWz(cb_entryId);return false;" href="javascript:void(0);">收藏该文</a>
+    <a id="green_channel_weibo" href="javascript:void(0);" title="分享至新浪微博" onclick="ShareToTsina()"><img src="python%E4%B8%AD%E7%9A%84%E7%9F%A9%E9%98%B5%E8%BF%90%E7%AE%97%20-%20chamie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/icon_weibo_24.png" alt=""></a>
+    <a id="green_channel_wechat" href="javascript:void(0);" title="分享至微信" onclick="shareOnWechat()"><img src="python%E4%B8%AD%E7%9A%84%E7%9F%A9%E9%98%B5%E8%BF%90%E7%AE%97%20-%20chamie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/wechat.png" alt=""></a>
+</div>
+<div id="author_profile">
+    <div id="author_profile_info" class="author_profile_info">
+            <a href="http://home.cnblogs.com/u/chamie/" target="_blank"><img src="python%E4%B8%AD%E7%9A%84%E7%9F%A9%E9%98%B5%E8%BF%90%E7%AE%97%20-%20chamie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/20171019115914.png" class="author_avatar" alt=""></a>
+        <div id="author_profile_detail" class="author_profile_info">
+            <a href="http://home.cnblogs.com/u/chamie/">chamie</a><br>
+            <a href="http://home.cnblogs.com/u/chamie/followees">关注 - 34</a><br>
+            <a href="http://home.cnblogs.com/u/chamie/followers">粉丝 - 59</a>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div id="author_profile_honor"></div>
+    <div id="author_profile_follow">
+                <a href="javascript:void(0);" onclick="follow('cfd2fef8-f16b-e411-b908-9dcfd8948a71');return false;">+加关注</a>
+    </div>
+</div>
+<div id="div_digg">
+    <div class="diggit" onclick="votePost(4870078,'Digg')">
+        <span class="diggnum" id="digg_count">3</span>
+    </div>
+    <div class="buryit" onclick="votePost(4870078,'Bury')">
+        <span class="burynum" id="bury_count">0</span>
+    </div>
+    <div class="clear"></div>
+    <div class="diggword" id="digg_tips">
+    </div>
+</div>
+<script type="text/javascript">
+    currentDiggType = 0;
+</script></div>
+<div class="clear"></div>
+<div id="post_next_prev"><a href="https://www.cnblogs.com/chamie/p/4865425.html" class="p_n_p_prefix">« </a> 上一篇：<a href="https://www.cnblogs.com/chamie/p/4865425.html" title="发布于2015-10-09 22:51">【python问题系列--4】ValueError: operands could not be broadcast together with shapes (100,3) (3,1)</a><br><a href="https://www.cnblogs.com/chamie/p/4870135.html" class="p_n_p_prefix">» </a> 下一篇：<a href="https://www.cnblogs.com/chamie/p/4870135.html" title="发布于2015-10-11 21:36">矩阵的维数</a><br></div>
+</div>
+
+
+	<div class="postDesc">posted on <span id="post-date">2015-10-11 21:20</span> <a href="https://www.cnblogs.com/chamie/">chamie</a> 阅读(<span id="post_view_count">122262</span>) 评论(<span id="post_comment_count">0</span>)  <a href="https://i.cnblogs.com/EditPosts.aspx?postid=4870078" rel="nofollow">编辑</a> <a href="#" onclick="AddToWz(4870078);return false;">收藏</a></div>
+</div>
+<script type="text/javascript">var allowComments=true,cb_blogId=204957,cb_entryId=4870078,cb_blogApp=currentBlogApp,cb_blogUserGuid='cfd2fef8-f16b-e411-b908-9dcfd8948a71',cb_entryCreatedDate='2015/10/11 21:20:00';loadViewCount(cb_entryId);var cb_postType=1;var isMarkdown=false;</script>
+
+</div><a name="!comments"></a><div id="blog-comments-placeholder"></div><script type="text/javascript">var commentManager = new blogCommentManager();commentManager.renderComments(0);</script>
+<div id="comment_form" class="commentform">
+<a name="commentform"></a>
+<div id="divCommentShow"></div>
+<div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="#" onclick="return RefreshPage();">刷新页面</a><a href="#top">返回顶部</a></div>
+<div id="comment_form_container"><div class="login_tips">注册用户登录后才能发表评论，请 <a rel="nofollow" href="javascript:void(0);" class="underline" onclick="return login('commentform');">登录</a> 或 <a rel="nofollow" href="javascript:void(0);" class="underline" onclick="return register();">注册</a>，<a href="http://www.cnblogs.com/">访问</a>网站首页。</div></div>
+<div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+<div id="ad_t2"><a href="http://www.ucancode.com/index.htm" target="_blank" onclick="ga('send', 'event', 'Link', 'click', 'T2-工控')">【推荐】超50万C++/C#源码: 大型实时仿真组态图形源码</a><br><a href="https://www.bagevent.com/event/2195041?bag_track=13072958" target="_blank" onclick="ga('send', 'event', 'Link', 'click', 'T2-看雪')">【活动】看雪2019安全开发者峰会，共话安全领域焦点</a><br><a href="https://ke.qq.com/adActivity.html?name=xiangxueketang2" target="_blank" onclick="ga('send', 'event', 'Link', 'click', 'T2-享学')">【培训】Java程序员年薪40W，他1年走了别人5年的路</a><br></div>
+<div id="opt_under_post"></div>
+<script async="async" src="python%E4%B8%AD%E7%9A%84%E7%9F%A9%E9%98%B5%E8%BF%90%E7%AE%97%20-%20chamie%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/gpt.js"></script>
+<script>
+  var googletag = googletag || {};
+  googletag.cmd = googletag.cmd || [];
+</script>
+<script>
+  googletag.cmd.push(function() {
+        googletag.defineSlot('/1090369/C1', [300, 250], 'div-gpt-ad-1546353474406-0').addService(googletag.pubads());
+        googletag.defineSlot('/1090369/C2', [468, 60], 'div-gpt-ad-1539008685004-0').addService(googletag.pubads());
+        googletag.pubads().enableSingleRequest();
+        googletag.enableServices();
+  });
+</script>
+<div id="cnblogs_c1" class="c_ad_block">
+    <div id="div-gpt-ad-1546353474406-0" style="height:250px; width:300px;" data-google-query-id="CKTs-aGBneICFRC8vQodEXwLMQ"><div id="google_ads_iframe_/1090369/C1_0__container__" style="border: 0pt none;"><iframe id="google_ads_iframe_/1090369/C1_0" title="3rd party ad content" name="google_ads_iframe_/1090369/C1_0" scrolling="no" marginwidth="0" marginheight="0" style="border: 0px none; vertical-align: bottom;" srcdoc="" data-google-container-id="1" data-load-complete="true" width="300" height="250" frameborder="0"></iframe></div></div>
+</div>
+<div id="under_post_news" style="display: none;"></div>
+<div id="cnblogs_c2" class="c_ad_block">
+    <div id="div-gpt-ad-1539008685004-0" style="height:60px; width:468px;" data-google-query-id="CKXs-aGBneICFRC8vQodEXwLMQ"><div id="google_ads_iframe_/1090369/C2_0__container__" style="border: 0pt none;"><iframe id="google_ads_iframe_/1090369/C2_0" title="3rd party ad content" name="google_ads_iframe_/1090369/C2_0" scrolling="no" marginwidth="0" marginheight="0" style="border: 0px none; vertical-align: bottom;" srcdoc="" data-google-container-id="2" data-load-complete="true" width="468" height="60" frameborder="0"></iframe></div></div>
+</div>
+<div id="under_post_kb"><div class="itnews c_ad_block"><b>最新新闻</b>：<br> ·  <a href="https://news.cnblogs.com/n/625329/" target="_blank">3岁娃成“社交万人迷”？别再被天价“情商培训班”忽悠了</a><br> ·  <a href="https://news.cnblogs.com/n/625328/" target="_blank">国产手机十年厮杀过后，为何只剩下华为带着米OV?</a><br> ·  <a href="https://news.cnblogs.com/n/625327/" target="_blank">英国宣布5G将在7月3日上线，兼容四款5G手机</a><br> ·  <a href="https://news.cnblogs.com/n/625326/" target="_blank">NASA 称重返月球需要增加预算，新登月项目命名为阿耳特弥斯</a><br> ·  <a href="https://news.cnblogs.com/n/625325/" target="_blank">科学家发现超市所售西红柿味道寡淡的原因</a><br>» <a href="http://news.cnblogs.com/" title="IT新闻" target="_blank">更多新闻...</a></div></div>
+<div id="HistoryToday" class="c_ad_block"></div>
+<script type="text/javascript">
+ if(enablePostBottom()) {
+    codeHighlight();
+    fixPostBody();
+    setTimeout(function () { incrementViewCount(cb_entryId); }, 50);
+    deliverT2();
+    deliverC1();
+    deliverC2();    
+    loadNewsAndKb();
+    loadBlogSignature();
+    LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+    GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+    loadOptUnderPost();
+    GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);  
+}
+</script>
+</div>
+
+    
+	
+<!--done-->
+<div class="footer">
+	
+	Copyright ©2019 chamie Powered by: <a href="http://www.cnblogs.com/" class="footerlink">博客园</a> 模板提供：<a href="http://blog.hjenglish.com/" class="footerlink">沪江博客</a><br>
+</div>
+</div>
+
+
+
+
+
+
+<iframe id="google_osd_static_frame_8004392472380" name="google_osd_static_frame" style="display: none; width: 0px; height: 0px;"></iframe></body></html>

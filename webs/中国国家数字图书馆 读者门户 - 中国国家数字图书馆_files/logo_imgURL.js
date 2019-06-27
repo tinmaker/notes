@@ -1,0 +1,2 @@
+var pics='/system/application/website/websiteLogoAndLibs/imagesLogo/2013020601.jpg|/system/application/website/websiteLogoAndLibs/imagesLogo/2012061901.jpg|/system/application/website/websiteLogoAndLibs/imagesLogo/20121205_tpz.jpg|/system/application/website/websiteLogoAndLibs/imagesLogo/20121205_wjjs.jpg';
+var links='http://www.nlc.cn/dsb_zt/xzzt/2013cjzt/|http://mylib.nlc.cn/web/guest/|http://www.nlc.cn/dsb_zt/xzzt/tpz/|http://find.nlc.cn/';

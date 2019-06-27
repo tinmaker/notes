@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="zh-cn"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="origin">
+    <title>VINS 估计器之结构初始化 - Eason_Jiang - 博客园</title>
+<meta property="og:description" content="为什么要初始化 非线性VINS估计器的性能对于初始的速度，尺度，重力向量，空间点3D位置，以及外参等非常敏感。在很多场合中，能做到相机和IMU即插即用，线上自动校准与初始化，将会给用户带来极大的方便性">
+    <link type="text/css" rel="stylesheet" href="VINS%20%E4%BC%B0%E8%AE%A1%E5%99%A8%E4%B9%8B%E7%BB%93%E6%9E%84%E5%88%9D%E5%A7%8B%E5%8C%96%20-%20Eason_Jiang%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/blog-common.css">
+<link id="MainCss" type="text/css" rel="stylesheet" href="VINS%20%E4%BC%B0%E8%AE%A1%E5%99%A8%E4%B9%8B%E7%BB%93%E6%9E%84%E5%88%9D%E5%A7%8B%E5%8C%96%20-%20Eason_Jiang%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/bundle-SimpleMemory.css">
+<link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="VINS%20%E4%BC%B0%E8%AE%A1%E5%99%A8%E4%B9%8B%E7%BB%93%E6%9E%84%E5%88%9D%E5%A7%8B%E5%8C%96%20-%20Eason_Jiang%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/bundle-SimpleMemory-mobile.css">
+    <link title="RSS" type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/easonslam/rss">
+    <link title="RSD" type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/easonslam/rsd.xml">
+<link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/easonslam/wlwmanifest.xml">
+    <script src="VINS%20%E4%BC%B0%E8%AE%A1%E5%99%A8%E4%B9%8B%E7%BB%93%E6%9E%84%E5%88%9D%E5%A7%8B%E5%8C%96%20-%20Eason_Jiang%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/amp4ads-host-v0.js"></script><script src="VINS%20%E4%BC%B0%E8%AE%A1%E5%99%A8%E4%B9%8B%E7%BB%93%E6%9E%84%E5%88%9D%E5%A7%8B%E5%8C%96%20-%20Eason_Jiang%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/pubads_impl_rendering_2019050901.js"></script><script async="" src="VINS%20%E4%BC%B0%E8%AE%A1%E5%99%A8%E4%B9%8B%E7%BB%93%E6%9E%84%E5%88%9D%E5%A7%8B%E5%8C%96%20-%20Eason_Jiang%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/analytics.js"></script><script src="VINS%20%E4%BC%B0%E8%AE%A1%E5%99%A8%E4%B9%8B%E7%BB%93%E6%9E%84%E5%88%9D%E5%A7%8B%E5%8C%96%20-%20Eason_Jiang%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/jquery-2.js"></script>
+    <script>var currentBlogId=319727;var currentBlogApp='easonslam',cb_enable_mathjax=false;var isLogined=false;</script>
+    <script src="VINS%20%E4%BC%B0%E8%AE%A1%E5%99%A8%E4%B9%8B%E7%BB%93%E6%9E%84%E5%88%9D%E5%A7%8B%E5%8C%96%20-%20Eason_Jiang%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/blog-common.js" type="text/javascript"></script>
+<link rel="preload" href="VINS%20%E4%BC%B0%E8%AE%A1%E5%99%A8%E4%B9%8B%E7%BB%93%E6%9E%84%E5%88%9D%E5%A7%8B%E5%8C%96%20-%20Eason_Jiang%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/integrator.js" as="script"><script type="text/javascript" src="VINS%20%E4%BC%B0%E8%AE%A1%E5%99%A8%E4%B9%8B%E7%BB%93%E6%9E%84%E5%88%9D%E5%A7%8B%E5%8C%96%20-%20Eason_Jiang%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/integrator.js"></script><script src="VINS%20%E4%BC%B0%E8%AE%A1%E5%99%A8%E4%B9%8B%E7%BB%93%E6%9E%84%E5%88%9D%E5%A7%8B%E5%8C%96%20-%20Eason_Jiang%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/pubads_impl_2019050901.js" async=""></script><link rel="prefetch" href="https://tpc.googlesyndication.com/safeframe/1-0-33/html/container.html"></head>
+<body>
+<a name="top"></a>
+
+
+<!--done-->
+<div id="home">
+<div id="header">
+	<div id="blogTitle">
+	<a id="lnkBlogLogo" href="https://www.cnblogs.com/easonslam/"><img id="blogLogo" src="VINS%20%E4%BC%B0%E8%AE%A1%E5%99%A8%E4%B9%8B%E7%BB%93%E6%9E%84%E5%88%9D%E5%A7%8B%E5%8C%96%20-%20Eason_Jiang%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/logo.gif" alt="返回主页"></a>			
+		
+<!--done-->
+<h1><a id="Header1_HeaderTitle" class="headermaintitle" href="https://www.cnblogs.com/easonslam/">Eason_Jiang</a></h1>
+<h2>SLAM算法工程师/香港城大PhD</h2>
+
+
+
+		
+	</div><!--end: blogTitle 博客的标题和副标题 -->
+	<div id="navigator">
+		
+<ul id="navList">
+<li><a id="blog_nav_sitehome" class="menu" href="https://www.cnblogs.com/">博客园</a></li>
+<li><a id="blog_nav_myhome" class="menu" href="https://www.cnblogs.com/easonslam/">首页</a></li>
+<li><a id="blog_nav_newpost" class="menu" rel="nofollow" href="https://i.cnblogs.com/EditPosts.aspx?opt=1">新随笔</a></li>
+<li><a id="blog_nav_contact" class="menu" rel="nofollow" href="https://msg.cnblogs.com/send/Eason_Jiang">联系</a></li>
+<li><a id="blog_nav_rss" class="menu" href="https://www.cnblogs.com/easonslam/rss">订阅</a>
+<!--<a id="blog_nav_rss_image" class="aHeaderXML" href="https://www.cnblogs.com/easonslam/rss"><img src="//www.cnblogs.com/images/xml.gif" alt="订阅" /></a>--></li>
+<li><a id="blog_nav_admin" class="menu" rel="nofollow" href="https://i.cnblogs.com/">管理</a></li>
+</ul>
+		<div class="blogStats">
+			
+			<div id="blog_stats">
+<span id="stats_post_count">随笔 - 12&nbsp; </span>
+<span id="stats_article_count">文章 - 0&nbsp; </span>
+<span id="stats-comment_count">评论 - 2</span>
+</div>
+			
+		</div><!--end: blogStats -->
+	</div><!--end: navigator 博客导航栏 -->
+</div><!--end: header 头部 -->
+
+<div id="main">
+	<div id="mainContent">
+	<div class="forFlow">
+		
+        <div id="post_detail">
+<!--done-->
+<div id="topics">
+	<div class="post">
+		<h1 class="postTitle">
+			<a id="cb_post_title_url" class="postTitle2" href="https://www.cnblogs.com/easonslam/p/8881266.html">VINS 估计器之结构初始化</a>
+		</h1>
+		<div class="clear"></div>
+		<div class="postBody">
+			<div id="cnblogs_post_body" class="blogpost-body cnblogs-markdown"><h4 id="为什么要初始化">为什么要初始化</h4>
+<p>非线性VINS估计器的性能对于初始的速度，尺度，重力向量，空间点3D位置，以及外参等非常敏感。在很多场合中，能做到相机和IMU即插即用，线
+上自动校准与初始化，将会给用户带来极大的方便性。VINS里面分四步进行，第一个就是上次讲的旋转外参校准，第二个就是找到某帧作为系统初始化原点，计
+算3D地图点，第三就是将相机坐标系转到IMU坐标系中，第四就是相机与IMU对齐，包括IMU零偏初始化，速度，重力向量，尺度初始化</p>
+<h4 id="初始化系统原点与转换到imu坐标系">初始化系统原点与转换到IMU坐标系</h4>
+<pre><code class="hljs php">bool Estimator::initialStructure()
+{
+    TicToc t_sfm;
+    <span class="hljs-comment">//check imu observibility, 通过协方差检测IMU的可观测性</span>
+    {
+        map&lt;double, ImageFrame&gt;::iterator frame_it;
+        Vector3d sum_g;
+        <span class="hljs-keyword">for</span> (frame_it = all_image_frame.begin(), frame_it++; frame_it != all_image_frame.end(); frame_it++)
+        {
+            double dt = frame_it-&gt;second.pre_integration-&gt;sum_dt;
+            Vector3d tmp_g = frame_it-&gt;second.pre_integration-&gt;delta_v / dt;
+            sum_g += tmp_g;
+        }
+        Vector3d aver_g;
+        aver_g = sum_g * <span class="hljs-number">1.0</span> / ((int)all_image_frame.size() - <span class="hljs-number">1</span>);
+        double <span class="hljs-keyword">var</span> = <span class="hljs-number">0</span>;
+        <span class="hljs-keyword">for</span> (frame_it = all_image_frame.begin(), frame_it++; frame_it != all_image_frame.end(); frame_it++)
+        {
+            double dt = frame_it-&gt;second.pre_integration-&gt;sum_dt;
+            Vector3d tmp_g = frame_it-&gt;second.pre_integration-&gt;delta_v / dt;
+            <span class="hljs-keyword">var</span> += (tmp_g - aver_g).transpose() * (tmp_g - aver_g);
+            <span class="hljs-comment">//cout &lt;&lt; "frame g " &lt;&lt; tmp_g.transpose() &lt;&lt; endl;</span>
+        }
+        <span class="hljs-keyword">var</span> = sqrt(<span class="hljs-keyword">var</span> / ((int)all_image_frame.size() - <span class="hljs-number">1</span>));
+        <span class="hljs-comment">//ROS_WARN("IMU variation %f!", var);</span>
+        <span class="hljs-keyword">if</span>(<span class="hljs-keyword">var</span> &lt; <span class="hljs-number">0.25</span>)
+        {
+            ROS_INFO(<span class="hljs-string">"IMU excitation not enouth!"</span>);
+            <span class="hljs-comment">//return false;</span>
+        }
+    }
+    <span class="hljs-comment">// global sfm 准备</span>
+    Quaterniond Q[frame_count + <span class="hljs-number">1</span>];
+    Vector3d T[frame_count + <span class="hljs-number">1</span>];
+    map&lt;int, Vector3d&gt; sfm_tracked_points;
+    vector&lt;SFMFeature&gt; sfm_f;
+    <span class="hljs-keyword">for</span> (auto &amp;it_per_id : f_manager.feature)
+    {
+        int imu_j = it_per_id.start_frame - <span class="hljs-number">1</span>;
+        SFMFeature tmp_feature;
+        tmp_feature.state = <span class="hljs-keyword">false</span>;
+        tmp_feature.id = it_per_id.feature_id;
+        <span class="hljs-keyword">for</span> (auto &amp;it_per_frame : it_per_id.feature_per_frame)
+        {
+            imu_j++;
+            Vector3d pts_j = it_per_frame.point;
+            tmp_feature.observation.push_back(make_pair(imu_j, Eigen::Vector2d{pts_j.x(), pts_j.y()}));
+        }
+        sfm_f.push_back(tmp_feature);
+    } 
+    <span class="hljs-comment">//在窗口内选择跟最后一帧视差最大的帧，利用五点法计算相对旋转和平移量</span>
+    Matrix3d relative_R;
+    Vector3d relative_T;
+    int l;
+    <span class="hljs-keyword">if</span> (!relativePose(relative_R, relative_T, l))
+    {
+        ROS_INFO(<span class="hljs-string">"Not enough features or parallax; Move device around"</span>);
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">false</span>;
+    }
+ 
+    <span class="hljs-comment">// 为了更方便理解，把relativePose 函数取了出来</span>
+  |  ----------------------------------------------------------------------------------------------------------
+  |  bool Estimator::relativePose(Matrix3d &amp;relative_R, Vector3d &amp;relative_T, int &amp;l)
+  |  {
+  |  <span class="hljs-comment">// find previous frame which contians enough correspondance and parallex with newest frame，循环找出和最新帧视差最大的历史帧</span>
+  |  <span class="hljs-keyword">for</span> (int i = <span class="hljs-number">0</span>; i &lt; WINDOW_SIZE; i++)
+  |  {
+  |      vector&lt;pair&lt;Vector3d, Vector3d&gt;&gt; corres;
+  |      corres = f_manager.getCorresponding(i, WINDOW_SIZE);
+  |      <span class="hljs-keyword">if</span> (corres.size() &gt; <span class="hljs-number">20</span>)
+  |      {
+  |          double sum_parallax = <span class="hljs-number">0</span>;
+  |          double average_parallax;
+  |          <span class="hljs-keyword">for</span> (int j = <span class="hljs-number">0</span>; j &lt; int(corres.size()); j++)
+  |          {
+  |              Vector2d pts_0(corres[j].first(<span class="hljs-number">0</span>), corres[j].first(<span class="hljs-number">1</span>));
+  |              Vector2d pts_1(corres[j].second(<span class="hljs-number">0</span>), corres[j].second(<span class="hljs-number">1</span>));
+  |              double parallax = (pts_0 - pts_1).norm();
+  |              sum_parallax = sum_parallax + parallax;
+  |          }
+  |          average_parallax = <span class="hljs-number">1.0</span> * sum_parallax / int(corres.size());
+  |  <span class="hljs-comment">// 找到后就可以利用五点法计算，如果计算失败就继续循环</span>
+  |          <span class="hljs-keyword">if</span>(average_parallax * <span class="hljs-number">460</span> &gt; <span class="hljs-number">30</span> &amp;&amp; m_estimator.solveRelativeRT(corres, relative_R, relative_T))
+  |          {
+  |              l = i;
+  |              ROS_DEBUG(<span class="hljs-string">"average_parallax %f choose l %d and newest frame to triangulate the whole structure"</span>, average_parallax * <span class="hljs-number">460</span>, l);
+  |              <span class="hljs-keyword">return</span> <span class="hljs-keyword">true</span>;
+  |          }
+  |      }
+  |  }
+  |  <span class="hljs-keyword">return</span> <span class="hljs-keyword">false</span>;
+  | }
+  | <span class="hljs-comment">// 核心的五点法，也是求本质矩阵</span>
+  | bool MotionEstimator::solveRelativeRT(<span class="hljs-keyword">const</span> vector&lt;pair&lt;Vector3d, Vector3d&gt;&gt; &amp;corres, Matrix3d &amp;Rotation, Vector3d &amp;Translation)
+  | {
+  |  <span class="hljs-keyword">if</span> (corres.size() &gt;= <span class="hljs-number">15</span>)
+  |  {
+  |     vector&lt;cv::Point2f&gt; ll, rr;
+  |      <span class="hljs-keyword">for</span> (int i = <span class="hljs-number">0</span>; i &lt; int(corres.size()); i++)
+  |      {
+  |          ll.push_back(cv::Point2f(corres[i].first(<span class="hljs-number">0</span>), corres[i].first(<span class="hljs-number">1</span>)));
+  |          rr.push_back(cv::Point2f(corres[i].second(<span class="hljs-number">0</span>), corres[i].second(<span class="hljs-number">1</span>)));
+  |      }
+  |      cv::Mat mask;
+  |      cv::Mat E = cv::findFundamentalMat(ll, rr, cv::FM_RANSAC, <span class="hljs-number">0.3</span> / <span class="hljs-number">460</span>, <span class="hljs-number">0.99</span>, mask);
+  |      cv::Mat cameraMatrix = (cv::Mat_&lt;double&gt;(<span class="hljs-number">3</span>, <span class="hljs-number">3</span>) &lt;&lt; <span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>);
+  |      cv::Mat rot, trans;
+  |  <span class="hljs-comment">// recoverPose内用了一些复杂的条件判断如何选取R和T，但是其用了单位矩阵作为cameraMatrix，feature_tracker_node在处理图像的是已经把图像坐标转为归一化的相机坐标了,并且进行了去畸变,所以之后的重投影部分只需要外参,不再需要内参了.</span>
+  |      int inlier_cnt = cv::recoverPose(E, ll, rr, cameraMatrix, rot, trans, mask);
+  |      <span class="hljs-comment">//cout &lt;&lt; "inlier_cnt " &lt;&lt; inlier_cnt &lt;&lt; endl;</span>
+  |
+  |      Eigen::Matrix3d R;
+  |      Eigen::Vector3d T;
+  |      <span class="hljs-keyword">for</span> (int i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">3</span>; i++)
+  |      {   
+  |          T(i) = trans.at&lt;double&gt;(i, <span class="hljs-number">0</span>);
+  |          <span class="hljs-keyword">for</span> (int j = <span class="hljs-number">0</span>; j &lt; <span class="hljs-number">3</span>; j++)
+  |              R(i, j) = rot.at&lt;double&gt;(i, j);
+  |      }
+  |
+  |      Rotation = R.transpose();
+  |      Translation = -R.transpose() * T;
+  |      <span class="hljs-keyword">if</span>(inlier_cnt &gt; <span class="hljs-number">12</span>)
+  |          <span class="hljs-keyword">return</span> <span class="hljs-keyword">true</span>;
+  |      <span class="hljs-keyword">else</span>
+  |          <span class="hljs-keyword">return</span> <span class="hljs-keyword">false</span>;
+  |  }
+  |  <span class="hljs-keyword">return</span> <span class="hljs-keyword">false</span>;
+  |  }
+  |  ----------------------------------------------------------------------------------------------------------
+
+    GlobalSFM sfm;
+    <span class="hljs-comment">/* sfm.construct 函数本身就很巨大，里面很多步骤，代码就不贴了，大致如下：
+       1. 三角化l 帧与frame_num - 1帧，得到一些地图点。
+       2. 通过这些地图点，利用pnp的方法计算l+1, l+2, l+3, …… frame_num-2 相对于l的位姿。而且每计算一帧，就会与frame_num - 1帧进行三角化，得出更多地图点
+       3. 三角化l+1, l+2 …… frame_num-2帧与l帧
+       4. 对l-1, l-2, l-3 等帧与sfm_f的特征点队列进行pnp求解，得出相对于l的位姿，并三角化其与l帧。
+       5. 三角化剩余的点
+       6. ceres全局BA优化，最小化3d投影误差
+     */</span>
+    <span class="hljs-keyword">if</span>(!sfm.construct(frame_count + <span class="hljs-number">1</span>, Q, T, l,
+              relative_R, relative_T,
+              sfm_f, sfm_tracked_points))
+    {
+        ROS_DEBUG(<span class="hljs-string">"global SFM failed!"</span>);
+        marginalization_flag = MARGIN_OLD;
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">false</span>;
+    }
+
+    <span class="hljs-comment">//solve pnp for all frame，因为有continue存在，怎么会solve all，感觉只是不满足时间戳相等的才pnp求解</span>
+    map&lt;double, ImageFrame&gt;::iterator frame_it;
+    map&lt;int, Vector3d&gt;::iterator it;
+    frame_it = all_image_frame.begin( );
+    <span class="hljs-keyword">for</span> (int i = <span class="hljs-number">0</span>; frame_it != all_image_frame.end( ); frame_it++)
+    {
+        <span class="hljs-comment">// provide initial guess</span>
+        cv::Mat r, rvec, t, D, tmp_r;
+        <span class="hljs-keyword">if</span>((frame_it-&gt;first) == Headers[i].stamp.toSec())
+        {
+            frame_it-&gt;second.is_key_frame = <span class="hljs-keyword">true</span>;
+            frame_it-&gt;second.R = Q[i].toRotationMatrix() * RIC[<span class="hljs-number">0</span>].transpose();
+            frame_it-&gt;second.T = T[i];
+            i++;
+            <span class="hljs-keyword">continue</span>;
+        }
+        <span class="hljs-keyword">if</span>((frame_it-&gt;first) &gt; Headers[i].stamp.toSec())
+        {
+            i++;
+        }
+        Matrix3d R_inital = (Q[i].inverse()).toRotationMatrix();
+        Vector3d P_inital = - R_inital * T[i];
+        cv::eigen2cv(R_inital, tmp_r);
+        cv::Rodrigues(tmp_r, rvec);
+        cv::eigen2cv(P_inital, t);
+
+        frame_it-&gt;second.is_key_frame = <span class="hljs-keyword">false</span>;
+        vector&lt;cv::Point3f&gt; pts_3_vector;
+        vector&lt;cv::Point2f&gt; pts_2_vector;
+        <span class="hljs-keyword">for</span> (auto &amp;id_pts : frame_it-&gt;second.points)
+        {
+            int feature_id = id_pts.first;
+            <span class="hljs-keyword">for</span> (auto &amp;i_p : id_pts.second)
+            {
+                it = sfm_tracked_points.find(feature_id);
+                <span class="hljs-keyword">if</span>(it != sfm_tracked_points.end())
+                {
+                    Vector3d world_pts = it-&gt;second;
+                    cv::Point3f pts_3(world_pts(<span class="hljs-number">0</span>), world_pts(<span class="hljs-number">1</span>), world_pts(<span class="hljs-number">2</span>));
+                    pts_3_vector.push_back(pts_3);
+                    Vector2d img_pts = i_p.second.head&lt;<span class="hljs-number">2</span>&gt;();
+                    cv::Point2f pts_2(img_pts(<span class="hljs-number">0</span>), img_pts(<span class="hljs-number">1</span>));
+                    pts_2_vector.push_back(pts_2);
+                }
+            }
+        }
+        cv::Mat K = (cv::Mat_&lt;double&gt;(<span class="hljs-number">3</span>, <span class="hljs-number">3</span>) &lt;&lt; <span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>);     
+        <span class="hljs-keyword">if</span>(pts_3_vector.size() &lt; <span class="hljs-number">6</span>)
+        {
+            cout &lt;&lt; <span class="hljs-string">"pts_3_vector size "</span> &lt;&lt; pts_3_vector.size() &lt;&lt; endl;
+            ROS_DEBUG(<span class="hljs-string">"Not enough points for solve pnp !"</span>);
+            <span class="hljs-keyword">return</span> <span class="hljs-keyword">false</span>;
+        }
+        <span class="hljs-keyword">if</span> (! cv::solvePnP(pts_3_vector, pts_2_vector, K, D, rvec, t, <span class="hljs-number">1</span>))
+        {
+            ROS_DEBUG(<span class="hljs-string">"solve pnp fail!"</span>);
+            <span class="hljs-keyword">return</span> <span class="hljs-keyword">false</span>;
+        }
+        cv::Rodrigues(rvec, r);
+        MatrixXd R_pnp,tmp_R_pnp;
+        cv::cv2eigen(r, tmp_R_pnp);
+        R_pnp = tmp_R_pnp.transpose();
+        MatrixXd T_pnp;
+        cv::cv2eigen(t, T_pnp);
+        T_pnp = R_pnp * (-T_pnp);
+        frame_it-&gt;second.R = R_pnp * RIC[<span class="hljs-number">0</span>].transpose();
+        frame_it-&gt;second.T = T_pnp;
+    }
+    <span class="hljs-keyword">if</span> (visualInitialAlign())
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">true</span>;
+    <span class="hljs-keyword">else</span>
+    {
+        ROS_INFO(<span class="hljs-string">"misalign visual structure with IMU"</span>);
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">false</span>;
+    }
+
+}</code></pre>
+<h4 id="相机与imu对齐">相机与IMU对齐</h4>
+<pre><code class="hljs groovy">bool <span class="hljs-string">Estimator:</span>:visualInitialAlign()
+{
+    TicToc t_g;
+    VectorXd x;
+    <span class="hljs-comment">/*里面包含
+    1. solveGyroscopeBias()零偏初始化: 在滑动窗口中，每两帧之间的相对旋转与IMU预积分产生的旋转进行最小二乘法优化，用ldlt求解
+    2. LinearAlignment() 尺度初始化:由于在视觉初始化SFM的过程中，将其中位姿变化较大的两帧中使用E矩阵求解出来旋转和位移，后续的PnP和三角化都是在这个尺度下完成的。所以当前的尺度与IMU测量出来的真实世界尺度肯定不是一致的，所以需要这里进行对齐。这里对齐的方法主要是通过在滑动窗口中每两帧之间的位置和速度与IMU预积分出来的位置和速度组成一个最小二乘法的形式，然后求解出来
+    3. RefineGravity()重力向量优化:进一步细化重力加速度，提高估计值的精度，形式与LinearAlignment()是一致的，只是将g改为g⋅ĝ +w1b1+w2b2
+    2和3的公式相对难懂，请参考下面图片
+    */</span>
+    bool result = VisualIMUAlignment(all_image_frame, Bgs, g, x);
+    <span class="hljs-keyword">if</span>(!result)
+    {
+        ROS_DEBUG(<span class="hljs-string">"solve g failed!"</span>);
+        <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+    }
+
+    <span class="hljs-comment">// change state</span>
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt;= frame_count; i++)
+    {
+        Matrix3d Ri = all_image_frame[Headers[i].stamp.toSec()].R;
+        Vector3d Pi = all_image_frame[Headers[i].stamp.toSec()].T;
+        Ps[i] = Pi;
+        Rs[i] = Ri;
+        all_image_frame[Headers[i].stamp.toSec()].is_key_frame = <span class="hljs-literal">true</span>;
+    }
+
+    VectorXd dep = f_manager.getDepthVector();
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; dep.size(); i++)
+        dep[i] = <span class="hljs-number">-1</span>;
+    f_manager.clearDepth(dep);
+
+    <span class="hljs-comment">//triangulat on cam pose , no tic三角化特征点，</span>
+    Vector3d TIC_TMP[NUM_OF_CAM];
+    <span class="hljs-keyword">for</span>(<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; NUM_OF_CAM; i++)
+        TIC_TMP[i].setZero();
+    ric[<span class="hljs-number">0</span>] = RIC[<span class="hljs-number">0</span>];
+    f_manager.setRic(ric);
+    f_manager.triangulate(Ps, &amp;(TIC_TMP[<span class="hljs-number">0</span>]), &amp;(RIC[<span class="hljs-number">0</span>]));
+    <span class="hljs-comment">//更新相机速度，位置和旋转量(通过精确求解的尺度，重力向量)</span>
+    <span class="hljs-keyword">double</span> s = (x.tail&lt;<span class="hljs-number">1</span>&gt;())(<span class="hljs-number">0</span>);
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt;= WINDOW_SIZE; i++)
+    {
+        pre_integrations[i]-&gt;repropagate(<span class="hljs-string">Vector3d:</span>:Zero(), Bgs[i]);
+    }
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = frame_count; i &gt;= <span class="hljs-number">0</span>; i--)
+        Ps[i] = s * Ps[i] - Rs[i] * TIC[<span class="hljs-number">0</span>] - (s * Ps[<span class="hljs-number">0</span>] - Rs[<span class="hljs-number">0</span>] * TIC[<span class="hljs-number">0</span>]);
+    <span class="hljs-keyword">int</span> kv = <span class="hljs-number">-1</span>;
+    map&lt;<span class="hljs-keyword">double</span>, ImageFrame&gt;::iterator frame_i;
+    <span class="hljs-keyword">for</span> (frame_i = all_image_frame.begin(); frame_i != all_image_frame.end(); frame_i++)
+    {
+        <span class="hljs-keyword">if</span>(frame_i-&gt;second.is_key_frame)
+        {
+            kv++;
+            Vs[kv] = frame_i-&gt;second.R * x.segment&lt;<span class="hljs-number">3</span>&gt;(kv * <span class="hljs-number">3</span>);
+        }
+    }
+    <span class="hljs-keyword">for</span> (auto &amp;<span class="hljs-string">it_per_id :</span> f_manager.feature)
+    {
+        it_per_id.used_num = it_per_id.feature_per_frame.size();
+        <span class="hljs-keyword">if</span> (!(it_per_id.used_num &gt;= <span class="hljs-number">2</span> &amp;&amp; it_per_id.start_frame &lt; WINDOW_SIZE - <span class="hljs-number">2</span>))
+            <span class="hljs-keyword">continue</span>;
+        it_per_id.estimated_depth *= s;
+    }
+
+    Matrix3d R0 = <span class="hljs-string">Utility:</span>:g2R(g);
+    <span class="hljs-keyword">double</span> yaw = <span class="hljs-string">Utility:</span>:R2ypr(R0 * Rs[<span class="hljs-number">0</span>]).x();
+    R0 = <span class="hljs-string">Utility:</span>:ypr2R(<span class="hljs-string">Eigen:</span>:Vector3d{-yaw, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>}) * R0;
+    g = R0 * g;
+    <span class="hljs-comment">//Matrix3d rot_diff = R0 * Rs[0].transpose();</span>
+    Matrix3d rot_diff = R0;
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt;= frame_count; i++)
+    {
+        Ps[i] = rot_diff * Ps[i];
+        Rs[i] = rot_diff * Rs[i];
+        Vs[i] = rot_diff * Vs[i];
+    }
+    ROS_DEBUG_STREAM(<span class="hljs-string">"g0     "</span> &lt;&lt; g.transpose());
+    ROS_DEBUG_STREAM(<span class="hljs-string">"my R0  "</span> &lt;&lt; <span class="hljs-string">Utility:</span>:R2ypr(Rs[<span class="hljs-number">0</span>]).transpose()); 
+
+    <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+}</code></pre>
+<p><img src="VINS%20%E4%BC%B0%E8%AE%A1%E5%99%A8%E4%B9%8B%E7%BB%93%E6%9E%84%E5%88%9D%E5%A7%8B%E5%8C%96%20-%20Eason_Jiang%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/1072373-20180419163252748-810017249.png"></p>
+</div><div id="MySignature"></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+<div id="BlogPostCategory">分类: <a href="https://www.cnblogs.com/easonslam/category/1179167.html" target="_blank">VINS笔记</a></div>
+<div id="EntryTag">标签: <a href="https://www.cnblogs.com/easonslam/tag/VINS/">VINS</a>, <a href="https://www.cnblogs.com/easonslam/tag/%E5%88%9D%E5%A7%8B%E5%8C%96/">初始化</a></div>
+<div id="blog_post_info"><div id="green_channel">
+        <a href="javascript:void(0);" id="green_channel_digg" onclick="DiggIt(8881266,cb_blogId,1);green_channel_success(this,'谢谢推荐！');">好文要顶</a>
+            <a id="green_channel_follow" onclick="follow('65829114-97b6-e611-845c-ac853d9f53ac');" href="javascript:void(0);">关注我</a>
+    <a id="green_channel_favorite" onclick="AddToWz(cb_entryId);return false;" href="javascript:void(0);">收藏该文</a>
+    <a id="green_channel_weibo" href="javascript:void(0);" title="分享至新浪微博" onclick="ShareToTsina()"><img src="VINS%20%E4%BC%B0%E8%AE%A1%E5%99%A8%E4%B9%8B%E7%BB%93%E6%9E%84%E5%88%9D%E5%A7%8B%E5%8C%96%20-%20Eason_Jiang%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/icon_weibo_24.png" alt=""></a>
+    <a id="green_channel_wechat" href="javascript:void(0);" title="分享至微信" onclick="shareOnWechat()"><img src="VINS%20%E4%BC%B0%E8%AE%A1%E5%99%A8%E4%B9%8B%E7%BB%93%E6%9E%84%E5%88%9D%E5%A7%8B%E5%8C%96%20-%20Eason_Jiang%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/wechat.png" alt=""></a>
+</div>
+<div id="author_profile">
+    <div id="author_profile_info" class="author_profile_info">
+            <a href="http://home.cnblogs.com/u/easonslam/" target="_blank"><img src="VINS%20%E4%BC%B0%E8%AE%A1%E5%99%A8%E4%B9%8B%E7%BB%93%E6%9E%84%E5%88%9D%E5%A7%8B%E5%8C%96%20-%20Eason_Jiang%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/sample_face.gif" class="author_avatar" alt=""></a>
+        <div id="author_profile_detail" class="author_profile_info">
+            <a href="http://home.cnblogs.com/u/easonslam/">Eason_Jiang</a><br>
+            <a href="http://home.cnblogs.com/u/easonslam/followees">关注 - 2</a><br>
+            <a href="http://home.cnblogs.com/u/easonslam/followers">粉丝 - 7</a>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div id="author_profile_honor"></div>
+    <div id="author_profile_follow">
+                <a href="javascript:void(0);" onclick="follow('65829114-97b6-e611-845c-ac853d9f53ac');return false;">+加关注</a>
+    </div>
+</div>
+<div id="div_digg">
+    <div class="diggit" onclick="votePost(8881266,'Digg')">
+        <span class="diggnum" id="digg_count">0</span>
+    </div>
+    <div class="buryit" onclick="votePost(8881266,'Bury')">
+        <span class="burynum" id="bury_count">0</span>
+    </div>
+    <div class="clear"></div>
+    <div class="diggword" id="digg_tips">
+    </div>
+</div>
+<script type="text/javascript">
+    currentDiggType = 0;
+</script></div>
+<div class="clear"></div>
+<div id="post_next_prev"><a href="https://www.cnblogs.com/easonslam/p/8877513.html" class="p_n_p_prefix">« </a> 上一篇：<a href="https://www.cnblogs.com/easonslam/p/8877513.html" title="发布于2018-04-18 21:17">VINS 估计器之外参初始化</a><br><a href="https://www.cnblogs.com/easonslam/p/8885214.html" class="p_n_p_prefix">» </a> 下一篇：<a href="https://www.cnblogs.com/easonslam/p/8885214.html" title="发布于2018-04-19 18:46">VINS 估计器之优化与边缘化</a><br></div>
+</div>
+
+
+		</div>
+		<div class="postDesc">posted @ <span id="post-date">2018-04-19 16:30</span> <a href="https://www.cnblogs.com/easonslam/">Eason_Jiang</a> 阅读(<span id="post_view_count">769</span>) 评论(<span id="post_comment_count">0</span>)  <a href="https://i.cnblogs.com/EditPosts.aspx?postid=8881266" rel="nofollow">编辑</a> <a href="#" onclick="AddToWz(8881266);return false;">收藏</a></div>
+	</div>
+	<script src="VINS%20%E4%BC%B0%E8%AE%A1%E5%99%A8%E4%B9%8B%E7%BB%93%E6%9E%84%E5%88%9D%E5%A7%8B%E5%8C%96%20-%20Eason_Jiang%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/highlight.js"></script><script>markdown_highlight();</script><script type="text/javascript">var allowComments=true,cb_blogId=319727,cb_entryId=8881266,cb_blogApp=currentBlogApp,cb_blogUserGuid='65829114-97b6-e611-845c-ac853d9f53ac',cb_entryCreatedDate='2018/4/19 16:30:00';loadViewCount(cb_entryId);var cb_postType=1;var isMarkdown=true;</script>
+	
+</div><!--end: topics 文章、评论容器-->
+</div><a name="!comments"></a><div id="blog-comments-placeholder"></div><script type="text/javascript">var commentManager = new blogCommentManager();commentManager.renderComments(0);</script>
+<div id="comment_form" class="commentform">
+<a name="commentform"></a>
+<div id="divCommentShow"></div>
+<div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="#" onclick="return RefreshPage();">刷新页面</a><a href="#top">返回顶部</a></div>
+<div id="comment_form_container"><div class="login_tips">注册用户登录后才能发表评论，请 <a rel="nofollow" href="javascript:void(0);" class="underline" onclick="return login('commentform');">登录</a> 或 <a rel="nofollow" href="javascript:void(0);" class="underline" onclick="return register();">注册</a>，<a href="http://www.cnblogs.com/">访问</a>网站首页。</div></div>
+<div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+<div id="ad_t2"><a href="http://www.ucancode.com/index.htm" target="_blank" onclick="ga('send', 'event', 'Link', 'click', 'T2-工控')">【推荐】超50万C++/C#源码: 大型实时仿真组态图形源码</a><br><a href="https://www.bagevent.com/event/2195041?bag_track=13072958" target="_blank" onclick="ga('send', 'event', 'Link', 'click', 'T2-看雪')">【活动】看雪2019安全开发者峰会，共话安全领域焦点</a><br><a href="https://ke.qq.com/adActivity.html?name=xiangxueketang2" target="_blank" onclick="ga('send', 'event', 'Link', 'click', 'T2-享学')">【培训】Java程序员年薪40W，他1年走了别人5年的路</a><br></div>
+<div id="opt_under_post"></div>
+<script async="async" src="VINS%20%E4%BC%B0%E8%AE%A1%E5%99%A8%E4%B9%8B%E7%BB%93%E6%9E%84%E5%88%9D%E5%A7%8B%E5%8C%96%20-%20Eason_Jiang%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/gpt.js"></script>
+<script>
+  var googletag = googletag || {};
+  googletag.cmd = googletag.cmd || [];
+</script>
+<script>
+  googletag.cmd.push(function() {
+        googletag.defineSlot('/1090369/C1', [300, 250], 'div-gpt-ad-1546353474406-0').addService(googletag.pubads());
+        googletag.defineSlot('/1090369/C2', [468, 60], 'div-gpt-ad-1539008685004-0').addService(googletag.pubads());
+        googletag.pubads().enableSingleRequest();
+        googletag.enableServices();
+  });
+</script>
+<div id="cnblogs_c1" class="c_ad_block">
+    <div id="div-gpt-ad-1546353474406-0" style="height:250px; width:300px;" data-google-query-id="CPHR4_-BneICFcF1YAod-usNzg"><div id="google_ads_iframe_/1090369/C1_0__container__" style="border: 0pt none;"><iframe id="google_ads_iframe_/1090369/C1_0" title="3rd party ad content" name="google_ads_iframe_/1090369/C1_0" scrolling="no" marginwidth="0" marginheight="0" style="border: 0px none; vertical-align: bottom;" srcdoc="" data-google-container-id="1" data-load-complete="true" width="300" height="250" frameborder="0"></iframe></div></div>
+</div>
+<div id="under_post_news" style="display: none;"></div>
+<div id="cnblogs_c2" class="c_ad_block">
+    <div id="div-gpt-ad-1539008685004-0" style="height:60px; width:468px;" data-google-query-id="CPLR4_-BneICFcF1YAod-usNzg"><div id="google_ads_iframe_/1090369/C2_0__container__" style="border: 0pt none;"><iframe id="google_ads_iframe_/1090369/C2_0" title="3rd party ad content" name="google_ads_iframe_/1090369/C2_0" scrolling="no" marginwidth="0" marginheight="0" style="border: 0px none; vertical-align: bottom;" srcdoc="" data-google-container-id="2" data-load-complete="true" width="468" height="60" frameborder="0"></iframe></div></div>
+</div>
+<div id="under_post_kb"><div class="itnews c_ad_block"><b>最新新闻</b>：<br> ·  <a href="https://news.cnblogs.com/n/625332/" target="_blank">日本显示器公司连续第五年亏损 宣布裁员1000人</a><br> ·  <a href="https://news.cnblogs.com/n/625331/" target="_blank">深网|万达百货更名苏宁易购广场 改造店5月底亮相</a><br> ·  <a href="https://news.cnblogs.com/n/625330/" target="_blank">圈重点！腾讯全球数字生态大会带来不一样的智慧医疗</a><br> ·  <a href="https://news.cnblogs.com/n/625329/" target="_blank">3岁娃成“社交万人迷”？别再被天价“情商培训班”忽悠了</a><br> ·  <a href="https://news.cnblogs.com/n/625328/" target="_blank">国产手机十年厮杀过后，为何只剩下华为带着米OV?</a><br>» <a href="http://news.cnblogs.com/" title="IT新闻" target="_blank">更多新闻...</a></div></div>
+<div id="HistoryToday" class="c_ad_block"></div>
+<script type="text/javascript">
+ if(enablePostBottom()) {
+    codeHighlight();
+    fixPostBody();
+    setTimeout(function () { incrementViewCount(cb_entryId); }, 50);
+    deliverT2();
+    deliverC1();
+    deliverC2();    
+    loadNewsAndKb();
+    loadBlogSignature();
+    LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+    GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+    loadOptUnderPost();
+    GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);  
+}
+</script>
+</div>
+
+    
+	</div><!--end: forFlow -->
+	</div><!--end: mainContent 主体内容容器-->
+
+	<div id="sideBar">
+		<div id="sideBarMain">
+			
+<!--done-->
+<div class="newsItem">
+<h3 class="catListTitle">公告</h3>
+	<div id="blog-news"><div id="profile_block">昵称：<a href="https://home.cnblogs.com/u/easonslam/">Eason_Jiang</a><br>园龄：<a href="https://home.cnblogs.com/u/easonslam/" title="入园时间：2016-11-30">2年5个月</a><br>粉丝：<a href="https://home.cnblogs.com/u/easonslam/followers/">7</a><br>关注：<a href="https://home.cnblogs.com/u/easonslam/followees/">2</a><div id="p_b_follow"><a href="javascript:void(0);" onclick="follow('65829114-97b6-e611-845c-ac853d9f53ac')">+加关注</a></div><script>getFollowStatus('65829114-97b6-e611-845c-ac853d9f53ac')</script></div></div><script type="text/javascript">loadBlogNews();</script>
+</div>
+
+			<div id="blog-calendar" style=""><table id="blogCalendar" class="Cal" title="Calendar" cellspacing="0" cellpadding="0">
+	<tbody><tr><td colspan="7"><table class="CalTitle" cellspacing="0">
+		<tbody><tr><td class="CalNextPrev"><a href="javascript:void(0);" onclick="loadBlogCalendar('2019/04/01');return false;">&lt;</a></td><td align="center">2019年5月</td><td class="CalNextPrev" align="right"><a href="javascript:void(0);" onclick="loadBlogCalendar('2019/06/01');return false;">&gt;</a></td></tr>
+	</tbody></table></td></tr><tr><th class="CalDayHeader" abbr="日" scope="col" align="center">日</th><th class="CalDayHeader" abbr="一" scope="col" align="center">一</th><th class="CalDayHeader" abbr="二" scope="col" align="center">二</th><th class="CalDayHeader" abbr="三" scope="col" align="center">三</th><th class="CalDayHeader" abbr="四" scope="col" align="center">四</th><th class="CalDayHeader" abbr="五" scope="col" align="center">五</th><th class="CalDayHeader" abbr="六" scope="col" align="center">六</th></tr><tr><td class="CalOtherMonthDay" align="center">28</td><td class="CalOtherMonthDay" align="center">29</td><td class="CalOtherMonthDay" align="center">30</td><td align="center">1</td><td align="center">2</td><td align="center">3</td><td class="CalWeekendDay" align="center">4</td></tr><tr><td class="CalWeekendDay" align="center">5</td><td align="center">6</td><td align="center">7</td><td align="center">8</td><td align="center">9</td><td align="center">10</td><td class="CalWeekendDay" align="center">11</td></tr><tr><td class="CalWeekendDay" align="center">12</td><td align="center">13</td><td align="center">14</td><td class="CalTodayDay" align="center">15</td><td align="center">16</td><td align="center">17</td><td class="CalWeekendDay" align="center">18</td></tr><tr><td class="CalWeekendDay" align="center">19</td><td align="center">20</td><td align="center">21</td><td align="center">22</td><td align="center">23</td><td align="center">24</td><td class="CalWeekendDay" align="center">25</td></tr><tr><td class="CalWeekendDay" align="center">26</td><td align="center">27</td><td align="center">28</td><td align="center">29</td><td align="center">30</td><td align="center">31</td><td class="CalOtherMonthDay" align="center">1</td></tr><tr><td class="CalOtherMonthDay" align="center">2</td><td class="CalOtherMonthDay" align="center">3</td><td class="CalOtherMonthDay" align="center">4</td><td class="CalOtherMonthDay" align="center">5</td><td class="CalOtherMonthDay" align="center">6</td><td class="CalOtherMonthDay" align="center">7</td><td class="CalOtherMonthDay" align="center">8</td></tr>
+</tbody></table></div><script type="text/javascript">loadBlogDefaultCalendar();</script>
+			
+			<div id="leftcontentcontainer">
+				<div id="blog-sidecolumn"><div id="sidebar_search" class="sidebar-block">
+<div id="sidebar_search" class="mySearch">
+<h3 class="catListTitle">搜索</h3>
+<div id="sidebar_search_box">
+<div id="widget_my_zzk" class="div_my_zzk"><input id="q" onkeydown="return zzk_go_enter(event);" class="input_my_zzk" type="text">&nbsp;<input onclick="zzk_go()" value="找找看" id="btnZzk" class="btn_my_zzk" type="button"></div>
+<div id="widget_my_google" class="div_my_zzk"><input name="google_q" id="google_q" onkeydown="return google_go_enter(event)" class="input_my_zzk" type="text">&nbsp;<input onclick="google_go()" value="谷歌搜索" class="btn_my_zzk" type="button"></div>
+</div>
+</div>
+
+</div><div id="sidebar_shortcut" class="sidebar-block">
+<div class="catListLink">
+<h3 class="catListTitle">常用链接</h3>
+<ul>
+<li><a href="https://www.cnblogs.com/easonslam/p/" title="我的博客的随笔列表">我的随笔</a></li><li><a href="https://www.cnblogs.com/easonslam/MyComments.html" title="我发表过的评论列表">我的评论</a></li><li><a href="https://www.cnblogs.com/easonslam/OtherPosts.html" title="我评论过的随笔列表">我的参与</a></li><li><a href="https://www.cnblogs.com/easonslam/RecentComments.html" title="我的博客的评论列表">最新评论</a></li><li><a href="https://www.cnblogs.com/easonslam/tag/" title="我的博客的标签列表">我的标签</a></li>
+</ul>
+<div id="itemListLin_con" style="display:none;">
+<ul>
+
+</ul>
+</div>
+</div></div><div id="sidebar_toptags" class="sidebar-block">
+<div class="catListTag">
+<h3 class="catListTitle">我的标签</h3>
+<ul>
+<li><a href="https://www.cnblogs.com/easonslam/tag/VINS/">VINS</a>(4)</li><li><a href="https://www.cnblogs.com/easonslam/tag/ORB_SLAM/">ORB_SLAM</a>(3)</li><li><a href="https://www.cnblogs.com/easonslam/tag/%E5%9B%9E%E7%8E%AF%E6%A3%80%E6%B5%8B/">回环检测</a>(2)</li><li><a href="https://www.cnblogs.com/easonslam/tag/%E5%85%A8%E5%B1%80%E4%BC%98%E5%8C%96/">全局优化</a>(1)</li><li><a href="https://www.cnblogs.com/easonslam/tag/%E8%A7%86%E5%B7%AE/">视差</a>(1)</li><li><a href="https://www.cnblogs.com/easonslam/tag/%E8%A7%86%E8%A7%89%E5%89%8D%E7%AB%AF/">视觉前端</a>(1)</li><li><a href="https://www.cnblogs.com/easonslam/tag/%E5%A4%96%E5%8F%82%E6%A0%A1%E5%87%86/">外参校准</a>(1)</li><li><a href="https://www.cnblogs.com/easonslam/tag/SVD/">SVD</a>(1)</li><li><a href="https://www.cnblogs.com/easonslam/tag/mac/">mac</a>(1)</li><li><a href="https://www.cnblogs.com/easonslam/tag/opencv/">opencv</a>(1)</li><li><a href="https://www.cnblogs.com/easonslam/tag/">更多</a></li>
+</ul>
+</div></div><div id="sidebar_categories">
+<div id="sidebar_postcategory" class="catListPostCategory sidebar-block">
+<h3 class="catListTitle">随笔分类</h3>
+
+<ul>
+
+<li><a id="CatList_LinkList_0_Link_0" href="https://www.cnblogs.com/easonslam/category/1207108.html">Laser-Visual Fusion(1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_1" href="https://www.cnblogs.com/easonslam/category/1179165.html">OKVIS笔记(1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_2" href="https://www.cnblogs.com/easonslam/category/1179164.html">ORB_SLAM笔记(3)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_3" href="https://www.cnblogs.com/easonslam/category/1179168.html">PLSLAM笔记</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_4" href="https://www.cnblogs.com/easonslam/category/1206984.html">skipmap_ros(octomap)笔记(1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_5" href="https://www.cnblogs.com/easonslam/category/1179166.html">SPTAM笔记</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_6" href="https://www.cnblogs.com/easonslam/category/1179167.html">VINS笔记(6)</a> </li>
+
+</ul>
+
+</div>
+
+<div id="sidebar_postarchive" class="catListPostArchive sidebar-block">
+<h3 class="catListTitle">随笔档案</h3>
+
+<ul>
+
+<li><a id="CatList_LinkList_1_Link_0" href="https://www.cnblogs.com/easonslam/archive/2018/06.html">2018年6月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_1" href="https://www.cnblogs.com/easonslam/archive/2018/05.html">2018年5月 (4)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_2" href="https://www.cnblogs.com/easonslam/archive/2018/04.html">2018年4月 (6)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_3" href="https://www.cnblogs.com/easonslam/archive/2017/06.html">2017年6月 (1)</a> </li>
+
+</ul>
+
+</div>
+
+</div><div id="sidebar_recentcomments" class="sidebar-block"><div id="recent_comments_wrap">
+<div class="catListComment">
+<h3 class="catListTitle">最新评论</h3>
+
+	<div id="RecentCommentsBlock"><ul>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/easonslam/p/8961387.html#4100903">1. Re:Skimap_ros 利用RGBD创建Octomap(一)</a></li>
+        <li class="recent_comment_body">博主，请问在 ros_rgbd.cc 做出您博文所说的修改后，是否还需要进行其他的修改，skimap不提供如何挑选关键帧的步骤，那如何将orbslam提取到的关键帧传递给skimao呢？希望博主可以稍......</li>
+        <li class="recent_comment_author">--fate7788</li>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/easonslam/p/8961387.html#3987312">2. Re:Skimap_ros 利用RGBD创建Octomap(一)</a></li>
+        <li class="recent_comment_body">请问在rviz界面，可以显示运动，但没有3D图出现是什么情况呢？Global Status 选的是world，没有odomskimap和orb-slam2结合后，命令是什么，楼主能详细说一下吗？看楼主......</li>
+        <li class="recent_comment_author">--wmj1238</li>
+</ul>
+</div>
+</div>
+</div></div><div id="sidebar_topviewedposts" class="sidebar-block"><div id="topview_posts_wrap">
+<div class="catListView">
+<h3 class="catListTitle">阅读排行榜</h3>
+	<div id="TopViewPostsBlock"><ul><li><a href="https://www.cnblogs.com/easonslam/p/8891051.html">1. VINS 回环检测与全局优化(1257)</a></li><li><a href="https://www.cnblogs.com/easonslam/p/6947406.html">2. Opencv在mac系统的安装与试用(1041)</a></li><li><a href="https://www.cnblogs.com/easonslam/p/8885214.html">3. VINS 估计器之优化与边缘化(1012)</a></li><li><a href="https://www.cnblogs.com/easonslam/p/8961387.html">4. Skimap_ros 利用RGBD创建Octomap(一)(873)</a></li><li><a href="https://www.cnblogs.com/easonslam/p/8881266.html">5. VINS 估计器之结构初始化(769)</a></li></ul></div>
+</div>
+</div></div><div id="sidebar_topcommentedposts" class="sidebar-block"><div id="topfeedback_posts_wrap">
+<div class="catListFeedback">
+<h3 class="catListTitle">评论排行榜</h3>
+	<div id="TopFeedbackPostsBlock"><ul><li><a href="https://www.cnblogs.com/easonslam/p/8961387.html">1. Skimap_ros 利用RGBD创建Octomap(一)(2)</a></li></ul></div>
+</div>
+</div></div><div id="sidebar_topdiggedposts" class="sidebar-block"><div id="topdigg_posts_wrap">
+<div class="catListView">
+<h3 class="catListTitle">推荐排行榜</h3>
+<div id="TopDiggPostsBlock"><ul><li><a href="https://www.cnblogs.com/easonslam/p/8961387.html">1. Skimap_ros 利用RGBD创建Octomap(一)(1)</a></li></ul></div>
+</div></div></div></div><script type="text/javascript">loadBlogSideColumn();</script>
+			</div>
+			
+		</div><!--end: sideBarMain -->
+	</div><!--end: sideBar 侧边栏容器 -->
+	<div class="clear"></div>
+	</div><!--end: main -->
+	<div class="clear"></div>
+	<div id="footer">
+		
+<!--done-->
+Copyright ©2019 Eason_Jiang
+	</div><!--end: footer -->
+</div><!--end: home 自定义的最大容器 -->
+
+
+
+</body></html>

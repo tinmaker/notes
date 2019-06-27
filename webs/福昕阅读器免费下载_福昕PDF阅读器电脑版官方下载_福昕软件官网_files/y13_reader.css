@@ -1,0 +1,62 @@
+/* reader */
+.newFeatureTitle{
+	display:inline-block;
+	position: relative;
+	padding-right: 30px;
+	cursor: pointer;
+	font-size: 24px;
+    font-weight: 700;
+}
+.newFeatureTitle .xiaosanjiao{
+	background: url(../../images/global/tab-conten-hover.png) no-repeat right top;
+    width: 30px;
+    height: 45px;
+    position: absolute;
+    right: 0px;
+    top: 0px;
+}
+.newFeatureContentBlock{
+	display:none;
+}
+.showNewFeature{
+	display:block;
+}
+.tabIconContent ul li h3 {
+    margin: 10px 0;
+    font-size: 12px;
+    font-weight: 700;
+    text-align: left;
+    padding: 0 5px;
+}
+.margin-bottom-30 {
+    margin-bottom: 30px!important;
+}
+.col-md-8 {
+    display: inline-block;
+    width: 620px;
+    padding: 0 0 0 20px;
+}
+.tabIconContent ._title1 {
+    font-size: 14px;
+    color: #333333;
+    font-weight: 600;
+    margin: 0 0 5px 0;
+}
+.tabIconContent p {
+    color: #6E6E6E;
+    font-size:14px;
+}
+.tabIconContent .right {
+    text-align: right;
+    vertical-align: top;
+}
+.col-md-3 {
+    display: inline-block;
+    width: 280px;
+}
+.align-center {
+    text-align: center;
+}
+.tabIconContent{
+	padding: 55px 0 30px 0;
+}

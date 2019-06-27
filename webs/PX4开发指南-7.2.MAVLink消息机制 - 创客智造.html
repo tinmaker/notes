@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html class="no-js"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>PX4开发指南-7.2.MAVLink消息机制 - 创客智造</title>
+    <!-- 使用url函数转换相关路径 -->
+    <link rel="stylesheet" href="PX4%E5%BC%80%E5%8F%91%E6%8C%87%E5%8D%97-7.2.MAVLink%E6%B6%88%E6%81%AF%E6%9C%BA%E5%88%B6%20-%20%E5%88%9B%E5%AE%A2%E6%99%BA%E9%80%A0_files/normalize.css">
+    <link rel="stylesheet" href="PX4%E5%BC%80%E5%8F%91%E6%8C%87%E5%8D%97-7.2.MAVLink%E6%B6%88%E6%81%AF%E6%9C%BA%E5%88%B6%20-%20%E5%88%9B%E5%AE%A2%E6%99%BA%E9%80%A0_files/grid.css">
+    <link rel="stylesheet" href="PX4%E5%BC%80%E5%8F%91%E6%8C%87%E5%8D%97-7.2.MAVLink%E6%B6%88%E6%81%AF%E6%9C%BA%E5%88%B6%20-%20%E5%88%9B%E5%AE%A2%E6%99%BA%E9%80%A0_files/style.css">
+	<link rel="stylesheet" href="PX4%E5%BC%80%E5%8F%91%E6%8C%87%E5%8D%97-7.2.MAVLink%E6%B6%88%E6%81%AF%E6%9C%BA%E5%88%B6%20-%20%E5%88%9B%E5%AE%A2%E6%99%BA%E9%80%A0_files/newstyle.css">
+	<link rel="stylesheet" href="PX4%E5%BC%80%E5%8F%91%E6%8C%87%E5%8D%97-7.2.MAVLink%E6%B6%88%E6%81%AF%E6%9C%BA%E5%88%B6%20-%20%E5%88%9B%E5%AE%A2%E6%99%BA%E9%80%A0_files/font-awesome.css" media="all">	
+  	<script src="PX4%E5%BC%80%E5%8F%91%E6%8C%87%E5%8D%97-7.2.MAVLink%E6%B6%88%E6%81%AF%E6%9C%BA%E5%88%B6%20-%20%E5%88%9B%E5%AE%A2%E6%99%BA%E9%80%A0_files/push.js"></script><script src="PX4%E5%BC%80%E5%8F%91%E6%8C%87%E5%8D%97-7.2.MAVLink%E6%B6%88%E6%81%AF%E6%9C%BA%E5%88%B6%20-%20%E5%88%9B%E5%AE%A2%E6%99%BA%E9%80%A0_files/hm.js"></script><script src="PX4%E5%BC%80%E5%8F%91%E6%8C%87%E5%8D%97-7.2.MAVLink%E6%B6%88%E6%81%AF%E6%9C%BA%E5%88%B6%20-%20%E5%88%9B%E5%AE%A2%E6%99%BA%E9%80%A0_files/jquery.js"></script>
+	<script src="PX4%E5%BC%80%E5%8F%91%E6%8C%87%E5%8D%97-7.2.MAVLink%E6%B6%88%E6%81%AF%E6%9C%BA%E5%88%B6%20-%20%E5%88%9B%E5%AE%A2%E6%99%BA%E9%80%A0_files/main.js"></script>
+    <!--[if lt IE 9]>
+    <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+    <script src="https://cdn.staticfile.org/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- 通过自有函数输出HTML头部信息 -->
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?7e8151543dd565a51201995b7a146c8a";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script><meta name="description" content="PX4开发指南-7.2.MAVLink消息机制MAVLink消息所有消息的概述可以在这里找到。创建自定义MAVLink消息这篇教程是假设你已经在 msg/ca_trajectory.msg 有了...">
+<meta name="keywords" content="px4开发指南">
+<meta name="generator" content="Typecho 1.0/14.10.10">
+<meta name="template" content="default">
+<link rel="pingback" href="https://www.ncnynl.com/action/xmlrpc">
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://www.ncnynl.com/action/xmlrpc?rsd">
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="https://www.ncnynl.com/action/xmlrpc?wlw">
+<script type="text/javascript">
+(function () {
+    window.TypechoComment = {
+        dom : function (id) {
+            return document.getElementById(id);
+        },
+    
+        create : function (tag, attr) {
+            var el = document.createElement(tag);
+        
+            for (var key in attr) {
+                el.setAttribute(key, attr[key]);
+            }
+        
+            return el;
+        },
+
+        reply : function (cid, coid) {
+            var comment = this.dom(cid), parent = comment.parentNode,
+                response = this.dom('respond-post-2049'), input = this.dom('comment-parent'),
+                form = 'form' == response.tagName ? response : response.getElementsByTagName('form')[0],
+                textarea = response.getElementsByTagName('textarea')[0];
+
+            if (null == input) {
+                input = this.create('input', {
+                    'type' : 'hidden',
+                    'name' : 'parent',
+                    'id'   : 'comment-parent'
+                });
+
+                form.appendChild(input);
+            }
+
+            input.setAttribute('value', coid);
+
+            if (null == this.dom('comment-form-place-holder')) {
+                var holder = this.create('div', {
+                    'id' : 'comment-form-place-holder'
+                });
+
+                response.parentNode.insertBefore(holder, response);
+            }
+
+            comment.appendChild(response);
+            this.dom('cancel-comment-reply-link').style.display = '';
+
+            if (null != textarea && 'text' == textarea.name) {
+                textarea.focus();
+            }
+
+            return false;
+        },
+
+        cancelReply : function () {
+            var response = this.dom('respond-post-2049'),
+            holder = this.dom('comment-form-place-holder'), input = this.dom('comment-parent');
+
+            if (null != input) {
+                input.parentNode.removeChild(input);
+            }
+
+            if (null == holder) {
+                return true;
+            }
+
+            this.dom('cancel-comment-reply-link').style.display = 'none';
+            holder.parentNode.insertBefore(response, holder);
+            return false;
+        }
+    };
+})();
+</script>
+<script type="text/javascript">
+(function () {
+    var event = document.addEventListener ? {
+        add: 'addEventListener',
+        focus: 'focus',
+        load: 'DOMContentLoaded'
+    } : {
+        add: 'attachEvent',
+        focus: 'onfocus',
+        load: 'onload'
+    };
+
+    document[event.add](event.load, function () {
+        var r = document.getElementById('respond-post-2049');
+
+        if (null != r) {
+            var forms = r.getElementsByTagName('form');
+            if (forms.length > 0) {
+                var f = forms[0], textarea = f.getElementsByTagName('textarea')[0], added = false;
+
+                if (null != textarea && 'text' == textarea.name) {
+                    textarea[event.add](event.focus, function () {
+                        if (!added) {
+                            var input = document.createElement('input');
+                            input.type = 'hidden';
+                            input.name = '_';
+                            input.value = (function () {
+    var _l6Q = 'bca'//'7e'
++//'Tf'
+'b58'+//'Qcn'
+'e'+//'zNo'
+'6f'+/* 'b'//'b' */''+'b4'//'Lb'
++/* 'xAX'//'xAX' */''+//'JNF'
+'aca'+//'qL'
+'1c5'+'f5d'//'va7'
++//'bb'
+'6d'+''///*'kd'*/'kd'
++'2e5'//'UT'
++'8'//'a5'
++'3'//'Z'
++''///*'IgN'*/'IgN'
++'Wba'//'Wba'
++''///*'W4F'*/'W4F'
++'bf7'//'baW'
++//'eNe'
+'6'+//'y'
+'y'+'R'//'R'
++'3'//'iQ'
+, _XRl = [[27,30],[31,32],[31,32]];
+    
+    for (var i = 0; i < _XRl.length; i ++) {
+        _l6Q = _l6Q.substring(0, _XRl[i][0]) + _l6Q.substring(_XRl[i][1]);
+    }
+
+    return _l6Q;
+})();
+
+                            f.appendChild(input);
+                            added = true;
+                        }
+                    });
+                }
+            }
+        }
+    });
+})();
+</script></head>
+<body>
+<!--[if lt IE 8]>
+    <div class="browsehappy" role="dialog">当前网页 <strong>不支持</strong> 你正在使用的浏览器. 为了正常的访问, 请 <a href="http://browsehappy.com/">升级你的浏览器</a>.</div>
+<![endif]-->
+
+<header id="header" class="clearfix">
+    <div class="container">
+        <div class="row">
+            <div class="site-name col-mb-12 col-9">
+                <a id="logo" href="https://www.ncnynl.com/">
+                    <img style="width:200px; height: 72px;" src="PX4%E5%BC%80%E5%8F%91%E6%8C%87%E5%8D%97-7.2.MAVLink%E6%B6%88%E6%81%AF%E6%9C%BA%E5%88%B6%20-%20%E5%88%9B%E5%AE%A2%E6%99%BA%E9%80%A0_files/ckzz.png" alt="创客智造">
+                </a>
+        	    <p class="description">专注于开源硬件和软件的学习和应用.Arduino，Raspberry Pi，树莓派，ROS机器人系统， Turtlebot，UAV无人机  </p>
+            </div>
+            <div class="site-search col-3 kit-hidden-tb">
+            	<table>
+            	<tbody><tr><td style="width:90px"><img alt="chuangkezhizao" src="PX4%E5%BC%80%E5%8F%91%E6%8C%87%E5%8D%97-7.2.MAVLink%E6%B6%88%E6%81%AF%E6%9C%BA%E5%88%B6%20-%20%E5%88%9B%E5%AE%A2%E6%99%BA%E9%80%A0_files/qrcode.jpg" width="90" height="90"></td>
+                <td style="padding-left:2px;">
+                <b>创造源于生活 生活在于折腾 </b>
+                <form id="search" method="post" action="./" role="search">
+                    <label for="s" class="sr-only">搜索关键字</label>
+                    <input name="s" class="text" placeholder="输入关键字搜索" type="text">
+                    <button type="submit" class="submit">搜索</button>
+                </form>
+                
+				<div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a><a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a><a href="#" class="bds_tqq" data-cmd="tqq" title="分享到腾讯微博"></a><a href="#" class="bds_renren" data-cmd="renren" title="分享到人人网"></a><a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a></div>
+            	</td></tr>
+            	</tbody></table>
+            </div>
+            <div class="col-mb-12">
+                <nav id="nav-menu" class="clearfix" role="navigation">
+                    <a href="https://www.ncnynl.com/">首页</a>
+                                                            <a href="https://www.ncnynl.com/tags.html" title="标签">标签</a>
+                                        <a href="https://www.ncnynl.com/beginning.html" title="入门">入门</a>
+                                        <a href="https://www.ncnynl.com/video.html" title="视频">视频</a>
+                                        <a href="https://www.ncnynl.com/book.html" title="书籍">书籍</a>
+                                        <a href="https://www.ncnynl.com/resources.html" title="资源">资源</a>
+                                        <a href="https://www.ncnynl.com/hackerspace.html" title="空间">空间</a>
+                                        <a href="https://www.ncnynl.com/events.html" title="活动">活动</a>
+                                        <a href="https://www.ncnynl.com/racebot.html" title="AiDriving">AiDriving</a>
+                                        <a href="https://www.ncnynl.com/turbot.html" title="Turbot">Turbot</a>
+                                        <a href="https://www.ncnynl.com/turtlebot2.html" title="Turtlebot2">Turtlebot2</a>
+                                        <a href="https://www.ncnynl.com/turtlebot3.html" title="Turtlebot3">Turtlebot3</a>
+                                        <a href="https://www.ncnynl.com/suite.html" title="淘宝">淘宝</a>
+                                        <a href="https://www.ncnynl.com/start-page.html" title="关于">关于</a>
+                                    </nav>
+            </div>
+        </div><!-- end .row -->
+    </div>
+</header><!-- end #header -->
+<div id="body">
+    <div class="container">
+        <div class="row">
+
+    
+    
+<div class="col-2 kit-hidden-tb" id="secondary" role="complementary">
+
+       
+    <div>
+	<div class="tab"><a href="https://www.ncnynl.com/category/uav-px4/">PX4开发指南</a> 教程</div>
+	<div class="sidebar-box gallery-list">
+		<div id="leftcolumn" class="design">
+			<a href="https://www.ncnynl.com/archives/201709/2003.html" title="PX4开发指南-目录">PX4开发指南-目录</a><a href="https://www.ncnynl.com/archives/201709/2004.html" title="PX4开发指南-1.项目介绍">PX4开发指南-1.项目介绍</a><a href="https://www.ncnynl.com/archives/201709/2006.html" title="PX4开发指南-2.1.初始设置">PX4开发指南-2.1.初始设置</a><a href="https://www.ncnynl.com/archives/201709/2007.html" title="PX4开发指南-2.2.安装工具链">PX4开发指南-2.2.安装工具链</a><a href="https://www.ncnynl.com/archives/201709/2008.html" title="PX4开发指南-2.2.1.Mac OS">PX4开发指南-2.2.1.Mac OS</a><a href="https://www.ncnynl.com/archives/201709/2009.html" title="PX4开发指南-2.2.2.Linux">PX4开发指南-2.2.2.Linux</a><a href="https://www.ncnynl.com/archives/201709/2010.html" title="PX4开发指南-2.2.2.1.Linux-Advanced Linux">PX4开发指南-2.2.2.1.Linux-Advanced Linux</a><a href="https://www.ncnynl.com/archives/201709/2011.html" title="PX4开发指南-2.2.3.Windows">PX4开发指南-2.2.3.Windows</a><a href="https://www.ncnynl.com/archives/201709/2012.html" title="PX4开发指南-2.3.Fast RTPS installation">PX4开发指南-2.3.Fast RTPS installation</a><a href="https://www.ncnynl.com/archives/201709/2013.html" title="PX4开发指南-2.4.代码编译">PX4开发指南-2.4.代码编译</a><a href="https://www.ncnynl.com/archives/201709/2014.html" title="PX4开发指南-2.5.高级配置">PX4开发指南-2.5.高级配置</a><a href="https://www.ncnynl.com/archives/201709/2015.html" title="PX4开发指南-2.6.贡献&amp;  开发者电话会议">PX4开发指南-2.6.贡献&amp;  开发者电话会议</a><a href="https://www.ncnynl.com/archives/201709/2016.html" title="PX4开发指南-2.6.1.GIT例程">PX4开发指南-2.6.1.GIT例程</a><a href="https://www.ncnynl.com/archives/201709/2017.html" title="PX4开发指南-3.2.结构概述">PX4开发指南-3.2.结构概述</a><a href="https://www.ncnynl.com/archives/201709/2018.html" title="PX4开发指南-3.1.飞行模式">PX4开发指南-3.1.飞行模式</a><a href="https://www.ncnynl.com/archives/201709/2019.html" title="PX4开发指南-3.概念解读">PX4开发指南-3.概念解读</a><a href="https://www.ncnynl.com/archives/201709/2020.html" title="PX4开发指南-3.3.飞行控制栈">PX4开发指南-3.3.飞行控制栈</a><a href="https://www.ncnynl.com/archives/201709/2021.html" title="PX4开发指南-3.4.中间件">PX4开发指南-3.4.中间件</a><a href="https://www.ncnynl.com/archives/201709/2022.html" title="PX4开发指南-3.5.混控和执行器">PX4开发指南-3.5.混控和执行器</a><a href="https://www.ncnynl.com/archives/201709/2023.html" title="PX4开发指南-3.6.PWM限制状态机">PX4开发指南-3.6.PWM限制状态机</a><a href="https://www.ncnynl.com/archives/201709/2025.html" title="PX4开发指南-4.1.地面站">PX4开发指南-4.1.地面站</a><a href="https://www.ncnynl.com/archives/201709/2026.html" title="PX4开发指南-4.2.编写应用程序">PX4开发指南-4.2.编写应用程序</a><a href="https://www.ncnynl.com/archives/201709/2027.html" title="PX4开发指南-4.3.QGC的视频流">PX4开发指南-4.3.QGC的视频流</a><a href="https://www.ncnynl.com/archives/201709/2028.html" title="PX4开发指南-4.4.远距离视频流">PX4开发指南-4.4.远距离视频流</a><a href="https://www.ncnynl.com/archives/201709/2029.html" title="PX4开发指南-4.5.u-blox M8P RTK">PX4开发指南-4.5.u-blox M8P RTK</a><a href="https://www.ncnynl.com/archives/201709/2030.html" title="PX4开发指南-4.6.相机触发器">PX4开发指南-4.6.相机触发器</a><a href="https://www.ncnynl.com/archives/201709/2031.html" title="PX4开发指南-4.7.综合测试">PX4开发指南-4.7.综合测试</a><a href="https://www.ncnynl.com/archives/201709/2032.html" title="PX4开发指南-4.8.光流">PX4开发指南-4.8.光流</a><a href="https://www.ncnynl.com/archives/201709/2033.html" title="PX4开发指南-4.9.ecl EKF">PX4开发指南-4.9.ecl EKF</a><a href="https://www.ncnynl.com/archives/201709/2034.html" title="PX4开发指南-4.10.飞行前检查">PX4开发指南-4.10.飞行前检查</a><a href="https://www.ncnynl.com/archives/201709/2035.html" title="PX4开发指南-4.11.数传">PX4开发指南-4.11.数传</a><a href="https://www.ncnynl.com/archives/201709/2036.html" title="PX4开发指南-4.12.传感器热补偿">PX4开发指南-4.12.传感器热补偿</a><a href="https://www.ncnynl.com/archives/201709/2037.html" title="PX4开发指南-4.13.着陆检测">PX4开发指南-4.13.着陆检测</a><a href="https://www.ncnynl.com/archives/201709/2038.html" title="PX4开发指南-4.14.Linux系统下使用S.Bus驱动">PX4开发指南-4.14.Linux系统下使用S.Bus驱动</a><a href="https://www.ncnynl.com/archives/201709/2040.html" title="PX4开发指南-5.1.基本仿真">PX4开发指南-5.1.基本仿真</a><a href="https://www.ncnynl.com/archives/201709/2041.html" title="PX4开发指南-5.2.Gazebo仿真">PX4开发指南-5.2.Gazebo仿真</a><a href="https://www.ncnynl.com/archives/201709/2042.html" title="PX4开发指南-5.3.HITL仿真">PX4开发指南-5.3.HITL仿真</a><a href="https://www.ncnynl.com/archives/201709/2043.html" title="PX4开发指南-5.4.连接到ROS">PX4开发指南-5.4.连接到ROS</a><a href="https://www.ncnynl.com/archives/201709/2044.html" title="PX4开发指南-5.5.AirSim仿真">PX4开发指南-5.5.AirSim仿真</a><a href="https://www.ncnynl.com/archives/201709/2045.html" title="PX4开发指南-5.6.多机仿真">PX4开发指南-5.6.多机仿真</a><a href="https://www.ncnynl.com/archives/201709/2048.html" title="PX4开发指南-7.1.uORB消息机制">PX4开发指南-7.1.uORB消息机制</a><a href="https://www.ncnynl.com/archives/201709/2049.html" title="PX4开发指南-7.2.MAVLink消息机制" style="background-color: rgb(150, 185, 125); font-weight: bold; color: rgb(255, 255, 255);">PX4开发指南-7.2.MAVLink消息机制</a><a href="https://www.ncnynl.com/archives/201709/2050.html" title="PX4开发指南-7.3.守护程序">PX4开发指南-7.3.守护程序</a><a href="https://www.ncnynl.com/archives/201709/2051.html" title="PX4开发指南-7.4.驱动框架">PX4开发指南-7.4.驱动框架</a><a href="https://www.ncnynl.com/archives/201709/2052.html" title="PX4开发指南-7.5.模块 &amp; 命令">PX4开发指南-7.5.模块 &amp; 命令</a><a href="https://www.ncnynl.com/archives/201709/2053.html" title="PX4开发指南-7.5.1.命令">PX4开发指南-7.5.1.命令</a><a href="https://www.ncnynl.com/archives/201709/2054.html" title="PX4开发指南-7.5.2.通信">PX4开发指南-7.5.2.通信</a><a href="https://www.ncnynl.com/archives/201709/2055.html" title="PX4开发指南-7.5.3.驱动">PX4开发指南-7.5.3.驱动</a><a href="https://www.ncnynl.com/archives/201709/2056.html" title="PX4开发指南-7.5.4.系统">PX4开发指南-7.5.4.系统</a><a href="https://www.ncnynl.com/archives/201709/2058.html" title="PX4开发指南-8.1.统一的基础代码">PX4开发指南-8.1.统一的基础代码</a><a href="https://www.ncnynl.com/archives/201709/2059.html" title="PX4开发指南-8.2.参考机型">PX4开发指南-8.2.参考机型</a><a href="https://www.ncnynl.com/archives/201709/2060.html" title="PX4开发指南-8.3.添加一个新的机型">PX4开发指南-8.3.添加一个新的机型</a><a href="https://www.ncnynl.com/archives/201709/2063.html" title="PX4开发指南-8.4.2.QAV 250 Racer">PX4开发指南-8.4.2.QAV 250 Racer</a><a href="https://www.ncnynl.com/archives/201709/2064.html" title="PX4开发指南-8.4.3.Matrice 100">PX4开发指南-8.4.3.Matrice 100</a><a href="https://www.ncnynl.com/archives/201709/2065.html" title="PX4开发指南-8.4.4.QAV-R">PX4开发指南-8.4.4.QAV-R</a><a href="https://www.ncnynl.com/archives/201709/2066.html" title="PX4开发指南-8.5.直升机">PX4开发指南-8.5.直升机</a><a href="https://www.ncnynl.com/archives/201709/2067.html" title="PX4开发指南-8.5.1.Wing Wing Z-84">PX4开发指南-8.5.1.Wing Wing Z-84</a><a href="https://www.ncnynl.com/archives/201709/2068.html" title="PX4开发指南-8.6.VTOL">PX4开发指南-8.6.VTOL</a><a href="https://www.ncnynl.com/archives/201709/2069.html" title="PX4开发指南-8.6.1.VTOL Testing">PX4开发指南-8.6.1.VTOL Testing</a><a href="https://www.ncnynl.com/archives/201709/2070.html" title="PX4开发指南-9.协同电脑">PX4开发指南-9.协同电脑</a><a href="https://www.ncnynl.com/archives/201709/2071.html" title="PX4开发指南-9.1.Pixhawk系列协同电脑">PX4开发指南-9.1.Pixhawk系列协同电脑</a><a href="https://www.ncnynl.com/archives/201709/2073.html" title="PX4开发指南-10.1.DroneKit的使用">PX4开发指南-10.1.DroneKit的使用</a><a href="https://www.ncnynl.com/archives/201709/2075.html" title="PX4开发指南-11.1.用Linux进行外部控制">PX4开发指南-11.1.用Linux进行外部控制</a><a href="https://www.ncnynl.com/archives/201709/2076.html" title="PX4开发指南-11.2.在RPi上安装ROS">PX4开发指南-11.2.在RPi上安装ROS</a><a href="https://www.ncnynl.com/archives/201709/2077.html" title="PX4开发指南-11.3.MAVROS (ROS上的MAVLink)">PX4开发指南-11.3.MAVROS (ROS上的MAVLink)</a><a href="https://www.ncnynl.com/archives/201709/2078.html" title="PX4开发指南-11.4.MAVROS外部控制例程">PX4开发指南-11.4.MAVROS外部控制例程</a><a href="https://www.ncnynl.com/archives/201709/2079.html" title="PX4开发指南-11.5.外部位置估计">PX4开发指南-11.5.外部位置估计</a><a href="https://www.ncnynl.com/archives/201709/2080.html" title="PX4开发指南-11.6.Gazebo Octomap">PX4开发指南-11.6.Gazebo Octomap</a><a href="https://www.ncnynl.com/archives/201709/2083.html" title="PX4开发指南-12.1.1.SF1XX lidar">PX4开发指南-12.1.1.SF1XX lidar</a><a href="https://www.ncnynl.com/archives/201709/2084.html" title="PX4开发指南-12.2.UAVCAN总线">PX4开发指南-12.2.UAVCAN总线</a><a href="https://www.ncnynl.com/archives/201709/2085.html" title="PX4开发指南-12.2.1.UAVCAN Bootloader">PX4开发指南-12.2.1.UAVCAN Bootloader</a><a href="https://www.ncnynl.com/archives/201709/2086.html" title="PX4开发指南-12.2.2.UAVCAN固件升级">PX4开发指南-12.2.2.UAVCAN固件升级</a><a href="https://www.ncnynl.com/archives/201709/2087.html" title="PX4开发指南-12.2.3.UAVCAN配置">PX4开发指南-12.2.3.UAVCAN配置</a><a href="https://www.ncnynl.com/archives/201709/2088.html" title="PX4开发指南-12.2.4.UAVCAN 的各种笔记">PX4开发指南-12.2.4.UAVCAN 的各种笔记</a><a href="https://www.ncnynl.com/archives/201709/2091.html" title="PX4开发指南-12.4.1.uLanding Radar">PX4开发指南-12.4.1.uLanding Radar</a><a href="https://www.ncnynl.com/archives/201709/2093.html" title="PX4开发指南-13.1.FAQ">PX4开发指南-13.1.FAQ</a><a href="https://www.ncnynl.com/archives/201709/2094.html" title="PX4开发指南-13.2.系统控制台">PX4开发指南-13.2.系统控制台</a><a href="https://www.ncnynl.com/archives/201709/2095.html" title="PX4开发指南-13.3.系统启动">PX4开发指南-13.3.系统启动</a><a href="https://www.ncnynl.com/archives/201709/2096.html" title="PX4开发指南-13.4.参数&amp;配置">PX4开发指南-13.4.参数&amp;配置</a><a href="https://www.ncnynl.com/archives/201709/2097.html" title="PX4开发指南-13.5.1.参考参数 目录">PX4开发指南-13.5.1.参考参数 目录</a><a href="https://www.ncnynl.com/archives/201709/2098.html" title="PX4开发指南-13.6.自驾仪调试">PX4开发指南-13.6.自驾仪调试</a><a href="https://www.ncnynl.com/archives/201709/2099.html" title="PX4开发指南-13.7.Sensor/Topic Debugging">PX4开发指南-13.7.Sensor/Topic Debugging</a><a href="https://www.ncnynl.com/archives/201709/2100.html" title="PX4开发指南-13.8.仿真调试">PX4开发指南-13.8.仿真调试</a><a href="https://www.ncnynl.com/archives/201709/2101.html" title="PX4开发指南-13.9.发送调试的值">PX4开发指南-13.9.发送调试的值</a><a href="https://www.ncnynl.com/archives/201709/2102.html" title="PX4开发指南-13.10.Profiling">PX4开发指南-13.10.Profiling</a><a href="https://www.ncnynl.com/archives/201709/2103.html" title="PX4开发指南-13.11.室内 / 虚拟 GPS">PX4开发指南-13.11.室内 / 虚拟 GPS</a><a href="https://www.ncnynl.com/archives/201709/2104.html" title="PX4开发指南-13.12.日志记录">PX4开发指南-13.12.日志记录</a><a href="https://www.ncnynl.com/archives/201709/2105.html" title="PX4开发指南-13.13.飞行日志分析">PX4开发指南-13.13.飞行日志分析</a><a href="https://www.ncnynl.com/archives/201709/2106.html" title="PX4开发指南-13.14.EKF日志回放">PX4开发指南-13.14.EKF日志回放</a><a href="https://www.ncnynl.com/archives/201709/2107.html" title="PX4开发指南-13.15.System-wide Replay">PX4开发指南-13.15.System-wide Replay</a><a href="https://www.ncnynl.com/archives/201709/2108.html" title="PX4开发指南-13.16.安装Intel RealSense R200的驱动">PX4开发指南-13.16.安装Intel RealSense R200的驱动</a><a href="https://www.ncnynl.com/archives/201709/2109.html" title="PX4开发指南-13.17.Parrot Bebop">PX4开发指南-13.17.Parrot Bebop</a><a href="https://www.ncnynl.com/archives/201709/2110.html" title="PX4开发指南-13.18.设置云台控制">PX4开发指南-13.18.设置云台控制</a><a href="https://www.ncnynl.com/archives/201709/2111.html" title="PX4开发指南-13.19.切换状态估计器">PX4开发指南-13.19.切换状态估计器</a><a href="https://www.ncnynl.com/archives/201709/2112.html" title="PX4开发指南-13.20.外部模块">PX4开发指南-13.20.外部模块</a><a href="https://www.ncnynl.com/archives/201709/2113.html" title="PX4开发指南-13.21.ULog文件格式">PX4开发指南-13.21.ULog文件格式</a><a href="https://www.ncnynl.com/archives/201709/2115.html" title="PX4开发指南-13.23.无线数传">PX4开发指南-13.23.无线数传</a><a href="https://www.ncnynl.com/archives/201709/2116.html" title="PX4开发指南-13.24.Wifi数传">PX4开发指南-13.24.Wifi数传</a><a href="https://www.ncnynl.com/archives/201709/2117.html" title="PX4开发指南-14.软件更新">PX4开发指南-14.软件更新</a><a href="https://www.ncnynl.com/archives/201709/2118.html" title="PX4开发指南-14.1.STM32 Bootloader">PX4开发指南-14.1.STM32 Bootloader</a>		</div>
+	</div>
+	
+		
+</div>
+	
+</div><!-- end #sidebar -->
+
+<div class="col-mb-12 col-8" id="main" role="main">
+	<div class="crumbs_patch">
+		<a href="https://www.ncnynl.com/">Home</a> »
+		<!-- 页面为文章单页时 -->
+			<a href="https://www.ncnynl.com/category/uav-px4/">PX4开发指南</a> » PX4开发指南-7.2.MAVLink消息机制			</div>
+    <ul class="post-near">
+        <li style="float:left;">上一篇: <a href="https://www.ncnynl.com/archives/201709/2048.html" title="PX4开发指南-7.1.uORB消息机制">PX4开发指南-7.1.uORB消息机制</a></li>
+        <li style="float:right;">下一篇: <a href="https://www.ncnynl.com/archives/201709/2050.html" title="PX4开发指南-7.3.守护程序">PX4开发指南-7.3.守护程序</a></li>
+    </ul>
+    <div style="clear:both;"></div>
+    <article class="post" itemscope="" itemtype="http://schema.org/BlogPosting">
+        <h1 class="post-title" itemprop="name headline"><a itemtype="url" href="https://www.ncnynl.com/archives/201709/2049.html">PX4开发指南-7.2.MAVLink消息机制</a></h1>
+        <div class="post-content article-body" itemprop="articleBody">
+            <p><strong>PX4开发指南-7.2.MAVLink消息机制</strong></p>
+<p><strong>MAVLink消息</strong></p>
+<blockquote>
+<p>所有消息的概述可以在这里找到。</p>
+</blockquote>
+<p><strong>创建自定义MAVLink消息</strong></p>
+<ul>
+<li>这篇教程是假设你已经在 <code>msg/ca_trajectory.msg</code> 有了一个自定义<a href="https://dev.px4.io/zh/middleware/uorb.html" target="_blank" rel="nofollow">uORB ca_trajectory</a> 消息，并且在 <code>mavlink/include/mavlink/v1.0/custom_messages/mavlink_msg_ca_trajectory.h</code> 有了一个自定义<code>mavlink ca_trajectory</code> 消息（点击<a href="http://qgroundcontrol.org/mavlink/create_new_mavlink_message" target="_blank" rel="nofollow">此处</a>查看如何建立一个自定义mavlink消息以及头文件）。</li>
+</ul>
+<p><strong>发送自定义MAVLink消息</strong></p>
+<ul>
+<li>这部分介绍如何使用一个自定义uORB消息并且作为mavlink消息发送。 添加<code>mavlink</code>的头文件和uorb消息到<a href="https://github.com/PX4/Firmware/blob/master/src/modules/mavlink/mavlink_messages.cpp" target="_blank" rel="nofollow">mavlink_messages.cpp</a></li>
+</ul>
+<pre class="prettyprint"><code>    #include &lt;uORB/topics/ca_trajectory.h&gt;
+    #include &lt;v1.0/custom_messages/mavlink_msg_ca_trajectory.h&gt;
+
+- 在mavlink_messages.cpp中创建一个新的类
+
+class MavlinkStreamCaTrajectory : public MavlinkStream
+{
+public:
+    const char *get_name() const
+    {
+        return MavlinkStreamCaTrajectory::get_name_static();
+    }
+
+    static const char *get_name_static()
+    {
+        return "CA_TRAJECTORY";
+    }
+
+    static uint8_t get_id_static()
+    {
+        return MAVLINK_MSG_ID_CA_TRAJECTORY;
+    }
+
+    uint8_t get_id()
+    {
+        return get_id_static();
+    }
+
+    static MavlinkStream *new_instance(Mavlink *mavlink)
+    {
+        return new MavlinkStreamCaTrajectory(mavlink);
+    }
+
+    unsigned get_size()
+    {
+        return MAVLINK_MSG_ID_CA_TRAJECTORY_LEN + MAVLINK_NUM_NON_PAYLOAD_BYTES;
+    }
+
+private:
+    MavlinkOrbSubscription *_sub;
+    uint64_t _ca_traj_time;
+
+    /* do not allow top copying this class */
+    MavlinkStreamCaTrajectory(MavlinkStreamCaTrajectory &amp;);
+    MavlinkStreamCaTrajectory&amp; operator = (const MavlinkStreamCaTrajectory &amp;);
+
+protected:
+    explicit MavlinkStreamCaTrajectory(Mavlink *mavlink) : MavlinkStream(mavlink),
+        _sub(_mavlink-&gt;add_orb_subscription(ORB_ID(ca_trajectory))),  // make sure you enter the name of your uorb topic here
+        _ca_traj_time(0)
+    {}
+
+    void send(const hrt_abstime t)
+    {
+        struct ca_trajectory_s _ca_trajectory;    //make sure ca_trajectory_s is the definition of your uorb topic
+
+        if (_sub-&gt;update(&amp;_ca_traj_time, &amp;_ca_trajectory)) {
+
+            mavlink_ca_trajectory_t msg;//make sure mavlink_ca_trajectory_t is the definition of your custom mavlink message 
+
+               msg.timestamp = _ca_trajectory.timestamp;
+            msg.time_start_usec = _ca_trajectory.time_start_usec;
+            msg.time_stop_usec  = _ca_trajectory.time_stop_usec;
+            msg.coefficients =_ca_trajectory.coefficients;
+            msg.seq_id = _ca_trajectory.seq_id;
+
+            mavlink_msg_ca_trajectory_send_struct(_mavlink-&gt;get_channel(), &amp;msg);
+        }
+    }
+};
+</code></pre>
+<ul>
+<li>最后附加流类<code>streams_list</code>的到mavlink_messages.cpp底部</li>
+</ul>
+<pre class="prettyprint"><code>StreamListItem *streams_list[] = {
+...
+new StreamListItem(&amp;MavlinkStreamCaTrajectory::new_instance, &amp;MavlinkStreamCaTrajectory::get_name_static),
+nullptr
+};
+</code></pre>
+<ul>
+<li>然后确保启用流，例如通过在启动脚本中添加以下行（-r配置流速率，-u标识UDP端口14556上的mavlink通道）：</li>
+</ul>
+<pre class="prettyprint"><code>mavlink stream -r 50 -s CA_TRAJECTORY -u 14556
+</code></pre>
+<p><strong>接收自定义MAVLink消息</strong></p>
+<blockquote>
+<p>这部分解释如何通过mavlink接收消息并将其发布到uORB。</p>
+</blockquote>
+<ul>
+<li>在<a href="https://github.com/PX4/Firmware/blob/master/src/modules/mavlink/mavlink_receiver.h#L77" target="_blank" rel="nofollow">mavlink_receiver.h</a>中增加一个用来处理接收信息得函数</li>
+</ul>
+<pre class="prettyprint"><code>#include &lt;uORB/topics/ca_trajectory.h&gt;
+#include &lt;v1.0/custom_messages/mavlink_msg_ca_trajectory.h&gt;
+</code></pre>
+<ul>
+<li>在 mavlink_receiver.h中增加一个处理类MavlinkReceiver 中的输入mavlink消息的函数</li>
+</ul>
+<pre class="prettyprint"><code>void handle_message_ca_trajectory_msg(mavlink_message_t *msg);
+</code></pre>
+<ul>
+<li>在 mavlink_receiver.h中加入一个类<code>MavlinkReceiver</code>中的uORB消息发布者</li>
+</ul>
+<pre class="prettyprint"><code>orb_advert_t _ca_traj_msg_pub;
+</code></pre>
+<p>在mavlink_receiver.cpp中实现<code>handle_message_ca_trajectory_msg</code>功能</p>
+<pre class="prettyprint"><code>void
+MavlinkReceiver::handle_message_ca_trajectory_msg(mavlink_message_t *msg)
+{
+    mavlink_ca_trajectory_t traj;
+    mavlink_msg_ca_trajectory_decode(msg, &amp;traj);
+
+    struct ca_trajectory_s f;
+    memset(&amp;f, 0, sizeof(f));
+
+    f.timestamp = hrt_absolute_time();
+    f.seq_id = traj.seq_id;
+    f.time_start_usec = traj.time_start_usec;
+    f.time_stop_usec = traj.time_stop_usec;
+    for(int i=0;i&lt;28;i++)
+        f.coefficients[i] = traj.coefficients[i];
+
+    if (_ca_traj_msg_pub == nullptr) {
+        _ca_traj_msg_pub = orb_advertise(ORB_ID(ca_trajectory), &amp;f);
+
+    } else {
+        orb_publish(ORB_ID(ca_trajectory), _ca_traj_msg_pub, &amp;f);
+    }
+}
+</code></pre>
+<ul>
+<li>最后确定函数在<a href="https://github.com/PX4/Firmware/blob/master/src/modules/mavlink/mavlink_receiver.cpp#L228" target="_blank" rel="nofollow">MavlinkReceiver::handle_message()</a>中被调用</li>
+</ul>
+<pre class="prettyprint"><code>MavlinkReceiver::handle_message(mavlink_message_t *msg)
+ {
+     switch (msg-&gt;msgid) {
+        ...
+    case MAVLINK_MSG_ID_CA_TRAJECTORY:
+        handle_message_ca_trajectory_msg(msg);
+        break;
+        ...
+     }
+</code></pre>
+<p><strong>一般情况</strong></p>
+<ul>
+<li><p><strong>设置流速率</strong></p></li>
+<li><p>有时，增加单个主题的流速率（例如，为例在QGC中检查）是有用的。这可以通过下面这行代码来实现</p></li>
+</ul>
+<pre class="prettyprint"><code>mavlink stream -u &lt;port number&gt; -s &lt;mavlink topic name&gt; -r &lt;rate&gt;
+</code></pre>
+<ul>
+<li>你可以通过mavlink status找到端口号，相应地将输出（在其他消息之间）transport protocol: UDP (<port number="">)。例如你可能得到</port></li>
+</ul>
+<pre class="prettyprint"><code>mavlink stream -u 14556 -s OPTICAL_FLOW_RAD -r 300
+</code></pre>
+        </div>
+        <p> <b>纠错,疑问,交流: </b> 
+        	<a href="http://wenda.ncnynl.com/" target="_blank">请进入讨论区</a>或 
+        	<a target="_blank" href="http://shang.qq.com/wpa/qunwpa?idkey=6fd8b051d0b7fd0d68a42a804c138519bbdecd3c1585bf3d66bdac0ca97c900e">点击加入Q群</a> 
+        </p>
+        <p> <b>获取最新文章: </b> 扫一扫右上角的二维码加入“创客智造”公众号</p>
+        <br>
+        <p itemprop="keywords" class="tags">标签: <a href="https://www.ncnynl.com/tag/px4%E5%BC%80%E5%8F%91%E6%8C%87%E5%8D%97/">px4开发指南</a></p>
+        
+    </article>
+
+    <ul class="post-near">
+        <li style="float:left;">上一篇: <a href="https://www.ncnynl.com/archives/201709/2048.html" title="PX4开发指南-7.1.uORB消息机制">PX4开发指南-7.1.uORB消息机制</a></li>
+        <li style="float:right;">下一篇: <a href="https://www.ncnynl.com/archives/201709/2050.html" title="PX4开发指南-7.3.守护程序">PX4开发指南-7.3.守护程序</a></li>
+    </ul>
+    <div style="clear:both;"></div>
+</div><!-- end #main-->
+
+<div class="col-2 kit-hidden-tb" id="secondary" role="complementary">
+
+    	
+		<div class="right-column">
+	
+	<div class="tab tab-light-blue">分类导航</div>
+	<div class="sidebar-box sidebar-cate">
+		
+		<div class="sidebar-tree">
+			<ul>
+				<li class=""><a class="tit" href="javascript:void(0);"> ROS/机器人系统</a><ul style="display: none;"><li><a href="https://www.ncnynl.com/category/ros-junior-tutorial" title="ROS入门教程">ROS入门教程</a></li><li><a href="https://www.ncnynl.com/category/ros-learning" title="ROS探索总结">ROS探索总结</a></li><li><a href="https://www.ncnynl.com/category/ros-allinone" title="ROS套件">ROS套件</a></li><li><a href="https://www.ncnynl.com/category/ros-voice" title="ROS与语音交互教程">ROS与语音交互教程</a></li><li><a href="https://www.ncnynl.com/category/ros-arduino" title="ROS与Arduino教程">ROS与Arduino教程</a></li><li><a href="https://www.ncnynl.com/category/ros-vision" title="ROS与计算机视觉">ROS与计算机视觉</a></li><li><a href="https://www.ncnynl.com/category/ros-virtualbox" title="ROS与虚拟机入门教程">ROS与虚拟机入门教程</a></li><li><a href="https://www.ncnynl.com/category/ros-laser" title="ROS与激光雷达教程">ROS与激光雷达教程</a></li><li><a href="https://www.ncnynl.com/category/ros-board" title="ROS与开发板入门教程">ROS与开发板入门教程</a></li><li><a href="https://www.ncnynl.com/category/ros-rosbridge_suite" title="rosbridge_suite教程">rosbridge_suite教程</a></li><li><a href="https://www.ncnynl.com/category/ros-rgbd" title="ROS与深度相机教程">ROS与深度相机教程</a></li><li><a href="https://www.ncnynl.com/category/rbx1" title="rbx1代码解读">rbx1代码解读</a></li><li><a href="https://www.ncnynl.com/category/rbx2" title="rbx2代码解读">rbx2代码解读</a></li><li><a href="https://www.ncnynl.com/category/ros-navigation" title="ROS与navigation教程">ROS与navigation教程</a></li><li><a href="https://www.ncnynl.com/category/TEB-Trajectory-planning" title="TEB轨迹规划算法教程">TEB轨迹规划算法教程</a></li><li><a href="https://www.ncnynl.com/category/ros-sensors" title="ROS与传感器教程">ROS与传感器教程</a></li></ul></li><li class=""><a class="tit" href="javascript:void(0);"> ROS2/二代机器人系统</a><ul style="display: none;"><li><a href="https://www.ncnynl.com/category/ros2base" title="ROS2入门教程">ROS2入门教程</a></li><li><a href="https://www.ncnynl.com/category/ros2explore" title="ROS2探索总结">ROS2探索总结</a></li><li><a href="https://www.ncnynl.com/category/Turtlebot-ROS2" title="TurtlebotROS2入门教程">TurtlebotROS2入门教程</a></li><li><a href="https://www.ncnynl.com/category/ROS2-DEMO" title="ROS2入门示例">ROS2入门示例</a></li><li><a href="https://www.ncnynl.com/category/Turtlebot3-ROS2" title="Turtlebot3ROS2教程">Turtlebot3ROS2教程</a></li></ul></li><li class=""><a class="tit" href="javascript:void(0);"> Turtlebot2/二代机器人</a><ul style="display: none;"><li><a href="https://www.ncnynl.com/category/turtlebot-junior-tutorial" title="Turtlebot入门教程">Turtlebot入门教程</a></li><li><a href="https://www.ncnynl.com/category/turtlebot-coffee-machine-tutorial" title="Turtlebot咖啡机教程">Turtlebot咖啡机教程</a></li><li><a href="https://www.ncnynl.com/category/turbot2" title="Turbot2机器人入门教程">Turbot2机器人入门教程</a></li><li><a href="https://www.ncnynl.com/category/turtlebot-Simulation" title="Turtlebot与仿真">Turtlebot与仿真</a></li><li><a href="https://www.ncnynl.com/category/turtlebot-android" title="Turtlebot与Android">Turtlebot与Android</a></li><li><a href="https://www.ncnynl.com/category/turtlebot-code" title="Turtlebot代码解读">Turtlebot代码解读</a></li><li><a href="https://www.ncnynl.com/category/ros-kobuki" title="Kobuki入门教程">Kobuki入门教程</a></li><li><a href="https://www.ncnynl.com/category/kobuki-core" title="kobuki_core代码解读">kobuki_core代码解读</a></li><li><a href="https://www.ncnynl.com/category/ros-kobuki-code" title="kobuki代码解读">kobuki代码解读</a></li><li><a href="https://www.ncnynl.com/category/Kobuki-hardware" title="Kobuki硬件入门教程">Kobuki硬件入门教程</a></li><li><a href="https://www.ncnynl.com/category/turbot" title="Turbot机器人入门教程">Turbot机器人入门教程</a></li><li><a href="https://www.ncnynl.com/category/turbot-SLAM" title="Turbot-SLAM入门教程">Turbot-SLAM入门教程</a></li><li><a href="https://www.ncnynl.com/category/turbot-DL" title="Turbot-DL入门教程">Turbot-DL入门教程</a></li><li><a href="https://www.ncnynl.com/category/turbot-medium" title="Turbot中级教程">Turbot中级教程</a></li><li><a href="https://www.ncnynl.com/category/turbot-python" title="Turbot与Python教程">Turbot与Python教程</a></li><li><a href="https://www.ncnynl.com/category/turtlebot2i" title="Turtlebot2i入门教程">Turtlebot2i入门教程</a></li><li><a href="https://www.ncnynl.com/category/turbot-vslam" title="Turbot-VSLAM入门教程">Turbot-VSLAM入门教程</a></li><li><a href="https://www.ncnynl.com/category/TurtleBot-Blockly" title="TurtleBot-Blockly教程">TurtleBot-Blockly教程</a></li></ul></li><li class=""><a class="tit" href="javascript:void(0);"> Turtlebot3/三代机器人</a><ul style="display: none;"><li><a href="https://www.ncnynl.com/category/turtlebot3-tutorial" title="Turtlebot3入门教程">Turtlebot3入门教程</a></li><li><a href="https://www.ncnynl.com/category/turtlebot3-code" title="Turtlebot3代码解读">Turtlebot3代码解读</a></li><li><a href="https://www.ncnynl.com/category/Turtlebot3-Simulation" title="Turtlebot3与仿真">Turtlebot3与仿真</a></li><li><a href="https://www.ncnynl.com/category/Turtlebot3-burger" title="Turtlebot3-burger教程">Turtlebot3-burger教程</a></li><li><a href="https://www.ncnynl.com/category/Turtlebot3-waffle" title="Turtlebot3-waffle教程">Turtlebot3-waffle教程</a></li><li><a href="https://www.ncnynl.com/category/TurtleBot3-Blockly" title="TurtleBot3-Blockly教程">TurtleBot3-Blockly教程</a></li><li><a href="https://www.ncnynl.com/category/Turtlebot3-middle" title="Turtlebot3中级教程">Turtlebot3中级教程</a></li><li><a href="https://www.ncnynl.com/category/turbot3" title="Turbot3入门教程">Turbot3入门教程</a></li><li><a href="https://www.ncnynl.com/category/Turtlebot3-waffle-pi" title="Turtlebot3-waffle-pi教程">Turtlebot3-waffle-pi教程</a></li><li><a href="https://www.ncnynl.com/category/Turtlebot3-multi-map" title="Turtlebot3多机建图教程">Turtlebot3多机建图教程</a></li><li><a href="https://www.ncnynl.com/category/turbot3-multi" title="Turbot3多机交互教程">Turbot3多机交互教程</a></li><li><a href="https://www.ncnynl.com/category/turtlebot3-autorace" title="Turtlebot3自动驾驶教程">Turtlebot3自动驾驶教程</a></li></ul></li><li class=""><a class="tit" href="javascript:void(0);"> ROBOTS/其他机器人</a><ul style="display: none;"><li><a href="https://www.ncnynl.com/category/autobot" title="autobot入门教程">autobot入门教程</a></li><li><a href="https://www.ncnynl.com/category/ros-car" title="搭建ROS小车底盘A">搭建ROS小车底盘A</a></li><li><a href="https://www.ncnynl.com/category/ros-diego" title="ROS机器人Diego制作">ROS机器人Diego制作</a></li><li><a href="https://www.ncnynl.com/category/ros-car-b" title="搭建ROS小车底盘B">搭建ROS小车底盘B</a></li><li><a href="https://www.ncnynl.com/category/ros-dashgo" title="Dashgo底盘入门教程">Dashgo底盘入门教程</a></li><li><a href="https://www.ncnynl.com/category/ros-dashgo2" title="DashgoD1底盘新指南">DashgoD1底盘新指南</a></li><li><a href="https://www.ncnynl.com/category/ros-jetsonbot" title="jetsonbot机器人教程">jetsonbot机器人教程</a></li><li><a href="https://www.ncnynl.com/category/linorobot" title="linorobot入门教程">linorobot入门教程</a></li><li><a href="https://www.ncnynl.com/category/autolabor2-5" title="autolabor2.5入门教程">autolabor2.5入门教程</a></li><li><a href="https://www.ncnynl.com/category/autolabor-pro1" title="autolabor pro1入门教程">autolabor pro1入门教程</a></li></ul></li><li class=""><a class="tit" href="javascript:void(0);"> Arm/机械臂套件</a><ul style="display: none;"><li><a href="https://www.ncnynl.com/category/ros-moveit" title="MoveIt!入门教程">MoveIt!入门教程</a></li><li><a href="https://www.ncnynl.com/category/turtlebot-arm" title="TurtlebotArm入门教程">TurtlebotArm入门教程</a></li><li><a href="https://www.ncnynl.com/category/ROS-PhantomXArm" title="PhantomXArm入门教程">PhantomXArm入门教程</a></li><li><a href="https://www.ncnynl.com/category/Turtlebot-arm-code" title="Turtlebot-arm代码解读">Turtlebot-arm代码解读</a></li><li><a href="https://www.ncnynl.com/category/arbotix-ros" title="arbotix_ros代码解读">arbotix_ros代码解读</a></li><li><a href="https://www.ncnynl.com/category/Open_Manipulator" title="Open_Manipulator教程">Open_Manipulator教程</a></li></ul></li><li class=""><a class="tit" href="javascript:void(0);"> AutoDriving/自动驾驶</a><ul style="display: none;"><li><a href="https://www.ncnynl.com/category/ros-racecar" title="ROS与RaceCar教程">ROS与RaceCar教程</a></li><li><a href="https://www.ncnynl.com/category/ros-duckietbot" title="ROS与duckietbot指南">ROS与duckietbot指南</a></li><li><a href="https://www.ncnynl.com/category/ros-racecar2" title="ROS与RaceCar教程2">ROS与RaceCar教程2</a></li><li><a href="https://www.ncnynl.com/category/racebot" title="RaceBot入门教程">RaceBot入门教程</a></li><li><a href="https://www.ncnynl.com/category/mit-racecar" title="MIT-RaceCar入门教程">MIT-RaceCar入门教程</a></li><li><a href="https://www.ncnynl.com/category/F1tenth" title="PENN-RaceCar入门教程">PENN-RaceCar入门教程</a></li><li><a href="https://www.ncnynl.com/category/auto-tutorial" title="无人驾驶汽车系统入门">无人驾驶汽车系统入门</a></li></ul></li><li class=""><a class="tit" href="javascript:void(0);"> TK1/TX1/嵌入式开发板</a><ul style="display: none;"><li><a href="https://www.ncnynl.com/category/TK1-basics" title="TK1入门教程基础篇">TK1入门教程基础篇</a></li><li><a href="https://www.ncnynl.com/category/TK1-software" title="TK1入门教程软件篇">TK1入门教程软件篇</a></li><li><a href="https://www.ncnynl.com/category/TK1-hardware" title="TK1入门教程硬件篇">TK1入门教程硬件篇</a></li><li><a href="https://www.ncnynl.com/category/TX1-basics" title="TX1入门教程基础篇">TX1入门教程基础篇</a></li><li><a href="https://www.ncnynl.com/category/TX1-software" title="TX1入门教程软件篇">TX1入门教程软件篇</a></li><li><a href="https://www.ncnynl.com/category/TX1-hardware" title="TX1入门教程硬件篇">TX1入门教程硬件篇</a></li><li><a href="https://www.ncnynl.com/category/TX2-basics" title="TX2入门教程基础篇">TX2入门教程基础篇</a></li><li><a href="https://www.ncnynl.com/category/TX2-software" title="TX2入门教程软件篇">TX2入门教程软件篇</a></li><li><a href="https://www.ncnynl.com/category/TX2-hardware" title="TX2入门教程硬件篇">TX2入门教程硬件篇</a></li><li><a href="https://www.ncnynl.com/category/Xavier-basic" title="Xavier入门教程基础篇">Xavier入门教程基础篇</a></li><li><a href="https://www.ncnynl.com/category/Xavier-software" title="Xavier入门教程软件篇">Xavier入门教程软件篇</a></li><li><a href="https://www.ncnynl.com/category/Xavier-hardware" title="Xavier入门教程硬件篇">Xavier入门教程硬件篇</a></li><li><a href="https://www.ncnynl.com/category/Nano-basic" title="Nano入门教程基础篇">Nano入门教程基础篇</a></li><li><a href="https://www.ncnynl.com/category/Nano-software" title="Nano入门教程软件篇">Nano入门教程软件篇</a></li><li><a href="https://www.ncnynl.com/category/Nano-hardware" title="Nano入门教程硬件篇">Nano入门教程硬件篇</a></li></ul></li><li class=""><a class="tit" href="javascript:void(0);"> Arduino/电子原型平台</a><ul style="display: none;"><li><a href="https://www.ncnynl.com/category/arduino-make-by-self" title="Arduino制作">Arduino制作</a></li><li><a href="https://www.ncnynl.com/category/arduino-language" title="Arduino语法参考">Arduino语法参考</a></li><li><a href="https://www.ncnynl.com/category/arduino-car" title="Arduino小车">Arduino小车</a></li><li><a href="https://www.ncnynl.com/category/arduino-gas" title="Arduino气体传感器">Arduino气体传感器</a></li><li><a href="https://www.ncnynl.com/category/arduino-Axis-Accelerometer" title="Arduino惯性传感器">Arduino惯性传感器</a></li><li><a href="https://www.ncnynl.com/category/arduino-ultrasound" title="Arduino超声波传感器">Arduino超声波传感器</a></li><li><a href="https://www.ncnynl.com/category/arduino-humiture" title="Arduino温湿度传感器">Arduino温湿度传感器</a></li><li><a href="https://www.ncnynl.com/category/arduino-infrared" title="Arduino红外传感器">Arduino红外传感器</a></li><li><a href="https://www.ncnynl.com/category/arduino-ph" title="Arduino溶液传感器">Arduino溶液传感器</a></li><li><a href="https://www.ncnynl.com/category/arduino-light" title="Arduino光线传感器">Arduino光线传感器</a></li><li><a href="https://www.ncnynl.com/category/arduino-color" title="Arduino颜色传感器">Arduino颜色传感器</a></li><li><a href="https://www.ncnynl.com/category/arduino-others" title="Arduino其他传感器">Arduino其他传感器</a></li><li><a href="https://www.ncnynl.com/category/arduino-motor" title="Arduino电机及驱动">Arduino电机及驱动</a></li><li><a href="https://www.ncnynl.com/category/arduino-communication" title="Arduino通信模块">Arduino通信模块</a></li><li><a href="https://www.ncnynl.com/category/arduino-speech" title="Arduino语音模块">Arduino语音模块</a></li><li><a href="https://www.ncnynl.com/category/arduino-build-in-examples" title="Arduino内置教程">Arduino内置教程</a></li><li><a href="https://www.ncnynl.com/category/arduino-library-examples" title="Arduino库教程">Arduino库教程</a></li><li><a href="https://www.ncnynl.com/category/arduino-allinone" title="Arduino套件">Arduino套件</a></li><li><a href="https://www.ncnynl.com/category/arduino-smarthome" title="Arduino智能家居">Arduino智能家居</a></li><li><a href="https://www.ncnynl.com/category/arduino-easy" title="Arduino初级项目">Arduino初级项目</a></li><li><a href="https://www.ncnynl.com/category/arduino-intermediate" title="Arduino中级项目">Arduino中级项目</a></li></ul></li><li class=""><a class="tit" href="javascript:void(0);"> Raspberry pi/树莓派</a><ul style="display: none;"><li><a href="https://www.ncnynl.com/category/Raspberry-Pi-tutorial" title="树莓派3教程">树莓派3教程</a></li><li><a href="https://www.ncnynl.com/category/Raspberry-Pi-computer-tutorial" title="树莓派3套件">树莓派3套件</a></li><li><a href="https://www.ncnynl.com/category/rpi-home-osmc-videos" title="树莓派3OSMC家庭影院">树莓派3OSMC家庭影院</a></li><li><a href="https://www.ncnynl.com/category/rpi-home-webcam" title="树莓派3家庭监控">树莓派3家庭监控</a></li><li><a href="https://www.ncnynl.com/category/rpi-server" title="树莓派3服务器">树莓派3服务器</a></li><li><a href="https://www.ncnynl.com/category/rpi-car" title="树莓派3小车">树莓派3小车</a></li><li><a href="https://www.ncnynl.com/category/rpi-iot" title="树莓派3物联网">树莓派3物联网</a></li></ul></li><li class=""><a class="tit" href="javascript:void(0);"> Dev/开发语言</a><ul style="display: none;"><li><a href="https://www.ncnynl.com/category/roscpp" title="ROS与C++入门教程">ROS与C++入门教程</a></li><li><a href="https://www.ncnynl.com/category/Python" title="Python入门教程">Python入门教程</a></li><li><a href="https://www.ncnynl.com/category/cplusplus" title="C++入门教程">C++入门教程</a></li><li><a href="https://www.ncnynl.com/category/ros-python" title="ROS与Python入门教程">ROS与Python入门教程</a></li><li><a href="https://www.ncnynl.com/category/ros-javascript" title="ROS与JS入门教程">ROS与JS入门教程</a></li><li><a href="https://www.ncnynl.com/category/ros-qt" title="ROS与QT语言入门教程">ROS与QT语言入门教程</a></li></ul></li><li class=""><a class="tit" href="javascript:void(0);"> SLAM/即时定位和导航</a><ul style="display: none;"><li><a href="https://www.ncnynl.com/category/ros-slam" title="ROS与SLAM入门教程">ROS与SLAM入门教程</a></li><li><a href="https://www.ncnynl.com/category/rgbd-slam" title="一起做RGB-D SLAM">一起做RGB-D SLAM</a></li><li><a href="https://www.ncnynl.com/category/slam-learning" title="SLAM入门教程">SLAM入门教程</a></li><li><a href="https://www.ncnynl.com/category/ros-vslam" title="ROS与VSLAM入门教程">ROS与VSLAM入门教程</a></li><li><a href="https://www.ncnynl.com/category/cartographer-ros" title="cartographer ros指南">cartographer ros指南</a></li></ul></li><li class=""><a class="tit" href="javascript:void(0);"> DL/AI/深度学习</a><ul style="display: none;"><li><a href="https://www.ncnynl.com/category/dl-manual" title="深度学习入门教程">深度学习入门教程</a></li><li><a href="https://www.ncnynl.com/category/dl-caffe" title="Caffe入门教程">Caffe入门教程</a></li><li><a href="https://www.ncnynl.com/category/DonkeyCar" title="DonkeyCar入门教程">DonkeyCar入门教程</a></li><li><a href="https://www.ncnynl.com/category/Jetbot-AI" title="Jetbot-AI机器人教程">Jetbot-AI机器人教程</a></li><li><a href="https://www.ncnynl.com/category/yaka-ai" title="Kaya-AI机器人教程">Kaya-AI机器人教程</a></li><li><a href="https://www.ncnynl.com/category/isaac-sdk" title="Isaac SDK入门教程">Isaac SDK入门教程</a></li><li><a href="https://www.ncnynl.com/category/isaac-engine" title="Isaac ENGINE入门教程">Isaac ENGINE入门教程</a></li><li><a href="https://www.ncnynl.com/category/isaac-gems" title="Isaac GEMS入门教程 ">Isaac GEMS入门教程 </a></li></ul></li><li class=""><a class="tit" href="javascript:void(0);"> UAV/无人机</a><ul style="display: none;"><li><a href="https://www.ncnynl.com/category/uav-pixhawk-quadrotor" title="Pixhawk无人机教程">Pixhawk无人机教程</a></li><li><a href="https://www.ncnynl.com/category/uav-allinone" title="无人机套件">无人机套件</a></li><li><a href="https://www.ncnynl.com/category/pixhawk-code" title="Pixhawk代码分析">Pixhawk代码分析</a></li><li><a href="https://www.ncnynl.com/category/uav-base" title="无人机基础知识">无人机基础知识</a></li><li><a href="https://www.ncnynl.com/category/ros-ardrone" title="ROS与AR.Drone教程">ROS与AR.Drone教程</a></li><li><a href="https://www.ncnynl.com/category/ros-bebop" title="ROS与Bebop入门教程">ROS与Bebop入门教程</a></li><li><a href="https://www.ncnynl.com/category/pixhawk-manual" title="Pixhawk入门指南">Pixhawk入门指南</a></li><li><a href="https://www.ncnynl.com/category/ppz-manual" title="Paparazzi/ppz入门指南">Paparazzi/ppz入门指南</a></li><li><a href="https://www.ncnynl.com/category/uav-px4" title="PX4开发指南">PX4开发指南</a></li><li><a href="https://www.ncnynl.com/category/px4-user" title="PX4用户指南">PX4用户指南</a></li></ul></li><li class=""><a class="tit" href="javascript:void(0);"> ROV/USV/无人潜艇/船</a><ul style="display: none;"><li><a href="https://www.ncnynl.com/category/rov-ArduSub" title="ArduSub无人潜艇教程">ArduSub无人潜艇教程</a></li></ul></li>										
+			</ul>
+		</div>
+	
+	</div>
+</div>
+    	
+</div><!-- end #sidebar -->
+
+        </div><!-- end .row -->
+    </div>
+</div><!-- end #body -->
+
+<footer id="footer" role="contentinfo">
+    © 2019 <a href="https://www.ncnynl.com/">创客智造</a>.
+     Made By <a href="http://www.imakething.com/">爱折腾</a> 粤ICP备16085480号-1.
+    <br> 本站文章采用:<a href="https://creativecommons.org/licenses/by-nc-sa/3.0/cn/" target="_blank" rel="nofollow">知识共享署名-非商业性使用-相同方式共享 3.0 中国大陆许可协议进行许可</a>.	
+</footer><!-- end #footer -->
+
+<!--百度分享
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"16"},"share":{},"image":{"viewList":["qzone","tsina","tqq","renren","weixin"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["qzone","tsina","tqq","renren","weixin"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='https://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+-->
+
+<!--百度自动推送-->
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+<!--百度自动推送-->
+
+
+</body></html>

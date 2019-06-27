@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="zh-cn"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="origin">
+    <title>浅析Python中的struct模块 - 叶珍力 - 博客园</title>
+<meta property="og:description" content="最近在学习python网络编程这一块，在写简单的socket通信代码时，遇到了struct这个模块的使用，当时不太清楚这到底有和作用，后来查阅了相关资料大概了解了，在这里做一下简单的总结。 了解c语言">
+    <link type="text/css" rel="stylesheet" href="%E6%B5%85%E6%9E%90Python%E4%B8%AD%E7%9A%84struct%E6%A8%A1%E5%9D%97%20-%20%E5%8F%B6%E7%8F%8D%E5%8A%9B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/blog-common.css">
+<link id="MainCss" type="text/css" rel="stylesheet" href="%E6%B5%85%E6%9E%90Python%E4%B8%AD%E7%9A%84struct%E6%A8%A1%E5%9D%97%20-%20%E5%8F%B6%E7%8F%8D%E5%8A%9B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/bundle-SimpleBlue.css">
+<link type="text/css" rel="stylesheet" href="%E6%B5%85%E6%9E%90Python%E4%B8%AD%E7%9A%84struct%E6%A8%A1%E5%9D%97%20-%20%E5%8F%B6%E7%8F%8D%E5%8A%9B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/274484.css">
+<link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="%E6%B5%85%E6%9E%90Python%E4%B8%AD%E7%9A%84struct%E6%A8%A1%E5%9D%97%20-%20%E5%8F%B6%E7%8F%8D%E5%8A%9B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/bundle-SimpleBlue-mobile.css">
+    <link title="RSS" type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/yezl/rss">
+    <link title="RSD" type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/yezl/rsd.xml">
+<link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/yezl/wlwmanifest.xml">
+    <script src="%E6%B5%85%E6%9E%90Python%E4%B8%AD%E7%9A%84struct%E6%A8%A1%E5%9D%97%20-%20%E5%8F%B6%E7%8F%8D%E5%8A%9B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/amp4ads-host-v0.js"></script><script src="%E6%B5%85%E6%9E%90Python%E4%B8%AD%E7%9A%84struct%E6%A8%A1%E5%9D%97%20-%20%E5%8F%B6%E7%8F%8D%E5%8A%9B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/pubads_impl_rendering_2019050901.js"></script><script async="" src="%E6%B5%85%E6%9E%90Python%E4%B8%AD%E7%9A%84struct%E6%A8%A1%E5%9D%97%20-%20%E5%8F%B6%E7%8F%8D%E5%8A%9B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/analytics.js"></script><script src="%E6%B5%85%E6%9E%90Python%E4%B8%AD%E7%9A%84struct%E6%A8%A1%E5%9D%97%20-%20%E5%8F%B6%E7%8F%8D%E5%8A%9B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/jquery-2.js"></script>
+    <script>var currentBlogId=274484;var currentBlogApp='yezl',cb_enable_mathjax=false;var isLogined=false;</script>
+    <script src="%E6%B5%85%E6%9E%90Python%E4%B8%AD%E7%9A%84struct%E6%A8%A1%E5%9D%97%20-%20%E5%8F%B6%E7%8F%8D%E5%8A%9B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/blog-common.js" type="text/javascript"></script>
+<link rel="preload" href="%E6%B5%85%E6%9E%90Python%E4%B8%AD%E7%9A%84struct%E6%A8%A1%E5%9D%97%20-%20%E5%8F%B6%E7%8F%8D%E5%8A%9B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/integrator.js" as="script"><script type="text/javascript" src="%E6%B5%85%E6%9E%90Python%E4%B8%AD%E7%9A%84struct%E6%A8%A1%E5%9D%97%20-%20%E5%8F%B6%E7%8F%8D%E5%8A%9B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/integrator.js"></script><script src="%E6%B5%85%E6%9E%90Python%E4%B8%AD%E7%9A%84struct%E6%A8%A1%E5%9D%97%20-%20%E5%8F%B6%E7%8F%8D%E5%8A%9B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/pubads_impl_2019050901.js" async=""></script></head>
+<body>
+<a name="top"></a>
+
+
+<div id="home">
+<div id="header">
+	<div id="blogTitle">
+		
+<!--done-->
+<div class="title"><a id="Header1_HeaderTitle" class="headermaintitle" href="https://www.cnblogs.com/yezl/">叶珍力</a></div>
+<div class="subtitle"></div>
+
+
+
+		
+	</div><!--end: blogTitle 博客的标题和副标题 -->
+	<div id="navigator">
+		
+<ul id="navList">
+<li id="nav_sitehome"><a id="blog_nav_sitehome" class="menu" href="https://www.cnblogs.com/">博客园</a></li>
+<li id="nav_myhome"><a id="blog_nav_myhome" class="menu" href="https://www.cnblogs.com/yezl/">首页</a></li>
+<li id="nav_newpost"><a id="blog_nav_newpost" class="menu" rel="nofollow" href="https://i.cnblogs.com/EditPosts.aspx?opt=1">新随笔</a></li>
+<li id="nav_contact"><a id="blog_nav_contact" class="menu" rel="nofollow" href="https://msg.cnblogs.com/send/%E5%8F%B6%E7%8F%8D%E5%8A%9B">联系</a></li>
+<li id="nav_rss"><a id="blog_nav_rss" class="menu" href="https://www.cnblogs.com/yezl/rss">订阅</a>
+<!--<a id="blog_nav_rss_image" class="aHeaderXML" href="https://www.cnblogs.com/yezl/rss"><img src="//www.cnblogs.com/images/xml.gif" alt="订阅" /></a>--></li>
+<li id="nav_admin"><a id="blog_nav_admin" class="menu" rel="nofollow" href="https://i.cnblogs.com/">管理</a></li>
+</ul>
+
+		<div class="blogStats">
+			
+			<div id="blog_stats">
+<!--done-->
+随笔-40&nbsp;
+文章-0&nbsp;
+评论-1&nbsp;
+</div>
+			
+		</div><!--end: blogStats -->
+	</div><!--end: navigator 博客导航栏 -->
+</div><!--end: header 头部 -->
+<div id="main">
+	<div id="mainContent">
+	<div class="forFlow">
+		
+        <div id="post_detail">
+<!--done-->
+<div id="topics">
+	<div class="post">
+		<h1 class="postTitle">
+			<a id="cb_post_title_url" class="postTitle2" href="https://www.cnblogs.com/yezl/p/5861787.html">浅析Python中的struct模块</a>
+		</h1>
+		<div class="clear"></div>
+		<div class="postBody">
+			<div id="cnblogs_post_body" class="blogpost-body"><p>　　最近在学习python网络编程这一块，在写简单的socket通信代码时，遇到了struct这个模块的使用，当时不太清楚这到底有和作用，后来查阅了相关资料大概了解了，在这里做一下简单的总结。</p>
+<p>&nbsp;&nbsp;&nbsp; 
+了解c语言的人，一定会知道struct结构体在c语言中的作用，它定义了一种结构，里面包含不同类型的数据(int,char,bool等等)，方便对
+某一结构对象进行处理。而在网络通信当中，大多传递的数据是以二进制流（binary 
+data）存在的。当传递字符串时，不必担心太多的问题，而当传递诸如int、char之类的基本数据的时候，就需要有一种机制将某些特定的结构体类型打
+包成二进制流的字符串然后再网络传输，而接收端也应该可以通过某种机制进行解包还原出原始的结构体数据。python中的struct模块就提供了这样的
+机制，该模块的主要作用就是对python基本类型值与用python字符串格式表示的C struct类型间的转化（This module 
+performs conversions between Python values and C structs represented as 
+Python strings.）。stuct模块提供了很简单的几个函数，下面写几个例子。</p>
+<h3><strong><span style="font-size: large;">1、基本的pack和unpack</span></strong></h3>
+<p>&nbsp; &nbsp; struct提供用format specifier方式对数据进行打包和解包（Packing and Unpacking）。例如:</p>
+<div class="cnblogs_Highlighter sh-gutter">
+<div><div id="highlighter_264694" class="syntaxhighlighter  python"><div class="toolbar"><span><a href="#" class="toolbar_item command_help help">?</a></span></div><table cellspacing="0" cellpadding="0" border="0"><tbody><tr><td class="gutter"><div class="line number1 index0 alt2">1</div><div class="line number2 index1 alt1">2</div><div class="line number3 index2 alt2">3</div><div class="line number4 index3 alt1">4</div><div class="line number5 index4 alt2">5</div><div class="line number6 index5 alt1">6</div><div class="line number7 index6 alt2">7</div><div class="line number8 index7 alt1">8</div><div class="line number9 index8 alt2">9</div><div class="line number10 index9 alt1">10</div><div class="line number11 index10 alt2">11</div><div class="line number12 index11 alt1">12</div></td><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="python keyword">import</code> <code class="python plain">struct</code></div><div class="line number2 index1 alt1"><code class="python keyword">import</code> <code class="python plain">binascii</code></div><div class="line number3 index2 alt2"><code class="python plain">values </code><code class="python keyword">=</code> <code class="python plain">(</code><code class="python value">1</code><code class="python plain">, </code><code class="python string">'abc'</code><code class="python plain">, </code><code class="python value">2.7</code><code class="python plain">)</code></div><div class="line number4 index3 alt1"><code class="python plain">s </code><code class="python keyword">=</code> <code class="python plain">struct.Struct(</code><code class="python string">'I3sf'</code><code class="python plain">)</code></div><div class="line number5 index4 alt2"><code class="python plain">packed_data </code><code class="python keyword">=</code> <code class="python plain">s.pack(</code><code class="python keyword">*</code><code class="python plain">values)</code></div><div class="line number6 index5 alt1"><code class="python plain">unpacked_data </code><code class="python keyword">=</code> <code class="python plain">s.unpack(packed_data)</code></div><div class="line number7 index6 alt2"><code class="python spaces">&nbsp;</code>&nbsp;</div><div class="line number8 index7 alt1"><code class="python functions">print</code> <code class="python string">'Original values:'</code><code class="python plain">, values</code></div><div class="line number9 index8 alt2"><code class="python functions">print</code> <code class="python string">'Format string :'</code><code class="python plain">, s.</code><code class="python functions">format</code></div><div class="line number10 index9 alt1"><code class="python functions">print</code> <code class="python string">'Uses :'</code><code class="python plain">, s.size, </code><code class="python string">'bytes'</code></div><div class="line number11 index10 alt2"><code class="python functions">print</code> <code class="python string">'Packed Value :'</code><code class="python plain">, binascii.hexlify(packed_data)</code></div><div class="line number12 index11 alt1"><code class="python functions">print</code> <code class="python string">'Unpacked Type :'</code><code class="python plain">, </code><code class="python functions">type</code><code class="python plain">(unpacked_data), </code><code class="python string">' Value:'</code><code class="python plain">, unpacked_data</code></div></div></td></tr></tbody></table></div></div>
+</div>
+<p>输出：</p>
+<p>Original values: (1, 'abc', 2.7)&nbsp;<br>Format string : I3sf&nbsp;<br>Uses : 12 bytes&nbsp;<br>Packed Value : 0100000061626300cdcc2c40&nbsp;<br>Unpacked Type : &lt;type 'tuple'&gt;&nbsp; Value: (1, 'abc', 2.700000047683716)</p>
+<p>代码中，首先定义了一个元组数据，包含int、string、float三种数据类型，然后定义了struct对象，并制定了
+format‘I3sf’，I 表示int，3s表示三个字符长度的字符串，f 表示 
+float。最后通过struct的pack和unpack进行打包和解包。通过输出结果可以发现，value被pack之后，转化为了一段二进制字节
+串，而unpack可以把该字节串再转换回一个元组，但是值得注意的是对于float的精度发生了改变，这是由一些比如操作系统等客观因素所决定的。打包
+之后的数据所占用的字节数与C语言中的struct十分相似。定义format可以参照官方api提供的对照表：</p>
+<p><img src="%E6%B5%85%E6%9E%90Python%E4%B8%AD%E7%9A%84struct%E6%A8%A1%E5%9D%97%20-%20%E5%8F%B6%E7%8F%8D%E5%8A%9B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/917108-20160911144809418-406479646.png" alt=""></p>
+<h3><strong><span style="font-size: large;">2、字节顺序</span></strong></h3>
+<p>另一方面，打包的后的字节顺序默认上是由操作系统的决定的，当然struct模块也提供了自定义字节顺序的功能，可以指定大端存储、小端存储等特定
+的字节顺序，对于底层通信的字节顺序是十分重要的，不同的字节顺序和存储方式也会导致字节大小的不同。在format字符串前面加上特定的符号即可以表示
+不同的字节顺序存储方式，例如采用小端存储 s = struct.Struct(‘<strong>&lt;</strong>I3sf’)就可以了。官方api library 也提供了相应的对照列表：</p>
+<p><a href="http://images.cnblogs.com/cnblogs_com/coser/201112/20111217161345373.png"><img title="image" src="%E6%B5%85%E6%9E%90Python%E4%B8%AD%E7%9A%84struct%E6%A8%A1%E5%9D%97%20-%20%E5%8F%B6%E7%8F%8D%E5%8A%9B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/201112171613455390.png" alt="image" width="244" height="181" border="0"></a></p>
+<h3><strong><span style="font-size: large;">3、利用buffer，使用pack_into和unpack_from方法</span></strong></h3>
+<p>&nbsp; 
+使用二进制打包数据的场景大部分都是对性能要求比较高的使用环境。而在上面提到的pack方法都是对输入数据进行操作后重新创建了一个内存空间用于返回，
+也就是说我们每次pack都会在内存中分配出相应的内存资源，这有时是一种很大的性能浪费。struct模块还提供了pack_into() 和 
+unpack_from()的方法用来解决这样的问题，也就是对一个已经提前分配好的buffer进行字节的填充，而不会每次都产生一个新对象对字节进行
+存储。</p>
+<div class="cnblogs_Highlighter sh-gutter">
+<div><div id="highlighter_117303" class="syntaxhighlighter  python"><div class="toolbar"><span><a href="#" class="toolbar_item command_help help">?</a></span></div><table cellspacing="0" cellpadding="0" border="0"><tbody><tr><td class="gutter"><div class="line number1 index0 alt2">1</div><div class="line number2 index1 alt1">2</div><div class="line number3 index2 alt2">3</div><div class="line number4 index3 alt1">4</div><div class="line number5 index4 alt2">5</div><div class="line number6 index5 alt1">6</div><div class="line number7 index6 alt2">7</div><div class="line number8 index7 alt1">8</div><div class="line number9 index8 alt2">9</div><div class="line number10 index9 alt1">10</div><div class="line number11 index10 alt2">11</div><div class="line number12 index11 alt1">12</div></td><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="python keyword">import</code> <code class="python plain">struct</code></div><div class="line number2 index1 alt1"><code class="python keyword">import</code> <code class="python plain">binascii</code></div><div class="line number3 index2 alt2"><code class="python keyword">import</code> <code class="python plain">ctypes</code></div><div class="line number4 index3 alt1"><code class="python spaces">&nbsp;</code>&nbsp;</div><div class="line number5 index4 alt2"><code class="python plain">values </code><code class="python keyword">=</code> <code class="python plain">(</code><code class="python value">1</code><code class="python plain">, </code><code class="python string">'abc'</code><code class="python plain">, </code><code class="python value">2.7</code><code class="python plain">)</code></div><div class="line number6 index5 alt1"><code class="python plain">s </code><code class="python keyword">=</code> <code class="python plain">struct.Struct(</code><code class="python string">'I3sf'</code><code class="python plain">)</code></div><div class="line number7 index6 alt2"><code class="python plain">prebuffer </code><code class="python keyword">=</code> <code class="python plain">ctypes.create_string_buffer(s.size)</code></div><div class="line number8 index7 alt1"><code class="python functions">print</code> <code class="python string">'Before :'</code><code class="python plain">,binascii.hexlify(prebuffer)</code></div><div class="line number9 index8 alt2"><code class="python plain">s.pack_into(prebuffer,</code><code class="python value">0</code><code class="python plain">,</code><code class="python keyword">*</code><code class="python plain">values)</code></div><div class="line number10 index9 alt1"><code class="python functions">print</code> <code class="python string">'After pack:'</code><code class="python plain">,binascii.hexlify(prebuffer)</code></div><div class="line number11 index10 alt2"><code class="python plain">unpacked </code><code class="python keyword">=</code> <code class="python plain">s.unpack_from(prebuffer,</code><code class="python value">0</code><code class="python plain">)</code></div><div class="line number12 index11 alt1"><code class="python functions">print</code> <code class="python string">'After unpack:'</code><code class="python plain">,unpacked</code></div></div></td></tr></tbody></table></div></div>
+</div>
+<p>输出：</p>
+<p>Before : 000000000000000000000000&nbsp;<br>After pack: 0100000061626300cdcc2c40&nbsp;<br>After unpack: (1, 'abc', 2.700000047683716)&nbsp;<br>对
+比使用pack方法打包，pack_into 
+方法一直是在对prebuffer对象进行操作，没有产生多余的内存浪费。另外需要注意的一点是，pack_into和unpack_from方法均是对
+string 
+buffer对象进行操作，并提供了offset参数，用户可以通过指定相应的offset，使相应的处理变得更加灵活。例如，我们可以把多个对象
+pack到一个buffer里面，然后通过指定不同的offset进行unpack：</p>
+<div class="cnblogs_Highlighter sh-gutter">
+<div><div id="highlighter_247708" class="syntaxhighlighter  python"><div class="toolbar"><span><a href="#" class="toolbar_item command_help help">?</a></span></div><table cellspacing="0" cellpadding="0" border="0"><tbody><tr><td class="gutter"><div class="line number1 index0 alt2">1</div><div class="line number2 index1 alt1">2</div><div class="line number3 index2 alt2">3</div><div class="line number4 index3 alt1">4</div><div class="line number5 index4 alt2">5</div><div class="line number6 index5 alt1">6</div><div class="line number7 index6 alt2">7</div><div class="line number8 index7 alt1">8</div><div class="line number9 index8 alt2">9</div><div class="line number10 index9 alt1">10</div><div class="line number11 index10 alt2">11</div><div class="line number12 index11 alt1">12</div><div class="line number13 index12 alt2">13</div><div class="line number14 index13 alt1">14</div><div class="line number15 index14 alt2">15</div><div class="line number16 index15 alt1">16</div></td><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="python keyword">import</code> <code class="python plain">struct</code></div><div class="line number2 index1 alt1"><code class="python keyword">import</code> <code class="python plain">binascii</code></div><div class="line number3 index2 alt2"><code class="python keyword">import</code> <code class="python plain">ctypes</code></div><div class="line number4 index3 alt1"><code class="python spaces">&nbsp;</code>&nbsp;</div><div class="line number5 index4 alt2"><code class="python plain">values1 </code><code class="python keyword">=</code> <code class="python plain">(</code><code class="python value">1</code><code class="python plain">, </code><code class="python string">'abc'</code><code class="python plain">, </code><code class="python value">2.7</code><code class="python plain">)</code></div><div class="line number6 index5 alt1"><code class="python plain">values2 </code><code class="python keyword">=</code> <code class="python plain">(</code><code class="python string">'defg'</code><code class="python plain">,</code><code class="python value">101</code><code class="python plain">)</code></div><div class="line number7 index6 alt2"><code class="python plain">s1 </code><code class="python keyword">=</code> <code class="python plain">struct.Struct(</code><code class="python string">'I3sf'</code><code class="python plain">)</code></div><div class="line number8 index7 alt1"><code class="python plain">s2 </code><code class="python keyword">=</code> <code class="python plain">struct.Struct(</code><code class="python string">'4sI'</code><code class="python plain">)</code></div><div class="line number9 index8 alt2"><code class="python spaces">&nbsp;</code>&nbsp;</div><div class="line number10 index9 alt1"><code class="python plain">prebuffer </code><code class="python keyword">=</code> <code class="python plain">ctypes.create_string_buffer(s1.size</code><code class="python keyword">+</code><code class="python plain">s2.size)</code></div><div class="line number11 index10 alt2"><code class="python functions">print</code> <code class="python string">'Before :'</code><code class="python plain">,binascii.hexlify(prebuffer)</code></div><div class="line number12 index11 alt1"><code class="python plain">s1.pack_into(prebuffer,</code><code class="python value">0</code><code class="python plain">,</code><code class="python keyword">*</code><code class="python plain">values1)</code></div><div class="line number13 index12 alt2"><code class="python plain">s2.pack_into(prebuffer,s1.size,</code><code class="python keyword">*</code><code class="python plain">values2)</code></div><div class="line number14 index13 alt1"><code class="python functions">print</code> <code class="python string">'After pack:'</code><code class="python plain">,binascii.hexlify(prebuffer)</code></div><div class="line number15 index14 alt2"><code class="python functions">print</code> <code class="python plain">s1.unpack_from(prebuffer,</code><code class="python value">0</code><code class="python plain">)</code></div><div class="line number16 index15 alt1"><code class="python functions">print</code> <code class="python plain">s2.unpack_from(prebuffer,s1.size)</code></div></div></td></tr></tbody></table></div></div>
+</div>
+<p>输出：</p>
+<p>Before : 0000000000000000000000000000000000000000&nbsp;<br>After pack: 0100000061626300cdcc2c406465666765000000&nbsp;<br>(1, 'abc', 2.700000047683716)&nbsp;<br>('defg', 101)</p></div><div id="MySignature"></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+<div id="BlogPostCategory">分类: <a href="https://www.cnblogs.com/yezl/category/870453.html" target="_blank">Python</a></div>
+<div id="EntryTag"></div>
+<div id="blog_post_info"><div id="green_channel">
+        <a href="javascript:void(0);" id="green_channel_digg" onclick="DiggIt(5861787,cb_blogId,1);green_channel_success(this,'谢谢推荐！');">好文要顶</a>
+            <a id="green_channel_follow" onclick="follow('84e2f225-f3ec-e511-9fc1-ac853d9f53cc');" href="javascript:void(0);">关注我</a>
+    <a id="green_channel_favorite" onclick="AddToWz(cb_entryId);return false;" href="javascript:void(0);">收藏该文</a>
+    <a id="green_channel_weibo" href="javascript:void(0);" title="分享至新浪微博" onclick="ShareToTsina()"><img src="%E6%B5%85%E6%9E%90Python%E4%B8%AD%E7%9A%84struct%E6%A8%A1%E5%9D%97%20-%20%E5%8F%B6%E7%8F%8D%E5%8A%9B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/icon_weibo_24.png" alt=""></a>
+    <a id="green_channel_wechat" href="javascript:void(0);" title="分享至微信" onclick="shareOnWechat()"><img src="%E6%B5%85%E6%9E%90Python%E4%B8%AD%E7%9A%84struct%E6%A8%A1%E5%9D%97%20-%20%E5%8F%B6%E7%8F%8D%E5%8A%9B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/wechat.png" alt=""></a>
+</div>
+<div id="author_profile">
+    <div id="author_profile_info" class="author_profile_info">
+            <a href="http://home.cnblogs.com/u/yezl/" target="_blank"><img src="%E6%B5%85%E6%9E%90Python%E4%B8%AD%E7%9A%84struct%E6%A8%A1%E5%9D%97%20-%20%E5%8F%B6%E7%8F%8D%E5%8A%9B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/20160821001456.png" class="author_avatar" alt=""></a>
+        <div id="author_profile_detail" class="author_profile_info">
+            <a href="http://home.cnblogs.com/u/yezl/">叶珍力</a><br>
+            <a href="http://home.cnblogs.com/u/yezl/followees">关注 - 0</a><br>
+            <a href="http://home.cnblogs.com/u/yezl/followers">粉丝 - 3</a>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div id="author_profile_honor"></div>
+    <div id="author_profile_follow">
+                <a href="javascript:void(0);" onclick="follow('84e2f225-f3ec-e511-9fc1-ac853d9f53cc');return false;">+加关注</a>
+    </div>
+</div>
+<div id="div_digg">
+    <div class="diggit" onclick="votePost(5861787,'Digg')">
+        <span class="diggnum" id="digg_count">1</span>
+    </div>
+    <div class="buryit" onclick="votePost(5861787,'Bury')">
+        <span class="burynum" id="bury_count">0</span>
+    </div>
+    <div class="clear"></div>
+    <div class="diggword" id="digg_tips">
+    </div>
+</div>
+<script type="text/javascript">
+    currentDiggType = 0;
+</script></div>
+<div class="clear"></div>
+<div id="post_next_prev"><a href="https://www.cnblogs.com/yezl/p/5852246.html" class="p_n_p_prefix">« </a> 上一篇：<a href="https://www.cnblogs.com/yezl/p/5852246.html" title="发布于2016-09-08 11:00">高效的DDoS攻击探测与分析工具——FastNetMon</a><br><a href="https://www.cnblogs.com/yezl/p/6007061.html" class="p_n_p_prefix">» </a> 下一篇：<a href="https://www.cnblogs.com/yezl/p/6007061.html" title="发布于2016-10-28 11:24">Python开发—Ajax系列</a><br></div>
+</div>
+
+
+		</div>
+		<div class="postDesc">posted @ <span id="post-date">2016-09-11 14:51</span> <a href="https://www.cnblogs.com/yezl/">叶珍力</a> 阅读(<span id="post_view_count">12060</span>) 评论(<span id="post_comment_count">1</span>)  <a href="https://i.cnblogs.com/EditPosts.aspx?postid=5861787" rel="nofollow">编辑</a> <a href="#" onclick="AddToWz(5861787);return false;">收藏</a></div>
+	</div>
+	<script type="text/javascript">var allowComments=true,cb_blogId=274484,cb_entryId=5861787,cb_blogApp=currentBlogApp,cb_blogUserGuid='84e2f225-f3ec-e511-9fc1-ac853d9f53cc',cb_entryCreatedDate='2016/9/11 14:51:00';loadViewCount(cb_entryId);var cb_postType=1;var isMarkdown=false;</script>
+	
+</div><!--end: topics 文章、评论容器-->
+</div><a name="!comments"></a><div id="blog-comments-placeholder"><div id="comments_pager_top"></div>
+<!--done-->
+<div class="feedback_area_title">评论列表</div>
+<div class="feedbackNoItems"></div>
+	
+
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="#3585598" class="layer">#1楼</a><a name="3585598" id="comment_anchor_3585598"></a><span id="comment-maxId" style="display:none;">3585598</span><span id="comment-maxDate" style="display:none;">2016/12/20 17:40:03</span>  <span class="comment_date">2016-12-20 17:40</span> <a id="a_comment_author_3585598" href="https://www.cnblogs.com/hxer/" target="_blank">hxer</a> <a href="http://msg.cnblogs.com/send/hxer" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3585598" class="blog_comment_body">转载还是说明比较好。。</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3585598,'Digg',this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3585598,'Bury',this)">反对(0)</a></div>
+			</div>
+		</div>
+	<div id="comments_pager_bottom"></div></div><script type="text/javascript">var commentManager = new blogCommentManager();commentManager.renderComments(0);</script>
+<div id="comment_form" class="commentform">
+<a name="commentform"></a>
+<div id="divCommentShow"></div>
+<div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="#" onclick="return RefreshPage();">刷新页面</a><a href="#top">返回顶部</a></div>
+<div id="comment_form_container"><div class="login_tips">注册用户登录后才能发表评论，请 <a rel="nofollow" href="javascript:void(0);" class="underline" onclick="return login('commentform');">登录</a> 或 <a rel="nofollow" href="javascript:void(0);" class="underline" onclick="return register();">注册</a>，<a href="http://www.cnblogs.com/">访问</a>网站首页。</div></div>
+<div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+<div id="ad_t2"><a href="http://www.ucancode.com/index.htm" target="_blank" onclick="ga('send', 'event', 'Link', 'click', 'T2-工控')">【推荐】超50万C++/C#源码: 大型实时仿真组态图形源码</a><br><a href="https://www.bagevent.com/event/2195041?bag_track=13072958" target="_blank" onclick="ga('send', 'event', 'Link', 'click', 'T2-看雪')">【活动】看雪2019安全开发者峰会，共话安全领域焦点</a><br><a href="https://ke.qq.com/adActivity.html?name=xiangxueketang2" target="_blank" onclick="ga('send', 'event', 'Link', 'click', 'T2-享学')">【培训】Java程序员年薪40W，他1年走了别人5年的路</a><br></div>
+<div id="opt_under_post"></div>
+<script async="async" src="%E6%B5%85%E6%9E%90Python%E4%B8%AD%E7%9A%84struct%E6%A8%A1%E5%9D%97%20-%20%E5%8F%B6%E7%8F%8D%E5%8A%9B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/gpt.js"></script>
+<script>
+  var googletag = googletag || {};
+  googletag.cmd = googletag.cmd || [];
+</script>
+<script>
+  googletag.cmd.push(function() {
+        googletag.defineSlot('/1090369/C1', [300, 250], 'div-gpt-ad-1546353474406-0').addService(googletag.pubads());
+        googletag.defineSlot('/1090369/C2', [468, 60], 'div-gpt-ad-1539008685004-0').addService(googletag.pubads());
+        googletag.pubads().enableSingleRequest();
+        googletag.enableServices();
+  });
+</script>
+<div id="cnblogs_c1" class="c_ad_block">
+    <div id="div-gpt-ad-1546353474406-0" style="height:250px; width:300px;" data-google-query-id="COGRnuuBneICFUIqlgodXMwF9A"><div id="google_ads_iframe_/1090369/C1_0__container__" style="border: 0pt none;"><iframe id="google_ads_iframe_/1090369/C1_0" title="3rd party ad content" name="google_ads_iframe_/1090369/C1_0" scrolling="no" marginwidth="0" marginheight="0" style="border: 0px none; vertical-align: bottom;" srcdoc="" data-google-container-id="1" data-load-complete="true" width="300" height="250" frameborder="0"></iframe></div></div>
+</div>
+<div id="under_post_news"><div class="itnews c_ad_block"><b>相关博文：</b><br>·  <a href="https://www.cnblogs.com/zjcode/p/8717909.html" target="_blank" onclick="clickRecomItmem(8717909)">路边拾遗之其他模块(struct/csv/xlwt/smtp)</a><br>·  <a href="https://www.cnblogs.com/menghuizuotian/p/3762804.html" target="_blank" onclick="clickRecomItmem(3762804)">python 中 struct 用法</a><br>·  <a href="https://www.cnblogs.com/myqiao/archive/2010/09/05/1818498.html" target="_blank" onclick="clickRecomItmem(1818498)">Python之struct模块浅谈</a><br>·  <a href="https://www.cnblogs.com/jhao/p/8458029.html" target="_blank" onclick="clickRecomItmem(8458029)">Python标准库笔记(6) — struct模块</a><br>·  <a href="https://www.cnblogs.com/xuwei1/p/9981033.html" target="_blank" onclick="clickRecomItmem(9981033)">Python-Struct</a><br></div></div>
+<div id="cnblogs_c2" class="c_ad_block">
+    <div id="div-gpt-ad-1539008685004-0" style="height:60px; width:468px;" data-google-query-id="COKRnuuBneICFUIqlgodXMwF9A"><div id="google_ads_iframe_/1090369/C2_0__container__" style="border: 0pt none;"><iframe id="google_ads_iframe_/1090369/C2_0" title="3rd party ad content" name="google_ads_iframe_/1090369/C2_0" scrolling="no" marginwidth="0" marginheight="0" style="border: 0px none; vertical-align: bottom;" srcdoc="" data-google-container-id="2" data-load-complete="true" width="468" height="60" frameborder="0"></iframe></div></div>
+</div>
+<div id="under_post_kb"><div class="itnews c_ad_block"><b>最新新闻</b>：<br> ·  <a href="https://news.cnblogs.com/n/625331/" target="_blank">深网|万达百货更名苏宁易购广场 改造店5月底亮相</a><br> ·  <a href="https://news.cnblogs.com/n/625330/" target="_blank">圈重点！腾讯全球数字生态大会带来不一样的智慧医疗</a><br> ·  <a href="https://news.cnblogs.com/n/625329/" target="_blank">3岁娃成“社交万人迷”？别再被天价“情商培训班”忽悠了</a><br> ·  <a href="https://news.cnblogs.com/n/625328/" target="_blank">国产手机十年厮杀过后，为何只剩下华为带着米OV?</a><br> ·  <a href="https://news.cnblogs.com/n/625327/" target="_blank">英国宣布5G将在7月3日上线，兼容四款5G手机</a><br>» <a href="http://news.cnblogs.com/" title="IT新闻" target="_blank">更多新闻...</a></div></div>
+<div id="HistoryToday" class="c_ad_block"></div>
+<script type="text/javascript">
+ if(enablePostBottom()) {
+    codeHighlight();
+    fixPostBody();
+    setTimeout(function () { incrementViewCount(cb_entryId); }, 50);
+    deliverT2();
+    deliverC1();
+    deliverC2();    
+    loadNewsAndKb();
+    loadBlogSignature();
+    LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+    GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+    loadOptUnderPost();
+    GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);  
+}
+</script>
+</div>
+
+    
+	</div><!--end: forFlow -->
+	</div><!--end: mainContent 主体内容容器-->
+
+	<div id="sideBar">
+		<div id="sideBarMain">
+			
+<!--done-->
+<div class="newsItem">
+<h3 class="catListTitle">公告</h3>
+	<div id="blog-news"><div id="profile_block">昵称：<a href="https://home.cnblogs.com/u/yezl/">叶珍力</a><br>园龄：<a href="https://home.cnblogs.com/u/yezl/" title="入园时间：2016-03-18">3年1个月</a><br>粉丝：<a href="https://home.cnblogs.com/u/yezl/followers/">3</a><br>关注：<a href="https://home.cnblogs.com/u/yezl/followees/">0</a><div id="p_b_follow"><a href="javascript:void(0);" onclick="follow('84e2f225-f3ec-e511-9fc1-ac853d9f53cc')">+加关注</a></div><script>getFollowStatus('84e2f225-f3ec-e511-9fc1-ac853d9f53cc')</script></div></div><script type="text/javascript">loadBlogNews();</script>
+</div>
+
+			<div id="calendar"><div id="blog-calendar" style=""><table id="blogCalendar" class="Cal" title="Calendar" cellspacing="0" cellpadding="0">
+	<tbody><tr><td colspan="7"><table class="CalTitle" cellspacing="0">
+		<tbody><tr><td class="CalNextPrev"><a href="javascript:void(0);" onclick="loadBlogCalendar('2019/04/01');return false;">&lt;</a></td><td align="center">2019年5月</td><td class="CalNextPrev" align="right"><a href="javascript:void(0);" onclick="loadBlogCalendar('2019/06/01');return false;">&gt;</a></td></tr>
+	</tbody></table></td></tr><tr><th class="CalDayHeader" abbr="日" scope="col" align="center">日</th><th class="CalDayHeader" abbr="一" scope="col" align="center">一</th><th class="CalDayHeader" abbr="二" scope="col" align="center">二</th><th class="CalDayHeader" abbr="三" scope="col" align="center">三</th><th class="CalDayHeader" abbr="四" scope="col" align="center">四</th><th class="CalDayHeader" abbr="五" scope="col" align="center">五</th><th class="CalDayHeader" abbr="六" scope="col" align="center">六</th></tr><tr><td class="CalOtherMonthDay" align="center">28</td><td class="CalOtherMonthDay" align="center">29</td><td class="CalOtherMonthDay" align="center">30</td><td align="center">1</td><td align="center">2</td><td align="center">3</td><td class="CalWeekendDay" align="center">4</td></tr><tr><td class="CalWeekendDay" align="center">5</td><td align="center">6</td><td align="center">7</td><td align="center">8</td><td align="center">9</td><td align="center">10</td><td class="CalWeekendDay" align="center">11</td></tr><tr><td class="CalWeekendDay" align="center">12</td><td align="center">13</td><td align="center">14</td><td class="CalTodayDay" align="center">15</td><td align="center">16</td><td align="center">17</td><td class="CalWeekendDay" align="center">18</td></tr><tr><td class="CalWeekendDay" align="center">19</td><td align="center">20</td><td align="center">21</td><td align="center">22</td><td align="center">23</td><td align="center">24</td><td class="CalWeekendDay" align="center">25</td></tr><tr><td class="CalWeekendDay" align="center">26</td><td align="center">27</td><td align="center">28</td><td align="center">29</td><td align="center">30</td><td align="center">31</td><td class="CalOtherMonthDay" align="center">1</td></tr><tr><td class="CalOtherMonthDay" align="center">2</td><td class="CalOtherMonthDay" align="center">3</td><td class="CalOtherMonthDay" align="center">4</td><td class="CalOtherMonthDay" align="center">5</td><td class="CalOtherMonthDay" align="center">6</td><td class="CalOtherMonthDay" align="center">7</td><td class="CalOtherMonthDay" align="center">8</td></tr>
+</tbody></table></div><script type="text/javascript">loadBlogDefaultCalendar();</script></div>
+			
+			<div id="leftcontentcontainer">
+				<div id="blog-sidecolumn"><div id="sidebar_search" class="sidebar-block">
+<div id="sidebar_search" class="mySearch">
+<h3 class="catListTitle">搜索</h3>
+<div id="sidebar_search_box">
+<div id="widget_my_zzk" class="div_my_zzk"><input id="q" onkeydown="return zzk_go_enter(event);" class="input_my_zzk" type="text">&nbsp;<input onclick="zzk_go()" value="找找看" id="btnZzk" class="btn_my_zzk" type="button"></div>
+<div id="widget_my_google" class="div_my_zzk"><input name="google_q" id="google_q" onkeydown="return google_go_enter(event)" class="input_my_zzk" type="text">&nbsp;<input onclick="google_go()" value="谷歌搜索" class="btn_my_zzk" type="button"></div>
+</div>
+</div>
+
+</div><div id="sidebar_shortcut" class="sidebar-block">
+<div class="catListLink">
+<h3 class="catListTitle">常用链接</h3>
+<ul>
+<li><a href="https://www.cnblogs.com/yezl/p/" title="我的博客的随笔列表">我的随笔</a></li><li><a href="https://www.cnblogs.com/yezl/MyComments.html" title="我发表过的评论列表">我的评论</a></li><li><a href="https://www.cnblogs.com/yezl/OtherPosts.html" title="我评论过的随笔列表">我的参与</a></li><li><a href="https://www.cnblogs.com/yezl/RecentComments.html" title="我的博客的评论列表">最新评论</a></li><li><a href="https://www.cnblogs.com/yezl/tag/" title="我的博客的标签列表">我的标签</a></li>
+</ul>
+<div id="itemListLin_con" style="display:none;">
+<ul>
+
+</ul>
+</div>
+</div></div><div id="sidebar_toptags" class="sidebar-block"></div><div id="sidebar_categories">
+<div class="catListPostCategory">
+<h3 class="catListTitle">随笔分类</h3>
+
+<ul>
+
+<li><a id="CatList_LinkList_0_Link_0" href="https://www.cnblogs.com/yezl/category/870456.html">Docker(1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_1" href="https://www.cnblogs.com/yezl/category/996378.html">Linux(5)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_2" href="https://www.cnblogs.com/yezl/category/870453.html">Python(16)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_3" href="https://www.cnblogs.com/yezl/category/970831.html">saltstack(6)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_4" href="https://www.cnblogs.com/yezl/category/918471.html">Web(3)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_5" href="https://www.cnblogs.com/yezl/category/870461.html">Windows(1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_6" href="https://www.cnblogs.com/yezl/category/1105341.html">大数据(5)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_7" href="https://www.cnblogs.com/yezl/category/879454.html">网络安全(3)</a> </li>
+
+</ul>
+
+</div>
+
+<div class="catListPostArchive">
+<h3 class="catListTitle">随笔档案</h3>
+
+<ul>
+
+<li><a id="CatList_LinkList_1_Link_0" href="https://www.cnblogs.com/yezl/archive/2018/10.html">2018年10月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_1" href="https://www.cnblogs.com/yezl/archive/2018/02.html">2018年2月 (2)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_2" href="https://www.cnblogs.com/yezl/archive/2017/11.html">2017年11月 (2)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_3" href="https://www.cnblogs.com/yezl/archive/2017/10.html">2017年10月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_4" href="https://www.cnblogs.com/yezl/archive/2017/08.html">2017年8月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_5" href="https://www.cnblogs.com/yezl/archive/2017/07.html">2017年7月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_6" href="https://www.cnblogs.com/yezl/archive/2017/05.html">2017年5月 (4)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_7" href="https://www.cnblogs.com/yezl/archive/2017/04.html">2017年4月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_8" href="https://www.cnblogs.com/yezl/archive/2017/03.html">2017年3月 (7)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_9" href="https://www.cnblogs.com/yezl/archive/2017/01.html">2017年1月 (6)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_10" href="https://www.cnblogs.com/yezl/archive/2016/12.html">2016年12月 (3)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_11" href="https://www.cnblogs.com/yezl/archive/2016/10.html">2016年10月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_12" href="https://www.cnblogs.com/yezl/archive/2016/09.html">2016年9月 (2)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_13" href="https://www.cnblogs.com/yezl/archive/2016/08.html">2016年8月 (8)</a> </li>
+
+</ul>
+
+</div>
+
+<div class="catListArticleCategory">
+<h3 class="catListTitle">文章分类</h3>
+
+<ul>
+
+<li><a id="CatList_LinkList_2_Link_0" href="https://www.cnblogs.com/yezl/category/870455.html">Docker</a> </li>
+
+<li><a id="CatList_LinkList_2_Link_1" href="https://www.cnblogs.com/yezl/category/870451.html">Linux</a> </li>
+
+<li><a id="CatList_LinkList_2_Link_2" href="https://www.cnblogs.com/yezl/category/870452.html">Python</a> </li>
+
+</ul>
+
+</div>
+
+</div><div id="sidebar_recentcomments" class="sidebar-block"><div id="recent_comments_wrap">
+<div class="catListComment">
+<h3 class="catListTitle">最新评论</h3>
+	<div id="RecentCommentsBlock"><ul>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/yezl/p/5861787.html#3585598">1. Re:浅析Python中的struct模块</a></li>
+        <li class="recent_comment_body">转载还是说明比较好。。</li>
+        <li class="recent_comment_author">--hxer</li>
+</ul>
+</div>
+</div>
+</div></div><div id="sidebar_topviewedposts" class="sidebar-block"><div id="topview_posts_wrap">
+<div class="catListView">
+<h3 class="catListTitle">阅读排行榜</h3>
+	<div id="TopViewPostsBlock"><ul><li><a href="https://www.cnblogs.com/yezl/p/5861787.html">1. 浅析Python中的struct模块(12060)</a></li><li><a href="https://www.cnblogs.com/yezl/p/5852246.html">2. 高效的DDoS攻击探测与分析工具——FastNetMon(3366)</a></li><li><a href="https://www.cnblogs.com/yezl/p/7787336.html">3. 大数据Hadoop生态圈：Pig和Hive(2578)</a></li><li><a href="https://www.cnblogs.com/yezl/p/7787377.html">4. 大数据处理框架(2094)</a></li><li><a href="https://www.cnblogs.com/yezl/p/6604680.html">5. saltstack系列(三)——zmq订阅/发布模式(1341)</a></li></ul></div>
+</div>
+</div></div><div id="sidebar_topcommentedposts" class="sidebar-block"><div id="topfeedback_posts_wrap">
+<div class="catListFeedback">
+<h3 class="catListTitle">评论排行榜</h3>
+	<div id="TopFeedbackPostsBlock"><ul><li><a href="https://www.cnblogs.com/yezl/p/5861787.html">1. 浅析Python中的struct模块(1)</a></li></ul></div>
+</div>
+</div></div><div id="sidebar_topdiggedposts" class="sidebar-block"><div id="topdigg_posts_wrap">
+<div class="catListView">
+<h3 class="catListTitle">推荐排行榜</h3>
+<div id="TopDiggPostsBlock"><ul><li><a href="https://www.cnblogs.com/yezl/p/5861787.html">1. 浅析Python中的struct模块(1)</a></li></ul></div>
+</div></div></div></div><script type="text/javascript">loadBlogSideColumn();</script>
+			</div>
+			
+		</div><!--end: sideBarMain -->
+	</div><!--end: sideBar 侧边栏容器 -->
+	<div class="clear"></div>
+	</div><!--end: main -->
+	<div class="clear"></div>
+	<div id="footer">
+		
+<!--done-->
+Copyright ©2019 叶珍力
+	</div><!--end: footer -->
+</div><!--end: home 自定义的最大容器 -->
+
+
+
+</body></html>

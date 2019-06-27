@@ -1,0 +1,67 @@
+div.blogStats {
+    top: 115px;
+}
+div#blogTitle .title a {
+    color: #000000;
+}
+body {
+    background: url("/Skins/coffee/images/bg_body.gif") repeat scroll left top transparent;
+}
+#mainContent .forFlow {
+    background: url("/Skins/coffee/images/bg_left.gif") repeat-x scroll left top #FEFEF2;
+border-width: 0;
+margin-bottom:10px;
+}
+
+div#blogTitle {
+    background: none;
+}
+
+#sideBar  {
+background: url("/Skins/coffee/images/bg_left.gif") repeat-x scroll left top #FEFEF2;
+padding-top:15px;
+border-width:0;
+}
+
+#cnblogs_post_body h2 {
+    background: none repeat scroll 0 0 #5db4dc;
+    clear: both;
+    color: #000000;
+    font-family: 'Courier New';
+    font-size: 18px;
+    margin: 10px 0;
+    padding: 6px 20px;
+}
+#cnblogs_post_body h3 {
+    background: #2fd1cb;
+    color: #000000;
+    font-family: 'Courier New';
+   padding:0px 5px;
+}
+#cnblogs_post_body a:hover {
+    color: #9CBA39;
+}
+#cnblogs_post_body a {
+    color: #399AB2;
+    padding: 1px 2px;
+    text-decoration: none;
+border-bottom:0px;
+}
+#div_digg {
+    background-color: #FFFFFF;
+    border: 1px solid #D9DBE1;
+    bottom: 0;
+    position: fixed;
+padding: 8px 8px 8px 10px;
+    right: -0px;
+}
+
+#div_digg {
+    float: right;
+    font-size: 12px;
+    margin-bottom: 0px;
+    margin-right: 0px;
+    margin-top: 0px;
+    text-align: center;
+    width: 125px;
+}

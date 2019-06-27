@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="zh-cn"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="origin">
+    <title>opencv中的SIFT,SURF,ORB,FAST 特征描叙算子比较 - Maddock - 博客园</title>
+<meta property="og:description" content="opencv中的SIFT,SURF,ORB,FAST 特征描叙算子比较参考：http://wenku.baidu.com/link?url=1aDYAJBCrrK-uk2w3sSNai7h52x_eW">
+    <link type="text/css" rel="stylesheet" href="opencv%E4%B8%AD%E7%9A%84SIFT,SURF,ORB,FAST%20%E7%89%B9%E5%BE%81%E6%8F%8F%E5%8F%99%E7%AE%97%E5%AD%90%E6%AF%94%E8%BE%83%20-%20Maddock%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/blog-common.css">
+<link id="MainCss" type="text/css" rel="stylesheet" href="opencv%E4%B8%AD%E7%9A%84SIFT,SURF,ORB,FAST%20%E7%89%B9%E5%BE%81%E6%8F%8F%E5%8F%99%E7%AE%97%E5%AD%90%E6%AF%94%E8%BE%83%20-%20Maddock%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/bundle-AnotherEon001.css">
+<link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="opencv%E4%B8%AD%E7%9A%84SIFT,SURF,ORB,FAST%20%E7%89%B9%E5%BE%81%E6%8F%8F%E5%8F%99%E7%AE%97%E5%AD%90%E6%AF%94%E8%BE%83%20-%20Maddock%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/bundle-AnotherEon001-mobile.css">
+    <link title="RSS" type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/adong7639/rss">
+    <link title="RSD" type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/adong7639/rsd.xml">
+<link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/adong7639/wlwmanifest.xml">
+    <script src="opencv%E4%B8%AD%E7%9A%84SIFT,SURF,ORB,FAST%20%E7%89%B9%E5%BE%81%E6%8F%8F%E5%8F%99%E7%AE%97%E5%AD%90%E6%AF%94%E8%BE%83%20-%20Maddock%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/amp4ads-host-v0.js"></script><script src="opencv%E4%B8%AD%E7%9A%84SIFT,SURF,ORB,FAST%20%E7%89%B9%E5%BE%81%E6%8F%8F%E5%8F%99%E7%AE%97%E5%AD%90%E6%AF%94%E8%BE%83%20-%20Maddock%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/pubads_impl_rendering_2019050901.js"></script><script async="" src="opencv%E4%B8%AD%E7%9A%84SIFT,SURF,ORB,FAST%20%E7%89%B9%E5%BE%81%E6%8F%8F%E5%8F%99%E7%AE%97%E5%AD%90%E6%AF%94%E8%BE%83%20-%20Maddock%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/analytics.js"></script><script src="opencv%E4%B8%AD%E7%9A%84SIFT,SURF,ORB,FAST%20%E7%89%B9%E5%BE%81%E6%8F%8F%E5%8F%99%E7%AE%97%E5%AD%90%E6%AF%94%E8%BE%83%20-%20Maddock%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/jquery-2.js"></script>
+    <script>var currentBlogId=146626;var currentBlogApp='adong7639',cb_enable_mathjax=false;var isLogined=false;</script>
+    <script src="opencv%E4%B8%AD%E7%9A%84SIFT,SURF,ORB,FAST%20%E7%89%B9%E5%BE%81%E6%8F%8F%E5%8F%99%E7%AE%97%E5%AD%90%E6%AF%94%E8%BE%83%20-%20Maddock%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/blog-common.js" type="text/javascript"></script>
+<link rel="preload" href="opencv%E4%B8%AD%E7%9A%84SIFT,SURF,ORB,FAST%20%E7%89%B9%E5%BE%81%E6%8F%8F%E5%8F%99%E7%AE%97%E5%AD%90%E6%AF%94%E8%BE%83%20-%20Maddock%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/integrator.js" as="script"><script type="text/javascript" src="opencv%E4%B8%AD%E7%9A%84SIFT,SURF,ORB,FAST%20%E7%89%B9%E5%BE%81%E6%8F%8F%E5%8F%99%E7%AE%97%E5%AD%90%E6%AF%94%E8%BE%83%20-%20Maddock%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/integrator.js"></script><script src="opencv%E4%B8%AD%E7%9A%84SIFT,SURF,ORB,FAST%20%E7%89%B9%E5%BE%81%E6%8F%8F%E5%8F%99%E7%AE%97%E5%AD%90%E6%AF%94%E8%BE%83%20-%20Maddock%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/pubads_impl_2019050901.js" async=""></script></head>
+<body>
+<a name="top"></a>
+
+<!--PageBeginHtml Block Begin-->
+<p style="background: #C0FFFF; padding: 10px; border: 1px dashed #E0E0E0; font: 140% 微软雅黑; color: #0000; text-align: left">
+<a href="http://www.cnblogs.com/adong7639/"> </a></p>
+<!--PageBeginHtml Block End-->
+
+<div id="wrapper">
+<div id="header">
+
+<div id="top">
+<h1><a id="Header1_HeaderTitle" class="headermaintitle" href="https://www.cnblogs.com/adong7639/">Image Process</a></h1>
+<div id="subtitle"></div>
+</div>
+<div id="sub"><div id="blog_stats">
+<div class="BlogStats">随笔 - 320, 文章 - 1, 评论 - 13, 引用 - 0</div>
+</div></div>
+
+
+
+</div>
+<div id="main_container">
+<div id="main_content">
+<div id="content">
+	
+        <div id="post_detail">
+	<div class="post">
+		<h2>
+			<a id="cb_post_title_url" href="https://www.cnblogs.com/adong7639/p/4940139.html">opencv中的SIFT,SURF,ORB,FAST 特征描叙算子比较</a>
+		</h2>
+		<div class="postbody">
+		<div id="cnblogs_post_body" class="blogpost-body"><p>opencv中的SIFT,SURF,ORB,FAST 特征描叙算子比较</p>
+<div class="markdown_views"><hr>
+<p>参考：</p>
+<p><a href="http://wenku.baidu.com/link?url=1aDYAJBCrrK-uk2w3sSNai7h52x_eWeRu9p9GhZd49WJ1bEOB7VluQdBdRKeehAO2Q3B7RatTXDruq-M9cR-W2yqATerDlIU1T3whYoyQfi" target="_blank">http://wenku.baidu.com/link?url=1aDYAJBCrrK-uk2w3sSNai7h52x_eWeRu9p9GhZd49WJ1bEOB7VluQdBdRKeehAO2Q3B7RatTXDruq-M9cR-W2yqATerDlIU1T3whYoyQfi</a></p>
+<p><a href="http://www.cvchina.info/2011/07/04/whats-orb/" target="_blank">http://www.cvchina.info/2011/07/04/whats-orb/</a></p>
+<p><a href="http://www.bubuko.com/infodetail-909956.html" target="_blank">http://www.bubuko.com/infodetail-909956.html</a></p>
+<p>主要的特征检测方法有以下几种，在一般的<span id="3_nwp" style="width: auto; height: auto; float: none;"><a id="3_nwl" style="text-decoration: none;" href="http://cpro.baidu.com/cpro/ui/uijs.php?adclass=0&amp;app_id=0&amp;c=news&amp;cf=1001&amp;ch=0&amp;di=128&amp;fv=19&amp;is_app=0&amp;jk=79d93ce5a2c9cbcf&amp;k=%CD%BC%CF%F1%B4%A6%C0%ED&amp;k0=%CD%BC%CF%F1%B4%A6%C0%ED&amp;kdi0=0&amp;luki=1&amp;n=10&amp;p=baidu&amp;q=65035100_cpr&amp;rb=0&amp;rs=1&amp;seller_id=1&amp;sid=cfcbc9a2e53cd979&amp;ssp2=1&amp;stid=0&amp;t=tpclicked3_hc&amp;td=1836545&amp;tu=u1836545&amp;u=http%3A%2F%2Fwww%2Ebubuko%2Ecom%2Finfodetail%2D909956%2Ehtml&amp;urlid=0" target="_blank"><span style="color: #0000ff; font-size: 14px; width: auto; height: auto; float: none;">图像处理</span></a>库中（如opencv, VLFeat, Boofcv等）都会实现。</span></p>
+<ul>
+<li>FAST ,<a href="http://www.edwardrosten.com/work/fast.html">Machine Learning for High-speed Corner Detection, 2006</a></li>
+<li>SIFT,<a href="http://en.wikipedia.org/wiki/Scale-invariant_feature_transform">Distinctive Image Features from Scale-Invariant Keypoints,2004</a>, invariant to image <span id="2_nwp" style="width: auto; height: auto; float: none;"><a id="2_nwl" style="text-decoration: none;" href="http://cpro.baidu.com/cpro/ui/uijs.php?adclass=0&amp;app_id=0&amp;c=news&amp;cf=1001&amp;ch=0&amp;di=128&amp;fv=19&amp;is_app=0&amp;jk=79d93ce5a2c9cbcf&amp;k=translation&amp;k0=translation&amp;kdi0=0&amp;luki=2&amp;n=10&amp;p=baidu&amp;q=65035100_cpr&amp;rb=0&amp;rs=1&amp;seller_id=1&amp;sid=cfcbc9a2e53cd979&amp;ssp2=1&amp;stid=0&amp;t=tpclicked3_hc&amp;td=1836545&amp;tu=u1836545&amp;u=http%3A%2F%2Fwww%2Ebubuko%2Ecom%2Finfodetail%2D909956%2Ehtml&amp;urlid=0" target="_blank"><span style="color: #0000ff; font-size: 14px; width: auto; height: auto; float: none;">translation</span></a>, scaling, and rotation, partially invariant to illumination changes and robust to local geometric distortion</span></li>
+<li>SURF,<a href="http://en.wikipedia.org/wiki/Speeded_up_robust_features">Speeded Up Robust Features,2006</a>,受SIFT启发，比SIFT快，健壮</li>
+<li>ORB,<a href="http://en.wikipedia.org/wiki/ORB_%28feature_descriptor%29">ORB: an efficient alternative to SIFT or SURF,2011</a>，基于FAST，比SIFT快两个数量级，可作为SIFT的替代</li>
+<li>BRISK，<a href="http://www.asl.ethz.ch/people/lestefan/personal/iccv2011.pdf">BRISK: Binary Robust Invariant Scalable Keypoints </a></li>
+<li>STAR，<a href="http://www.bubuko.com/infodetail-909956.html">Censure: Center surround extremas for realtime feature detection and matching</a>,引用次数不高</li>
+<li>MSER，<a href="http://en.wikipedia.org/wiki/Maximally_stable_extremal_regions">Robust Wide Baseline Stereo from Maximally Stable Extremal Regions,2002</a>,斑点<span id="1_nwp" style="width: auto; height: auto; float: none;"><a id="1_nwl" style="text-decoration: none;" href="http://cpro.baidu.com/cpro/ui/uijs.php?adclass=0&amp;app_id=0&amp;c=news&amp;cf=1001&amp;ch=0&amp;di=128&amp;fv=19&amp;is_app=0&amp;jk=79d93ce5a2c9cbcf&amp;k=%BC%EC%B2%E2&amp;k0=%BC%EC%B2%E2&amp;kdi0=0&amp;luki=6&amp;n=10&amp;p=baidu&amp;q=65035100_cpr&amp;rb=0&amp;rs=1&amp;seller_id=1&amp;sid=cfcbc9a2e53cd979&amp;ssp2=1&amp;stid=0&amp;t=tpclicked3_hc&amp;td=1836545&amp;tu=u1836545&amp;u=http%3A%2F%2Fwww%2Ebubuko%2Ecom%2Finfodetail%2D909956%2Ehtml&amp;urlid=0" target="_blank"><span style="color: #0000ff; font-size: 14px; width: auto; height: auto; float: none;">检测</span></a></span></li>
+<li>GFTT，<a href="http://docs.opencv.org/modules/imgproc/doc/feature_detection.html#shi94">Good Features to Track,1994</a>,Determines strong corners on an image</li>
+<li>HARRIS,<a href="http://en.wikipedia.org/wiki/Corner_detection">Harris and M. Stephens (1988). “A combined corner and edge detector”</a>,也是一种角点<span id="0_nwp" style="width: auto; height: auto; float: none;"><a id="0_nwl" style="text-decoration: none;" href="http://cpro.baidu.com/cpro/ui/uijs.php?adclass=0&amp;app_id=0&amp;c=news&amp;cf=1001&amp;ch=0&amp;di=128&amp;fv=19&amp;is_app=0&amp;jk=79d93ce5a2c9cbcf&amp;k=%BC%EC%B2%E2%B7%BD%B7%A8&amp;k0=%BC%EC%B2%E2%B7%BD%B7%A8&amp;kdi0=0&amp;luki=4&amp;n=10&amp;p=baidu&amp;q=65035100_cpr&amp;rb=0&amp;rs=1&amp;seller_id=1&amp;sid=cfcbc9a2e53cd979&amp;ssp2=1&amp;stid=0&amp;t=tpclicked3_hc&amp;td=1836545&amp;tu=u1836545&amp;u=http%3A%2F%2Fwww%2Ebubuko%2Ecom%2Finfodetail%2D909956%2Ehtml&amp;urlid=0" target="_blank"><span style="color: #0000ff; font-size: 14px; width: auto; height: auto; float: none;">检测方法</span></a></span></li>
+<li><span style="width: auto; height: auto; float: none;"><span style="color: #0000ff; font-size: 14px; width: auto; height: auto; float: none;">KAZE(eccv2012)</span></span></li>
+<li><span style="width: auto; height: auto; float: none;"><span style="color: #0000ff; font-size: 14px; width: auto; height: auto; float: none;">FREAK（）</span></span></li>
+<li><span style="width: auto; height: auto; float: none;"><span style="color: #0000ff; font-size: 14px; width: auto; height: auto; float: none;"><span style="width: auto; height: auto; float: none;"><span style="color: #0000ff; font-size: 14px; width: auto; height: auto; float: none;">deepmatching</span></span> <a href="http://lear.inrialpes.fr/src/deepmatching/" target="_blank">http://lear.inrialpes.fr/src/deepmatching/</a></span></span></li>
+</ul>
+<p>这里主要关注SIFT,SURF,FAST,ORB的对比。</p>
+<table>
+<thead>
+<tr><th>Image NO</th><th align="center">SIFT</th><th align="center">SURF</th><th align="center">ORB</th><th align="center">FAST</th></tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td align="center">2414</td>
+<td align="center">4126</td>
+<td align="center">500</td>
+<td align="center">11978</td>
+</tr>
+<tr>
+<td>1</td>
+<td align="center">4295</td>
+<td align="center">8129</td>
+<td align="center">500</td>
+<td align="center">16763</td>
+</tr>
+<tr>
+<td>2</td>
+<td align="center">3404</td>
+<td align="center">4784</td>
+<td align="center">500</td>
+<td align="center">16191</td>
+</tr>
+<tr>
+<td>3</td>
+<td align="center">1639</td>
+<td align="center">2802</td>
+<td align="center">500</td>
+<td align="center">7166</td>
+</tr>
+<tr>
+<td>4</td>
+<td align="center">1510</td>
+<td align="center">1484</td>
+<td align="center">497</td>
+<td align="center">29562</td>
+</tr>
+<tr>
+<td>5</td>
+<td align="center">10572</td>
+<td align="center">8309</td>
+<td align="center">500</td>
+<td align="center">720</td>
+</tr>
+<tr>
+<td>6</td>
+<td align="center">191</td>
+<td align="center">187</td>
+<td align="center">295</td>
+<td align="center">16125</td>
+</tr>
+<tr>
+<td>7</td>
+<td align="center">3352</td>
+<td align="center">4706</td>
+<td align="center">500</td>
+<td align="center">567</td>
+</tr>
+<tr>
+<td>8</td>
+<td align="center">165</td>
+<td align="center">403</td>
+<td align="center">374</td>
+<td align="center">26701</td>
+</tr>
+<tr>
+<td>9</td>
+<td align="center">4899</td>
+<td align="center">7523</td>
+<td align="center">500</td>
+<td align="center">12780</td>
+</tr>
+<tr>
+<td>10</td>
+<td align="center">1979</td>
+<td align="center">4212</td>
+<td align="center">500</td>
+<td align="center">10676</td>
+</tr>
+<tr>
+<td>11</td>
+<td align="center">3599</td>
+<td align="center">3294</td>
+<td align="center">500</td>
+<td align="center">663</td>
+</tr>
+<tr>
+<td>12</td>
+<td align="center">163</td>
+<td align="center">168</td>
+<td align="center">287</td>
+<td align="center">7923</td>
+</tr>
+<tr>
+<td>13</td>
+<td align="center">1884</td>
+<td align="center">2413</td>
+<td align="center">500</td>
+<td align="center">11681</td>
+</tr>
+<tr>
+<td>14</td>
+<td align="center">2509</td>
+<td align="center">5055</td>
+<td align="center">500</td>
+<td align="center">18097</td>
+</tr>
+<tr>
+<td>15</td>
+<td align="center">9177</td>
+<td align="center">4773</td>
+<td align="center">500</td>
+<td align="center">7224</td>
+</tr>
+<tr>
+<td>16</td>
+<td align="center">3332</td>
+<td align="center">3217</td>
+<td align="center">500</td>
+<td align="center">20502</td>
+</tr>
+<tr>
+<td>17</td>
+<td align="center">5446</td>
+<td align="center">6611</td>
+<td align="center">500</td>
+<td align="center">16553</td>
+</tr>
+<tr>
+<td>18</td>
+<td align="center">4592</td>
+<td align="center">6033</td>
+<td align="center">500</td>
+<td align="center">706</td>
+</tr>
+<tr>
+<td>19</td>
+<td align="center">266</td>
+<td align="center">509</td>
+<td align="center">459</td>
+<td align="center">9613</td>
+</tr>
+<tr>
+<td>20</td>
+<td align="center">2087</td>
+<td align="center">2786</td>
+<td align="center">500</td>
+<td align="center">7459</td>
+</tr>
+<tr>
+<td>21</td>
+<td align="center">2582</td>
+<td align="center">3651</td>
+<td align="center">500</td>
+<td align="center">12147</td>
+</tr>
+<tr>
+<td>22</td>
+<td align="center">2509</td>
+<td align="center">4237</td>
+<td align="center">500</td>
+<td align="center">14890</td>
+</tr>
+<tr>
+<td>23</td>
+<td align="center">1236</td>
+<td align="center">4545</td>
+<td align="center">500</td>
+<td align="center">6473</td>
+</tr>
+<tr>
+<td>24</td>
+<td align="center">1311</td>
+<td align="center">2606</td>
+<td align="center">500</td>
+<td align="center">4293</td>
+</tr>
+<tr>
+<td>25</td>
+<td align="center">237</td>
+<td align="center">387</td>
+<td align="center">500</td>
+<td align="center">657</td>
+</tr>
+<tr>
+<td>26</td>
+<td align="center">968</td>
+<td align="center">1418</td>
+<td align="center">488</td>
+<td align="center">6609</td>
+</tr>
+<tr>
+<td><em>Time Cost</em></td>
+<td align="center">21.52</td>
+<td align="center">17.4</td>
+<td align="center">0.97</td>
+<td align="center">0.25</td>
+</tr>
+</tbody>
+</table>
+<p>可以看到FAST提取了大量的特征点，在计算时间上，比SIFT SURF快两个数量级，ORB在FAST基础上得来的，特征点的质量比较高！</p>
+<p>下面通过通过两张图片来看这几个算法匹配的效果，1639-1311-697表示图片1，2分别提取了1639，1311个keypoints，其中匹配的有697个。</p>
+<table>
+<thead>
+<tr><th>Image pair</th><th align="center">SIFT</th><th align="center">SURF</th><th align="center">ORB</th><th align="center">FAST(SURF)</th></tr>
+</thead>
+<tbody>
+<tr>
+<td>eiffel-1.jpg，eiffel-13.jpg</td>
+<td align="center">1639-1311-697</td>
+<td align="center">2802-2606-1243</td>
+<td align="center">500-500-251</td>
+<td align="center">1196-1105-586</td>
+</tr>
+</tbody>
+</table>
+<p>接下来是eiffel-1.jpg，eiffel-13.jpg 俩图片通过不同算法进行匹配的结果示意图。 <br>
+SIFT <br>
+<img title="" src="opencv%E4%B8%AD%E7%9A%84SIFT,SURF,ORB,FAST%20%E7%89%B9%E5%BE%81%E6%8F%8F%E5%8F%99%E7%AE%97%E5%AD%90%E6%AF%94%E8%BE%83%20-%20Maddock%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/20150611204811955.jpeg" alt="技术分享" data-bd-imgshare-binded="1"> <br>
+SURF <br>
+<img title="" src="opencv%E4%B8%AD%E7%9A%84SIFT,SURF,ORB,FAST%20%E7%89%B9%E5%BE%81%E6%8F%8F%E5%8F%99%E7%AE%97%E5%AD%90%E6%AF%94%E8%BE%83%20-%20Maddock%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/20150611204852519.jpeg" alt="技术分享" data-bd-imgshare-binded="1"> <br>
+ORB <br>
+<img title="" src="opencv%E4%B8%AD%E7%9A%84SIFT,SURF,ORB,FAST%20%E7%89%B9%E5%BE%81%E6%8F%8F%E5%8F%99%E7%AE%97%E5%AD%90%E6%AF%94%E8%BE%83%20-%20Maddock%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/20150611205116327.jpeg" alt="技术分享" data-bd-imgshare-binded="1"> <br>
+FAST <br>
+<img title="" src="opencv%E4%B8%AD%E7%9A%84SIFT,SURF,ORB,FAST%20%E7%89%B9%E5%BE%81%E6%8F%8F%E5%8F%99%E7%AE%97%E5%AD%90%E6%AF%94%E8%BE%83%20-%20Maddock%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/20150611205355593.jpeg" alt="技术分享" data-bd-imgshare-binded="1"></p>
+<p>需要注意的地方： <br>
+* 链接的时候加上<code>pkg-config opencv --cflags --libs</code>可以加入所有opencv的库 <br>
+* SIFT，SURF是nonfree的，使用的时候需要方法<code>initModule_nonfree()</code>，需要头文件opencv2/nonfree/nonfree.hpp <br>
+* FAST只是检测角点，要结合其他extractor如ORB,SIFT.</p>
+<p>参考： <br>
+1.<a href="http://docs.opencv.org/doc/user_guide/ug_features2d.html">opencv feature2d </a> <br>
+2.<a href="http://docs.opencv.org/modules/features2d/doc/feature_detection_and_description.html">Feature Detection and Description</a></p>
+
+
+
+
+
+
+</div></div><div id="MySignature" style="display: block;"><p style="background: #C0FFFF; padding: 10px; border: 1px dashed #E0E0E0; font: 120% 微软雅黑; color: #0000; text-align: left">
+<a href="http://www.cnblogs.com/adong7639/">Author：Maddock<br> 
+转载请注明出处：Maddock 计算机视觉、图像处理、机器学习</a></p></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+<div id="BlogPostCategory">分类: <a href="https://www.cnblogs.com/adong7639/category/645623.html" target="_blank">机器学习</a>,<a href="https://www.cnblogs.com/adong7639/category/645622.html" target="_blank">计算机视觉</a>,<a href="https://www.cnblogs.com/adong7639/category/645618.html" target="_blank">图像处理</a></div>
+<div id="EntryTag"></div>
+<div id="blog_post_info"><div id="green_channel">
+        <a href="javascript:void(0);" id="green_channel_digg" onclick="DiggIt(4940139,cb_blogId,1);green_channel_success(this,'谢谢推荐！');">好文要顶</a>
+            <a id="green_channel_follow" onclick="follow('c5e8c5a7-728f-e211-9010-c3d7423e3b07');" href="javascript:void(0);">关注我</a>
+    <a id="green_channel_favorite" onclick="AddToWz(cb_entryId);return false;" href="javascript:void(0);">收藏该文</a>
+    <a id="green_channel_weibo" href="javascript:void(0);" title="分享至新浪微博" onclick="ShareToTsina()"><img src="opencv%E4%B8%AD%E7%9A%84SIFT,SURF,ORB,FAST%20%E7%89%B9%E5%BE%81%E6%8F%8F%E5%8F%99%E7%AE%97%E5%AD%90%E6%AF%94%E8%BE%83%20-%20Maddock%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/icon_weibo_24.png" alt=""></a>
+    <a id="green_channel_wechat" href="javascript:void(0);" title="分享至微信" onclick="shareOnWechat()"><img src="opencv%E4%B8%AD%E7%9A%84SIFT,SURF,ORB,FAST%20%E7%89%B9%E5%BE%81%E6%8F%8F%E5%8F%99%E7%AE%97%E5%AD%90%E6%AF%94%E8%BE%83%20-%20Maddock%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/wechat.png" alt=""></a>
+</div>
+<div id="author_profile">
+    <div id="author_profile_info" class="author_profile_info">
+            <a href="http://home.cnblogs.com/u/adong7639/" target="_blank"><img src="opencv%E4%B8%AD%E7%9A%84SIFT,SURF,ORB,FAST%20%E7%89%B9%E5%BE%81%E6%8F%8F%E5%8F%99%E7%AE%97%E5%AD%90%E6%AF%94%E8%BE%83%20-%20Maddock%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/20130328095349.png" class="author_avatar" alt=""></a>
+        <div id="author_profile_detail" class="author_profile_info">
+            <a href="http://home.cnblogs.com/u/adong7639/">Maddock</a><br>
+            <a href="http://home.cnblogs.com/u/adong7639/followees">关注 - 93</a><br>
+            <a href="http://home.cnblogs.com/u/adong7639/followers">粉丝 - 66</a>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div id="author_profile_honor"></div>
+    <div id="author_profile_follow">
+                <a href="javascript:void(0);" onclick="follow('c5e8c5a7-728f-e211-9010-c3d7423e3b07');return false;">+加关注</a>
+    </div>
+</div>
+<div id="div_digg">
+    <div class="diggit" onclick="votePost(4940139,'Digg')">
+        <span class="diggnum" id="digg_count">0</span>
+    </div>
+    <div class="buryit" onclick="votePost(4940139,'Bury')">
+        <span class="burynum" id="bury_count">0</span>
+    </div>
+    <div class="clear"></div>
+    <div class="diggword" id="digg_tips">
+    </div>
+</div>
+<script type="text/javascript">
+    currentDiggType = 0;
+</script></div>
+<div class="clear"></div>
+<div id="post_next_prev"><a href="https://www.cnblogs.com/adong7639/p/4910689.html" class="p_n_p_prefix">« </a> 上一篇：<a href="https://www.cnblogs.com/adong7639/p/4910689.html" title="发布于2015-10-26 11:26">OpenCv学习--图像画框标记rectangle</a><br><a href="https://www.cnblogs.com/adong7639/p/4952006.html" class="p_n_p_prefix">» </a> 下一篇：<a href="https://www.cnblogs.com/adong7639/p/4952006.html" title="发布于2015-11-10 10:00">Matlab 读取文件夹中所有的bmp文件</a><br></div>
+</div>
+
+
+		</div>
+		<p class="postfoot">
+			posted on <span id="post-date">2015-11-05 17:08</span> <a href="https://www.cnblogs.com/adong7639/">Maddock</a> 阅读(<span id="post_view_count">1763</span>) 评论(<span id="post_comment_count">0</span>)  <a href="https://i.cnblogs.com/EditPosts.aspx?postid=4940139" rel="nofollow">编辑</a> <a href="#" onclick="AddToWz(4940139);return false;">收藏</a>
+		</p>
+	</div>
+	<script type="text/javascript">var allowComments=true,cb_blogId=146626,cb_entryId=4940139,cb_blogApp=currentBlogApp,cb_blogUserGuid='c5e8c5a7-728f-e211-9010-c3d7423e3b07',cb_entryCreatedDate='2015/11/5 17:08:00';loadViewCount(cb_entryId);var cb_postType=1;var isMarkdown=false;</script>
+	
+	</div><a name="!comments"></a><div id="blog-comments-placeholder"></div><script type="text/javascript">var commentManager = new blogCommentManager();commentManager.renderComments(0);</script>
+<div id="comment_form" class="commentform">
+<a name="commentform"></a>
+<div id="divCommentShow"></div>
+<div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="#" onclick="return RefreshPage();">刷新页面</a><a href="#top">返回顶部</a></div>
+<div id="comment_form_container"><div class="login_tips">注册用户登录后才能发表评论，请 <a rel="nofollow" href="javascript:void(0);" class="underline" onclick="return login('commentform');">登录</a> 或 <a rel="nofollow" href="javascript:void(0);" class="underline" onclick="return register();">注册</a>，<a href="http://www.cnblogs.com/">访问</a>网站首页。</div></div>
+<div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+<div id="ad_t2"><a href="http://www.ucancode.com/index.htm" target="_blank" onclick="ga('send', 'event', 'Link', 'click', 'T2-工控')">【推荐】超50万C++/C#源码: 大型实时仿真组态图形源码</a><br><a href="https://www.bagevent.com/event/2195041?bag_track=13072958" target="_blank" onclick="ga('send', 'event', 'Link', 'click', 'T2-看雪')">【活动】看雪2019安全开发者峰会，共话安全领域焦点</a><br><a href="https://ke.qq.com/adActivity.html?name=xiangxueketang2" target="_blank" onclick="ga('send', 'event', 'Link', 'click', 'T2-享学')">【培训】Java程序员年薪40W，他1年走了别人5年的路</a><br></div>
+<div id="opt_under_post"></div>
+<script async="async" src="opencv%E4%B8%AD%E7%9A%84SIFT,SURF,ORB,FAST%20%E7%89%B9%E5%BE%81%E6%8F%8F%E5%8F%99%E7%AE%97%E5%AD%90%E6%AF%94%E8%BE%83%20-%20Maddock%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/gpt.js"></script>
+<script>
+  var googletag = googletag || {};
+  googletag.cmd = googletag.cmd || [];
+</script>
+<script>
+  googletag.cmd.push(function() {
+        googletag.defineSlot('/1090369/C1', [300, 250], 'div-gpt-ad-1546353474406-0').addService(googletag.pubads());
+        googletag.defineSlot('/1090369/C2', [468, 60], 'div-gpt-ad-1539008685004-0').addService(googletag.pubads());
+        googletag.pubads().enableSingleRequest();
+        googletag.enableServices();
+  });
+</script>
+<div id="cnblogs_c1" class="c_ad_block">
+    <div id="div-gpt-ad-1546353474406-0" style="height:250px; width:300px;" data-google-query-id="CMTCz_aCneICFdC3lgode3IGJQ"><div id="google_ads_iframe_/1090369/C1_0__container__" style="border: 0pt none;"><iframe id="google_ads_iframe_/1090369/C1_0" title="3rd party ad content" name="google_ads_iframe_/1090369/C1_0" scrolling="no" marginwidth="0" marginheight="0" style="border: 0px none; vertical-align: bottom;" srcdoc="" data-google-container-id="1" data-load-complete="true" width="300" height="250" frameborder="0"></iframe></div></div>
+</div>
+<div id="under_post_news"><div class="itnews c_ad_block"><b>相关博文：</b><br>·  <a href="https://www.cnblogs.com/hahalala/p/8137817.html" target="_blank" onclick="clickRecomItmem(8137817)">SIFT,SURF,ORB,FAST,BRISK 特征提取算法比较</a><br>·  <a href="https://www.cnblogs.com/jsxyhelu/p/7834416.html" target="_blank" onclick="clickRecomItmem(7834416)">特征提取算法的综合实验（多种角度比较sift/surf/brisk/orb/akze）</a><br>·  <a href="https://www.cnblogs.com/adong7639/p/4998223.html" target="_blank" onclick="clickRecomItmem(4998223)">OpenCV特征点检测------ORB特征</a><br>·  <a href="https://www.cnblogs.com/wangyaning/p/4363427.html" target="_blank" onclick="clickRecomItmem(4363427)">OpenCV特征点检测——ORB特征</a><br>·  <a href="https://www.cnblogs.com/mikewolf2002/p/3603375.html" target="_blank" onclick="clickRecomItmem(3603375)">OpenCV教程(47) sift特征和surf特征</a><br></div></div>
+<div id="cnblogs_c2" class="c_ad_block">
+    <div id="div-gpt-ad-1539008685004-0" style="height:60px; width:468px;" data-google-query-id="CMXCz_aCneICFdC3lgode3IGJQ"><div id="google_ads_iframe_/1090369/C2_0__container__" style="border: 0pt none;"><iframe id="google_ads_iframe_/1090369/C2_0" title="3rd party ad content" name="google_ads_iframe_/1090369/C2_0" scrolling="no" marginwidth="0" marginheight="0" style="border: 0px none; vertical-align: bottom;" srcdoc="" data-google-container-id="2" data-load-complete="true" width="468" height="60" frameborder="0"></iframe></div></div>
+</div>
+<div id="under_post_kb"><div class="itnews c_ad_block"><b>最新新闻</b>：<br> ·  <a href="https://news.cnblogs.com/n/625331/" target="_blank">深网|万达百货更名苏宁易购广场 改造店5月底亮相</a><br> ·  <a href="https://news.cnblogs.com/n/625330/" target="_blank">圈重点！腾讯全球数字生态大会带来不一样的智慧医疗</a><br> ·  <a href="https://news.cnblogs.com/n/625329/" target="_blank">3岁娃成“社交万人迷”？别再被天价“情商培训班”忽悠了</a><br> ·  <a href="https://news.cnblogs.com/n/625328/" target="_blank">国产手机十年厮杀过后，为何只剩下华为带着米OV?</a><br> ·  <a href="https://news.cnblogs.com/n/625327/" target="_blank">英国宣布5G将在7月3日上线，兼容四款5G手机</a><br>» <a href="http://news.cnblogs.com/" title="IT新闻" target="_blank">更多新闻...</a></div></div>
+<div id="HistoryToday" class="c_ad_block"></div>
+<script type="text/javascript">
+ if(enablePostBottom()) {
+    codeHighlight();
+    fixPostBody();
+    setTimeout(function () { incrementViewCount(cb_entryId); }, 50);
+    deliverT2();
+    deliverC1();
+    deliverC2();    
+    loadNewsAndKb();
+    loadBlogSignature();
+    LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+    GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+    loadOptUnderPost();
+    GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);  
+}
+</script>
+</div>
+
+    
+</div>
+</div>
+<div id="leftmenu">
+
+
+<h3>导航</h3>
+<ul>
+<li>
+<a id="blog_nav_sitehome" href="https://www.cnblogs.com/">博客园</a></li>
+<li>
+<a id="blog_nav_myhome" class="two_words" href="https://www.cnblogs.com/adong7639/">首页</a></li>
+<li>
+<a id="blog_nav_newpost" rel="nofollow" href="https://i.cnblogs.com/EditPosts.aspx?opt=1">新随笔</a></li>
+<li>
+<a id="blog_nav_contact" accesskey="9" class="two_words" rel="nofollow" href="https://msg.cnblogs.com/send/Maddock">联系</a></li>
+<li>
+<a id="blog_nav_rss" class="two_words" href="https://www.cnblogs.com/adong7639/rss">订阅</a>
+<a id="blog_nav_rss_image" href="https://www.cnblogs.com/adong7639/rss"><img src="opencv%E4%B8%AD%E7%9A%84SIFT,SURF,ORB,FAST%20%E7%89%B9%E5%BE%81%E6%8F%8F%E5%8F%99%E7%AE%97%E5%AD%90%E6%AF%94%E8%BE%83%20-%20Maddock%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/xml.gif" alt="订阅"></a>
+</li>
+<li>
+<a id="blog_nav_admin" class="two_words" rel="nofollow" href="https://i.cnblogs.com/">管理</a></li>
+</ul>
+
+<div id="blog-calendar" style=""><table id="blogCalendar" class="Cal" title="Calendar" cellspacing="0" cellpadding="0">
+	<tbody><tr><td colspan="7"><table class="CalTitle" cellspacing="0">
+		<tbody><tr><td class="CalNextPrev"><a href="javascript:void(0);" onclick="loadBlogCalendar('2019/04/01');return false;">&lt;</a></td><td align="center">2019年5月</td><td class="CalNextPrev" align="right"><a href="javascript:void(0);" onclick="loadBlogCalendar('2019/06/01');return false;">&gt;</a></td></tr>
+	</tbody></table></td></tr><tr><th class="CalDayHeader" abbr="日" scope="col" align="center">日</th><th class="CalDayHeader" abbr="一" scope="col" align="center">一</th><th class="CalDayHeader" abbr="二" scope="col" align="center">二</th><th class="CalDayHeader" abbr="三" scope="col" align="center">三</th><th class="CalDayHeader" abbr="四" scope="col" align="center">四</th><th class="CalDayHeader" abbr="五" scope="col" align="center">五</th><th class="CalDayHeader" abbr="六" scope="col" align="center">六</th></tr><tr><td class="CalOtherMonthDay" align="center">28</td><td class="CalOtherMonthDay" align="center">29</td><td class="CalOtherMonthDay" align="center">30</td><td align="center">1</td><td align="center">2</td><td align="center">3</td><td class="CalWeekendDay" align="center">4</td></tr><tr><td class="CalWeekendDay" align="center">5</td><td align="center">6</td><td align="center">7</td><td align="center">8</td><td align="center">9</td><td align="center">10</td><td class="CalWeekendDay" align="center">11</td></tr><tr><td class="CalWeekendDay" align="center">12</td><td align="center">13</td><td align="center">14</td><td class="CalTodayDay" align="center">15</td><td align="center">16</td><td align="center">17</td><td class="CalWeekendDay" align="center">18</td></tr><tr><td class="CalWeekendDay" align="center">19</td><td align="center">20</td><td align="center">21</td><td align="center">22</td><td align="center">23</td><td align="center">24</td><td class="CalWeekendDay" align="center">25</td></tr><tr><td class="CalWeekendDay" align="center">26</td><td align="center">27</td><td align="center">28</td><td align="center">29</td><td align="center">30</td><td align="center">31</td><td class="CalOtherMonthDay" align="center">1</td></tr><tr><td class="CalOtherMonthDay" align="center">2</td><td class="CalOtherMonthDay" align="center">3</td><td class="CalOtherMonthDay" align="center">4</td><td class="CalOtherMonthDay" align="center">5</td><td class="CalOtherMonthDay" align="center">6</td><td class="CalOtherMonthDay" align="center">7</td><td class="CalOtherMonthDay" align="center">8</td></tr>
+</tbody></table></div><script type="text/javascript">loadBlogDefaultCalendar();</script>
+<meta name="vs_showGrid" content="False">
+
+<h3>公告</h3>
+<div id="blog-news"><a href="https://clustrmaps.com/site/1a6u7" title="Visit tracker"><img src="opencv%E4%B8%AD%E7%9A%84SIFT,SURF,ORB,FAST%20%E7%89%B9%E5%BE%81%E6%8F%8F%E5%8F%99%E7%AE%97%E5%AD%90%E6%AF%94%E8%BE%83%20-%20Maddock%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/map_v2.png"></a><div id="profile_block">昵称：<a href="https://home.cnblogs.com/u/adong7639/">Maddock</a><br>园龄：<a href="https://home.cnblogs.com/u/adong7639/" title="入园时间：2013-03-18">6年1个月</a><br>粉丝：<a href="https://home.cnblogs.com/u/adong7639/followers/">66</a><br>关注：<a href="https://home.cnblogs.com/u/adong7639/followees/">93</a><div id="p_b_follow"><a href="javascript:void(0);" onclick="follow('c5e8c5a7-728f-e211-9010-c3d7423e3b07')">+加关注</a></div><script>getFollowStatus('c5e8c5a7-728f-e211-9010-c3d7423e3b07')</script></div></div><script type="text/javascript">loadBlogNews();</script>
+
+<div id="blog-sidecolumn"><div id="sidebar_search" class="sidebar-block">
+<div id="sidebar_search" class="mySearch">
+<h3 class="catListTitle">搜索</h3>
+<div id="sidebar_search_box">
+<div id="widget_my_zzk" class="div_my_zzk"><input id="q" onkeydown="return zzk_go_enter(event);" class="input_my_zzk" type="text">&nbsp;<input onclick="zzk_go()" value="找找看" id="btnZzk" class="btn_my_zzk" type="button"></div>
+
+</div>
+</div>
+
+</div><div id="sidebar_shortcut" class="sidebar-block">
+<h3 class="catListTitle">常用链接</h3>
+<ul>
+<li><a href="https://www.cnblogs.com/adong7639/p/" title="我的博客的随笔列表">我的随笔</a></li><li><a href="https://www.cnblogs.com/adong7639/MyComments.html" title="我发表过的评论列表">我的评论</a></li><li><a href="https://www.cnblogs.com/adong7639/OtherPosts.html" title="我评论过的随笔列表">我的参与</a></li><li><a href="https://www.cnblogs.com/adong7639/RecentComments.html" title="我的博客的评论列表">最新评论</a></li><li><a href="https://www.cnblogs.com/adong7639/tag/" title="我的博客的标签列表">我的标签</a></li>
+</ul>
+<div id="itemListLin_con" style="display:none;">
+
+</div></div><div id="sidebar_recentposts" class="sidebar-block">
+<h3 class="catListTitle">最新随笔</h3>
+<div class="RecentComment" id="RecentPosts">
+<ul style="word-break:break-all">
+<li><a href="https://www.cnblogs.com/adong7639/p/10690650.html">1. 在Windows下编译扩展OpenCV 3.1.0 + opencv_contrib</a></li><li><a href="https://www.cnblogs.com/adong7639/p/10600148.html">2. opencv wlsfilter depth refinement demo</a></li><li><a href="https://www.cnblogs.com/adong7639/p/10531140.html">3. permutohedral lattice理解</a></li><li><a href="https://www.cnblogs.com/adong7639/p/10529168.html">4. linux下怎样批量更改文件后缀名</a></li><li><a href="https://www.cnblogs.com/adong7639/p/10489565.html">5. Android Studio  Gradle Build Running 加速</a></li><li><a href="https://www.cnblogs.com/adong7639/p/10488456.html">6. matlab将矩阵数据归一化到[0,255]</a></li><li><a href="https://www.cnblogs.com/adong7639/p/10330387.html">7. MATLAB 显示输出数据的三种方式</a></li><li><a href="https://www.cnblogs.com/adong7639/p/10305969.html">8. matlab与python读取tiff文件</a></li><li><a href="https://www.cnblogs.com/adong7639/p/10204816.html">9. Visual studio中编译和使用libpng和zlib</a></li><li><a href="https://www.cnblogs.com/adong7639/p/10148043.html">10. 关于softmax、argmax、softargmax</a></li>
+</ul>
+</div>
+</div><div id="sidebar_categories">
+		<h3>随笔分类<span style="font-size:11px;font-weight:normal">(373)</span></h3>
+		
+				<ul>
+			
+				<li><a id="CatList_LinkList_0_Link_0" href="https://www.cnblogs.com/adong7639/category/645624.html">Android(8)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_1" href="https://www.cnblogs.com/adong7639/category/1089268.html">Bayes(2)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_2" href="https://www.cnblogs.com/adong7639/category/645632.html">C(8)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_3" href="https://www.cnblogs.com/adong7639/category/645620.html">C++(12)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_4" href="https://www.cnblogs.com/adong7639/category/918091.html">DeepLearning(53)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_5" href="https://www.cnblogs.com/adong7639/category/645625.html">Java</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_6" href="https://www.cnblogs.com/adong7639/category/645621.html">Linux(39)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_7" href="https://www.cnblogs.com/adong7639/category/645627.html">Matlab(14)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_8" href="https://www.cnblogs.com/adong7639/category/1242173.html">Mxnet(3)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_9" href="https://www.cnblogs.com/adong7639/category/645619.html">OpenCV(31)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_10" href="https://www.cnblogs.com/adong7639/category/666768.html">python(31)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_11" href="https://www.cnblogs.com/adong7639/category/1099102.html">PyTorch(1)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_12" href="https://www.cnblogs.com/adong7639/category/1089773.html">TensorFlow(32)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_13" href="https://www.cnblogs.com/adong7639/category/645626.html">编程工具(8)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_14" href="https://www.cnblogs.com/adong7639/category/645628.html">代码优化</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_15" href="https://www.cnblogs.com/adong7639/category/645633.html">各类软件使用问题(8)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_16" href="https://www.cnblogs.com/adong7639/category/645623.html">机器学习(48)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_17" href="https://www.cnblogs.com/adong7639/category/645622.html">计算机视觉(17)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_18" href="https://www.cnblogs.com/adong7639/category/1100231.html">人脸检测与识别(9)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_19" href="https://www.cnblogs.com/adong7639/category/650729.html">数据库(1)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_20" href="https://www.cnblogs.com/adong7639/category/1061672.html">数学(4)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_21" href="https://www.cnblogs.com/adong7639/category/672773.html">算法(2)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_22" href="https://www.cnblogs.com/adong7639/category/645618.html">图像处理(42)</a></li>
+			
+				</ul>
+			
+	
+		<h3>随笔档案<span style="font-size:11px;font-weight:normal">(320)</span></h3>
+		
+				<ul>
+			
+				<li><a id="CatList_LinkList_1_Link_0" href="https://www.cnblogs.com/adong7639/archive/2019/04.html">2019年4月 (1)</a></li>
+			
+				<li><a id="CatList_LinkList_1_Link_1" href="https://www.cnblogs.com/adong7639/archive/2019/03.html">2019年3月 (5)</a></li>
+			
+				<li><a id="CatList_LinkList_1_Link_2" href="https://www.cnblogs.com/adong7639/archive/2019/01.html">2019年1月 (3)</a></li>
+			
+				<li><a id="CatList_LinkList_1_Link_3" href="https://www.cnblogs.com/adong7639/archive/2018/12.html">2018年12月 (1)</a></li>
+			
+				<li><a id="CatList_LinkList_1_Link_4" href="https://www.cnblogs.com/adong7639/archive/2018/11.html">2018年11月 (1)</a></li>
+			
+				<li><a id="CatList_LinkList_1_Link_5" href="https://www.cnblogs.com/adong7639/archive/2018/10.html">2018年10月 (6)</a></li>
+			
+				<li><a id="CatList_LinkList_1_Link_6" href="https://www.cnblogs.com/adong7639/archive/2018/09.html">2018年9月 (4)</a></li>
+			
+				<li><a id="CatList_LinkList_1_Link_7" href="https://www.cnblogs.com/adong7639/archive/2018/08.html">2018年8月 (11)</a></li>
+			
+				<li><a id="CatList_LinkList_1_Link_8" href="https://www.cnblogs.com/adong7639/archive/2018/07.html">2018年7月 (14)</a></li>
+			
+				<li><a id="CatList_LinkList_1_Link_9" href="https://www.cnblogs.com/adong7639/archive/2018/06.html">2018年6月 (20)</a></li>
+			
+				<li><a id="CatList_LinkList_1_Link_10" href="https://www.cnblogs.com/adong7639/archive/2018/05.html">2018年5月 (10)</a></li>
+			
+				<li><a id="CatList_LinkList_1_Link_11" href="https://www.cnblogs.com/adong7639/archive/2018/04.html">2018年4月 (11)</a></li>
+			
+				<li><a id="CatList_LinkList_1_Link_12" href="https://www.cnblogs.com/adong7639/archive/2018/03.html">2018年3月 (13)</a></li>
+			
+				<li><a id="CatList_LinkList_1_Link_13" href="https://www.cnblogs.com/adong7639/archive/2018/02.html">2018年2月 (2)</a></li>
+			
+				<li><a id="CatList_LinkList_1_Link_14" href="https://www.cnblogs.com/adong7639/archive/2018/01.html">2018年1月 (2)</a></li>
+			
+				<li><a id="CatList_LinkList_1_Link_15" href="https://www.cnblogs.com/adong7639/archive/2017/12.html">2017年12月 (8)</a></li>
+			
+				<li><a id="CatList_LinkList_1_Link_16" href="https://www.cnblogs.com/adong7639/archive/2017/11.html">2017年11月 (21)</a></li>
+			
+				<li><a id="CatList_LinkList_1_Link_17" href="https://www.cnblogs.com/adong7639/archive/2017/10.html">2017年10月 (20)</a></li>
+			
+				<li><a id="CatList_LinkList_1_Link_18" href="https://www.cnblogs.com/adong7639/archive/2017/09.html">2017年9月 (29)</a></li>
+			
+				<li><a id="CatList_LinkList_1_Link_19" href="https://www.cnblogs.com/adong7639/archive/2017/08.html">2017年8月 (8)</a></li>
+			
+				<li><a id="CatList_LinkList_1_Link_20" href="https://www.cnblogs.com/adong7639/archive/2017/07.html">2017年7月 (9)</a></li>
+			
+				<li><a id="CatList_LinkList_1_Link_21" href="https://www.cnblogs.com/adong7639/archive/2017/06.html">2017年6月 (1)</a></li>
+			
+				<li><a id="CatList_LinkList_1_Link_22" href="https://www.cnblogs.com/adong7639/archive/2017/02.html">2017年2月 (1)</a></li>
+			
+				<li><a id="CatList_LinkList_1_Link_23" href="https://www.cnblogs.com/adong7639/archive/2016/12.html">2016年12月 (1)</a></li>
+			
+				<li><a id="CatList_LinkList_1_Link_24" href="https://www.cnblogs.com/adong7639/archive/2016/09.html">2016年9月 (1)</a></li>
+			
+				<li><a id="CatList_LinkList_1_Link_25" href="https://www.cnblogs.com/adong7639/archive/2016/08.html">2016年8月 (1)</a></li>
+			
+				<li><a id="CatList_LinkList_1_Link_26" href="https://www.cnblogs.com/adong7639/archive/2016/06.html">2016年6月 (2)</a></li>
+			
+				<li><a id="CatList_LinkList_1_Link_27" href="https://www.cnblogs.com/adong7639/archive/2016/03.html">2016年3月 (2)</a></li>
+			
+				<li><a id="CatList_LinkList_1_Link_28" href="https://www.cnblogs.com/adong7639/archive/2016/01.html">2016年1月 (2)</a></li>
+			
+				<li><a id="CatList_LinkList_1_Link_29" href="https://www.cnblogs.com/adong7639/archive/2015/12.html">2015年12月 (2)</a></li>
+			
+				<li><a id="CatList_LinkList_1_Link_30" href="https://www.cnblogs.com/adong7639/archive/2015/11.html">2015年11月 (3)</a></li>
+			
+				<li><a id="CatList_LinkList_1_Link_31" href="https://www.cnblogs.com/adong7639/archive/2015/10.html">2015年10月 (6)</a></li>
+			
+				<li><a id="CatList_LinkList_1_Link_32" href="https://www.cnblogs.com/adong7639/archive/2015/09.html">2015年9月 (3)</a></li>
+			
+				<li><a id="CatList_LinkList_1_Link_33" href="https://www.cnblogs.com/adong7639/archive/2015/08.html">2015年8月 (3)</a></li>
+			
+				<li><a id="CatList_LinkList_1_Link_34" href="https://www.cnblogs.com/adong7639/archive/2015/07.html">2015年7月 (9)</a></li>
+			
+				<li><a id="CatList_LinkList_1_Link_35" href="https://www.cnblogs.com/adong7639/archive/2015/06.html">2015年6月 (5)</a></li>
+			
+				<li><a id="CatList_LinkList_1_Link_36" href="https://www.cnblogs.com/adong7639/archive/2015/05.html">2015年5月 (3)</a></li>
+			
+				<li><a id="CatList_LinkList_1_Link_37" href="https://www.cnblogs.com/adong7639/archive/2015/04.html">2015年4月 (12)</a></li>
+			
+				<li><a id="CatList_LinkList_1_Link_38" href="https://www.cnblogs.com/adong7639/archive/2015/03.html">2015年3月 (7)</a></li>
+			
+				<li><a id="CatList_LinkList_1_Link_39" href="https://www.cnblogs.com/adong7639/archive/2015/02.html">2015年2月 (7)</a></li>
+			
+				<li><a id="CatList_LinkList_1_Link_40" href="https://www.cnblogs.com/adong7639/archive/2015/01.html">2015年1月 (17)</a></li>
+			
+				<li><a id="CatList_LinkList_1_Link_41" href="https://www.cnblogs.com/adong7639/archive/2014/12.html">2014年12月 (12)</a></li>
+			
+				<li><a id="CatList_LinkList_1_Link_42" href="https://www.cnblogs.com/adong7639/archive/2014/11.html">2014年11月 (1)</a></li>
+			
+				<li><a id="CatList_LinkList_1_Link_43" href="https://www.cnblogs.com/adong7639/archive/2014/10.html">2014年10月 (1)</a></li>
+			
+				<li><a id="CatList_LinkList_1_Link_44" href="https://www.cnblogs.com/adong7639/archive/2014/09.html">2014年9月 (3)</a></li>
+			
+				<li><a id="CatList_LinkList_1_Link_45" href="https://www.cnblogs.com/adong7639/archive/2014/08.html">2014年8月 (12)</a></li>
+			
+				<li><a id="CatList_LinkList_1_Link_46" href="https://www.cnblogs.com/adong7639/archive/2014/06.html">2014年6月 (1)</a></li>
+			
+				<li><a id="CatList_LinkList_1_Link_47" href="https://www.cnblogs.com/adong7639/archive/2014/05.html">2014年5月 (1)</a></li>
+			
+				<li><a id="CatList_LinkList_1_Link_48" href="https://www.cnblogs.com/adong7639/archive/2013/09.html">2013年9月 (2)</a></li>
+			
+				</ul>
+			
+	
+		<h3>文章档案<span style="font-size:11px;font-weight:normal">(1)</span></h3>
+		
+				<ul>
+			
+				<li><a id="CatList_LinkList_2_Link_0" href="https://www.cnblogs.com/adong7639/archives/2014/12.html" rel="nofollow">2014年12月 (1)</a></li>
+			
+				</ul>
+			
+	</div><div id="sidebar_scorerank" class="sidebar-block">
+<h3>积分与排名</h3>
+<ul>
+	<li>
+		积分 -
+		185511
+	</li><li>
+		排名 -
+		1975
+	</li>
+</ul>
+</div><div id="sidebar_recentcomments" class="sidebar-block"><div id="recent_comments_wrap">
+<h3 class="catListTitle">最新评论</h3>
+<div class="RecentComment" id="RecentComments">
+	<div id="RecentCommentsBlock"><ul>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/adong7639/p/7591435.html#4209022">1. Re:Matlab 实现神经网络实例</a></li>
+        <li class="recent_comment_body">美中不足缺少特征归一化这部分</li>
+        <li class="recent_comment_author">--大胜归来</li>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/adong7639/p/4851390.html#4180510">2. Re:机器学习部分国内牛人</a></li>
+        <li class="recent_comment_body">good post</li>
+        <li class="recent_comment_author">--Andrew.Hann</li>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/adong7639/p/8136273.html#4124983">3. Re:TensorFlow基础笔记(13)  tf.name_scope tf.variable_scope学习</a></li>
+        <li class="recent_comment_body">感谢！</li>
+        <li class="recent_comment_author">--WeiXT</li>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/adong7639/p/7685509.html#4074500">4. Re:人脸验证算法Joint Bayesian详解及实现(Matlab)</a></li>
+        <li class="recent_comment_body">能否求一个数据集 ，多谢多谢多谢 602661313@qq.com</li>
+        <li class="recent_comment_author">--kwok2018</li>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/adong7639/p/5238515.html#4061080">5. Re:YUV格式介绍</a></li>
+        <li class="recent_comment_body">厉害</li>
+        <li class="recent_comment_author">--赵言文</li>
+</ul>
+</div>
+</div>
+</div></div><div id="sidebar_topviewedposts" class="sidebar-block"><div id="topview_posts_wrap">
+<h3 class="catListTitle">阅读排行榜</h3>
+<div class="RecentComment" id="TopViewPosts"> 
+	<div id="TopViewPostsBlock"><ul><li><a href="https://www.cnblogs.com/adong7639/p/7918527.html">1. 深度可分离卷积结构（depthwise separable convolution）计算复杂度分析(23361)</a></li><li><a href="https://www.cnblogs.com/adong7639/p/9213038.html">2. Relu的理解(16964)</a></li><li><a href="https://www.cnblogs.com/adong7639/p/8136273.html">3. TensorFlow基础笔记(13)  tf.name_scope tf.variable_scope学习(16381)</a></li><li><a href="https://www.cnblogs.com/adong7639/p/7690963.html">4. TensorFlow基础笔记(8) TensorFlow简单人脸识别(13733)</a></li><li><a href="https://www.cnblogs.com/adong7639/p/4267326.html">5. 立体匹配算法(9560)</a></li></ul></div>
+</div>
+</div></div><div id="sidebar_topcommentedposts" class="sidebar-block"><div id="topfeedback_posts_wrap">
+<h3 class="catListTitle">评论排行榜</h3>
+<div class="RecentComment" id="TopCommentsPosts">
+	<div id="TopFeedbackPostsBlock"><ul><li><a href="https://www.cnblogs.com/adong7639/p/4267326.html">1. 立体匹配算法(5)</a></li><li><a href="https://www.cnblogs.com/adong7639/p/4194307.html">2. 基于MATLAB的adaboost级联形式的人脸检测实现(2)</a></li><li><a href="https://www.cnblogs.com/adong7639/p/7685509.html">3. 人脸验证算法Joint Bayesian详解及实现(Matlab)(2)</a></li><li><a href="https://www.cnblogs.com/adong7639/p/7591435.html">4. Matlab 实现神经网络实例(1)</a></li><li><a href="https://www.cnblogs.com/adong7639/p/5238515.html">5. YUV格式介绍(1)</a></li></ul></div>
+</div></div></div><div id="sidebar_topdiggedposts" class="sidebar-block"><div id="topdigg_posts_wrap">
+<h3 class="catListTitle">推荐排行榜</h3>
+<div class="RecentComment">
+	<div id="TopDiggPostsBlock"><ul><li><a href="https://www.cnblogs.com/adong7639/p/7690963.html">1. TensorFlow基础笔记(8) TensorFlow简单人脸识别(2)</a></li><li><a href="https://www.cnblogs.com/adong7639/p/9213038.html">2. Relu的理解(2)</a></li><li><a href="https://www.cnblogs.com/adong7639/p/7918527.html">3. 深度可分离卷积结构（depthwise separable convolution）计算复杂度分析(2)</a></li><li><a href="https://www.cnblogs.com/adong7639/p/7685509.html">4. 人脸验证算法Joint Bayesian详解及实现(Matlab)(1)</a></li><li><a href="https://www.cnblogs.com/adong7639/p/7591435.html">5. Matlab 实现神经网络实例(1)</a></li></ul></div>
+</div></div></div></div><script type="text/javascript">loadBlogSideColumn();</script>
+
+</div>
+</div>
+<div class="clear"></div>
+<div id="footer">
+
+<p id="footer">
+	Powered by: 
+	<br>
+	
+	<a id="Footer1_Hyperlink3" name="Hyperlink1" href="https://www.cnblogs.com/" style="font-family:Verdana;font-size:12px;">博客园</a>
+	<br>
+	Copyright © Maddock
+</p>
+</div>
+</div>
+
+
+
+
+</body></html>

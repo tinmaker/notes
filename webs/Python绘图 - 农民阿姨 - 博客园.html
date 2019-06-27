@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="zh-cn"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="origin">
+    <title>Python绘图 - 农民阿姨 - 博客园</title>
+<meta property="og:description" content="各位工程师累了吗? 推荐一篇可以让你技术能力达到出神入化的网站 ''持久男'' 1.二维绘图 a. 一维数据集 用 Numpy ndarray 作为数据传入 ply 1. 2.操纵坐标轴和增加网格及标">
+    <link type="text/css" rel="stylesheet" href="Python%E7%BB%98%E5%9B%BE%20-%20%E5%86%9C%E6%B0%91%E9%98%BF%E5%A7%A8%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/blog-common.css">
+<link id="MainCss" type="text/css" rel="stylesheet" href="Python%E7%BB%98%E5%9B%BE%20-%20%E5%86%9C%E6%B0%91%E9%98%BF%E5%A7%A8%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/bundle-BlueFresh.css">
+<link type="text/css" rel="stylesheet" href="Python%E7%BB%98%E5%9B%BE%20-%20%E5%86%9C%E6%B0%91%E9%98%BF%E5%A7%A8%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/137183.css">
+<link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="Python%E7%BB%98%E5%9B%BE%20-%20%E5%86%9C%E6%B0%91%E9%98%BF%E5%A7%A8%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/bundle-BlueFresh-mobile.css">
+    <link title="RSS" type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/chaoren399/rss">
+    <link title="RSD" type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/chaoren399/rsd.xml">
+<link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/chaoren399/wlwmanifest.xml">
+    <script src="Python%E7%BB%98%E5%9B%BE%20-%20%E5%86%9C%E6%B0%91%E9%98%BF%E5%A7%A8%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/amp4ads-host-v0.js"></script><script src="Python%E7%BB%98%E5%9B%BE%20-%20%E5%86%9C%E6%B0%91%E9%98%BF%E5%A7%A8%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/pubads_impl_rendering_2019050901.js"></script><script async="" src="Python%E7%BB%98%E5%9B%BE%20-%20%E5%86%9C%E6%B0%91%E9%98%BF%E5%A7%A8%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/analytics.js"></script><script src="Python%E7%BB%98%E5%9B%BE%20-%20%E5%86%9C%E6%B0%91%E9%98%BF%E5%A7%A8%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/jquery-2.js"></script>
+    <script>var currentBlogId=137183;var currentBlogApp='chaoren399',cb_enable_mathjax=false;var isLogined=false;</script>
+    <script src="Python%E7%BB%98%E5%9B%BE%20-%20%E5%86%9C%E6%B0%91%E9%98%BF%E5%A7%A8%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/blog-common.js" type="text/javascript"></script>
+<link rel="preload" href="Python%E7%BB%98%E5%9B%BE%20-%20%E5%86%9C%E6%B0%91%E9%98%BF%E5%A7%A8%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/integrator.js" as="script"><script type="text/javascript" src="Python%E7%BB%98%E5%9B%BE%20-%20%E5%86%9C%E6%B0%91%E9%98%BF%E5%A7%A8%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/integrator.js"></script><script src="Python%E7%BB%98%E5%9B%BE%20-%20%E5%86%9C%E6%B0%91%E9%98%BF%E5%A7%A8%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/pubads_impl_2019050901.js" async=""></script></head>
+<body>
+<a name="top"></a>
+
+<!--PageBeginHtml Block Begin-->
+<script src="Python%E7%BB%98%E5%9B%BE%20-%20%E5%86%9C%E6%B0%91%E9%98%BF%E5%A7%A8%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/buildCTable.js" type="text/javascript"></script>
+<!--PageBeginHtml Block End-->
+
+<!--done-->
+<div id="home">
+<div id="header">
+	<div id="blogTitle">
+	<a id="lnkBlogLogo" href="https://www.cnblogs.com/chaoren399/"><img id="blogLogo" src="Python%E7%BB%98%E5%9B%BE%20-%20%E5%86%9C%E6%B0%91%E9%98%BF%E5%A7%A8%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/logo.gif" alt="返回主页"></a>			
+		
+<!--done-->
+<h1><a id="Header1_HeaderTitle" class="headermaintitle" href="https://www.cnblogs.com/chaoren399/">农民阿姨</a></h1>
+<h2>跟随农民伯伯</h2>
+
+
+
+		
+	</div><!--end: blogTitle 博客的标题和副标题 -->
+	<div id="navigator">
+		
+<ul id="navList">
+<li><a id="blog_nav_sitehome" class="menu" href="https://www.cnblogs.com/">博客园</a></li>
+<li><a id="blog_nav_myhome" class="menu" href="https://www.cnblogs.com/chaoren399/">首页</a></li>
+<li><a id="blog_nav_newpost" class="menu" rel="nofollow" href="https://i.cnblogs.com/EditPosts.aspx?opt=1">新随笔</a></li>
+<li><a id="blog_nav_contact" class="menu" rel="nofollow" href="https://msg.cnblogs.com/send/%E5%86%9C%E6%B0%91%E9%98%BF%E5%A7%A8">联系</a></li>
+<li><a id="blog_nav_rss" class="menu" href="https://www.cnblogs.com/chaoren399/rss">订阅</a>
+<!--<a id="blog_nav_rss_image" class="aHeaderXML" href="https://www.cnblogs.com/chaoren399/rss"><img src="//www.cnblogs.com/images/xml.gif" alt="订阅" /></a>--></li>
+<li><a id="blog_nav_admin" class="menu" rel="nofollow" href="https://i.cnblogs.com/">管理</a></li>
+</ul>
+		<div class="blogStats">
+			
+			<div id="blog_stats">
+<span id="stats_post_count">随笔 - 286&nbsp; </span>
+<span id="stats_article_count">文章 - 64&nbsp; </span>
+<span id="stats-comment_count">评论 - 12</span>
+</div>
+			
+		</div><!--end: blogStats -->
+	</div><!--end: navigator 博客导航栏 -->
+</div><!--end: header 头部 -->
+
+<div id="main">
+	<div id="mainContent">
+	<div class="forFlow">
+		
+        <div id="post_detail">
+<!--done-->
+<div id="topics">
+	<div class="post">
+		<h1 class="postTitle">
+			<a id="cb_post_title_url" class="postTitle2" href="https://www.cnblogs.com/chaoren399/p/5792168.html">Python绘图</a>
+		</h1>
+		<div class="clear"></div>
+		<div class="postBody">
+			<div id="cnblogs_post_body" class="blogpost-body cnblogs-markdown"><p>各位工程师累了吗? 推荐一篇可以让你技术能力达到出神入化的网站<a href="https://langtime.com/">"持久男"</a></p>
+<h3 id="二维绘图">1.二维绘图</h3>
+<h4 id="a.-一维数据集">a. 一维数据集</h4>
+<p>用 Numpy ndarray 作为数据传入 ply</p>
+<h5 id="section">1.</h5>
+<pre><code class="hljs haskell"><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np
+<span class="hljs-keyword">import</span> matplotlib <span class="hljs-keyword">as</span> mpl
+<span class="hljs-keyword">import</span> matplotlib.pyplot <span class="hljs-keyword">as</span> plt
+
+<span class="hljs-title">np</span>.random.seed(<span class="hljs-number">1000</span>)
+<span class="hljs-title">y</span> = np.random.standard_normal(<span class="hljs-number">10</span>)
+<span class="hljs-title">print</span> <span class="hljs-string">"y = %s"</span>% y
+<span class="hljs-title">x</span> = range(len(y))
+<span class="hljs-title">print</span> <span class="hljs-string">"x=%s"</span>% x
+<span class="hljs-title">plt</span>.plot(y)
+<span class="hljs-title">plt</span>.show()</code></pre>
+<p><img src="Python%E7%BB%98%E5%9B%BE%20-%20%E5%86%9C%E6%B0%91%E9%98%BF%E5%A7%A8%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/456673-20160822105246714-800760217.png"></p>
+<p><img src="Python%E7%BB%98%E5%9B%BE%20-%20%E5%86%9C%E6%B0%91%E9%98%BF%E5%A7%A8%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/456673-20160822105311839-958385549.png"></p>
+<h5 id="操纵坐标轴和增加网格及标签的函数">2.操纵坐标轴和增加网格及标签的函数</h5>
+<pre><code class="hljs python"><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np
+<span class="hljs-keyword">import</span> matplotlib <span class="hljs-keyword">as</span> mpl
+<span class="hljs-keyword">import</span> matplotlib.pyplot <span class="hljs-keyword">as</span> plt
+
+np.random.seed(<span class="hljs-number">1000</span>)
+y = np.random.standard_normal(<span class="hljs-number">10</span>)
+plt.plot(y.cumsum())
+plt.grid(<span class="hljs-keyword">True</span>) <span class="hljs-comment">##增加格点</span>
+plt.axis(<span class="hljs-string">'tight'</span>) <span class="hljs-comment"># 坐标轴适应数据量 axis 设置坐标轴</span>
+plt.show()</code></pre>
+<p><img src="Python%E7%BB%98%E5%9B%BE%20-%20%E5%86%9C%E6%B0%91%E9%98%BF%E5%A7%A8%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/456673-20160822105640323-745040734.png"></p>
+<h5 id="plt.xlim-和-plt.ylim-设置每个坐标轴的最小值和最大值">3.plt.xlim 和 plt.ylim 设置每个坐标轴的最小值和最大值</h5>
+<pre><code class="hljs haskell"><span class="hljs-meta">#!/etc/bin/python</span>
+<span class="hljs-meta">#coding=utf-8</span>
+<span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np
+<span class="hljs-keyword">import</span> matplotlib <span class="hljs-keyword">as</span> mpl
+<span class="hljs-keyword">import</span> matplotlib.pyplot <span class="hljs-keyword">as</span> plt
+
+<span class="hljs-title">np</span>.random.seed(<span class="hljs-number">1000</span>)
+<span class="hljs-title">y</span> = np.random.standard_normal(<span class="hljs-number">20</span>)
+<span class="hljs-title">plt</span>.plot(y.cumsum())
+<span class="hljs-title">plt</span>.grid(<span class="hljs-type">True</span>) ##增加格点
+<span class="hljs-title">plt</span>.xlim(<span class="hljs-number">-1</span>,<span class="hljs-number">20</span>)
+<span class="hljs-title">plt</span>.ylim(np.min(y.cumsum())- <span class="hljs-number">1</span>, np.max(y.cumsum()) + <span class="hljs-number">1</span>)
+
+<span class="hljs-title">plt</span>.show()</code></pre>
+<p><img src="Python%E7%BB%98%E5%9B%BE%20-%20%E5%86%9C%E6%B0%91%E9%98%BF%E5%A7%A8%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/456673-20160822110120839-1101196282.png"></p>
+<h5 id="添加标题和标签-plt.title-plt.xlabe-plt.ylabel-离散点-线">4. 添加标题和标签 plt.title, plt.xlabe, plt.ylabel 离散点, 线</h5>
+<pre><code class="hljs python"><span class="hljs-comment">#!/etc/bin/python</span>
+<span class="hljs-comment">#coding=utf-8</span>
+<span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np
+<span class="hljs-keyword">import</span> matplotlib <span class="hljs-keyword">as</span> mpl
+<span class="hljs-keyword">import</span> matplotlib.pyplot <span class="hljs-keyword">as</span> plt
+
+np.random.seed(<span class="hljs-number">1000</span>)
+y = np.random.standard_normal(<span class="hljs-number">20</span>)
+
+plt.figure(figsize=(<span class="hljs-number">7</span>,<span class="hljs-number">4</span>)) <span class="hljs-comment">#画布大小</span>
+plt.plot(y.cumsum(),<span class="hljs-string">'b'</span>,lw = <span class="hljs-number">1.5</span>) <span class="hljs-comment"># 蓝色的线</span>
+plt.plot(y.cumsum(),<span class="hljs-string">'ro'</span>) <span class="hljs-comment">#离散的点</span>
+plt.grid(<span class="hljs-keyword">True</span>)
+plt.axis(<span class="hljs-string">'tight'</span>)
+plt.xlabel(<span class="hljs-string">'index'</span>)
+plt.ylabel(<span class="hljs-string">'value'</span>)
+plt.title(<span class="hljs-string">'A simple Plot'</span>)
+plt.show()
+</code></pre>
+<p><img src="Python%E7%BB%98%E5%9B%BE%20-%20%E5%86%9C%E6%B0%91%E9%98%BF%E5%A7%A8%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/456673-20160822110729745-1447160491.png"></p>
+<h4 id="b.-二维数据集">b. 二维数据集</h4>
+<pre><code class="hljs lua">np.<span class="hljs-built_in">random</span>.seed(<span class="hljs-number">2000</span>)
+y = np.<span class="hljs-built_in">random</span>.standard_normal((<span class="hljs-number">10</span>, <span class="hljs-number">2</span>)).cumsum(axis=<span class="hljs-number">0</span>)   #<span class="hljs-number">10</span>行<span class="hljs-number">2</span>列   在这个数组上调用cumsum 计算赝本数据在<span class="hljs-number">0</span>轴(即第一维)上的总和
+<span class="hljs-built_in">print</span> y</code></pre>
+<p><img src="Python%E7%BB%98%E5%9B%BE%20-%20%E5%86%9C%E6%B0%91%E9%98%BF%E5%A7%A8%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/456673-20160822111324433-873152318.png"></p>
+<h5 id="两个数据集绘图">1.两个数据集绘图</h5>
+<pre><code class="hljs python"><span class="hljs-comment">#!/etc/bin/python</span>
+<span class="hljs-comment">#coding=utf-8</span>
+<span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np
+<span class="hljs-keyword">import</span> matplotlib <span class="hljs-keyword">as</span> mpl
+<span class="hljs-keyword">import</span> matplotlib.pyplot <span class="hljs-keyword">as</span> plt
+
+np.random.seed(<span class="hljs-number">2000</span>)
+y = np.random.standard_normal((<span class="hljs-number">10</span>, <span class="hljs-number">2</span>))
+plt.figure(figsize=(<span class="hljs-number">7</span>,<span class="hljs-number">5</span>))
+plt.plot(y, lw = <span class="hljs-number">1.5</span>)
+plt.plot(y, <span class="hljs-string">'ro'</span>)
+plt.grid(<span class="hljs-keyword">True</span>)
+plt.axis(<span class="hljs-string">'tight'</span>)
+plt.xlabel(<span class="hljs-string">'index'</span>)
+plt.ylabel(<span class="hljs-string">'value'</span>)
+plt.title(<span class="hljs-string">'A simple plot'</span>)
+plt.show()</code></pre>
+<p><img src="Python%E7%BB%98%E5%9B%BE%20-%20%E5%86%9C%E6%B0%91%E9%98%BF%E5%A7%A8%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/456673-20160822112142370-1299888663.png"></p>
+<h5 id="添加图例-plt.legendloc-0">2.添加图例 plt.legend(loc = 0)</h5>
+<pre><code class="hljs python"><span class="hljs-comment">#!/etc/bin/python</span>
+<span class="hljs-comment">#coding=utf-8</span>
+<span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np
+<span class="hljs-keyword">import</span> matplotlib <span class="hljs-keyword">as</span> mpl
+<span class="hljs-keyword">import</span> matplotlib.pyplot <span class="hljs-keyword">as</span> plt
+
+np.random.seed(<span class="hljs-number">2000</span>)
+y = np.random.standard_normal((<span class="hljs-number">10</span>, <span class="hljs-number">2</span>))
+plt.figure(figsize=(<span class="hljs-number">7</span>,<span class="hljs-number">5</span>))
+plt.plot(y[:,<span class="hljs-number">0</span>], lw = <span class="hljs-number">1.5</span>,label = <span class="hljs-string">'1st'</span>)
+plt.plot(y[:,<span class="hljs-number">1</span>], lw = <span class="hljs-number">1.5</span>, label = <span class="hljs-string">'2st'</span>)
+plt.plot(y, <span class="hljs-string">'ro'</span>)
+plt.grid(<span class="hljs-keyword">True</span>)
+plt.legend(loc = <span class="hljs-number">0</span>) <span class="hljs-comment">#图例位置自动</span>
+plt.axis(<span class="hljs-string">'tight'</span>)
+plt.xlabel(<span class="hljs-string">'index'</span>)
+plt.ylabel(<span class="hljs-string">'value'</span>)
+plt.title(<span class="hljs-string">'A simple plot'</span>)
+plt.show()</code></pre>
+<p><img src="Python%E7%BB%98%E5%9B%BE%20-%20%E5%86%9C%E6%B0%91%E9%98%BF%E5%A7%A8%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/456673-20160822112512651-338014603.png"></p>
+<h5 id="使用2个-y轴左右fig-ax1-plt.subplots-ax2-ax1.twinx">3.使用2个 Y轴(左右)fig, ax1 = plt.subplots() ax2 = ax1.twinx()</h5>
+<pre><code class="hljs python"><span class="hljs-comment">#!/etc/bin/python</span>
+<span class="hljs-comment">#coding=utf-8</span>
+<span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np
+<span class="hljs-keyword">import</span> matplotlib <span class="hljs-keyword">as</span> mpl
+<span class="hljs-keyword">import</span> matplotlib.pyplot <span class="hljs-keyword">as</span> plt
+
+np.random.seed(<span class="hljs-number">2000</span>)
+y = np.random.standard_normal((<span class="hljs-number">10</span>, <span class="hljs-number">2</span>))
+
+fig, ax1 = plt.subplots() <span class="hljs-comment"># 关键代码1 plt first data set using first (left) axis</span>
+
+plt.plot(y[:,<span class="hljs-number">0</span>], lw = <span class="hljs-number">1.5</span>,label = <span class="hljs-string">'1st'</span>)
+
+plt.plot(y[:,<span class="hljs-number">0</span>], <span class="hljs-string">'ro'</span>)
+plt.grid(<span class="hljs-keyword">True</span>)
+plt.legend(loc = <span class="hljs-number">0</span>) <span class="hljs-comment">#图例位置自动</span>
+plt.axis(<span class="hljs-string">'tight'</span>)
+plt.xlabel(<span class="hljs-string">'index'</span>)
+plt.ylabel(<span class="hljs-string">'value'</span>)
+plt.title(<span class="hljs-string">'A simple plot'</span>)
+
+ax2 = ax1.twinx()  <span class="hljs-comment">#关键代码2  plt second data set using second(right) axis</span>
+plt.plot(y[:,<span class="hljs-number">1</span>],<span class="hljs-string">'g'</span>, lw = <span class="hljs-number">1.5</span>, label = <span class="hljs-string">'2nd'</span>)
+plt.plot(y[:,<span class="hljs-number">1</span>], <span class="hljs-string">'ro'</span>)
+plt.legend(loc = <span class="hljs-number">0</span>)
+plt.ylabel(<span class="hljs-string">'value 2nd'</span>)
+plt.show()
+</code></pre>
+<p><img src="Python%E7%BB%98%E5%9B%BE%20-%20%E5%86%9C%E6%B0%91%E9%98%BF%E5%A7%A8%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/456673-20160822113258401-1373408397.png"></p>
+<h5 id="使用两个子图上下左右plt.subplot211">4.使用两个子图(上下,左右)plt.subplot(211)</h5>
+<p>通过使用 plt.subplots 函数,可以直接访问底层绘图对象,例如可以用它生成和第一个子图共享 x 轴的第二个子图.</p>
+<pre><code class="hljs python"><span class="hljs-comment">#!/etc/bin/python</span>
+<span class="hljs-comment">#coding=utf-8</span>
+<span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np
+<span class="hljs-keyword">import</span> matplotlib <span class="hljs-keyword">as</span> mpl
+<span class="hljs-keyword">import</span> matplotlib.pyplot <span class="hljs-keyword">as</span> plt
+
+np.random.seed(<span class="hljs-number">2000</span>)
+y = np.random.standard_normal((<span class="hljs-number">10</span>, <span class="hljs-number">2</span>))
+
+plt.figure(figsize=(<span class="hljs-number">7</span>,<span class="hljs-number">5</span>))
+plt.subplot(<span class="hljs-number">211</span>)  <span class="hljs-comment">#两行一列,第一个图</span>
+plt.plot(y[:,<span class="hljs-number">0</span>], lw = <span class="hljs-number">1.5</span>,label = <span class="hljs-string">'1st'</span>)
+plt.plot(y[:,<span class="hljs-number">0</span>], <span class="hljs-string">'ro'</span>)
+plt.grid(<span class="hljs-keyword">True</span>)
+plt.legend(loc = <span class="hljs-number">0</span>) <span class="hljs-comment">#图例位置自动</span>
+plt.axis(<span class="hljs-string">'tight'</span>)
+plt.ylabel(<span class="hljs-string">'value'</span>)
+plt.title(<span class="hljs-string">'A simple plot'</span>)
+
+
+plt.subplot(<span class="hljs-number">212</span>) <span class="hljs-comment">#两行一列.第二个图</span>
+plt.plot(y[:,<span class="hljs-number">1</span>],<span class="hljs-string">'g'</span>, lw = <span class="hljs-number">1.5</span>, label = <span class="hljs-string">'2nd'</span>)
+plt.plot(y[:,<span class="hljs-number">1</span>], <span class="hljs-string">'ro'</span>)
+plt.grid(<span class="hljs-keyword">True</span>)
+plt.legend(loc = <span class="hljs-number">0</span>)
+plt.xlabel(<span class="hljs-string">'index'</span>)
+plt.ylabel(<span class="hljs-string">'value 2nd'</span>)
+plt.axis(<span class="hljs-string">'tight'</span>)
+plt.show()</code></pre>
+<p><img src="Python%E7%BB%98%E5%9B%BE%20-%20%E5%86%9C%E6%B0%91%E9%98%BF%E5%A7%A8%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/456673-20160822114032448-190509237.png"></p>
+<h5 id="左右子图">5.左右子图</h5>
+<p>有时候,选择两个不同的图标类型来可视化数据可能是必要的或者是理想的.利用子图方法:</p>
+<pre><code class="hljs python"><span class="hljs-comment">#!/etc/bin/python</span>
+<span class="hljs-comment">#coding=utf-8</span>
+<span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np
+<span class="hljs-keyword">import</span> matplotlib <span class="hljs-keyword">as</span> mpl
+<span class="hljs-keyword">import</span> matplotlib.pyplot <span class="hljs-keyword">as</span> plt
+
+np.random.seed(<span class="hljs-number">2000</span>)
+y = np.random.standard_normal((<span class="hljs-number">10</span>, <span class="hljs-number">2</span>))
+
+plt.figure(figsize=(<span class="hljs-number">10</span>,<span class="hljs-number">5</span>))
+plt.subplot(<span class="hljs-number">121</span>)  <span class="hljs-comment">#两行一列,第一个图</span>
+plt.plot(y[:,<span class="hljs-number">0</span>], lw = <span class="hljs-number">1.5</span>,label = <span class="hljs-string">'1st'</span>)
+plt.plot(y[:,<span class="hljs-number">0</span>], <span class="hljs-string">'ro'</span>)
+plt.grid(<span class="hljs-keyword">True</span>)
+plt.legend(loc = <span class="hljs-number">0</span>) <span class="hljs-comment">#图例位置自动</span>
+plt.axis(<span class="hljs-string">'tight'</span>)
+plt.xlabel(<span class="hljs-string">'index'</span>)
+plt.ylabel(<span class="hljs-string">'value'</span>)
+plt.title(<span class="hljs-string">'1st Data Set'</span>)
+
+plt.subplot(<span class="hljs-number">122</span>)
+plt.bar(np.arange(len(y)), y[:,<span class="hljs-number">1</span>],width=<span class="hljs-number">0.5</span>, color=<span class="hljs-string">'g'</span>,label = <span class="hljs-string">'2nc'</span>)
+plt.grid(<span class="hljs-keyword">True</span>)
+plt.legend(loc=<span class="hljs-number">0</span>)
+plt.axis(<span class="hljs-string">'tight'</span>)
+plt.xlabel(<span class="hljs-string">'index'</span>)
+plt.title(<span class="hljs-string">'2nd Data Set'</span>)
+plt.show()</code></pre>
+<p><img src="Python%E7%BB%98%E5%9B%BE%20-%20%E5%86%9C%E6%B0%91%E9%98%BF%E5%A7%A8%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/456673-20160822141056855-1164203127.png"></p>
+<h4 id="c.其他绘图样式散点图直方图等">c.其他绘图样式,散点图,直方图等</h4>
+<h5 id="散点图-scatter">1.散点图 scatter</h5>
+<pre><code class="hljs python"><span class="hljs-comment">#!/etc/bin/python</span>
+<span class="hljs-comment">#coding=utf-8</span>
+<span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np
+<span class="hljs-keyword">import</span> matplotlib <span class="hljs-keyword">as</span> mpl
+<span class="hljs-keyword">import</span> matplotlib.pyplot <span class="hljs-keyword">as</span> plt
+
+np.random.seed(<span class="hljs-number">2000</span>)
+y = np.random.standard_normal((<span class="hljs-number">1000</span>, <span class="hljs-number">2</span>))
+plt.figure(figsize=(<span class="hljs-number">7</span>,<span class="hljs-number">5</span>))
+plt.scatter(y[:,<span class="hljs-number">0</span>],y[:,<span class="hljs-number">1</span>],marker=<span class="hljs-string">'o'</span>)
+plt.grid(<span class="hljs-keyword">True</span>)
+plt.xlabel(<span class="hljs-string">'1st'</span>)
+plt.ylabel(<span class="hljs-string">'2nd'</span>)
+plt.title(<span class="hljs-string">'Scatter Plot'</span>)
+plt.show()</code></pre>
+<p><img src="Python%E7%BB%98%E5%9B%BE%20-%20%E5%86%9C%E6%B0%91%E9%98%BF%E5%A7%A8%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/456673-20160822141823964-586388651.png"></p>
+<h5 id="直方图-plt.hist">2.直方图 plt.hist</h5>
+<pre><code class="hljs python"><span class="hljs-comment">#!/etc/bin/python</span>
+<span class="hljs-comment">#coding=utf-8</span>
+<span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np
+<span class="hljs-keyword">import</span> matplotlib <span class="hljs-keyword">as</span> mpl
+<span class="hljs-keyword">import</span> matplotlib.pyplot <span class="hljs-keyword">as</span> plt
+
+np.random.seed(<span class="hljs-number">2000</span>)
+y = np.random.standard_normal((<span class="hljs-number">1000</span>, <span class="hljs-number">2</span>))
+plt.figure(figsize=(<span class="hljs-number">7</span>,<span class="hljs-number">5</span>))
+plt.hist(y,label=[<span class="hljs-string">'1st'</span>,<span class="hljs-string">'2nd'</span>],bins=<span class="hljs-number">25</span>)
+plt.grid(<span class="hljs-keyword">True</span>)
+plt.xlabel(<span class="hljs-string">'value'</span>)
+plt.ylabel(<span class="hljs-string">'frequency'</span>)
+plt.title(<span class="hljs-string">'Histogram'</span>)
+plt.show()
+</code></pre>
+<p><img src="Python%E7%BB%98%E5%9B%BE%20-%20%E5%86%9C%E6%B0%91%E9%98%BF%E5%A7%A8%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/456673-20160822142301308-1631617147.png"></p>
+<h5 id="直方图-同一个图中堆叠">3.直方图 同一个图中堆叠</h5>
+<pre><code class="hljs python"><span class="hljs-comment">#!/etc/bin/python</span>
+<span class="hljs-comment">#coding=utf-8</span>
+<span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np
+<span class="hljs-keyword">import</span> matplotlib <span class="hljs-keyword">as</span> mpl
+<span class="hljs-keyword">import</span> matplotlib.pyplot <span class="hljs-keyword">as</span> plt
+
+np.random.seed(<span class="hljs-number">2000</span>)
+y = np.random.standard_normal((<span class="hljs-number">1000</span>, <span class="hljs-number">2</span>))
+plt.figure(figsize=(<span class="hljs-number">7</span>,<span class="hljs-number">5</span>))
+plt.hist(y,label=[<span class="hljs-string">'1st'</span>,<span class="hljs-string">'2nd'</span>],color=[<span class="hljs-string">'b'</span>,<span class="hljs-string">'g'</span>],stacked=<span class="hljs-keyword">True</span>,bins=<span class="hljs-number">20</span>)
+plt.grid(<span class="hljs-keyword">True</span>)
+plt.xlabel(<span class="hljs-string">'value'</span>)
+plt.ylabel(<span class="hljs-string">'frequency'</span>)
+plt.title(<span class="hljs-string">'Histogram'</span>)
+plt.show()</code></pre>
+<p><img src="Python%E7%BB%98%E5%9B%BE%20-%20%E5%86%9C%E6%B0%91%E9%98%BF%E5%A7%A8%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/456673-20160822142433386-1928946537.png"></p>
+<h5 id="箱型图-boxplot">4.箱型图 boxplot</h5>
+<pre><code class="hljs python"><span class="hljs-comment">#!/etc/bin/python</span>
+<span class="hljs-comment">#coding=utf-8</span>
+<span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np
+<span class="hljs-keyword">import</span> matplotlib <span class="hljs-keyword">as</span> mpl
+<span class="hljs-keyword">import</span> matplotlib.pyplot <span class="hljs-keyword">as</span> plt
+
+np.random.seed(<span class="hljs-number">2000</span>)
+y = np.random.standard_normal((<span class="hljs-number">1000</span>, <span class="hljs-number">2</span>))
+fig, ax = plt.subplots(figsize=(<span class="hljs-number">7</span>,<span class="hljs-number">4</span>))
+plt.boxplot(y)
+
+plt.grid(<span class="hljs-keyword">True</span>)
+plt.setp(ax,xticklabels=[<span class="hljs-string">'1st'</span> , <span class="hljs-string">'2nd'</span>])
+plt.xlabel(<span class="hljs-string">'value'</span>)
+plt.ylabel(<span class="hljs-string">'frequency'</span>)
+plt.title(<span class="hljs-string">'Histogram'</span>)
+plt.show()</code></pre>
+<p><img src="Python%E7%BB%98%E5%9B%BE%20-%20%E5%86%9C%E6%B0%91%E9%98%BF%E5%A7%A8%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/456673-20160822142830964-231783791.png"></p>
+<h5 id="绘制函数">5.绘制函数</h5>
+<pre><code class="hljs python"><span class="hljs-keyword">from</span> matplotlib.patches <span class="hljs-keyword">import</span> Polygon
+<span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np
+<span class="hljs-keyword">import</span> matplotlib.pyplot <span class="hljs-keyword">as</span> plt
+
+<span class="hljs-comment">#1. 定义积分函数</span>
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">func</span><span class="hljs-params">(x)</span>:</span>
+    <span class="hljs-keyword">return</span> <span class="hljs-number">0.5</span> * np.exp(x)+<span class="hljs-number">1</span>
+
+<span class="hljs-comment">#2.定义积分区间</span>
+a,b = <span class="hljs-number">0.5</span>, <span class="hljs-number">1.5</span>
+x = np.linspace(<span class="hljs-number">0</span>, <span class="hljs-number">2</span> )
+y = func(x)
+<span class="hljs-comment">#3.绘制函数图形</span>
+fig, ax = plt.subplots(figsize=(<span class="hljs-number">7</span>,<span class="hljs-number">5</span>))
+plt.plot(x,y, <span class="hljs-string">'b'</span>,linewidth=<span class="hljs-number">2</span>)
+plt.ylim(ymin=<span class="hljs-number">0</span>)
+<span class="hljs-comment">#4.核心， 我们使用Polygon函数生成阴影部分，表示积分面积：</span>
+Ix = np.linspace(a,b)
+Iy = func(Ix)
+verts = [(a,<span class="hljs-number">0</span>)] + list(zip(Ix, Iy))+[(b,<span class="hljs-number">0</span>)]
+poly = Polygon(verts,facecolor=<span class="hljs-string">'0.7'</span>,edgecolor = <span class="hljs-string">'0.5'</span>)
+ax.add_patch(poly)
+<span class="hljs-comment">#5.用plt.text和plt.figtext在图表上添加数学公式和一些坐标轴标签。</span>
+plt.text(<span class="hljs-number">0.5</span> *(a+b),<span class="hljs-number">1</span>,<span class="hljs-string">r"$\int_a^b f(x)\mathrm{d}x$"</span>, horizontalalignment =<span class="hljs-string">'center'</span>,fontsize=<span class="hljs-number">20</span>)
+plt.figtext(<span class="hljs-number">0.9</span>, <span class="hljs-number">0.075</span>,<span class="hljs-string">'$x$'</span>)
+plt.figtext(<span class="hljs-number">0.075</span>, <span class="hljs-number">0.9</span>, <span class="hljs-string">'$f(x)$'</span>)
+<span class="hljs-comment">#6. 分别设置x,y刻度标签的位置。</span>
+ax.set_xticks((a,b))
+ax.set_xticklabels((<span class="hljs-string">'$a$'</span>,<span class="hljs-string">'$b$'</span>))
+ax.set_yticks([func(a),func(b)])
+ax.set_yticklabels((<span class="hljs-string">'$f(a)$'</span>,<span class="hljs-string">'$f(b)$'</span>))
+plt.grid(<span class="hljs-keyword">True</span>)</code></pre>
+<p><img src="Python%E7%BB%98%E5%9B%BE%20-%20%E5%86%9C%E6%B0%91%E9%98%BF%E5%A7%A8%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/456673-20160821095158480-25916696.png"></p>
+<h3 id="金融学图表-matplotlib.finance">2.金融学图表 matplotlib.finance</h3>
+<h4 id="烛柱图-candlestick">1.烛柱图 candlestick</h4>
+<pre><code class="hljs python"><span class="hljs-comment">#!/etc/bin/python</span>
+<span class="hljs-comment">#coding=utf-8</span>
+<span class="hljs-keyword">import</span> matplotlib.pyplot <span class="hljs-keyword">as</span> plt
+<span class="hljs-keyword">import</span> matplotlib.finance <span class="hljs-keyword">as</span> mpf
+start = (<span class="hljs-number">2014</span>, <span class="hljs-number">5</span>,<span class="hljs-number">1</span>)
+end = (<span class="hljs-number">2014</span>, <span class="hljs-number">7</span>,<span class="hljs-number">1</span>)
+quotes = mpf.quotes_historical_yahoo(<span class="hljs-string">'^GDAXI'</span>,start,end)
+<span class="hljs-comment"># print quotes[:2]</span>
+
+fig, ax = plt.subplots(figsize=(<span class="hljs-number">8</span>,<span class="hljs-number">5</span>))
+fig.subplots_adjust(bottom = <span class="hljs-number">0.2</span>)
+mpf.candlestick(ax, quotes, width=<span class="hljs-number">0.6</span>, colorup=<span class="hljs-string">'b'</span>,colordown=<span class="hljs-string">'r'</span>)
+plt.grid(<span class="hljs-keyword">True</span>)
+ax.xaxis_date() <span class="hljs-comment">#x轴上的日期</span>
+ax.autoscale_view()
+plt.setp(plt.gca().get_xticklabels(),rotation=<span class="hljs-number">30</span>) <span class="hljs-comment">#日期倾斜</span>
+plt.show()</code></pre>
+<p><img src="Python%E7%BB%98%E5%9B%BE%20-%20%E5%86%9C%E6%B0%91%E9%98%BF%E5%A7%A8%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/456673-20160822161949558-291002053.png"></p>
+<h4 id="plot_day_summary">2. plot_day_summary</h4>
+<p>该函数提供了一个相当类似的图标类型,使用方法和 candlestick 函数相同,使用类似的参数. 这里开盘价和收盘价不是由彩色矩形表示,而是由两条短水平线表示.</p>
+<pre><code class="hljs python"><span class="hljs-comment">#!/etc/bin/python</span>
+<span class="hljs-comment">#coding=utf-8</span>
+<span class="hljs-keyword">import</span> matplotlib.pyplot <span class="hljs-keyword">as</span> plt
+<span class="hljs-keyword">import</span> matplotlib.finance <span class="hljs-keyword">as</span> mpf
+start = (<span class="hljs-number">2014</span>, <span class="hljs-number">5</span>,<span class="hljs-number">1</span>)
+end = (<span class="hljs-number">2014</span>, <span class="hljs-number">7</span>,<span class="hljs-number">1</span>)
+quotes = mpf.quotes_historical_yahoo(<span class="hljs-string">'^GDAXI'</span>,start,end)
+<span class="hljs-comment"># print quotes[:2]</span>
+
+fig, ax = plt.subplots(figsize=(<span class="hljs-number">8</span>,<span class="hljs-number">5</span>))
+fig.subplots_adjust(bottom = <span class="hljs-number">0.2</span>)
+mpf.plot_day_summary(ax, quotes,  colorup=<span class="hljs-string">'b'</span>,colordown=<span class="hljs-string">'r'</span>)
+plt.grid(<span class="hljs-keyword">True</span>)
+ax.xaxis_date() <span class="hljs-comment">#x轴上的日期</span>
+ax.autoscale_view()
+plt.setp(plt.gca().get_xticklabels(),rotation=<span class="hljs-number">30</span>) <span class="hljs-comment">#日期倾斜</span>
+plt.show()</code></pre>
+<p><img src="Python%E7%BB%98%E5%9B%BE%20-%20%E5%86%9C%E6%B0%91%E9%98%BF%E5%A7%A8%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/456673-20160822162535730-215571858.png"></p>
+<h4 id="股价数据和成交量">3.股价数据和成交量</h4>
+<pre><code class="hljs python"><span class="hljs-comment">#!/etc/bin/python</span>
+<span class="hljs-comment">#coding=utf-8</span>
+<span class="hljs-keyword">import</span> matplotlib.pyplot <span class="hljs-keyword">as</span> plt
+<span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np
+<span class="hljs-keyword">import</span> matplotlib.finance <span class="hljs-keyword">as</span> mpf
+start = (<span class="hljs-number">2014</span>, <span class="hljs-number">5</span>,<span class="hljs-number">1</span>)
+end = (<span class="hljs-number">2014</span>, <span class="hljs-number">7</span>,<span class="hljs-number">1</span>)
+quotes = mpf.quotes_historical_yahoo(<span class="hljs-string">'^GDAXI'</span>,start,end)
+<span class="hljs-comment"># print quotes[:2]</span>
+
+quotes = np.array(quotes)
+fig, (ax1, ax2) = plt.subplots(<span class="hljs-number">2</span>, sharex=<span class="hljs-keyword">True</span>, figsize=(<span class="hljs-number">8</span>,<span class="hljs-number">6</span>))
+mpf.candlestick(ax1, quotes, width=<span class="hljs-number">0.6</span>,colorup=<span class="hljs-string">'b'</span>,colordown=<span class="hljs-string">'r'</span>)
+ax1.set_title(<span class="hljs-string">'Yahoo Inc.'</span>)
+ax1.set_ylabel(<span class="hljs-string">'index level'</span>)
+ax1.grid(<span class="hljs-keyword">True</span>)
+ax1.xaxis_date()
+plt.bar(quotes[:,<span class="hljs-number">0</span>] - <span class="hljs-number">0.25</span>, quotes[:, <span class="hljs-number">5</span>], width=<span class="hljs-number">0.5</span>)
+
+ax2.set_ylabel(<span class="hljs-string">'volume'</span>)
+ax2.grid(<span class="hljs-keyword">True</span>)
+ax2.autoscale_view()
+plt.setp(plt.gca().get_xticklabels(),rotation=<span class="hljs-number">30</span>)
+plt.show()</code></pre>
+<p><img src="Python%E7%BB%98%E5%9B%BE%20-%20%E5%86%9C%E6%B0%91%E9%98%BF%E5%A7%A8%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/456673-20160822163217011-257792137.png"></p>
+<h3 id="d-绘图">3.3D 绘图</h3>
+<pre><code class="hljs makefile"><span class="hljs-comment">#!/etc/bin/python</span>
+<span class="hljs-comment">#coding=utf-8</span>
+import numpy as np
+import matplotlib.pyplot as plt
+
+stike = np.linspace(50, 150, 24)
+ttm = np.linspace(0.5, 2.5, 24)
+stike, ttm = np.meshgrid(stike, ttm)
+print  stike[:2]
+
+iv = (stike - 100) ** 2 / (100 * stike) /ttm
+from mpl_toolkits.mplot3d import Axes3D
+fig = plt.figure(figsize=(9,6))
+ax = fig.gca(projection='3d')
+surf = ax.plot_surface(stike, ttm, iv, rstride=2, cstride=2, cmap=plt.cm.coolwarm, linewidth=0.5, antialiased=True)
+ax.set_xlabel('strike')
+ax.set_ylabel('time-to-maturity')
+ax.set_zlabel('implied volatility')
+
+plt.show()</code></pre>
+<p><img src="Python%E7%BB%98%E5%9B%BE%20-%20%E5%86%9C%E6%B0%91%E9%98%BF%E5%A7%A8%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/456673-20160822164528323-1549822798.png"></p>
+</div><div id="MySignature" style="display: block;">岁月里，寒暑交替。人世间，北来南往。铭心的，云烟的。都付往事，不念，不问。</div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+<div id="BlogPostCategory">分类: <a href="https://www.cnblogs.com/chaoren399/category/741373.html" target="_blank">python</a></div>
+<div id="EntryTag"></div>
+<div id="blog_post_info"><div id="green_channel">
+        <a href="javascript:void(0);" id="green_channel_digg" onclick="DiggIt(5792168,cb_blogId,1);green_channel_success(this,'谢谢推荐！');">好文要顶</a>
+            <a id="green_channel_follow" onclick="follow('4d6548f1-5b16-e211-b854-842b2b196315');" href="javascript:void(0);">关注我</a>
+    <a id="green_channel_favorite" onclick="AddToWz(cb_entryId);return false;" href="javascript:void(0);">收藏该文</a>
+    <a id="green_channel_weibo" href="javascript:void(0);" title="分享至新浪微博" onclick="ShareToTsina()"><img src="Python%E7%BB%98%E5%9B%BE%20-%20%E5%86%9C%E6%B0%91%E9%98%BF%E5%A7%A8%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/icon_weibo_24.png" alt=""></a>
+    <a id="green_channel_wechat" href="javascript:void(0);" title="分享至微信" onclick="shareOnWechat()"><img src="Python%E7%BB%98%E5%9B%BE%20-%20%E5%86%9C%E6%B0%91%E9%98%BF%E5%A7%A8%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/wechat.png" alt=""></a>
+</div>
+<div id="author_profile">
+    <div id="author_profile_info" class="author_profile_info">
+            <a href="http://home.cnblogs.com/u/chaoren399/" target="_blank"><img src="Python%E7%BB%98%E5%9B%BE%20-%20%E5%86%9C%E6%B0%91%E9%98%BF%E5%A7%A8%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/20130819095939.png" class="author_avatar" alt=""></a>
+        <div id="author_profile_detail" class="author_profile_info">
+            <a href="http://home.cnblogs.com/u/chaoren399/">农民阿姨</a><br>
+            <a href="http://home.cnblogs.com/u/chaoren399/followees">关注 - 18</a><br>
+            <a href="http://home.cnblogs.com/u/chaoren399/followers">粉丝 - 39</a>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div id="author_profile_honor"></div>
+    <div id="author_profile_follow">
+                <a href="javascript:void(0);" onclick="follow('4d6548f1-5b16-e211-b854-842b2b196315');return false;">+加关注</a>
+    </div>
+</div>
+<div id="div_digg"><div style="padding-bottom: 5px"><span class="icon_favorite" style="padding-top: 2px; padding-bottom: 2px"></span><a onclick="follow('4d6548f1-5b16-e211-b854-842b2b196315');" href="javascript:void(0);" style="font-weight: bold; padding-left: 5px; color: rgb(57, 154, 178); border-bottom: 0px none;">关注农民阿姨</a></div>
+    <div class="diggit" onclick="votePost(5792168,'Digg')">
+        <span class="diggnum" id="digg_count">11</span>
+    </div>
+    <div class="buryit" onclick="votePost(5792168,'Bury')">
+        <span class="burynum" id="bury_count">1</span>
+    </div>
+    <div class="clear"></div>
+    <div class="diggword" id="digg_tips">
+    </div>
+</div>
+<script type="text/javascript">
+    currentDiggType = 0;
+</script></div>
+<div class="clear"></div>
+<div id="post_next_prev"><a href="https://www.cnblogs.com/chaoren399/p/5757090.html" class="p_n_p_prefix">« </a> 上一篇：<a href="https://www.cnblogs.com/chaoren399/p/5757090.html" title="发布于2016-08-10 15:54">Python - 类与对象的方法</a><br><a href="https://www.cnblogs.com/chaoren399/p/5796276.html" class="p_n_p_prefix">» </a> 下一篇：<a href="https://www.cnblogs.com/chaoren399/p/5796276.html" title="发布于2016-08-22 17:04">Python-pandas</a><br></div>
+</div>
+
+
+		</div>
+		<div class="postDesc">posted @ <span id="post-date">2016-08-21 09:52</span> <a href="https://www.cnblogs.com/chaoren399/">农民阿姨</a> 阅读(<span id="post_view_count">40350</span>) 评论(<span id="post_comment_count">0</span>)  <a href="https://i.cnblogs.com/EditPosts.aspx?postid=5792168" rel="nofollow">编辑</a> <a href="#" onclick="AddToWz(5792168);return false;">收藏</a></div>
+	</div>
+	<script src="Python%E7%BB%98%E5%9B%BE%20-%20%E5%86%9C%E6%B0%91%E9%98%BF%E5%A7%A8%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/highlight.js"></script><script>markdown_highlight();</script><script type="text/javascript">var allowComments=true,cb_blogId=137183,cb_entryId=5792168,cb_blogApp=currentBlogApp,cb_blogUserGuid='4d6548f1-5b16-e211-b854-842b2b196315',cb_entryCreatedDate='2016/8/21 9:52:00';loadViewCount(cb_entryId);var cb_postType=1;var isMarkdown=true;</script>
+	
+</div><!--end: topics 文章、评论容器-->
+</div><a name="!comments"></a><div id="blog-comments-placeholder"></div><script type="text/javascript">var commentManager = new blogCommentManager();commentManager.renderComments(0);</script>
+<div id="comment_form" class="commentform">
+<a name="commentform"></a>
+<div id="divCommentShow"></div>
+<div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="#" onclick="return RefreshPage();">刷新页面</a><a href="#top">返回顶部</a></div>
+<div id="comment_form_container"><div class="login_tips">注册用户登录后才能发表评论，请 <a rel="nofollow" href="javascript:void(0);" class="underline" onclick="return login('commentform');">登录</a> 或 <a rel="nofollow" href="javascript:void(0);" class="underline" onclick="return register();">注册</a>，<a href="http://www.cnblogs.com/">访问</a>网站首页。</div></div>
+
+<div id="ad_t2"><a href="http://www.ucancode.com/index.htm" target="_blank" onclick="ga('send', 'event', 'Link', 'click', 'T2-工控')">【推荐】超50万C++/C#源码: 大型实时仿真组态图形源码</a><br><a href="https://www.bagevent.com/event/2195041?bag_track=13072958" target="_blank" onclick="ga('send', 'event', 'Link', 'click', 'T2-看雪')">【活动】看雪2019安全开发者峰会，共话安全领域焦点</a><br><a href="https://ke.qq.com/adActivity.html?name=xiangxueketang2" target="_blank" onclick="ga('send', 'event', 'Link', 'click', 'T2-享学')">【培训】Java程序员年薪40W，他1年走了别人5年的路</a><br></div>
+<div id="opt_under_post"></div>
+<script async="async" src="Python%E7%BB%98%E5%9B%BE%20-%20%E5%86%9C%E6%B0%91%E9%98%BF%E5%A7%A8%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/gpt.js"></script>
+<script>
+  var googletag = googletag || {};
+  googletag.cmd = googletag.cmd || [];
+</script>
+<script>
+  googletag.cmd.push(function() {
+        googletag.defineSlot('/1090369/C1', [300, 250], 'div-gpt-ad-1546353474406-0').addService(googletag.pubads());
+        googletag.defineSlot('/1090369/C2', [468, 60], 'div-gpt-ad-1539008685004-0').addService(googletag.pubads());
+        googletag.pubads().enableSingleRequest();
+        googletag.enableServices();
+  });
+</script>
+<div id="cnblogs_c1" class="c_ad_block">
+    <div id="div-gpt-ad-1546353474406-0" style="height:250px; width:300px;" data-google-query-id="CNi7wKCBneICFRdtvQodQ64Hbw"><div id="google_ads_iframe_/1090369/C1_0__container__" style="border: 0pt none;"><iframe id="google_ads_iframe_/1090369/C1_0" title="3rd party ad content" name="google_ads_iframe_/1090369/C1_0" scrolling="no" marginwidth="0" marginheight="0" style="border: 0px none; vertical-align: bottom;" srcdoc="" data-google-container-id="1" data-load-complete="true" width="300" height="250" frameborder="0"></iframe></div></div>
+</div>
+<div id="under_post_news" style="display: none;"></div>
+<div id="cnblogs_c2" class="c_ad_block">
+    <div id="div-gpt-ad-1539008685004-0" style="height:60px; width:468px;" data-google-query-id="CNm7wKCBneICFRdtvQodQ64Hbw"><div id="google_ads_iframe_/1090369/C2_0__container__" style="border: 0pt none;"><iframe id="google_ads_iframe_/1090369/C2_0" title="3rd party ad content" name="google_ads_iframe_/1090369/C2_0" scrolling="no" marginwidth="0" marginheight="0" style="border: 0px none; vertical-align: bottom;" srcdoc="" data-google-container-id="2" data-load-complete="true" width="468" height="60" frameborder="0"></iframe></div></div>
+</div>
+<div id="under_post_kb"><div class="itnews c_ad_block"><b>最新新闻</b>：<br> ·  <a href="https://news.cnblogs.com/n/625331/" target="_blank">深网|万达百货更名苏宁易购广场 改造店5月底亮相</a><br> ·  <a href="https://news.cnblogs.com/n/625330/" target="_blank">圈重点！腾讯全球数字生态大会带来不一样的智慧医疗</a><br> ·  <a href="https://news.cnblogs.com/n/625329/" target="_blank">3岁娃成“社交万人迷”？别再被天价“情商培训班”忽悠了</a><br> ·  <a href="https://news.cnblogs.com/n/625328/" target="_blank">国产手机十年厮杀过后，为何只剩下华为带着米OV?</a><br> ·  <a href="https://news.cnblogs.com/n/625327/" target="_blank">英国宣布5G将在7月3日上线，兼容四款5G手机</a><br>» <a href="http://news.cnblogs.com/" title="IT新闻" target="_blank">更多新闻...</a></div></div>
+<div id="HistoryToday" class="c_ad_block"><b>历史上的今天:</b><br>2015-08-21 <a href="https://www.cnblogs.com/chaoren399/p/4749283.html">Linux之服务器时间同步</a><br></div>
+<script type="text/javascript">
+ if(enablePostBottom()) {
+    codeHighlight();
+    fixPostBody();
+    setTimeout(function () { incrementViewCount(cb_entryId); }, 50);
+    deliverT2();
+    deliverC1();
+    deliverC2();    
+    loadNewsAndKb();
+    loadBlogSignature();
+    LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+    GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+    loadOptUnderPost();
+    GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);  
+}
+</script>
+</div>
+
+    
+	</div><!--end: forFlow -->
+	</div><!--end: mainContent 主体内容容器-->
+
+	<div id="sideBar">
+		<div id="sideBarMain">
+			
+<!--done-->
+<div class="newsItem">
+<h3 class="catListTitle">公告</h3>
+	<div id="blog-news">授之以渔<div id="profile_block">昵称：<a href="https://home.cnblogs.com/u/chaoren399/">农民阿姨</a><br>园龄：<a href="https://home.cnblogs.com/u/chaoren399/" title="入园时间：2012-10-15">6年7个月</a><br>粉丝：<a href="https://home.cnblogs.com/u/chaoren399/followers/">39</a><br>关注：<a href="https://home.cnblogs.com/u/chaoren399/followees/">18</a><div id="p_b_follow"><a href="javascript:void(0);" onclick="follow('4d6548f1-5b16-e211-b854-842b2b196315')">+加关注</a></div><script>getFollowStatus('4d6548f1-5b16-e211-b854-842b2b196315')</script></div></div><script type="text/javascript">loadBlogNews();</script>
+</div>
+
+			<div id="blog-calendar" style=""><table id="blogCalendar" class="Cal" title="Calendar" cellspacing="0" cellpadding="0">
+	<tbody><tr><td colspan="7"><table class="CalTitle" cellspacing="0">
+		<tbody><tr><td class="CalNextPrev"><a href="javascript:void(0);" onclick="loadBlogCalendar('2019/04/01');return false;">&lt;</a></td><td align="center">2019年5月</td><td class="CalNextPrev" align="right"><a href="javascript:void(0);" onclick="loadBlogCalendar('2019/06/01');return false;">&gt;</a></td></tr>
+	</tbody></table></td></tr><tr><th class="CalDayHeader" abbr="日" scope="col" align="center">日</th><th class="CalDayHeader" abbr="一" scope="col" align="center">一</th><th class="CalDayHeader" abbr="二" scope="col" align="center">二</th><th class="CalDayHeader" abbr="三" scope="col" align="center">三</th><th class="CalDayHeader" abbr="四" scope="col" align="center">四</th><th class="CalDayHeader" abbr="五" scope="col" align="center">五</th><th class="CalDayHeader" abbr="六" scope="col" align="center">六</th></tr><tr><td class="CalOtherMonthDay" align="center">28</td><td class="CalOtherMonthDay" align="center">29</td><td class="CalOtherMonthDay" align="center">30</td><td align="center">1</td><td align="center">2</td><td align="center">3</td><td class="CalWeekendDay" align="center">4</td></tr><tr><td class="CalWeekendDay" align="center"><a href="https://www.cnblogs.com/chaoren399/archive/2019/05/05.html"><u>5</u></a></td><td align="center">6</td><td align="center">7</td><td align="center">8</td><td align="center">9</td><td align="center">10</td><td class="CalWeekendDay" align="center">11</td></tr><tr><td class="CalWeekendDay" align="center">12</td><td align="center">13</td><td align="center">14</td><td class="CalTodayDay" align="center">15</td><td align="center">16</td><td align="center">17</td><td class="CalWeekendDay" align="center">18</td></tr><tr><td class="CalWeekendDay" align="center">19</td><td align="center">20</td><td align="center">21</td><td align="center">22</td><td align="center">23</td><td align="center">24</td><td class="CalWeekendDay" align="center">25</td></tr><tr><td class="CalWeekendDay" align="center">26</td><td align="center">27</td><td align="center">28</td><td align="center">29</td><td align="center">30</td><td align="center">31</td><td class="CalOtherMonthDay" align="center">1</td></tr><tr><td class="CalOtherMonthDay" align="center">2</td><td class="CalOtherMonthDay" align="center">3</td><td class="CalOtherMonthDay" align="center">4</td><td class="CalOtherMonthDay" align="center">5</td><td class="CalOtherMonthDay" align="center">6</td><td class="CalOtherMonthDay" align="center">7</td><td class="CalOtherMonthDay" align="center">8</td></tr>
+</tbody></table></div><script type="text/javascript">loadBlogDefaultCalendar();</script>
+			
+			<div id="leftcontentcontainer">
+				<div id="blog-sidecolumn"><div id="sidebar_search" class="sidebar-block"></div><div id="sidebar_shortcut" class="sidebar-block">
+<div class="catListLink">
+<h3 class="catListTitle">常用链接</h3>
+<ul>
+<li><a href="https://www.cnblogs.com/chaoren399/p/" title="我的博客的随笔列表">我的随笔</a></li><li><a href="https://www.cnblogs.com/chaoren399/MyComments.html" title="我发表过的评论列表">我的评论</a></li><li><a href="https://www.cnblogs.com/chaoren399/OtherPosts.html" title="我评论过的随笔列表">我的参与</a></li><li><a href="https://www.cnblogs.com/chaoren399/RecentComments.html" title="我的博客的评论列表">最新评论</a></li><li><a href="https://www.cnblogs.com/chaoren399/tag/" title="我的博客的标签列表">我的标签</a></li>
+</ul>
+<div id="itemListLin_con" style="display:none;">
+<ul>
+
+</ul>
+</div>
+</div></div><div id="sidebar_toptags" class="sidebar-block">
+<div class="catListTag">
+<h3 class="catListTitle">我的标签</h3>
+<ul>
+<li><a href="https://www.cnblogs.com/chaoren399/tag/hadoop/">hadoop</a>(1)</li>
+</ul>
+</div></div><div id="sidebar_categories">
+<div id="sidebar_postcategory" class="catListPostCategory sidebar-block">
+<h3 class="catListTitle">随笔分类</h3>
+
+<ul>
+
+<li><a id="CatList_LinkList_0_Link_0" href="https://www.cnblogs.com/chaoren399/category/921420.html">bug(4)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_1" href="https://www.cnblogs.com/chaoren399/category/722919.html">hadoop(27)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_2" href="https://www.cnblogs.com/chaoren399/category/827788.html">JAVA 基础(3)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_3" href="https://www.cnblogs.com/chaoren399/category/722920.html">Linux(21)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_4" href="https://www.cnblogs.com/chaoren399/category/741373.html">python(10)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_5" href="https://www.cnblogs.com/chaoren399/category/727719.html">spark(8)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_6" href="https://www.cnblogs.com/chaoren399/category/730082.html">大数据(18)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_7" href="https://www.cnblogs.com/chaoren399/category/931430.html">大数据系列(13)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_8" href="https://www.cnblogs.com/chaoren399/category/719731.html">读书笔记(11)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_9" href="https://www.cnblogs.com/chaoren399/category/723160.html">工具类(25)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_10" href="https://www.cnblogs.com/chaoren399/category/722921.html">机器学习(26)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_11" href="https://www.cnblogs.com/chaoren399/category/849571.html">理财(19)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_12" href="https://www.cnblogs.com/chaoren399/category/817435.html">深度学习(2)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_13" href="https://www.cnblogs.com/chaoren399/category/740791.html">算法(8)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_14" href="https://www.cnblogs.com/chaoren399/category/740886.html">系统设计(4)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_15" href="https://www.cnblogs.com/chaoren399/category/734796.html">英语歌曲(1)</a> </li>
+
+</ul>
+
+</div>
+
+<div id="sidebar_postarchive" class="catListPostArchive sidebar-block">
+<h3 class="catListTitle">随笔档案</h3>
+
+<ul>
+
+<li><a id="CatList_LinkList_1_Link_0" href="https://www.cnblogs.com/chaoren399/archive/2019/05.html">2019年5月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_1" href="https://www.cnblogs.com/chaoren399/archive/2019/04.html">2019年4月 (4)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_2" href="https://www.cnblogs.com/chaoren399/archive/2018/11.html">2018年11月 (3)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_3" href="https://www.cnblogs.com/chaoren399/archive/2018/09.html">2018年9月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_4" href="https://www.cnblogs.com/chaoren399/archive/2018/08.html">2018年8月 (2)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_5" href="https://www.cnblogs.com/chaoren399/archive/2018/02.html">2018年2月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_6" href="https://www.cnblogs.com/chaoren399/archive/2017/12.html">2017年12月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_7" href="https://www.cnblogs.com/chaoren399/archive/2017/08.html">2017年8月 (5)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_8" href="https://www.cnblogs.com/chaoren399/archive/2017/07.html">2017年7月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_9" href="https://www.cnblogs.com/chaoren399/archive/2017/06.html">2017年6月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_10" href="https://www.cnblogs.com/chaoren399/archive/2017/03.html">2017年3月 (4)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_11" href="https://www.cnblogs.com/chaoren399/archive/2017/02.html">2017年2月 (4)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_12" href="https://www.cnblogs.com/chaoren399/archive/2017/01.html">2017年1月 (16)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_13" href="https://www.cnblogs.com/chaoren399/archive/2016/12.html">2016年12月 (4)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_14" href="https://www.cnblogs.com/chaoren399/archive/2016/10.html">2016年10月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_15" href="https://www.cnblogs.com/chaoren399/archive/2016/08.html">2016年8月 (9)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_16" href="https://www.cnblogs.com/chaoren399/archive/2016/07.html">2016年7月 (19)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_17" href="https://www.cnblogs.com/chaoren399/archive/2016/06.html">2016年6月 (8)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_18" href="https://www.cnblogs.com/chaoren399/archive/2016/05.html">2016年5月 (5)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_19" href="https://www.cnblogs.com/chaoren399/archive/2016/04.html">2016年4月 (4)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_20" href="https://www.cnblogs.com/chaoren399/archive/2016/02.html">2016年2月 (6)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_21" href="https://www.cnblogs.com/chaoren399/archive/2016/01.html">2016年1月 (3)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_22" href="https://www.cnblogs.com/chaoren399/archive/2015/12.html">2015年12月 (4)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_23" href="https://www.cnblogs.com/chaoren399/archive/2015/11.html">2015年11月 (12)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_24" href="https://www.cnblogs.com/chaoren399/archive/2015/10.html">2015年10月 (16)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_25" href="https://www.cnblogs.com/chaoren399/archive/2015/09.html">2015年9月 (45)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_26" href="https://www.cnblogs.com/chaoren399/archive/2015/08.html">2015年8月 (50)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_27" href="https://www.cnblogs.com/chaoren399/archive/2015/07.html">2015年7月 (4)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_28" href="https://www.cnblogs.com/chaoren399/archive/2015/02.html">2015年2月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_29" href="https://www.cnblogs.com/chaoren399/archive/2014/12.html">2014年12月 (4)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_30" href="https://www.cnblogs.com/chaoren399/archive/2014/02.html">2014年2月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_31" href="https://www.cnblogs.com/chaoren399/archive/2014/01.html">2014年1月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_32" href="https://www.cnblogs.com/chaoren399/archive/2013/11.html">2013年11月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_33" href="https://www.cnblogs.com/chaoren399/archive/2013/09.html">2013年9月 (2)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_34" href="https://www.cnblogs.com/chaoren399/archive/2013/06.html">2013年6月 (2)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_35" href="https://www.cnblogs.com/chaoren399/archive/2013/05.html">2013年5月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_36" href="https://www.cnblogs.com/chaoren399/archive/2013/04.html">2013年4月 (2)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_37" href="https://www.cnblogs.com/chaoren399/archive/2013/03.html">2013年3月 (20)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_38" href="https://www.cnblogs.com/chaoren399/archive/2013/01.html">2013年1月 (10)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_39" href="https://www.cnblogs.com/chaoren399/archive/2012/12.html">2012年12月 (7)</a> </li>
+
+</ul>
+
+</div>
+
+<div id="sidebar_articlecategory" class="catListArticleCategory sidebar-block">
+<h3 class="catListTitle">文章分类</h3>
+
+<ul>
+
+<li><a id="CatList_LinkList_2_Link_0" href="https://www.cnblogs.com/chaoren399/category/459189.html">android (10)</a> </li>
+
+<li><a id="CatList_LinkList_2_Link_1" href="https://www.cnblogs.com/chaoren399/category/450690.html">AXURE RP 学习笔记(1)</a> </li>
+
+<li><a id="CatList_LinkList_2_Link_2" href="https://www.cnblogs.com/chaoren399/category/722262.html">hadoop(7)</a> </li>
+
+<li><a id="CatList_LinkList_2_Link_3" href="https://www.cnblogs.com/chaoren399/category/722264.html">hbase</a> </li>
+
+<li><a id="CatList_LinkList_2_Link_4" href="https://www.cnblogs.com/chaoren399/category/722263.html">hive</a> </li>
+
+<li><a id="CatList_LinkList_2_Link_5" href="https://www.cnblogs.com/chaoren399/category/658180.html">iOS(1)</a> </li>
+
+<li><a id="CatList_LinkList_2_Link_6" href="https://www.cnblogs.com/chaoren399/category/722265.html">java</a> </li>
+
+<li><a id="CatList_LinkList_2_Link_7" href="https://www.cnblogs.com/chaoren399/category/444784.html">JAVA 函数转化问题(2)</a> </li>
+
+<li><a id="CatList_LinkList_2_Link_8" href="https://www.cnblogs.com/chaoren399/category/461694.html">java 基础(4)</a> </li>
+
+<li><a id="CatList_LinkList_2_Link_9" href="https://www.cnblogs.com/chaoren399/category/448435.html">python(1)</a> </li>
+
+<li><a id="CatList_LinkList_2_Link_10" href="https://www.cnblogs.com/chaoren399/category/722267.html">spark(1)</a> </li>
+
+<li><a id="CatList_LinkList_2_Link_11" href="https://www.cnblogs.com/chaoren399/category/731178.html">读书(5)</a> </li>
+
+<li><a id="CatList_LinkList_2_Link_12" href="https://www.cnblogs.com/chaoren399/category/440467.html">工具问题(8)</a> </li>
+
+</ul>
+
+</div>
+
+<div id="sidebar_imagecategory" class="catListImageCategory sidebar-block">
+<h3 class="catListTitle">相册</h3>
+
+<ul>
+
+<li><a id="CatList_LinkList_3_Link_0" href="https://www.cnblogs.com/chaoren399/gallery/464028.html" rel="nofollow">android for u975(3)</a> </li>
+
+</ul>
+
+</div>
+
+<div id="sidebar_links463706" class="catList sidebar-block">
+<h3 class="catListTitle">日记</h3>
+
+<ul>
+
+<li><a id="CatList_LinkList_4_Link_0" href="https://5-jrice-53wkb-hezvn-nsv4c-3pd9a/" rel="nofollow">5-jrice-53wkb-hezvn-nsv4c-3pd9a</a> </li>
+<li class="c_b_p_link_desc">5-jrice-53wkb-hezvn-nsv4c-3pd9a</li>
+<li><a id="CatList_LinkList_4_Link_1" href="http://get.adobe.com/flashplayer/otherversions/" rel="nofollow">firefox for adobe falsh player</a> </li>
+
+</ul>
+
+</div>
+
+</div><div id="sidebar_scorerank" class="sidebar-block">
+<div class="catListBlogRank">
+<h3 class="catListTitle">积分与排名</h3>
+<ul>
+	<li class="liScore">
+		积分 -	115710
+	</li>
+	<li class="liRank">
+		排名 -	3910
+	</li>
+</ul>
+</div>
+
+
+</div><div id="sidebar_recentcomments" class="sidebar-block"><div id="recent_comments_wrap">
+<div class="catListComment">
+<h3 class="catListTitle">最新评论</h3>
+
+	<div id="RecentCommentsBlock"><ul>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/chaoren399/p/4795665.html#4221665">1. Re:机器学习之凸优化基础一</a></li>
+        <li class="recent_comment_body">其实我的理解是这样的，如果是二范数那自然是凸的，但是如果是一范数（这里没有明确标明是二范数，感觉像一范数），那么这个为什么会是凸的？</li>
+        <li class="recent_comment_author">--dfcs008</li>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/chaoren399/p/4795665.html#4221644">2. Re:机器学习之凸优化基础一</a></li>
+        <li class="recent_comment_body">凸优化书中有一句： 以r为半径，Xc为球心的范数球{X| ||X -Xc|| &lt;= r } 是凸的，为什么是凸的？</li>
+        <li class="recent_comment_author">--dfcs008</li>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/chaoren399/p/9604347.html#4183084">3. Re:10年老司机经验总结--程序员兼职的那些事</a></li>
+        <li class="recent_comment_body">实力战将！</li>
+        <li class="recent_comment_author">--IT_BULL</li>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/chaoren399/p/6595031.html#4101208">4. Re:博客园样式-根据文章自动生成文章目录</a></li>
+        <li class="recent_comment_body">可以可以，不错，不错。感谢，实在哦。</li>
+        <li class="recent_comment_author">--不敲代码了去打网球了</li>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/chaoren399/p/6548703.html#3645431">5. Re:Apache Ambari安装过程（CentOS 6.5）</a></li>
+        <li class="recent_comment_body">抽空照着做一下ambari</li>
+        <li class="recent_comment_author">--CJZhaoSimons</li>
+</ul>
+</div>
+</div>
+</div></div><div id="sidebar_topviewedposts" class="sidebar-block"><div id="topview_posts_wrap">
+<div class="catListView">
+<h3 class="catListTitle">阅读排行榜</h3>
+	<div id="TopViewPostsBlock"><ul><li><a href="https://www.cnblogs.com/chaoren399/p/5792168.html">1. Python绘图(40349)</a></li><li><a href="https://www.cnblogs.com/chaoren399/p/4858253.html">2. Python 集合set添加删除、交集、并集、集合操作符号(11760)</a></li><li><a href="https://www.cnblogs.com/chaoren399/p/5620742.html">3. Linux 修改主机名 和 ip 映射关系(8161)</a></li><li><a href="https://www.cnblogs.com/chaoren399/p/4858263.html">4. Python的Set和List的性能比较 + 两者之间的转换(7827)</a></li><li><a href="https://www.cnblogs.com/chaoren399/p/6240811.html">5. 如何使用FileZilla上传和下载文件(6524)</a></li></ul></div>
+</div>
+</div></div><div id="sidebar_topcommentedposts" class="sidebar-block"><div id="topfeedback_posts_wrap">
+<div class="catListFeedback">
+<h3 class="catListTitle">评论排行榜</h3>
+	<div id="TopFeedbackPostsBlock"><ul><li><a href="https://www.cnblogs.com/chaoren399/p/4795665.html">1. 机器学习之凸优化基础一(2)</a></li><li><a href="https://www.cnblogs.com/chaoren399/p/5091739.html">2. 傲笑九天志在必得,卧薪尝胆勇者无畏.(2)</a></li><li><a href="https://www.cnblogs.com/chaoren399/p/4854468.html">3. 1.系统设计-概要(1)</a></li><li><a href="https://www.cnblogs.com/chaoren399/p/4851658.html">4. 机器学习算法一般步骤(1)</a></li><li><a href="https://www.cnblogs.com/chaoren399/p/5956384.html">5. python多种格式数据加载、处理与存储(1)</a></li></ul></div>
+</div>
+</div></div><div id="sidebar_topdiggedposts" class="sidebar-block"><div id="topdigg_posts_wrap">
+<div class="catListView">
+<h3 class="catListTitle">推荐排行榜</h3>
+<div id="TopDiggPostsBlock"><ul><li><a href="https://www.cnblogs.com/chaoren399/p/5792168.html">1. Python绘图(11)</a></li><li><a href="https://www.cnblogs.com/chaoren399/p/5091739.html">2. 傲笑九天志在必得,卧薪尝胆勇者无畏.(1)</a></li><li><a href="https://www.cnblogs.com/chaoren399/p/4858253.html">3. Python 集合set添加删除、交集、并集、集合操作符号(1)</a></li><li><a href="https://www.cnblogs.com/chaoren399/p/6595031.html">4. 博客园样式-根据文章自动生成文章目录(1)</a></li><li><a href="https://www.cnblogs.com/chaoren399/p/6548703.html">5. Apache Ambari安装过程（CentOS 6.5）(1)</a></li></ul></div>
+</div></div></div></div><script type="text/javascript">loadBlogSideColumn();</script>
+			</div>
+			
+		</div><!--end: sideBarMain -->
+	</div><!--end: sideBar 侧边栏容器 -->
+	<div class="clear"></div>
+	</div><!--end: main -->
+	<div class="clear"></div>
+	<div id="footer">
+		
+<!--done-->
+Copyright ©2019 农民阿姨
+	</div><!--end: footer -->
+</div><!--end: home 自定义的最大容器 -->
+
+
+
+</body></html>

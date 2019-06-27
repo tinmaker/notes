@@ -1,0 +1,538 @@
+<!DOCTYPE html PUBLIC "-//W3C//dtD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/dtD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=GBK">
+<link rel="stylesheet" href="%E3%80%8A%E5%AE%9E%E7%94%A8OpenCV%E3%80%8B(%E5%85%AD)%20%E5%9B%BE%E5%83%8F%E4%B8%AD%E7%9A%84%E5%BD%A2%E7%8A%B6%EF%BC%881%EF%BC%89%20-%20%E7%BB%BC%E5%90%88%E7%BC%96%E7%A8%8B%E7%B1%BB%E5%85%B6%E4%BB%96%E7%BB%BC%E5%90%88%20-%20%E7%BA%A2%E9%BB%91%E8%81%94%E7%9B%9F_files/articles.css" type="text/css">
+<link href="%E3%80%8A%E5%AE%9E%E7%94%A8OpenCV%E3%80%8B(%E5%85%AD)%20%E5%9B%BE%E5%83%8F%E4%B8%AD%E7%9A%84%E5%BD%A2%E7%8A%B6%EF%BC%881%EF%BC%89%20-%20%E7%BB%BC%E5%90%88%E7%BC%96%E7%A8%8B%E7%B1%BB%E5%85%B6%E4%BB%96%E7%BB%BC%E5%90%88%20-%20%E7%BA%A2%E9%BB%91%E8%81%94%E7%9B%9F_files/dialog.css" rel="stylesheet" type="text/css">
+<title>《实用OpenCV》(六) 图像中的形状（1） - 综合编程类其他综合 - 红黑联盟</title>
+<meta name="description" content="形状是当我们看到物体时最开始的印象之一，这一章我们将赋予计算机这种能力。识别图像里的形状是通常是做决策时一个重要步骤。形状是由图像的轮廓形成的，所以理论上形状识别是通常在边缘或轮廓检测后的步骤。    ">
+<meta http-equiv="mobile-agent" content="format=html5;url=https://m.2cto.com/kf/201401/270283.html">
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+<link type="text/css" rel="stylesheet" href="%E3%80%8A%E5%AE%9E%E7%94%A8OpenCV%E3%80%8B(%E5%85%AD)%20%E5%9B%BE%E5%83%8F%E4%B8%AD%E7%9A%84%E5%BD%A2%E7%8A%B6%EF%BC%881%EF%BC%89%20-%20%E7%BB%BC%E5%90%88%E7%BC%96%E7%A8%8B%E7%B1%BB%E5%85%B6%E4%BB%96%E7%BB%BC%E5%90%88%20-%20%E7%BA%A2%E9%BB%91%E8%81%94%E7%9B%9F_files/shCore.css">
+<link type="text/css" rel="stylesheet" href="%E3%80%8A%E5%AE%9E%E7%94%A8OpenCV%E3%80%8B(%E5%85%AD)%20%E5%9B%BE%E5%83%8F%E4%B8%AD%E7%9A%84%E5%BD%A2%E7%8A%B6%EF%BC%881%EF%BC%89%20-%20%E7%BB%BC%E5%90%88%E7%BC%96%E7%A8%8B%E7%B1%BB%E5%85%B6%E4%BB%96%E7%BB%BC%E5%90%88%20-%20%E7%BA%A2%E9%BB%91%E8%81%94%E7%9B%9F_files/shThemeDefault.css">
+<script src="%E3%80%8A%E5%AE%9E%E7%94%A8OpenCV%E3%80%8B(%E5%85%AD)%20%E5%9B%BE%E5%83%8F%E4%B8%AD%E7%9A%84%E5%BD%A2%E7%8A%B6%EF%BC%881%EF%BC%89%20-%20%E7%BB%BC%E5%90%88%E7%BC%96%E7%A8%8B%E7%B1%BB%E5%85%B6%E4%BB%96%E7%BB%BC%E5%90%88%20-%20%E7%BA%A2%E9%BB%91%E8%81%94%E7%9B%9F_files/hm.js"></script><script type="text/javascript" async="" charset="utf-8" src="%E3%80%8A%E5%AE%9E%E7%94%A8OpenCV%E3%80%8B(%E5%85%AD)%20%E5%9B%BE%E5%83%8F%E4%B8%AD%E7%9A%84%E5%BD%A2%E7%8A%B6%EF%BC%881%EF%BC%89%20-%20%E7%BB%BC%E5%90%88%E7%BC%96%E7%A8%8B%E7%B1%BB%E5%85%B6%E4%BB%96%E7%BB%BC%E5%90%88%20-%20%E7%BA%A2%E9%BB%91%E8%81%94%E7%9B%9F_files/core.js"></script><script type="text/javascript" async="" charset="utf-8" src="%E3%80%8A%E5%AE%9E%E7%94%A8OpenCV%E3%80%8B(%E5%85%AD)%20%E5%9B%BE%E5%83%8F%E4%B8%AD%E7%9A%84%E5%BD%A2%E7%8A%B6%EF%BC%881%EF%BC%89%20-%20%E7%BB%BC%E5%90%88%E7%BC%96%E7%A8%8B%E7%B1%BB%E5%85%B6%E4%BB%96%E7%BB%BC%E5%90%88%20-%20%E7%BA%A2%E9%BB%91%E8%81%94%E7%9B%9F_files/core_002.js"></script><script src="%E3%80%8A%E5%AE%9E%E7%94%A8OpenCV%E3%80%8B(%E5%85%AD)%20%E5%9B%BE%E5%83%8F%E4%B8%AD%E7%9A%84%E5%BD%A2%E7%8A%B6%EF%BC%881%EF%BC%89%20-%20%E7%BB%BC%E5%90%88%E7%BC%96%E7%A8%8B%E7%B1%BB%E5%85%B6%E4%BB%96%E7%BB%BC%E5%90%88%20-%20%E7%BA%A2%E9%BB%91%E8%81%94%E7%9B%9F_files/push.js"></script><script src="%E3%80%8A%E5%AE%9E%E7%94%A8OpenCV%E3%80%8B(%E5%85%AD)%20%E5%9B%BE%E5%83%8F%E4%B8%AD%E7%9A%84%E5%BD%A2%E7%8A%B6%EF%BC%881%EF%BC%89%20-%20%E7%BB%BC%E5%90%88%E7%BC%96%E7%A8%8B%E7%B1%BB%E5%85%B6%E4%BB%96%E7%BB%BC%E5%90%88%20-%20%E7%BA%A2%E9%BB%91%E8%81%94%E7%9B%9F_files/uaredirect.js" type="text/javascript"></script>
+<script type="text/javascript">uaredirect("https://m.2cto.com/kf/201401/270283.html");</script>
+<script src="%E3%80%8A%E5%AE%9E%E7%94%A8OpenCV%E3%80%8B(%E5%85%AD)%20%E5%9B%BE%E5%83%8F%E4%B8%AD%E7%9A%84%E5%BD%A2%E7%8A%B6%EF%BC%881%EF%BC%89%20-%20%E7%BB%BC%E5%90%88%E7%BC%96%E7%A8%8B%E7%B1%BB%E5%85%B6%E4%BB%96%E7%BB%BC%E5%90%88%20-%20%E7%BA%A2%E9%BB%91%E8%81%94%E7%9B%9F_files/gg.js"></script>
+<script type="application/ld+json">
+		{
+                "@context": "https://zhanzhang.baidu.com/contexts/cambrian.jsonld",
+                "@id": "https://www.2cto.com/kf/201401/270283.html",
+                "pubDate": "2014-01-05T15:33:04",
+				"upDate":"2014-01-05T15:33:04",
+         }
+
+</script>
+</head>
+<body><div style="display: none; position: absolute;" class=""><div class="aui_outer"><table class="aui_border"><tbody><tr><td class="aui_nw"></td><td class="aui_n"></td><td class="aui_ne"></td></tr><tr><td class="aui_w"></td><td class="aui_c"><div class="aui_inner"><table class="aui_dialog"><tbody><tr><td colspan="2" class="aui_header"><div class="aui_titleBar"><div class="aui_title" style="cursor: move; display: block;"></div><a class="aui_close" href="javascript:/*artDialog*/;" style="display: block;">×</a></div></td></tr><tr><td class="aui_icon" style="display: none;"><div class="aui_iconBg" style="background: rgba(0, 0, 0, 0) none repeat scroll 0% 0%;"></div></td><td class="aui_main" style="width: auto; height: auto;"><div class="aui_content" style="padding: 20px 25px;"></div></td></tr><tr><td colspan="2" class="aui_footer"><div class="aui_buttons" style="display: none;"></div></td></tr></tbody></table></div></td><td class="aui_e"></td></tr><tr><td class="aui_sw"></td><td class="aui_s"></td><td class="aui_se" style="cursor: se-resize;"></td></tr></tbody></table></div></div>
+<div class="line_top_box">
+	<dl class="top_box_left">
+		<dd class="left_logo"><a href="https://www.2cto.com/"></a></dd>
+		<dd class="left_menu_link">
+																<a class="first" href="https://www.2cto.com/news/">资讯</a>
+													<a href="https://www.2cto.com/article/">安全</a>
+													<a href="https://bbs.2cto.com/">论坛</a>
+													<a href="https://www.2cto.com/soft/">下载</a>
+													<a href="https://book.2cto.com/">读书</a>
+													<a href="https://www.2cto.com/kf/">程序开发</a>
+													<a href="https://www.2cto.com/database/">数据库</a>
+													<a href="https://www.2cto.com/os/">系统</a>
+													<a href="https://www.2cto.com/net/">网络</a>
+													<a href="https://www.2cto.com/ebook/">电子书</a>
+													<a href="https://www.2cto.com/weixin/">微信学院</a>
+													<a href="https://zz.2cto.com/">站长学院</a>
+													<a href="https://www.2cto.com/qq/">QQ</a>
+													<a href="https://www.2cto.com/px/">考试</a>
+														</dd>
+	</dl>
+</div>
+<div class="line_top_lmbox">
+	<dl class="lmpic"><dt><i></i>频道栏目</dt></dl>
+	<dl class="lmlinkbox"><dd>
+										<a class="Channel" href="https://www.2cto.com/kf/ware/">软件开发</a>|
+							<a class="Channel" href="https://www.2cto.com/kf/qianduan/">web前端</a>|
+							<a class="Channel" href="https://www.2cto.com/kf/web/">Web开发</a>|
+							<a class="Channel" href="https://www.2cto.com/kf/yidong/">移动开发</a>|
+							<a class="Channel" href="https://www.2cto.com/kf/all/">综合编程</a>|
+								</dd></dl>
+	<div class="login" id="userbar"><div class="unlogin">
+<a class="loginbtn" href="https://home.2cto.com/?forward=https%3A%2F%2Fwww.2cto.com%2Fkf%2F201401%2F270283.html&amp;siteid=1" target="_blank">登录</a><a class="regbtn" href="https://home.2cto.com/index.php/index/regedit" target="_blank">注册</a>
+</div>
+</div>
+</div>
+<div class="ibox mt8 mb8">
+<!-- 2cto_通栏 -->
+<script type="text/javascript">cto_A_D("2cto_1");</script>
+</div>
+<div class="wrapper">
+	<div class="box_left">
+		
+		<dl class="box_p">
+			<dd class="pRight"><a href="https://www.2cto.com/">首页</a><span> &gt; </span><a href="https://www.2cto.com/kf/">程序开发</a> &gt; <a href="https://www.2cto.com/kf/all/">综合编程</a> &gt; <a href="https://www.2cto.com/kf/all/qita/">其他综合</a> &gt;  正文</dd>
+			
+			</dl>
+		<dl class="box_t"><dd>《实用OpenCV》(六) 图像中的形状（1）</dd></dl>
+																										<dl class="box_INFO clearfix">
+			<dd class="frinfo">2014-01-05 15:33:04 &nbsp;&nbsp;&nbsp;&nbsp;
+				<i class="comm"></i><!-- <a class="num" href="#SOHUCS" id="changyan_count_unit"></a><a href="#SOHUCS">个评论</a> -->
+				<script type="text/javascript" src="%E3%80%8A%E5%AE%9E%E7%94%A8OpenCV%E3%80%8B(%E5%85%AD)%20%E5%9B%BE%E5%83%8F%E4%B8%AD%E7%9A%84%E5%BD%A2%E7%8A%B6%EF%BC%881%EF%BC%89%20-%20%E7%BB%BC%E5%90%88%E7%BC%96%E7%A8%8B%E7%B1%BB%E5%85%B6%E4%BB%96%E7%BB%BC%E5%90%88%20-%20%E7%BA%A2%E9%BB%91%E8%81%94%E7%9B%9F_files/plugins.js"></script>
+&nbsp;&nbsp;  来源：岁月留给了你苍老 你给岁月留了什么&nbsp;&nbsp;  </dd>
+			<dd class="frsize">
+				<a href="javascript:;" onclick="add_favorite('《实用OpenCV》(六) 图像中的形状（1）');" class="t6">收藏</a>&nbsp;&nbsp;
+				<a target="_blank" href="https://www.2cto.com/index.php?m=member&amp;c=content&amp;a=publish&amp;modid=1&amp;siteid=1"><i class="publish"></i>我要投稿</a>
+			</dd>
+		</dl>
+        <!-- 2cto_左一 -->
+         <div class="cont_ibox">
+         	<script type="text/javascript">cto_A_D("2cto_9");</script>
+         </div>
+		<div class="box_body" id="fontzoom">
+       <div id="Article">
+        形状是当我们看到物体时最开始的印象之一，这一章我们将赋予计算机这种能力。识别图像里的形状是通常是做决策时一个重要步骤。形状是由图像的轮廓形成的，所以理论上形状识别是通常在边缘或轮廓检测后的步骤。<br>
+        所以，我们将首先讨论从图像里提取轮廓，然后再开始讨论形状。将会包含：<br>
+<p>           ?霍夫变换，可以使我们检测图像里的常规形状如线条和圆形。</p>
+           ?随机样本一致性（RANSAC），一个广泛使用的可以确定数据点来匹配特定模型的框架。我们将编写算法代码来检测图像里的椭圆。<br>
+<p>           ?对象周围的绑定盒，绑定椭圆和凸形外壳的计算。</p>
+<p>           ?形状匹配。</p>
+<p><strong>轮廓</strong><br>
+        
+轮廓和边缘有一个显著区别。边缘是图像亮度梯度的局部极大值集合。我们也看到，这些梯度极大值不全是在物体的轮廓上而且他们是非常有噪声的。Canny边
+缘有一点不同，更像轮廓一些，因为在梯度极大值提取后经过一些后处理步骤。轮廓，相对而言，是一系列相连的点，更可能落在物体的外框上。<br>
+        
+OpenCV的轮廓提取基于二值图像（像Canny边缘检测的输出或对Scharr边缘做阈值处理或者一张黑白图）然后提取边缘点连接的层次结构。组织层
+次使得位于数结构更高的轮廓更有可能是物体的轮廓，然而低位的轮廓更有可能是噪声边缘和“洞口”的轮廓以及噪声块。<br>
+        
+实现这些特性的函数叫findContours()然后它使用了由S.Suzuki和K.Abe在“数字二值图像的基于边界跟随的拓扑结构分析”一文中描
+述的算法来提取轮廓并排列层次结构。文中描述了决定层次结构的详细规则，简而言之呢，当一个轮廓围绕着另一个轮廓的时候被认为是那个轮廓的“父亲”。<br>
+        为了更实际地显示我们所说的层次结构呢，我们将编写一个程序，见例6-1，使用了我们最喜欢的工具，滑块，来选择要显示层次结构的级别值。注意该函数仅接受一个二值图像为输入。从普通图像得到二值图的方式有：<br>
+         ?通过threshold()或adaptiveThreshold()来阈值处理<br>
+        ?使用inRange()检查像素值边界<br>
+        ?Canny边缘<br>
+        ?Scharr边缘做阈值处理</p>
+<p><br>
+例 6-1 程序展现层次轮廓提取<br>
+</p>
+<p></p>
+<div><div id="highlighter_476015" class="syntaxhighlighter  java"><div class="toolbar"><span><a href="#" class="toolbar_item command_help help">?</a></span></div><table cellspacing="0" cellpadding="0" border="0"><tbody><tr><td class="gutter"><div class="line number1 index0 alt2">1</div><div class="line number2 index1 alt1">2</div><div class="line number3 index2 alt2">3</div><div class="line number4 index3 alt1">4</div><div class="line number5 index4 alt2">5</div><div class="line number6 index5 alt1">6</div><div class="line number7 index6 alt2">7</div><div class="line number8 index7 alt1">8</div><div class="line number9 index8 alt2">9</div><div class="line number10 index9 alt1">10</div><div class="line number11 index10 alt2">11</div><div class="line number12 index11 alt1">12</div><div class="line number13 index12 alt2">13</div><div class="line number14 index13 alt1">14</div><div class="line number15 index14 alt2">15</div><div class="line number16 index15 alt1">16</div><div class="line number17 index16 alt2">17</div><div class="line number18 index17 alt1">18</div><div class="line number19 index18 alt2">19</div><div class="line number20 index19 alt1">20</div><div class="line number21 index20 alt2">21</div><div class="line number22 index21 alt1">22</div><div class="line number23 index22 alt2">23</div><div class="line number24 index23 alt1">24</div><div class="line number25 index24 alt2">25</div><div class="line number26 index25 alt1">26</div><div class="line number27 index26 alt2">27</div><div class="line number28 index27 alt1">28</div><div class="line number29 index28 alt2">29</div><div class="line number30 index29 alt1">30</div><div class="line number31 index30 alt2">31</div><div class="line number32 index31 alt1">32</div><div class="line number33 index32 alt2">33</div><div class="line number34 index33 alt1">34</div></td><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="java comments">// Program to illustrate hierarchical contour extraction</code></div><div class="line number2 index1 alt1"><code class="java comments">// Author: Samarth Manoj Brahmbhatt, University of Pennsylvania</code></div><div class="line number3 index2 alt2"><code class="java plain">#include &lt;opencv2 opencv.hpp=</code><code class="java string">""</code><code class="java plain">&gt;</code></div><div class="line number4 index3 alt1"><code class="java plain">#include &lt;opencv2 highgui=</code><code class="java string">""</code> <code class="java plain">highgui.hpp=</code><code class="java string">""</code><code class="java plain">&gt;</code></div><div class="line number5 index4 alt2"><code class="java plain">#include &lt;opencv2 imgproc=</code><code class="java string">""</code> <code class="java plain">imgproc.hpp=</code><code class="java string">""</code><code class="java plain">&gt;</code></div><div class="line number6 index5 alt1"><code class="java plain">using namespace std;</code></div><div class="line number7 index6 alt2"><code class="java plain">using namespace cv;</code></div><div class="line number8 index7 alt1"><code class="java plain">Mat img;</code></div><div class="line number9 index8 alt2"><code class="java plain">vector&lt;vector&lt;point&gt; &gt; contours;</code></div><div class="line number10 index9 alt1"><code class="java plain">vector&lt;vec4i&gt; heirarchy;</code></div><div class="line number11 index10 alt2"><code class="java keyword">int</code> <code class="java plain">levels = </code><code class="java value">0</code><code class="java plain">;</code></div><div class="line number12 index11 alt1"><code class="java keyword">void</code> <code class="java plain">on_trackbar(</code><code class="java keyword">int</code><code class="java plain">, </code><code class="java keyword">void</code> <code class="java plain">*) {</code></div><div class="line number13 index12 alt2"><code class="java spaces">&nbsp;&nbsp;</code><code class="java keyword">if</code><code class="java plain">(contours.empty()) </code><code class="java keyword">return</code><code class="java plain">;</code></div><div class="line number14 index13 alt1"><code class="java spaces">&nbsp;&nbsp;</code><code class="java plain">Mat img_show = img.clone();</code></div><div class="line number15 index14 alt2"><code class="java spaces">&nbsp;&nbsp;</code><code class="java comments">// Draw contours of the level indicated by slider</code></div><div class="line number16 index15 alt1"><code class="java spaces">&nbsp;&nbsp;</code><code class="java plain">drawContours(img_show, contours, -</code><code class="java value">1</code><code class="java plain">, Scalar(</code><code class="java value">0</code><code class="java plain">, </code><code class="java value">0</code><code class="java plain">, </code><code class="java value">255</code><code class="java plain">), </code><code class="java value">3</code><code class="java plain">, </code><code class="java value">8</code><code class="java plain">, heirarchy, levels);</code></div><div class="line number17 index16 alt2"><code class="java spaces">&nbsp;&nbsp;</code><code class="java plain">imshow(</code><code class="java string">"Contours"</code><code class="java plain">, img_show);</code></div><div class="line number18 index17 alt1"><code class="java plain">}</code></div><div class="line number19 index18 alt2"><code class="java keyword">int</code> <code class="java plain">main() {</code></div><div class="line number20 index19 alt1"><code class="java spaces">&nbsp;&nbsp;</code><code class="java plain">img = imread(</code><code class="java string">"circles.jpg"</code><code class="java plain">);</code></div><div class="line number21 index20 alt2"><code class="java spaces">&nbsp;&nbsp;</code><code class="java plain">Mat img_b;</code></div><div class="line number22 index21 alt1"><code class="java spaces">&nbsp;&nbsp;</code><code class="java plain">cvtColor(img, img_b, CV_RGB2GRAY);</code></div><div class="line number23 index22 alt2"><code class="java spaces">&nbsp;&nbsp;</code><code class="java plain">Mat edges;</code></div><div class="line number24 index23 alt1"><code class="java spaces">&nbsp;&nbsp;</code><code class="java plain">Canny(img_b, edges, </code><code class="java value">50</code><code class="java plain">, </code><code class="java value">100</code><code class="java plain">);</code></div><div class="line number25 index24 alt2"><code class="java spaces">&nbsp;&nbsp;</code><code class="java comments">// Extract contours and heirarchy</code></div><div class="line number26 index25 alt1"><code class="java spaces">&nbsp;&nbsp;</code><code class="java plain">findContours(edges, contours, heirarchy, CV_RETR_TREE, CV_CHAIN_APPROX_NONE);</code></div><div class="line number27 index26 alt2"><code class="java spaces">&nbsp;&nbsp;</code><code class="java plain">namedWindow(</code><code class="java string">"Contours"</code><code class="java plain">);</code></div><div class="line number28 index27 alt1"><code class="java spaces">&nbsp;&nbsp;</code><code class="java plain">createTrackbar(</code><code class="java string">"levels"</code><code class="java plain">, </code><code class="java string">"Contours"</code><code class="java plain">, &amp;levels, </code><code class="java value">15</code><code class="java plain">, on_trackbar);</code></div><div class="line number29 index28 alt2"><code class="java spaces">&nbsp;&nbsp;</code><code class="java comments">// Initialize by drawing the top level contours (as 'levels' is initialized to 0)</code></div><div class="line number30 index29 alt1"><code class="java spaces">&nbsp;&nbsp;</code><code class="java plain">on_trackbar(</code><code class="java value">0</code><code class="java plain">, </code><code class="java value">0</code><code class="java plain">);</code></div><div class="line number31 index30 alt2"><code class="java spaces">&nbsp;&nbsp;</code><code class="java keyword">while</code><code class="java plain">(</code><code class="java keyword">char</code><code class="java plain">(waitKey(</code><code class="java value">1</code><code class="java plain">)) != </code><code class="java string">'q'</code><code class="java plain">) {}</code></div><div class="line number32 index31 alt1"><code class="java spaces">&nbsp;&nbsp;</code><code class="java keyword">return</code> <code class="java value">0</code><code class="java plain">;</code></div><div class="line number33 index32 alt2"><code class="java plain">}</code></div><div class="line number34 index33 alt1"><code class="java plain">&lt;/vec4i&gt;&lt;/vector&lt;point&gt;&lt;/opencv2&gt;&lt;/opencv2&gt;&lt;/opencv2&gt;</code></div></div></td></tr></tbody></table></div></div>
+        
+注意每个轮廓是一个STL向量里的点。所以，储存轮廓的数据结构是一个含点向量的向量。层次结构是一个含四整数向量的向量（注：即向量的元素也是向量）。
+对每个轮廓来说，它的层次结构位置表示为四个整数值：他们是轮廓向量基于0的索引分别指示 
+下一位置（同等级），上一个（同等级），父级，以及第一个子轮廓。假使其中任意一个不存在（比如，如果一个轮廓没有父轮廓），对应的整数值则为负值。同时
+注意drawContours()函数根据层次结构和绘制允许最大层次等级来通过绘制轮廓修改输入图片。<br>
+<p>图6-1显示了一张简图上的不同等级的轮廓。</p>
+<p><img src="%E3%80%8A%E5%AE%9E%E7%94%A8OpenCV%E3%80%8B(%E5%85%AD)%20%E5%9B%BE%E5%83%8F%E4%B8%AD%E7%9A%84%E5%BD%A2%E7%8A%B6%EF%BC%881%EF%BC%89%20-%20%E7%BB%BC%E5%90%88%E7%BC%96%E7%A8%8B%E7%B1%BB%E5%85%B6%E4%BB%96%E7%BB%BC%E5%90%88%20-%20%E7%BA%A2%E9%BB%91%E8%81%94%E7%9B%9F_files/20140105135140160.jpg" alt="\" style="width: 452px; height: 432px;"><img src="%E3%80%8A%E5%AE%9E%E7%94%A8OpenCV%E3%80%8B(%E5%85%AD)%20%E5%9B%BE%E5%83%8F%E4%B8%AD%E7%9A%84%E5%BD%A2%E7%8A%B6%EF%BC%881%EF%BC%89%20-%20%E7%BB%BC%E5%90%88%E7%BC%96%E7%A8%8B%E7%B1%BB%E5%85%B6%E4%BB%96%E7%BB%BC%E5%90%88%20-%20%E7%BA%A2%E9%BB%91%E8%81%94%E7%9B%9F_files/20140105135140161.jpg" alt="\" style="width: 452px; height: 435px;"><br>
+</p>
+<p>                                                                            <img src="%E3%80%8A%E5%AE%9E%E7%94%A8OpenCV%E3%80%8B(%E5%85%AD)%20%E5%9B%BE%E5%83%8F%E4%B8%AD%E7%9A%84%E5%BD%A2%E7%8A%B6%EF%BC%881%EF%BC%89%20-%20%E7%BB%BC%E5%90%88%E7%BC%96%E7%A8%8B%E7%B1%BB%E5%85%B6%E4%BB%96%E7%BB%BC%E5%90%88%20-%20%E7%BA%A2%E9%BB%91%E8%81%94%E7%9B%9F_files/20140105135140162.jpg" alt="\" style="width: 452px; height: 432px;"></p>
+<p>   图6-1  不同等级的轮廓层次<br>
+</p>
+        
+经常和findContours()一起使用的一个函数是approxPolyDP()。approxPolyDP()用另一条顶点较少的曲线来逼近一条
+曲线或者一个多边形，这样两条曲线之间的距离小于或等于指定的精度。同时也有使闭合逼近曲线的选项（那就是说，起始点和终止点相同）<br>
+<br>
+<strong>点-多边形测试</strong><br>
+        
+我们先暂且来介绍一个有趣的特性：点-多边形测试。你也许猜到了，pointPolygonTest()函数判定一个点是否在一个多边形内。如果你开启 
+measureDist标签的话它也会返回该点到轮廓最近点的有符号欧式距离。如果点在曲线内，距离则为正，外则负，点在轮廓上则为零。如果标签关闭的
+话，相应的距离则被替换为+1，-1和0。<br>
+ 让我们来做一个程序来演示点-多边形和闭合曲线逼近的新知识——一个寻找图像上用户点击点相近的最小闭合轮廓的程序。同时它也演示了轮廓层次的导引。代码见例6-2<br>
+<p>例6-2 寻找点击点围绕的最小轮廓</p>
+<p>&lt;喎&#65533;"https://www.2cto.com/kf/ware/vc/" target="_blank" 
+class="keylink"&gt;vcD4KPHByZSBjbGFzcz0="brush:java;"&gt;// Program to 
+find the smallest contour that surrounds the clicked point
+// Author: Samarth Manoj Brahmbhatt, University of Pennsylvania
+#include <opencv2 opencv.hpp="">
+#include <opencv2 highgui="" highgui.hpp="">
+#include <opencv2 imgproc="" imgproc.hpp="">
+using namespace std;
+using namespace cv;
+Mat img_all_contours;
+vector<vector<point> &gt; closed_contours;
+vector<vec4i> heirarchy;
+// Function to approximate contours by closed contours
+vector<vector<point> &gt; make_contours_closed(vector<vector<point> &gt; contours) {
+   vector<vector<point> &gt; closed_contours;
+   closed_contours.resize(contours.size());
+   for(int i = 0; i &lt; contours.size(); i++)
+   approxPolyDP(contours[i], closed_contours[i], 0.1, true);
+   return closed_contours;
+}
+// Function to return the index of smallest contour in 'closed_contours' surrounding the clicked point
+int smallest_contour(Point p, vector<vector<point> &gt; contours, vector<vec4i> heirarchy) {
+   int idx = 0, prev_idx = -1;
+   while(idx &gt;= 0) {
+   vector<point> c = contours[idx];
+   // Point-polgon test
+   double d = pointPolygonTest(c, p, false);
+   // If point is inside the contour, check its children for an even smaller contour...
+   if(d &gt; 0) {
+     prev_idx = idx;
+     idx = heirarchy[idx][2];
+    }
+    // ...else, check the next contour on the same level
+    else idx = heirarchy[idx][0];
+  }
+  return prev_idx;
+}
+void on_mouse(int event, int x, int y, int, void *) {
+   if(event != EVENT_LBUTTONDOWN) return;
+   // Clicked point
+   Point p(x, y);
+   // Find index of smallest enclosing contour
+   int contour_show_idx = smallest_contour(p, closed_contours, heirarchy);
+   // If no such contour, user clicked outside all contours, hence clear image
+   if(contour_show_idx &lt; 0) {
+   imshow("Contours", img_all_contours);
+   return;
+   }
+   // Draw the smallest contour using a thick red line
+   vector<vector<point> &gt; contour_show;
+   contour_show.push_back(closed_contours[contour_show_idx]);
+   if(!contour_show.empty()) {
+      Mat img_show = img_all_contours.clone();
+      drawContours(img_show, contour_show, -1, Scalar(0, 0, 255), 3);
+      imshow("Contours", img_show);
+   }
+}
+int main() {
+   Mat img = imread("circles.jpg");
+   img_all_contours = img.clone();
+   Mat img_b;
+   cvtColor(img, img_b, CV_RGB2GRAY);
+   Mat edges;
+   Canny(img_b, edges, 50, 100);
+   // Extract contours and heirarchy
+   vector<vector<point> &gt; contours;
+   findContours(edges, contours, heirarchy, CV_RETR_TREE, CV_CHAIN_APPROX_NONE);
+   // Make contours closed so point-polygon test is valid
+   closed_contours = make_contours_closed(contours);
+   // Draw all contours usign a thin green line
+   drawContours(img_all_contours, closed_contours, -1, Scalar(0, 255, 0));
+   imshow("Contours", img_all_contours);
+   // Mouse callback
+   setMouseCallback("Contours", on_mouse);
+   while(char(waitKey(1)) != 'q') {}
+   return 0;
+}       假设 idx为轮廓在点向量的向量中的索引而hierarchy代表层次的话：<br>
+          ? hierarchy[idx][0] 返回同等级层次结构的下一个轮廓索引<br>
+          ? hierarchy[idx][1]  返回同等级层次结构的上一个轮廓索引<br>
+          ? hierarchy[idx][2]  返回第一个子轮廓的索引<br>
+          ? hierarchy[idx][3]  返回父轮廓的索引<br>
+       如果其中一个轮廓不存在，返回索引为负值。<br>
+程序运行的截图如图6-2所示<br>
+</vector<point></vector<point></point></vec4i></vector<point></vector<point></vector<point></vector<point></vec4i></vector<point></opencv2></opencv2></opencv2></p><p></p>
+<p><img src="%E3%80%8A%E5%AE%9E%E7%94%A8OpenCV%E3%80%8B(%E5%85%AD)%20%E5%9B%BE%E5%83%8F%E4%B8%AD%E7%9A%84%E5%BD%A2%E7%8A%B6%EF%BC%881%EF%BC%89%20-%20%E7%BB%BC%E5%90%88%E7%BC%96%E7%A8%8B%E7%B1%BB%E5%85%B6%E4%BB%96%E7%BB%BC%E5%90%88%20-%20%E7%BA%A2%E9%BB%91%E8%81%94%E7%9B%9F_files/20140105135140163.jpg" alt="\" style="width: 404px; height: 348px;"><img src="%E3%80%8A%E5%AE%9E%E7%94%A8OpenCV%E3%80%8B(%E5%85%AD)%20%E5%9B%BE%E5%83%8F%E4%B8%AD%E7%9A%84%E5%BD%A2%E7%8A%B6%EF%BC%881%EF%BC%89%20-%20%E7%BB%BC%E5%90%88%E7%BC%96%E7%A8%8B%E7%B1%BB%E5%85%B6%E4%BB%96%E7%BB%BC%E5%90%88%20-%20%E7%BA%A2%E9%BB%91%E8%81%94%E7%9B%9F_files/20140105135141165.jpg" alt="\" style="width: 400px; height: 345px;"><br>
+</p>
+<p>                                                                  <img src="%E3%80%8A%E5%AE%9E%E7%94%A8OpenCV%E3%80%8B(%E5%85%AD)%20%E5%9B%BE%E5%83%8F%E4%B8%AD%E7%9A%84%E5%BD%A2%E7%8A%B6%EF%BC%881%EF%BC%89%20-%20%E7%BB%BC%E5%90%88%E7%BC%96%E7%A8%8B%E7%B1%BB%E5%85%B6%E4%BB%96%E7%BB%BC%E5%90%88%20-%20%E7%BA%A2%E9%BB%91%E8%81%94%E7%9B%9F_files/20140105135141166.jpg" alt="\" style="width: 404px; height: 347px;"></p>
+<p>       图 6-2 最小封闭轮廓的应用<br>
+<br>
+        OpenCV也提供了一些函数检查其中的一些属性来帮助你过滤噪声图像的轮廓。如表6-1</p>
+<p><br>
+ 表6-1 OpenCV轮廓后处理函数</p>
+<p>
+</p><table width="600" cellspacing="1" cellpadding="1" border="1">
+<tbody>
+<tr>
+<td>函数        </td>
+<td>描述</td>
+</tr>
+<tr>
+<td>ArcLength()  </td>
+<td>查找轮廓长度</td>
+</tr>
+<tr>
+<td>ContourArea()  </td>
+<td>查找轮廓区域和方向</td>
+</tr>
+<tr>
+<td>BoundingRect()</td>
+<td>计算轮廓的垂直边界矩形</td>
+</tr>
+<tr>
+<td>ConvexHull()    </td>
+<td>计算轮廓围绕的凸形壳</td>
+</tr>
+<tr>
+<td>IsContourConvex() </td>
+<td> 测试轮廓的凸性</td>
+</tr>
+<tr>
+<td>MinAreaRect()  </td>
+<td>计算围绕轮廓的最小旋转矩形</td>
+</tr>
+<tr>
+<td>MinEnclosingCircle()  </td>
+<td>查找围绕轮廓的最小区域圆形</td>
+</tr>
+<tr>
+<td>FitLine()    </td>
+<td>基于轮廓匹配一条线（最小二乘）</td>
+</tr>
+</tbody>
+</table>
+<br>
+<br>
+<p></p>
+<p></p>						</div>
+		</div>
+	<div id="pages" class="box_body"></div>
+	<div class="cont_ibox">
+		<!-- 2cto_左二 -->
+		<script type="text/javascript">cto_A_D("2cto_5");</script>
+	</div>
+	<dl class="box_Nsc">
+		<dd class="lcopy"><a class="ckcopy" onclick="copyToClipBoard()">点击复制链接 与好友分享!</a><a class="ckhome" href="https://www.2cto.com/">回本站首页</a><div class="zclip" id="zclip-ZeroClipboardMovie_1" style="position: absolute; left: 452px; top: 6229px; width: 202px; height: 26px; z-index: 99;"><embed id="ZeroClipboardMovie_1" src="%E3%80%8A%E5%AE%9E%E7%94%A8OpenCV%E3%80%8B(%E5%85%AD)%20%E5%9B%BE%E5%83%8F%E4%B8%AD%E7%9A%84%E5%BD%A2%E7%8A%B6%EF%BC%881%EF%BC%89%20-%20%E7%BB%BC%E5%90%88%E7%BC%96%E7%A8%8B%E7%B1%BB%E5%85%B6%E4%BB%96%E7%BB%BC%E5%90%88%20-%20%E7%BA%A2%E9%BB%91%E8%81%94%E7%9B%9F_files/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" name="ZeroClipboardMovie_1" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=1&amp;width=202&amp;height=26" wmode="transparent" width="202" height="26" align="middle"></div></dd>
+		<dd class="Article-Tool">
+  		<!--<div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a><a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a><a href="#" class="bds_tqq" data-cmd="tqq" title="分享到腾讯微博"></a><a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a><a href="#" class="bds_renren" data-cmd="renren" title="分享到人人网"></a><a href="#" class="bds_mshare" data-cmd="mshare" title="分享到一键分享"></a></div>                                -->
+	  </dd>
+	</dl>
+	<div class="more_tags"><span>相关TAG标签</span>
+																		<a href="https://www.2cto.com/tag/xingzhuang.html" target="_blank"> 形状</a>
+								 		         															<a href="https://www.2cto.com/tag/tuxiang.html" target="_blank"> 图像</a>
+								 		             </div>
+	<dl class="box_NPre">
+		<dd class="TLineX"><strong>上一篇：</strong><a href="https://www.2cto.com/kf/201401/270282.html">Clojure 学习入门（13）—— binding</a></dd>
+		<dd><strong>下一篇：</strong><a href="https://www.2cto.com/kf/201401/270284.html">图像处理之Lanczos采样放缩算法</a></dd>
+	</dl>
+	<div class="inbox">
+	<div class="about">相关文章</div>
+	</div>
+	<ul class="alists clearfix">
+				<li class="alistline"><i class="dot"></i><a href="https://www.2cto.com/kf/201603/495789.html" target="_blank">SVG和SVG常用形状的分析</a></li>
+			<li class="alistline"><i class="dot"></i><a href="https://www.2cto.com/kf/201604/496837.html" target="_blank">SVG和SVG常用的形状分析</a></li>
+			<li class="alistline"><i class="dot"></i><a href="https://www.2cto.com/kf/201605/507124.html" target="_blank">形状增加阴影</a></li>
+			<li class="alistline"><i class="dot"></i><a href="https://www.2cto.com/kf/201607/524908.html" target="_blank">不规则形状的Mask动画 </a></li>
+			<li class="alistline"><i class="dot"></i><a href="https://www.2cto.com/kf/201709/676819.html" target="_blank">Make your own Neural NetWork之代</a></li>
+			<li class="alistline"><i class="dot"></i><a href="https://www.2cto.com/kf/201904/804969.html" target="_blank">45个值得收藏的 CSS 形状 - Funde</a></li>
+			<li class="alistline"><i class="dot"></i><a href="https://www.2cto.com/kf/201104/87518.html" target="_blank">sift图像特征提取与匹配算法代码</a></li>
+			<li class="alistline"><i class="dot"></i><a href="https://www.2cto.com/kf/201201/115936.html" target="_blank">kinect 学习笔记二（深度图像的利用-</a></li>
+			<li class="alistline"><i class="dot"></i><a href="https://www.2cto.com/kf/201209/154713.html" target="_blank">图像处理中消除相机透镜畸变和视角变换</a></li>
+			<li class="alistline"><i class="dot"></i><a href="https://www.2cto.com/kf/201301/186126.html" target="_blank">matlab在图像中画长方形(框)</a></li>
+			</ul>
+	<div class="more_tags"><span class="t2">热门专题推荐</span>
+																														<a href="https://www.2cto.com/special/pjc/" target="_blank"> python</a>
+													<a href="https://www.2cto.com/special/dsjc/" target="_blank"> div+css</a>
+													<a href="https://www.2cto.com/special/css/" target="_blank"> css教程</a>
+													<a href="https://www.2cto.com/special/html5/" target="_blank"> html5</a>
+													<a href="https://www.2cto.com/special/html/" target="_blank"> html教程</a>
+													<a href="https://www.2cto.com/special/jquery_ajax/" target="_blank"> jquery</a>
+													<a href="https://www.2cto.com/special/Android_AndroidSDK/" target="_blank"> Android SDK</a>
+													<a href="https://www.2cto.com/special/phphuanjingdajian/" target="_blank"> php</a>
+													<a href="https://www.2cto.com/special/mysql/" target="_blank"> mysql</a>
+													<a href="https://www.2cto.com/special/oracle/" target="_blank"> oracle</a>
+										 				 				 	
+    </div>
+    <div class="inbox">
+	<div class="cont_ibox">
+		<!-- 2cto_左三 -->
+		<script type="text/javascript">cto_A_D("2cto_13");</script>
+	</div>
+	</div>
+	<div class="inbox">
+		<div class="about">图文推荐</div>
+	</div>
+    <div class="cont_ibox">
+	<!-- 2cto_左四 -->
+	<script type="text/javascript">cto_A_D("2cto_4");</script>
+	</div>
+	<ul class="picbox clearfix">
+						<li>
+			<a target="_blank" class="imgbox" href="https://www.2cto.com/kf/201808/776144.html"><img src="%E3%80%8A%E5%AE%9E%E7%94%A8OpenCV%E3%80%8B(%E5%85%AD)%20%E5%9B%BE%E5%83%8F%E4%B8%AD%E7%9A%84%E5%BD%A2%E7%8A%B6%EF%BC%881%EF%BC%89%20-%20%E7%BB%BC%E5%90%88%E7%BC%96%E7%A8%8B%E7%B1%BB%E5%85%B6%E4%BB%96%E7%BB%BC%E5%90%88%20-%20%E7%BA%A2%E9%BB%91%E8%81%94%E7%9B%9F_files/20180828143519764.png"></a>
+			<a class="npictext" target="_blank" href="https://www.2cto.com/kf/201808/776144.html">七层网络结构解析</a>
+		</li>
+				<li>
+			<a target="_blank" class="imgbox" href="https://www.2cto.com/kf/201808/774991.html"><img src="%E3%80%8A%E5%AE%9E%E7%94%A8OpenCV%E3%80%8B(%E5%85%AD)%20%E5%9B%BE%E5%83%8F%E4%B8%AD%E7%9A%84%E5%BD%A2%E7%8A%B6%EF%BC%881%EF%BC%89%20-%20%E7%BB%BC%E5%90%88%E7%BC%96%E7%A8%8B%E7%B1%BB%E5%85%B6%E4%BB%96%E7%BB%BC%E5%90%88%20-%20%E7%BA%A2%E9%BB%91%E8%81%94%E7%9B%9F_files/20180823170243638.png"></a>
+			<a class="npictext" target="_blank" href="https://www.2cto.com/kf/201808/774991.html">Java虚拟机详解之JVM</a>
+		</li>
+				<li>
+			<a target="_blank" class="imgbox" href="https://www.2cto.com/kf/201808/774979.html"><img src="%E3%80%8A%E5%AE%9E%E7%94%A8OpenCV%E3%80%8B(%E5%85%AD)%20%E5%9B%BE%E5%83%8F%E4%B8%AD%E7%9A%84%E5%BD%A2%E7%8A%B6%EF%BC%881%EF%BC%89%20-%20%E7%BB%BC%E5%90%88%E7%BC%96%E7%A8%8B%E7%B1%BB%E5%85%B6%E4%BB%96%E7%BB%BC%E5%90%88%20-%20%E7%BA%A2%E9%BB%91%E8%81%94%E7%9B%9F_files/20180823165832117.png"></a>
+			<a class="npictext" target="_blank" href="https://www.2cto.com/kf/201808/774979.html">常用 Git 命令清单</a>
+		</li>
+				<li>
+			<a target="_blank" class="imgbox" href="https://www.2cto.com/kf/201808/774978.html"><img src="%E3%80%8A%E5%AE%9E%E7%94%A8OpenCV%E3%80%8B(%E5%85%AD)%20%E5%9B%BE%E5%83%8F%E4%B8%AD%E7%9A%84%E5%BD%A2%E7%8A%B6%EF%BC%881%EF%BC%89%20-%20%E7%BB%BC%E5%90%88%E7%BC%96%E7%A8%8B%E7%B1%BB%E5%85%B6%E4%BB%96%E7%BB%BC%E5%90%88%20-%20%E7%BA%A2%E9%BB%91%E8%81%94%E7%9B%9F_files/20180823165849153.jpg"></a>
+			<a class="npictext" target="_blank" href="https://www.2cto.com/kf/201808/774978.html">营销费用持续走高，药</a>
+		</li>
+					</ul>
+	<iframe src="%E3%80%8A%E5%AE%9E%E7%94%A8OpenCV%E3%80%8B(%E5%85%AD)%20%E5%9B%BE%E5%83%8F%E4%B8%AD%E7%9A%84%E5%BD%A2%E7%8A%B6%EF%BC%881%EF%BC%89%20-%20%E7%BB%BC%E5%90%88%E7%BC%96%E7%A8%8B%E7%B1%BB%E5%85%B6%E4%BB%96%E7%BB%BC%E5%90%88%20-%20%E7%BA%A2%E9%BB%91%E8%81%94%E7%9B%9F_files/270283.html" id="mainFrame" name="ifd" onload="this.height=ifd.document.body.scrollHeight" scrolling="no" width="100%" height="298" frameborder="0"></iframe>
+	</div>
+	<div class="box_right">
+		<div class="side-ibox h250">
+        <!-- 2cto_右一 -->
+        <script type="text/javascript">cto_A_D("2cto_6");</script>
+		</div>
+		<div class="box_right_box mt8">
+			<dl class="bTitle tabtitle borT" id="ltabTitle"><dd class="on">文章</dd><dd>推荐</dd></dl>
+                <div class="paddingbox tab_wrap" id="listTab" style="height: 192px;">
+				<div class="tab_main" style="width: 556px; height: 192px;">
+				<dl class="index tab_item swiper-slide-visible swiper-slide-active" style="width: 278px; height: 192px;">
+															<dd class="list">·&nbsp;<a target="_blank" href="https://www.2cto.com/kf/201503/380025.html">bzoj 1018 堵塞的交通traffic</a></dd>
+										<dd class="list">·&nbsp;<a target="_blank" href="https://www.2cto.com/kf/201503/380023.html">hdu 1085 Holding Bin-Laden Capt</a></dd>
+										<dd class="list">·&nbsp;<a target="_blank" href="https://www.2cto.com/kf/201503/380021.html">45. Jump Game II Leetcode Python</a></dd>
+										<dd class="list">·&nbsp;<a target="_blank" href="https://www.2cto.com/kf/201503/380022.html">C. DNA Alignment 数学公式推导  </a></dd>
+										<dd class="list">·&nbsp;<a target="_blank" href="https://www.2cto.com/kf/201503/379760.html">LeetCode ---  Rotate Image</a></dd>
+										<dd class="list">·&nbsp;<a target="_blank" href="https://www.2cto.com/kf/201503/379763.html">LeetCode ---  Permutations II</a></dd>
+										<dd class="list">·&nbsp;<a target="_blank" href="https://www.2cto.com/kf/201503/379767.html">1027. Colors in Mars</a></dd>
+										<dd class="list">·&nbsp;<a target="_blank" href="https://www.2cto.com/kf/201503/379768.html">[Leetcode]Single Number</a></dd>
+														</dl>
+				<dl class="index tab_item" style="width: 278px; height: 192px;">
+					 										<dd class="list">·&nbsp;<a target="_blank" href="https://www.2cto.com/special/win7jh/">win7激活工具</a></dd>
+										<dd class="list">·&nbsp;<a target="_blank" href="https://www.2cto.com/os/201607/522176.html">win10激活工具</a></dd>
+										<dd class="list">·&nbsp;<a target="_blank" href="https://www.2cto.com/special/win7jihuogongju/">win7激活工具旗舰版</a></dd>
+										<dd class="list">·&nbsp;<a target="_blank" href="https://www.2cto.com/os/201602/489186.html">office2010激活密钥</a></dd>
+										<dd class="list">·&nbsp;<a target="_blank" href="https://www.2cto.com/os/201601/456235.html">windows7激活密钥</a></dd>
+										<dd class="list">·&nbsp;<a target="_blank" href="https://www.2cto.com/os/201601/488006.html">office2010激活工具</a></dd>
+										<dd class="list">·&nbsp;<a target="_blank" href="https://www.2cto.com/os/201601/456247.html">小马激活工具</a></dd>
+										<dd class="list">·&nbsp;<a target="_blank" href="https://www.2cto.com/os/201607/524552.html">win10激活工具</a></dd>
+														</dl>
+				</div>
+			</div>
+		</div>
+		
+		<div class="side-ibox mt8">
+		<!-- 2cto_右二 -->
+		<script type="text/javascript">cto_A_D("2cto_7");</script>
+		</div>
+		
+		<div class="box_right_box mt8">
+			<dl class="bTitle tabtitle borT"><dd class="on">点击排行</dd></dl>
+			<div class="paddingbox">
+				<dl class="index">
+					<dd class="picline"></dd>
+																			</dl>
+			</div>
+		</div>
+		<div class="side-ibox mt8">
+		<!-- 2cto_右三 -->
+           <script type="text/javascript">cto_A_D("2cto_14");</script>
+		</div>
+		<div class="box_right_box mt8">
+			<div class="paddingbox">
+				<!-- <div id="cyHotnews" role="cylabs" data-use="hotnews"></div>
+				<script type="text/javascript" charset="utf-8" src="//changyan.itc.cn/js/??lib/jquery.js,changyan.labs.js?appid=cyrBEfE7C"></script> -->
+			</div>
+		</div>
+		<div class="side-ibox mt8">
+			<!-- 2cto_右四 -->
+			<script type="text/javascript">cto_A_D("2cto_8");</script>
+        </div>
+	</div><!--box_right  end-->
+</div>
+
+<script language="JavaScript" src="%E3%80%8A%E5%AE%9E%E7%94%A8OpenCV%E3%80%8B(%E5%85%AD)%20%E5%9B%BE%E5%83%8F%E4%B8%AD%E7%9A%84%E5%BD%A2%E7%8A%B6%EF%BC%881%EF%BC%89%20-%20%E7%BB%BC%E5%90%88%E7%BC%96%E7%A8%8B%E7%B1%BB%E5%85%B6%E4%BB%96%E7%BB%BC%E5%90%88%20-%20%E7%BA%A2%E9%BB%91%E8%81%94%E7%9B%9F_files/api.html"></script>
+
+<div class="ibox p8">
+<!-- 2cto_通栏2 -->
+<script type="text/javascript">cto_A_D("2cto_2");</script>
+</div>
+<div class="ibox p8">
+<!-- 2cto_通栏3 -->
+<a target="_blank" href="https://vip.2cto.com/"><img src="%E3%80%8A%E5%AE%9E%E7%94%A8OpenCV%E3%80%8B(%E5%85%AD)%20%E5%9B%BE%E5%83%8F%E4%B8%AD%E7%9A%84%E5%BD%A2%E7%8A%B6%EF%BC%881%EF%BC%89%20-%20%E7%BB%BC%E5%90%88%E7%BC%96%E7%A8%8B%E7%B1%BB%E5%85%B6%E4%BB%96%E7%BB%BC%E5%90%88%20-%20%E7%BA%A2%E9%BB%91%E8%81%94%E7%9B%9F_files/980-80.gif" class="style2" width="980" height="80"></a>
+</div>
+
+<span style="display:none"><script type="text/javascript" src="%E3%80%8A%E5%AE%9E%E7%94%A8OpenCV%E3%80%8B(%E5%85%AD)%20%E5%9B%BE%E5%83%8F%E4%B8%AD%E7%9A%84%E5%BD%A2%E7%8A%B6%EF%BC%881%EF%BC%89%20-%20%E7%BB%BC%E5%90%88%E7%BC%96%E7%A8%8B%E7%B1%BB%E5%85%B6%E4%BB%96%E7%BB%BC%E5%90%88%20-%20%E7%BA%A2%E9%BB%91%E8%81%94%E7%9B%9F_files/baidu_js_push.js"></script><script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+</span>
+<div class="foot">
+<p>
+<a href="https://www.2cto.com/about">关于我们</a> |
+<a href="https://www.2cto.com/about/contact.html">联系我们</a> |
+<a href="https://www.2cto.com/about/ads.html">广告服务</a> |
+<a href="https://www.2cto.com/about/touzi.html">投资合作</a> |
+<a href="https://www.2cto.com/about/Copyright.html">版权申明</a> |
+<a href="https://www.2cto.com/about/faq.html">在线帮助</a> |
+<a href="https://www.2cto.com/about/map.html">网站地图</a> |
+<a href="https://www.2cto.com/about/tg.html">作品发布</a> |
+<a target="_blank" href="https://vip.2cto.com/"><span class="c-red">Vip技术培训</span></a> |
+<a rel="nofollow" href="https://www.2cto.com/member/report.php">举报中心</a>
+</p>
+<p class="style4">版权所有: <a href="https://www.2cto.com/">红黑联盟</a>--致力于做实用的IT技术学习网站<script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1258398875'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "w.cnzz.com/c.php%3Fid%3D1258398875' type='text/javascript'%3E%3C/script%3E"));</script><span id="cnzz_stat_icon_1258398875"></span><script src="%E3%80%8A%E5%AE%9E%E7%94%A8OpenCV%E3%80%8B(%E5%85%AD)%20%E5%9B%BE%E5%83%8F%E4%B8%AD%E7%9A%84%E5%BD%A2%E7%8A%B6%EF%BC%881%EF%BC%89%20-%20%E7%BB%BC%E5%90%88%E7%BC%96%E7%A8%8B%E7%B1%BB%E5%85%B6%E4%BB%96%E7%BB%BC%E5%90%88%20-%20%E7%BA%A2%E9%BB%91%E8%81%94%E7%9B%9F_files/c_002.js" type="text/javascript"></script><script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1260439972'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "w.cnzz.com/c.php%3Fid%3D1260439972' type='text/javascript'%3E%3C/script%3E"));</script><span id="cnzz_stat_icon_1260439972"></span><script src="%E3%80%8A%E5%AE%9E%E7%94%A8OpenCV%E3%80%8B(%E5%85%AD)%20%E5%9B%BE%E5%83%8F%E4%B8%AD%E7%9A%84%E5%BD%A2%E7%8A%B6%EF%BC%881%EF%BC%89%20-%20%E7%BB%BC%E5%90%88%E7%BC%96%E7%A8%8B%E7%B1%BB%E5%85%B6%E4%BB%96%E7%BB%BC%E5%90%88%20-%20%E7%BA%A2%E9%BB%91%E8%81%94%E7%9B%9F_files/c.js" type="text/javascript"></script> 
+</p>
+<div class="hidden"><script type="text/javascript" src="%E3%80%8A%E5%AE%9E%E7%94%A8OpenCV%E3%80%8B(%E5%85%AD)%20%E5%9B%BE%E5%83%8F%E4%B8%AD%E7%9A%84%E5%BD%A2%E7%8A%B6%EF%BC%881%EF%BC%89%20-%20%E7%BB%BC%E5%90%88%E7%BC%96%E7%A8%8B%E7%B1%BB%E5%85%B6%E4%BB%96%E7%BB%BC%E5%90%88%20-%20%E7%BA%A2%E9%BB%91%E8%81%94%E7%9B%9F_files/tj.js"></script><script>var _hmt = _hmt || [];(function(){var hm = document.createElement("script");hm.src = "//hm.baidu.com/hm.js?7d56085e3581adae103f2bb368b1fd85";var s = document.getElementsByTagName("script")[0];s.parentNode.insertBefore(hm,s);})();</script>
+
+<script type="text/javascript">usertongji("自动化编辑")</script>
+</div>
+<!-- 2cto_图加 -->
+<script type="text/javascript">cto_A_D("2cto_10");</script>
+<!-- 2cto_视窗 -->
+<script type="text/javascript">cto_A_D("2cto_11");</script>
+<!-- 2cto_对联 -->
+<script type="text/javascript">cto_A_D("2cto_12");</script>
+</div><script type="text/javascript" src="%E3%80%8A%E5%AE%9E%E7%94%A8OpenCV%E3%80%8B(%E5%85%AD)%20%E5%9B%BE%E5%83%8F%E4%B8%AD%E7%9A%84%E5%BD%A2%E7%8A%B6%EF%BC%881%EF%BC%89%20-%20%E7%BB%BC%E5%90%88%E7%BC%96%E7%A8%8B%E7%B1%BB%E5%85%B6%E4%BB%96%E7%BB%BC%E5%90%88%20-%20%E7%BA%A2%E9%BB%91%E8%81%94%E7%9B%9F_files/jquery_003.js"></script>
+<script type="text/javascript" src="%E3%80%8A%E5%AE%9E%E7%94%A8OpenCV%E3%80%8B(%E5%85%AD)%20%E5%9B%BE%E5%83%8F%E4%B8%AD%E7%9A%84%E5%BD%A2%E7%8A%B6%EF%BC%881%EF%BC%89%20-%20%E7%BB%BC%E5%90%88%E7%BC%96%E7%A8%8B%E7%B1%BB%E5%85%B6%E4%BB%96%E7%BB%BC%E5%90%88%20-%20%E7%BA%A2%E9%BB%91%E8%81%94%E7%9B%9F_files/swiper.js"></script>
+<script type="text/javascript" src="%E3%80%8A%E5%AE%9E%E7%94%A8OpenCV%E3%80%8B(%E5%85%AD)%20%E5%9B%BE%E5%83%8F%E4%B8%AD%E7%9A%84%E5%BD%A2%E7%8A%B6%EF%BC%881%EF%BC%89%20-%20%E7%BB%BC%E5%90%88%E7%BC%96%E7%A8%8B%E7%B1%BB%E5%85%B6%E4%BB%96%E7%BB%BC%E5%90%88%20-%20%E7%BA%A2%E9%BB%91%E8%81%94%E7%9B%9F_files/init_swiper.js"></script>
+<script type="text/javascript" src="%E3%80%8A%E5%AE%9E%E7%94%A8OpenCV%E3%80%8B(%E5%85%AD)%20%E5%9B%BE%E5%83%8F%E4%B8%AD%E7%9A%84%E5%BD%A2%E7%8A%B6%EF%BC%881%EF%BC%89%20-%20%E7%BB%BC%E5%90%88%E7%BC%96%E7%A8%8B%E7%B1%BB%E5%85%B6%E4%BB%96%E7%BB%BC%E5%90%88%20-%20%E7%BA%A2%E9%BB%91%E8%81%94%E7%9B%9F_files/jquery.js"></script>
+<script charset="UTF-8" src="%E3%80%8A%E5%AE%9E%E7%94%A8OpenCV%E3%80%8B(%E5%85%AD)%20%E5%9B%BE%E5%83%8F%E4%B8%AD%E7%9A%84%E5%BD%A2%E7%8A%B6%EF%BC%881%EF%BC%89%20-%20%E7%BB%BC%E5%90%88%E7%BC%96%E7%A8%8B%E7%B1%BB%E5%85%B6%E4%BB%96%E7%BB%BC%E5%90%88%20-%20%E7%BA%A2%E9%BB%91%E8%81%94%E7%9B%9F_files/jquery_002.js"></script>
+<script language="javascript" type="text/javascript" src="%E3%80%8A%E5%AE%9E%E7%94%A8OpenCV%E3%80%8B(%E5%85%AD)%20%E5%9B%BE%E5%83%8F%E4%B8%AD%E7%9A%84%E5%BD%A2%E7%8A%B6%EF%BC%881%EF%BC%89%20-%20%E7%BB%BC%E5%90%88%E7%BC%96%E7%A8%8B%E7%B1%BB%E5%85%B6%E4%BB%96%E7%BB%BC%E5%90%88%20-%20%E7%BA%A2%E9%BB%91%E8%81%94%E7%9B%9F_files/dialog.js"></script>
+<script language="javascript" type="text/javascript" src="%E3%80%8A%E5%AE%9E%E7%94%A8OpenCV%E3%80%8B(%E5%85%AD)%20%E5%9B%BE%E5%83%8F%E4%B8%AD%E7%9A%84%E5%BD%A2%E7%8A%B6%EF%BC%881%EF%BC%89%20-%20%E7%BB%BC%E5%90%88%E7%BC%96%E7%A8%8B%E7%B1%BB%E5%85%B6%E4%BB%96%E7%BB%BC%E5%90%88%20-%20%E7%BA%A2%E9%BB%91%E8%81%94%E7%9B%9F_files/syntaxhighlighter.js"></script><script type="text/javascript" src="%E3%80%8A%E5%AE%9E%E7%94%A8OpenCV%E3%80%8B(%E5%85%AD)%20%E5%9B%BE%E5%83%8F%E4%B8%AD%E7%9A%84%E5%BD%A2%E7%8A%B6%EF%BC%881%EF%BC%89%20-%20%E7%BB%BC%E5%90%88%E7%BC%96%E7%A8%8B%E7%B1%BB%E5%85%B6%E4%BB%96%E7%BB%BC%E5%90%88%20-%20%E7%BA%A2%E9%BB%91%E8%81%94%E7%9B%9F_files/XRegExp.js"></script><script type="text/javascript" src="%E3%80%8A%E5%AE%9E%E7%94%A8OpenCV%E3%80%8B(%E5%85%AD)%20%E5%9B%BE%E5%83%8F%E4%B8%AD%E7%9A%84%E5%BD%A2%E7%8A%B6%EF%BC%881%EF%BC%89%20-%20%E7%BB%BC%E5%90%88%E7%BC%96%E7%A8%8B%E7%B1%BB%E5%85%B6%E4%BB%96%E7%BB%BC%E5%90%88%20-%20%E7%BA%A2%E9%BB%91%E8%81%94%E7%9B%9F_files/shCore.js"></script><script type="text/javascript" src="%E3%80%8A%E5%AE%9E%E7%94%A8OpenCV%E3%80%8B(%E5%85%AD)%20%E5%9B%BE%E5%83%8F%E4%B8%AD%E7%9A%84%E5%BD%A2%E7%8A%B6%EF%BC%881%EF%BC%89%20-%20%E7%BB%BC%E5%90%88%E7%BC%96%E7%A8%8B%E7%B1%BB%E5%85%B6%E4%BB%96%E7%BB%BC%E5%90%88%20-%20%E7%BA%A2%E9%BB%91%E8%81%94%E7%9B%9F_files/shBrushBash.js"></script><script type="text/javascript" src="%E3%80%8A%E5%AE%9E%E7%94%A8OpenCV%E3%80%8B(%E5%85%AD)%20%E5%9B%BE%E5%83%8F%E4%B8%AD%E7%9A%84%E5%BD%A2%E7%8A%B6%EF%BC%881%EF%BC%89%20-%20%E7%BB%BC%E5%90%88%E7%BC%96%E7%A8%8B%E7%B1%BB%E5%85%B6%E4%BB%96%E7%BB%BC%E5%90%88%20-%20%E7%BA%A2%E9%BB%91%E8%81%94%E7%9B%9F_files/shBrushCpp.js"></script><script type="text/javascript" src="%E3%80%8A%E5%AE%9E%E7%94%A8OpenCV%E3%80%8B(%E5%85%AD)%20%E5%9B%BE%E5%83%8F%E4%B8%AD%E7%9A%84%E5%BD%A2%E7%8A%B6%EF%BC%881%EF%BC%89%20-%20%E7%BB%BC%E5%90%88%E7%BC%96%E7%A8%8B%E7%B1%BB%E5%85%B6%E4%BB%96%E7%BB%BC%E5%90%88%20-%20%E7%BA%A2%E9%BB%91%E8%81%94%E7%9B%9F_files/shBrushCSharp.js"></script><script type="text/javascript" src="%E3%80%8A%E5%AE%9E%E7%94%A8OpenCV%E3%80%8B(%E5%85%AD)%20%E5%9B%BE%E5%83%8F%E4%B8%AD%E7%9A%84%E5%BD%A2%E7%8A%B6%EF%BC%881%EF%BC%89%20-%20%E7%BB%BC%E5%90%88%E7%BC%96%E7%A8%8B%E7%B1%BB%E5%85%B6%E4%BB%96%E7%BB%BC%E5%90%88%20-%20%E7%BA%A2%E9%BB%91%E8%81%94%E7%9B%9F_files/shBrushCss.js"></script><script type="text/javascript" src="%E3%80%8A%E5%AE%9E%E7%94%A8OpenCV%E3%80%8B(%E5%85%AD)%20%E5%9B%BE%E5%83%8F%E4%B8%AD%E7%9A%84%E5%BD%A2%E7%8A%B6%EF%BC%881%EF%BC%89%20-%20%E7%BB%BC%E5%90%88%E7%BC%96%E7%A8%8B%E7%B1%BB%E5%85%B6%E4%BB%96%E7%BB%BC%E5%90%88%20-%20%E7%BA%A2%E9%BB%91%E8%81%94%E7%9B%9F_files/shBrushDelphi.js"></script><script type="text/javascript" src="%E3%80%8A%E5%AE%9E%E7%94%A8OpenCV%E3%80%8B(%E5%85%AD)%20%E5%9B%BE%E5%83%8F%E4%B8%AD%E7%9A%84%E5%BD%A2%E7%8A%B6%EF%BC%881%EF%BC%89%20-%20%E7%BB%BC%E5%90%88%E7%BC%96%E7%A8%8B%E7%B1%BB%E5%85%B6%E4%BB%96%E7%BB%BC%E5%90%88%20-%20%E7%BA%A2%E9%BB%91%E8%81%94%E7%9B%9F_files/shBrushDiff.js"></script><script type="text/javascript" src="%E3%80%8A%E5%AE%9E%E7%94%A8OpenCV%E3%80%8B(%E5%85%AD)%20%E5%9B%BE%E5%83%8F%E4%B8%AD%E7%9A%84%E5%BD%A2%E7%8A%B6%EF%BC%881%EF%BC%89%20-%20%E7%BB%BC%E5%90%88%E7%BC%96%E7%A8%8B%E7%B1%BB%E5%85%B6%E4%BB%96%E7%BB%BC%E5%90%88%20-%20%E7%BA%A2%E9%BB%91%E8%81%94%E7%9B%9F_files/shBrushGroovy.js"></script><script type="text/javascript" src="%E3%80%8A%E5%AE%9E%E7%94%A8OpenCV%E3%80%8B(%E5%85%AD)%20%E5%9B%BE%E5%83%8F%E4%B8%AD%E7%9A%84%E5%BD%A2%E7%8A%B6%EF%BC%881%EF%BC%89%20-%20%E7%BB%BC%E5%90%88%E7%BC%96%E7%A8%8B%E7%B1%BB%E5%85%B6%E4%BB%96%E7%BB%BC%E5%90%88%20-%20%E7%BA%A2%E9%BB%91%E8%81%94%E7%9B%9F_files/shBrushJava.js"></script><script type="text/javascript" src="%E3%80%8A%E5%AE%9E%E7%94%A8OpenCV%E3%80%8B(%E5%85%AD)%20%E5%9B%BE%E5%83%8F%E4%B8%AD%E7%9A%84%E5%BD%A2%E7%8A%B6%EF%BC%881%EF%BC%89%20-%20%E7%BB%BC%E5%90%88%E7%BC%96%E7%A8%8B%E7%B1%BB%E5%85%B6%E4%BB%96%E7%BB%BC%E5%90%88%20-%20%E7%BA%A2%E9%BB%91%E8%81%94%E7%9B%9F_files/shBrushJScript.js"></script><script type="text/javascript" src="%E3%80%8A%E5%AE%9E%E7%94%A8OpenCV%E3%80%8B(%E5%85%AD)%20%E5%9B%BE%E5%83%8F%E4%B8%AD%E7%9A%84%E5%BD%A2%E7%8A%B6%EF%BC%881%EF%BC%89%20-%20%E7%BB%BC%E5%90%88%E7%BC%96%E7%A8%8B%E7%B1%BB%E5%85%B6%E4%BB%96%E7%BB%BC%E5%90%88%20-%20%E7%BA%A2%E9%BB%91%E8%81%94%E7%9B%9F_files/shBrushPhp.js"></script><script type="text/javascript" src="%E3%80%8A%E5%AE%9E%E7%94%A8OpenCV%E3%80%8B(%E5%85%AD)%20%E5%9B%BE%E5%83%8F%E4%B8%AD%E7%9A%84%E5%BD%A2%E7%8A%B6%EF%BC%881%EF%BC%89%20-%20%E7%BB%BC%E5%90%88%E7%BC%96%E7%A8%8B%E7%B1%BB%E5%85%B6%E4%BB%96%E7%BB%BC%E5%90%88%20-%20%E7%BA%A2%E9%BB%91%E8%81%94%E7%9B%9F_files/shBrushPlain.js"></script><script type="text/javascript" src="%E3%80%8A%E5%AE%9E%E7%94%A8OpenCV%E3%80%8B(%E5%85%AD)%20%E5%9B%BE%E5%83%8F%E4%B8%AD%E7%9A%84%E5%BD%A2%E7%8A%B6%EF%BC%881%EF%BC%89%20-%20%E7%BB%BC%E5%90%88%E7%BC%96%E7%A8%8B%E7%B1%BB%E5%85%B6%E4%BB%96%E7%BB%BC%E5%90%88%20-%20%E7%BA%A2%E9%BB%91%E8%81%94%E7%9B%9F_files/shBrushPython.js"></script><script type="text/javascript" src="%E3%80%8A%E5%AE%9E%E7%94%A8OpenCV%E3%80%8B(%E5%85%AD)%20%E5%9B%BE%E5%83%8F%E4%B8%AD%E7%9A%84%E5%BD%A2%E7%8A%B6%EF%BC%881%EF%BC%89%20-%20%E7%BB%BC%E5%90%88%E7%BC%96%E7%A8%8B%E7%B1%BB%E5%85%B6%E4%BB%96%E7%BB%BC%E5%90%88%20-%20%E7%BA%A2%E9%BB%91%E8%81%94%E7%9B%9F_files/shBrushRuby.js"></script><script type="text/javascript" src="%E3%80%8A%E5%AE%9E%E7%94%A8OpenCV%E3%80%8B(%E5%85%AD)%20%E5%9B%BE%E5%83%8F%E4%B8%AD%E7%9A%84%E5%BD%A2%E7%8A%B6%EF%BC%881%EF%BC%89%20-%20%E7%BB%BC%E5%90%88%E7%BC%96%E7%A8%8B%E7%B1%BB%E5%85%B6%E4%BB%96%E7%BB%BC%E5%90%88%20-%20%E7%BA%A2%E9%BB%91%E8%81%94%E7%9B%9F_files/shBrushScala.js"></script><script type="text/javascript" src="%E3%80%8A%E5%AE%9E%E7%94%A8OpenCV%E3%80%8B(%E5%85%AD)%20%E5%9B%BE%E5%83%8F%E4%B8%AD%E7%9A%84%E5%BD%A2%E7%8A%B6%EF%BC%881%EF%BC%89%20-%20%E7%BB%BC%E5%90%88%E7%BC%96%E7%A8%8B%E7%B1%BB%E5%85%B6%E4%BB%96%E7%BB%BC%E5%90%88%20-%20%E7%BA%A2%E9%BB%91%E8%81%94%E7%9B%9F_files/shBrushSql.js"></script><script type="text/javascript" src="%E3%80%8A%E5%AE%9E%E7%94%A8OpenCV%E3%80%8B(%E5%85%AD)%20%E5%9B%BE%E5%83%8F%E4%B8%AD%E7%9A%84%E5%BD%A2%E7%8A%B6%EF%BC%881%EF%BC%89%20-%20%E7%BB%BC%E5%90%88%E7%BC%96%E7%A8%8B%E7%B1%BB%E5%85%B6%E4%BB%96%E7%BB%BC%E5%90%88%20-%20%E7%BA%A2%E9%BB%91%E8%81%94%E7%9B%9F_files/shBrushVb.js"></script><script type="text/javascript" src="%E3%80%8A%E5%AE%9E%E7%94%A8OpenCV%E3%80%8B(%E5%85%AD)%20%E5%9B%BE%E5%83%8F%E4%B8%AD%E7%9A%84%E5%BD%A2%E7%8A%B6%EF%BC%881%EF%BC%89%20-%20%E7%BB%BC%E5%90%88%E7%BC%96%E7%A8%8B%E7%B1%BB%E5%85%B6%E4%BB%96%E7%BB%BC%E5%90%88%20-%20%E7%BA%A2%E9%BB%91%E8%81%94%E7%9B%9F_files/shBrushXml.js"></script><script type="text/javascript" src="%E3%80%8A%E5%AE%9E%E7%94%A8OpenCV%E3%80%8B(%E5%85%AD)%20%E5%9B%BE%E5%83%8F%E4%B8%AD%E7%9A%84%E5%BD%A2%E7%8A%B6%EF%BC%881%EF%BC%89%20-%20%E7%BB%BC%E5%90%88%E7%BC%96%E7%A8%8B%E7%B1%BB%E5%85%B6%E4%BB%96%E7%BB%BC%E5%90%88%20-%20%E7%BA%A2%E9%BB%91%E8%81%94%E7%9B%9F_files/shBrushPerl.js"></script>
+<script type="text/javascript">SyntaxHighlighter.all();</script>
+<script type="text/javascript" src="%E3%80%8A%E5%AE%9E%E7%94%A8OpenCV%E3%80%8B(%E5%85%AD)%20%E5%9B%BE%E5%83%8F%E4%B8%AD%E7%9A%84%E5%BD%A2%E7%8A%B6%EF%BC%881%EF%BC%89%20-%20%E7%BB%BC%E5%90%88%E7%BC%96%E7%A8%8B%E7%B1%BB%E5%85%B6%E4%BB%96%E7%BB%BC%E5%90%88%20-%20%E7%BA%A2%E9%BB%91%E8%81%94%E7%9B%9F_files/login.js"></script>
+<script type="text/javascript">
+ajaxlogin(encodeURIComponent(location.href),1,3);
+
+function showLogin(){
+	window.art.dialog({id:'Login',iframe:'//www.2cto.com/index.php?m=member&c=index&a=login&tupe=mini', title:'快捷登陆', width:'450', height:'310', lock:true}, function(){var d = window.art.dialog({id:'Login'}).data.iframe;var form = d.document.getElementById('dosubmit');form.click();return false;}, function(){window.art.dialog({id:'Login'}).close()});void(0);
+}
+function add_favorite(title) {
+		$.getJSON('https://www.2cto.com/api.php?op=add_favorite&title='+encodeURIComponent(title)+'&url='+encodeURIComponent(location.href)+'&'+Math.random()+'&callback=?', function(data){
+			if(data.status==1)	{
+				$("#favorite").html('收藏成功');
+			} else {
+				alert('请登陆');
+				window.location.href='//home.2cto.com/?forward='+encodeURIComponent(location.href);
+			}
+		});
+	}
+</script>
+<script type="text/javascript">
+	$(function(){
+	  $('#Article img').LoadImage(true, 630, 560,'http://statics.2cto.com/images/s_nopic.gif');    
+	})
+</script>
+<script> 
+	function copyToClipBoard(){ 
+		var clipBoardContent=document.title + '\r\n' + document.location; 
+		clipBoardContent+='\r\n';	//内容
+
+		var copyurl = clipBoardContent;
+		$(".ckcopy").zclip({
+			path: "https://statics.2cto.com/js/zeroclipboard/ZeroClipboard.swf",
+			copy: copyurl,
+			afterCopy: function() {
+				alert('链接复制成功');
+			},
+			clickAfter: false
+		});
+	} 
+	$(function (){
+		$(".ckcopy").click();
+	});
+</script>
+<!-- <script>
+  (function(){
+    var appid = 'cyrBEfE7C',
+    conf = 'prod_830794cf494da8b808afb2994cfe0fee';
+    var doc = document,
+    s = doc.createElement('script'),
+    h = doc.getElementsByTagName('head')[0] || doc.head || doc.documentElement;
+    s.type = 'text/javascript';
+    s.charset = 'utf-8';
+    s.src =  '//assets.changyan.sohu.com/upload/changyan.js?conf='+ conf +'&appid=' + appid;
+    h.insertBefore(s,h.firstChild);
+    window.SCS_NO_IFRAME = true;
+  })()
+</script> -->
+<script>
+<!--window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];-->
+</script>
+
+</body></html>

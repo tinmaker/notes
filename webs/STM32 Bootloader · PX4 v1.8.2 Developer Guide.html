@@ -1,0 +1,2017 @@
+<!DOCTYPE html>
+<html lang="zh"><head>
+        <meta charset="UTF-8">
+        <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+        <title>STM32 Bootloader · PX4 v1.8.2 Developer Guide</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 3.2.3">
+        
+        
+        
+    
+    <link rel="stylesheet" href="STM32%20Bootloader%20%C2%B7%20PX4%20v1.8.2%20Developer%20Guide_files/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="STM32%20Bootloader%20%C2%B7%20PX4%20v1.8.2%20Developer%20Guide_files/plugin_003.css">
+                
+            
+                
+                <link rel="stylesheet" href="STM32%20Bootloader%20%C2%B7%20PX4%20v1.8.2%20Developer%20Guide_files/plugin_002.css">
+                
+            
+                
+                <link rel="stylesheet" href="STM32%20Bootloader%20%C2%B7%20PX4%20v1.8.2%20Developer%20Guide_files/plugin_005.css">
+                
+            
+                
+                <link rel="stylesheet" href="STM32%20Bootloader%20%C2%B7%20PX4%20v1.8.2%20Developer%20Guide_files/plugin.css">
+                
+            
+                
+                <link rel="stylesheet" href="STM32%20Bootloader%20%C2%B7%20PX4%20v1.8.2%20Developer%20Guide_files/plugin_004.css">
+                
+            
+                
+                <link rel="stylesheet" href="STM32%20Bootloader%20%C2%B7%20PX4%20v1.8.2%20Developer%20Guide_files/website.css">
+                
+            
+                
+                <link rel="stylesheet" href="STM32%20Bootloader%20%C2%B7%20PX4%20v1.8.2%20Developer%20Guide_files/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="STM32%20Bootloader%20%C2%B7%20PX4%20v1.8.2%20Developer%20Guide_files/website_002.css">
+                
+            
+                
+                <link rel="stylesheet" href="STM32%20Bootloader%20%C2%B7%20PX4%20v1.8.2%20Developer%20Guide_files/theme_styles.css">
+                
+            
+        
+
+    
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+        
+    
+    
+    <meta name="HandheldFriendly" content="true">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="http://dev.px4.io/gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="http://dev.px4.io/gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    <link rel="next" href="http://dev.px4.io/zh/test_and_ci/">
+    
+    
+    <link rel="prev" href="http://dev.px4.io/zh/advanced/out_of_tree_modules.html">
+    
+
+    </head>
+    <body>
+        
+    
+    <!-- ##HW Add dronecode menu -->
+    <div id="common_dronecode_menu">
+
+      <div class="common_menu_logo large_version">
+        <a href="https://www.dronecode.org/">
+          <img src="STM32%20Bootloader%20%C2%B7%20PX4%20v1.8.2%20Developer%20Guide_files/dronecode_top_bar_logo_full.png" alt="Dronecode logo (large)">
+        </a>
+      </div>
+      <div class="common_menu_logo small_version">
+        <a href="https://www.dronecode.org/">
+          <img src="STM32%20Bootloader%20%C2%B7%20PX4%20v1.8.2%20Developer%20Guide_files/dronecode_top_bar_logo_small.png" alt="Dronecode logo (small)">
+        </a>
+      </div>
+      
+      <div class="common_menu_options">
+        
+            <div class="common_dronecode_menu_item"><a href="http://px4.io/">PX4</a></div>
+            <div class="common_dronecode_menu_item large_version"><a href="http://qgroundcontrol.com/">QGroundControl</a></div>
+            <div class="common_dronecode_menu_item small_version"><a href="http://qgroundcontrol.com/">QGC</a></div>
+            <div class="common_dronecode_menu_item"><a href="https://www.dronecode.org/sdk/">SDK</a></div>
+            <div class="common_dronecode_menu_item"><a href="https://mavlink.io/en/">MAVLink</a></div>
+            <div class="common_dronecode_menu_item large_version"><a href="https://www.dronecode.org/documentation/">Documentation</a></div>
+            <div class="common_dronecode_menu_item small_version"><a href="https://www.dronecode.org/documentation/">Docs</a></div>
+            <div class="common_dronecode_menu_item large_version"><a href="http://discuss.px4.io/">Support</a></div>
+            <div class="common_dronecode_menu_item small_version"><a href="http://discuss.px4.io/">Help</a></div>
+        
+      </div>
+    </div>
+    
+<!-- ##HW END Add dronecode menu -->
+    
+<div class="book">
+    <div class="book-summary">
+        
+            
+<div id="book-search-input" role="search">
+    <input placeholder="輸入並搜尋" type="text">
+</div>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+
+    
+
+    
+        
+        
+    
+        <li class="chapter " data-level="1.1" data-path="../">
+            
+                <a href="http://dev.px4.io/zh/">
+            
+                    
+                    项目介绍
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2" data-path="../setup/getting_started.html">
+            
+                <a href="http://dev.px4.io/zh/setup/getting_started.html">
+            
+                    
+                    新手上路
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.2.1" data-path="../setup/config_initial.html">
+            
+                <a href="http://dev.px4.io/zh/setup/config_initial.html">
+            
+                    
+                    初始设置
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.2" data-path="../setup/dev_env.html">
+            
+                <a href="http://dev.px4.io/zh/setup/dev_env.html">
+            
+                    
+                    安装工具链
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.2.2.1" data-path="../setup/dev_env_mac.html">
+            
+                <a href="http://dev.px4.io/zh/setup/dev_env_mac.html">
+            
+                    
+                    Mac OS
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.2.2" data-path="../setup/dev_env_linux.html">
+            
+                <a href="http://dev.px4.io/zh/setup/dev_env_linux.html">
+            
+                    
+                    Linux
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.2.2.2.1" data-path="../setup/dev_env_linux_boutique.html">
+            
+                <a href="http://dev.px4.io/zh/setup/dev_env_linux_boutique.html">
+            
+                    
+                    Advanced Linux
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.2.3" data-path="../setup/dev_env_windows.html">
+            
+                <a href="http://dev.px4.io/zh/setup/dev_env_windows.html">
+            
+                    
+                    Windows
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.3" data-path="../setup/fast-rtps-installation.html">
+            
+                <a href="http://dev.px4.io/zh/setup/fast-rtps-installation.html">
+            
+                    
+                    Fast RTPS installation
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.4" data-path="../setup/building_px4.html">
+            
+                <a href="http://dev.px4.io/zh/setup/building_px4.html">
+            
+                    
+                    代码编译
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.5" data-path="../setup/config_advanced.html">
+            
+                <a href="http://dev.px4.io/zh/setup/config_advanced.html">
+            
+                    
+                    高级配置
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.6" data-path="../contribute/">
+            
+                <a href="http://dev.px4.io/zh/contribute/">
+            
+                    
+                    贡献&amp;  开发者电话会议
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.2.6.1" data-path="../contribute/git_examples.html">
+            
+                <a href="http://dev.px4.io/zh/contribute/git_examples.html">
+            
+                    
+                    GIT例程
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.6.2" data-path="../contribute/docs.html">
+            
+                <a href="http://dev.px4.io/zh/contribute/docs.html">
+            
+                    
+                    Documentation
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.7" data-path="../contribute/licenses.html">
+            
+                <a href="http://dev.px4.io/zh/contribute/licenses.html">
+            
+                    
+                    Licenses
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3" data-path="../concept/">
+            
+                <a href="http://dev.px4.io/zh/concept/">
+            
+                    
+                    概念解读
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.1" data-path="../concept/flight_modes.html">
+            
+                <a href="http://dev.px4.io/zh/concept/flight_modes.html">
+            
+                    
+                    飞行模式
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2" data-path="../concept/architecture.html">
+            
+                <a href="http://dev.px4.io/zh/concept/architecture.html">
+            
+                    
+                    结构概述
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.3" data-path="../concept/flight_stack.html">
+            
+                <a href="http://dev.px4.io/zh/concept/flight_stack.html">
+            
+                    
+                    飞行控制栈
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.4" data-path="../concept/middleware.html">
+            
+                <a href="http://dev.px4.io/zh/concept/middleware.html">
+            
+                    
+                    中间件
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.5" data-path="../concept/mixing.html">
+            
+                <a href="http://dev.px4.io/zh/concept/mixing.html">
+            
+                    
+                    混控和执行器
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.6" data-path="../concept/pwm_limit.html">
+            
+                <a href="http://dev.px4.io/zh/concept/pwm_limit.html">
+            
+                    
+                    PWM限制状态机
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4" data-path="../hardware/">
+            
+                <a href="http://dev.px4.io/zh/hardware/">
+            
+                    
+                    Hardware
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.1" data-path="../flight_controller/">
+            
+                <a href="http://dev.px4.io/zh/flight_controller/">
+            
+                    
+                    自驾仪硬件
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.1.1">
+            
+                <a target="_blank" href="https://dev.px4.io/en/debug/porting-guide.html">
+            
+                    
+                    Porting Guide
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2" data-path="../airframes/">
+            
+                <a href="http://dev.px4.io/zh/airframes/">
+            
+                    
+                    机型
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.2.1" data-path="../airframes/architecture.html">
+            
+                <a href="http://dev.px4.io/zh/airframes/architecture.html">
+            
+                    
+                    统一的基础代码
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.2" data-path="../airframes/airframe_reference.html">
+            
+                <a href="http://dev.px4.io/zh/airframes/airframe_reference.html">
+            
+                    
+                    参考机型
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2.3" data-path="../airframes/adding_a_new_frame.html">
+            
+                <a href="http://dev.px4.io/zh/airframes/adding_a_new_frame.html">
+            
+                    
+                    添加一个新的机型
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.3" data-path="../data_links/">
+            
+                <a href="http://dev.px4.io/zh/data_links/">
+            
+                    
+                    Data Links
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.3.1" data-path="../data_links/sik_radio.html">
+            
+                <a href="http://dev.px4.io/zh/data_links/sik_radio.html">
+            
+                    
+                    SiK Radio
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.3.2" data-path="../advanced/telemetry_wifi.html">
+            
+                <a href="http://dev.px4.io/zh/advanced/telemetry_wifi.html">
+            
+                    
+                    Wifi数传
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.3.3" data-path="../tutorials/telemetry.html">
+            
+                <a href="http://dev.px4.io/zh/tutorials/telemetry.html">
+            
+                    
+                    数传
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4" data-path="../sensor_bus/">
+            
+                <a href="http://dev.px4.io/zh/sensor_bus/">
+            
+                    
+                    传感器和执行机构总线
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.4.1" data-path="../sensor_bus/i2c.html">
+            
+                <a href="http://dev.px4.io/zh/sensor_bus/i2c.html">
+            
+                    
+                    I2C总线
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.4.1.1" data-path="../sensor/sf1xx_lidar_setup.html">
+            
+                <a href="http://dev.px4.io/zh/sensor/sf1xx_lidar_setup.html">
+            
+                    
+                    SF1XX lidar
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4.2" data-path="../uavcan/">
+            
+                <a href="http://dev.px4.io/zh/uavcan/">
+            
+                    
+                    UAVCAN总线
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.4.2.1" data-path="../uavcan/bootloader_installation.html">
+            
+                <a href="http://dev.px4.io/zh/uavcan/bootloader_installation.html">
+            
+                    
+                    UAVCAN Bootloader
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4.2.2" data-path="../uavcan/node_firmware.html">
+            
+                <a href="http://dev.px4.io/zh/uavcan/node_firmware.html">
+            
+                    
+                    UAVCAN固件升级
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4.2.3" data-path="../uavcan/node_enumeration.html">
+            
+                <a href="http://dev.px4.io/zh/uavcan/node_enumeration.html">
+            
+                    
+                    UAVCAN配置
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4.2.4" data-path="../uavcan/notes.html">
+            
+                <a href="http://dev.px4.io/zh/uavcan/notes.html">
+            
+                    
+                    UAVCAN 的各种笔记
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4.3" data-path="../sensor_bus/uart.html">
+            
+                <a href="http://dev.px4.io/zh/sensor_bus/uart.html">
+            
+                    
+                    UART
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.4.3.1" data-path="../sensor/uart_ulanding_radar.html">
+            
+                <a href="http://dev.px4.io/zh/sensor/uart_ulanding_radar.html">
+            
+                    
+                    uLanding Radar
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4.4" data-path="../advanced/gimbal_control.html">
+            
+                <a href="http://dev.px4.io/zh/advanced/gimbal_control.html">
+            
+                    
+                    设置云台控制
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.5" data-path="../companion_computer/pixhawk_companion.html">
+            
+                <a href="http://dev.px4.io/zh/companion_computer/pixhawk_companion.html">
+            
+                    
+                    协同电脑
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5" data-path="../simulation/">
+            
+                <a href="http://dev.px4.io/zh/simulation/">
+            
+                    
+                    仿真
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.5.1" data-path="../simulation/jmavsim.html">
+            
+                <a href="http://dev.px4.io/zh/simulation/jmavsim.html">
+            
+                    
+                    基本仿真
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.2" data-path="../simulation/gazebo.html">
+            
+                <a href="http://dev.px4.io/zh/simulation/gazebo.html">
+            
+                    
+                    Gazebo仿真
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.3" data-path="../simulation/hitl.html">
+            
+                <a href="http://dev.px4.io/zh/simulation/hitl.html">
+            
+                    
+                    HITL仿真
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.4" data-path="../simulation/ros_interface.html">
+            
+                <a href="http://dev.px4.io/zh/simulation/ros_interface.html">
+            
+                    
+                    连接到ROS
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.5" data-path="../simulation/airsim.html">
+            
+                <a href="http://dev.px4.io/zh/simulation/airsim.html">
+            
+                    
+                    AirSim仿真
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5.6" data-path="../simulation/multi-vehicle-simulation.html">
+            
+                <a href="http://dev.px4.io/zh/simulation/multi-vehicle-simulation.html">
+            
+                    
+                    多机仿真
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6" data-path="../middleware/">
+            
+                <a href="http://dev.px4.io/zh/middleware/">
+            
+                    
+                    中间件及架构
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.6.1" data-path="../middleware/uorb.html">
+            
+                <a href="http://dev.px4.io/zh/middleware/uorb.html">
+            
+                    
+                    uORB消息机制
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.2" data-path="../middleware/uorb_graph.html">
+            
+                <a href="http://dev.px4.io/zh/middleware/uorb_graph.html">
+            
+                    
+                    uORB Graph
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.3" data-path="../middleware/mavlink.html">
+            
+                <a href="http://dev.px4.io/zh/middleware/mavlink.html">
+            
+                    
+                    MAVLink消息机制
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.4" data-path="../middleware/micrortps.html">
+            
+                <a href="http://dev.px4.io/zh/middleware/micrortps.html">
+            
+                    
+                    RTPS/ROS2 Interface
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.6.4.1" data-path="../middleware/micrortps_throughput_test.html">
+            
+                <a href="http://dev.px4.io/zh/middleware/micrortps_throughput_test.html">
+            
+                    
+                    Throughput Test
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.4.2" data-path="../middleware/micrortps_manual_code_generation.html">
+            
+                <a href="http://dev.px4.io/zh/middleware/micrortps_manual_code_generation.html">
+            
+                    
+                    Manually Generate Client/Agent
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.5" data-path="../advanced/architecture_daemon.html">
+            
+                <a href="http://dev.px4.io/zh/advanced/architecture_daemon.html">
+            
+                    
+                    守护程序
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.6" data-path="../middleware/drivers.html">
+            
+                <a href="http://dev.px4.io/zh/middleware/drivers.html">
+            
+                    
+                    驱动框架
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7" data-path="../middleware/modules_main.html">
+            
+                <a href="http://dev.px4.io/zh/middleware/modules_main.html">
+            
+                    
+                    模块 &amp; 命令
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.7.1" data-path="../middleware/modules_command.html">
+            
+                <a href="http://dev.px4.io/zh/middleware/modules_command.html">
+            
+                    
+                    命令
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.2" data-path="../middleware/modules_communication.html">
+            
+                <a href="http://dev.px4.io/zh/middleware/modules_communication.html">
+            
+                    
+                    通信
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.3" data-path="../middleware/modules_driver.html">
+            
+                <a href="http://dev.px4.io/zh/middleware/modules_driver.html">
+            
+                    
+                    驱动
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7.4" data-path="../middleware/modules_system.html">
+            
+                <a href="http://dev.px4.io/zh/middleware/modules_system.html">
+            
+                    
+                    系统
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.8" data-path="../robotics/">
+            
+                <a href="http://dev.px4.io/zh/robotics/">
+            
+                    
+                    Robotics
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.8.1" data-path="../ros/offboard_control.html">
+            
+                <a href="http://dev.px4.io/zh/ros/offboard_control.html">
+            
+                    
+                    用Linux进行外部控制
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.8.2" data-path="../ros/">
+            
+                <a href="http://dev.px4.io/zh/ros/">
+            
+                    
+                    ROS
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.8.2.1" data-path="../ros/raspberrypi_installation.html">
+            
+                <a href="http://dev.px4.io/zh/ros/raspberrypi_installation.html">
+            
+                    
+                    在RPi上安装ROS
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.8.2.2" data-path="../ros/mavros_installation.html">
+            
+                <a href="http://dev.px4.io/zh/ros/mavros_installation.html">
+            
+                    
+                    MAVROS (ROS上的MAVLink)
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.8.2.3" data-path="../ros/mavros_offboard.html">
+            
+                <a href="http://dev.px4.io/zh/ros/mavros_offboard.html">
+            
+                    
+                    MAVROS外部控制例程
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.8.2.4" data-path="../ros/external_position_estimation.html">
+            
+                <a href="http://dev.px4.io/zh/ros/external_position_estimation.html">
+            
+                    
+                    外部位置估计
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.8.2.5" data-path="../simulation/gazebo_octomap.html">
+            
+                <a href="http://dev.px4.io/zh/simulation/gazebo_octomap.html">
+            
+                    
+                    Gazebo Octomap
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.8.3" data-path="../robotics/dronekit.html">
+            
+                <a href="http://dev.px4.io/zh/robotics/dronekit.html">
+            
+                    
+                    DroneKit
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.9" data-path="../debug/">
+            
+                <a href="http://dev.px4.io/zh/debug/">
+            
+                    
+                    Debugging/Logging
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.9.1" data-path="../debug/faq.html">
+            
+                <a href="http://dev.px4.io/zh/debug/faq.html">
+            
+                    
+                    FAQ
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.9.2" data-path="../debug/system_console.html">
+            
+                <a href="http://dev.px4.io/zh/debug/system_console.html">
+            
+                    
+                    系统控制台
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.9.3" data-path="../debug/gdb_debugging.html">
+            
+                <a href="http://dev.px4.io/zh/debug/gdb_debugging.html">
+            
+                    
+                    自驾仪调试
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.9.4" data-path="../debug/sensor_uorb_topic_debugging.html">
+            
+                <a href="http://dev.px4.io/zh/debug/sensor_uorb_topic_debugging.html">
+            
+                    
+                    Sensor/Topic Debugging
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.9.5" data-path="../debug/simulation_debugging.html">
+            
+                <a href="http://dev.px4.io/zh/debug/simulation_debugging.html">
+            
+                    
+                    仿真调试
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.9.6" data-path="../debug/system_wide_replay.html">
+            
+                <a href="http://dev.px4.io/zh/debug/system_wide_replay.html">
+            
+                    
+                    System-wide Replay
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.9.7" data-path="../debug/debug_values.html">
+            
+                <a href="http://dev.px4.io/zh/debug/debug_values.html">
+            
+                    
+                    发送调试的值
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.9.8" data-path="../debug/profiling.html">
+            
+                <a href="http://dev.px4.io/zh/debug/profiling.html">
+            
+                    
+                    Profiling
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.9.9" data-path="../log/logging.html">
+            
+                <a href="http://dev.px4.io/zh/log/logging.html">
+            
+                    
+                    日志记录
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.9.10" data-path="../log/flight_log_analysis.html">
+            
+                <a href="http://dev.px4.io/zh/log/flight_log_analysis.html">
+            
+                    
+                    飞行日志分析
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.9.11" data-path="../log/ulog_file_format.html">
+            
+                <a href="http://dev.px4.io/zh/log/ulog_file_format.html">
+            
+                    
+                    ULog文件格式
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.10" data-path="../tutorials/tutorials.html">
+            
+                <a href="http://dev.px4.io/zh/tutorials/tutorials.html">
+            
+                    
+                    教程
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.10.1" data-path="../qgc/">
+            
+                <a href="http://dev.px4.io/zh/qgc/">
+            
+                    
+                    地面站
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.10.2" data-path="../tutorials/tutorial_hello_sky.html">
+            
+                <a href="http://dev.px4.io/zh/tutorials/tutorial_hello_sky.html">
+            
+                    
+                    编写应用程序
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.10.3" data-path="../qgc/video_streaming.html">
+            
+                <a href="http://dev.px4.io/zh/qgc/video_streaming.html">
+            
+                    
+                    QGC的视频流
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.10.4" data-path="../qgc/video_streaming_wifi_broadcast.html">
+            
+                <a href="http://dev.px4.io/zh/qgc/video_streaming_wifi_broadcast.html">
+            
+                    
+                    远距离视频流
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.10.5" data-path="../tutorials/rtk-gps.html">
+            
+                <a href="http://dev.px4.io/zh/tutorials/rtk-gps.html">
+            
+                    
+                    u-blox M8P RTK
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.10.6" data-path="../tutorials/tuning_the_ecl_ekf.html">
+            
+                <a href="http://dev.px4.io/zh/tutorials/tuning_the_ecl_ekf.html">
+            
+                    
+                    ecl EKF
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.10.7" data-path="../tutorials/pre_flight_checks.html">
+            
+                <a href="http://dev.px4.io/zh/tutorials/pre_flight_checks.html">
+            
+                    
+                    飞行前检查
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.10.8" data-path="../tutorials/land_detector.html">
+            
+                <a href="http://dev.px4.io/zh/tutorials/land_detector.html">
+            
+                    
+                    着陆检测
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.10.9" data-path="../tutorials/linux_sbus.html">
+            
+                <a href="http://dev.px4.io/zh/tutorials/linux_sbus.html">
+            
+                    
+                    Linux系统下使用S.Bus驱动
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.11" data-path="../advanced/">
+            
+                <a href="http://dev.px4.io/zh/advanced/">
+            
+                    
+                    Advanced Topics
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.11.1" data-path="../concept/system_startup.html">
+            
+                <a href="http://dev.px4.io/zh/concept/system_startup.html">
+            
+                    
+                    系统启动
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.11.2" data-path="../advanced/parameters_and_configurations.html">
+            
+                <a href="http://dev.px4.io/zh/advanced/parameters_and_configurations.html">
+            
+                    
+                    参数&amp;配置
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.11.3" data-path="../advanced/parameter_reference.html">
+            
+                <a href="http://dev.px4.io/zh/advanced/parameter_reference.html">
+            
+                    
+                    参考参数
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.11.4" data-path="../advanced/realsense_intel_driver.html">
+            
+                <a href="http://dev.px4.io/zh/advanced/realsense_intel_driver.html">
+            
+                    
+                    安装Intel RealSense R200的驱动
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.11.5" data-path="../advanced/switching_state_estimators.html">
+            
+                <a href="http://dev.px4.io/zh/advanced/switching_state_estimators.html">
+            
+                    
+                    切换状态估计器
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.11.6" data-path="../advanced/out_of_tree_modules.html">
+            
+                <a href="http://dev.px4.io/zh/advanced/out_of_tree_modules.html">
+            
+                    
+                    外部模块
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter active" data-level="1.11.7" data-path="stm32_bootloader.html">
+            
+                <a href="http://dev.px4.io/zh/software_update/stm32_bootloader.html">
+            
+                    
+                    STM32 Bootloader
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.12" data-path="../test_and_ci/">
+            
+                <a href="http://dev.px4.io/zh/test_and_ci/">
+            
+                    
+                    测试和持续集成
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.12.1">
+            
+                <a target="_blank" href="https://dev.px4.io/en/test_and_ci/unit_tests.html">
+            
+                    
+                    Unit Tests
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.12.2" data-path="../test_and_ci/continous_integration.html">
+            
+                <a href="http://dev.px4.io/zh/test_and_ci/continous_integration.html">
+            
+                    
+                    持续集成
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.12.3" data-path="../test_and_ci/jenkins_ci.html">
+            
+                <a href="http://dev.px4.io/zh/test_and_ci/jenkins_ci.html">
+            
+                    
+                    Jenkins持续集成环境
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.12.4" data-path="../test_and_ci/integration_testing.html">
+            
+                <a href="http://dev.px4.io/zh/test_and_ci/integration_testing.html">
+            
+                    
+                    综合测试
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.12.5" data-path="../test_and_ci/docker.html">
+            
+                <a href="http://dev.px4.io/zh/test_and_ci/docker.html">
+            
+                    
+                    Docker容器
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.12.6" data-path="../test_and_ci/maintenance.html">
+            
+                <a href="http://dev.px4.io/zh/test_and_ci/maintenance.html">
+            
+                    
+                    维护
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+    
+        
+        <li class="header">Dronecode Shortcuts</li>
+        
+        
+    
+        <li class="chapter " data-level="2.1">
+            
+                <a target="_blank" href="https://docs.px4.io/en/">
+            
+                    
+                    PX4用户指南
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="2.2">
+            
+                <a target="_blank" href="https://docs.qgroundcontrol.com/en/">
+            
+                    
+                    QGroundControl用户指南
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="2.3">
+            
+                <a target="_blank" href="https://dev.qgroundcontrol.com/en/">
+            
+                    
+                    QGroundControl开发指南
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="2.4">
+            
+                <a target="_blank" href="https://mavlink.io/en/">
+            
+                    
+                    MAVLink开发指南
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="2.5">
+            
+                <a target="_blank" href="https://sdk.dronecode.org/en/">
+            
+                    
+                    Dronecode SDK
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="2.6">
+            
+                <a target="_blank" href="https://camera-manager.dronecode.org/en/">
+            
+                    
+                    Dronecode Camera Manager
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com/" target="blank" class="gitbook-link">
+            本書使用 GitBook 釋出
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
+    </div>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href="http://dev.px4.io/zh/">STM32 Bootloader</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <h1 id="stm32-bootloader"><a name="stm32-bootloader" class="plugin-anchor" href="#stm32-bootloader"><i class="fa fa-link" aria-hidden="true"></i></a>STM32 BootLoader</h1>
+<p>PX4 bootloader的代码在Github的 <a href="https://github.com/px4/bootloader" target="_blank">Bootloader</a> 仓库。</p>
+<h2 id="支持的飞控板"><a name="支持的飞控板" class="plugin-anchor" href="#支持的飞控板"><i class="fa fa-link" aria-hidden="true"></i></a>支持的飞控板</h2>
+<ul>
+<li>FMUv1 (PX4FMU, STM32F4)</li>
+<li>FMUv2 (Pixhawk 1, STM32F4)</li>
+<li>FMUv3 (Pixhawk 2, STM32F4)</li>
+<li>FMUv4 (Pixracer 3 和 Pixhawk 3 Pro, STM32F4)</li>
+<li>FMUv5 (Pixhawk 4, STM32F7)</li>
+<li>TAPv1 (TBA, STM32F4)</li>
+<li>ASCv1 (TBA, STM32F4)</li>
+</ul>
+<h2 id="构建bootloader"><a name="构建bootloader" class="plugin-anchor" href="#构建bootloader"><i class="fa fa-link" aria-hidden="true"></i></a>构建Bootloader</h2>
+<pre><code>git clone https://github.com/PX4/Bootloader.git
+cd Bootloader
+make
+</code></pre><p>经过这一步会为所有支持的飞控板生成一系列elf文件，这些文件都在BootLoader目录中。</p>
+<h2 id="刷bootloader"><a name="刷bootloader" class="plugin-anchor" href="#刷bootloader"><i class="fa fa-link" aria-hidden="true"></i></a>刷Bootloader</h2>
+<blockquote>
+<p>重要提醒：对于一些飞控板来说，为了使用JTAG\/SWD接口需要采取正确的供电顺序。正是按照所描述的这些步骤。 
+下列的说明适用于Blackmagic\/Dronecode探针。其他的JTAG探针可能需要使用类似的不同顺序。尝试刷BootLoader的开发者
+应该具备相关知识。如果你不知道如何进行这些操作，或许你应该再三考虑你是否确实需要更改BootLoader中的任何东西。</p>
+</blockquote>
+<ul>
+<li>断开JTAG连线</li>
+<li>连接USB电源线</li>
+<li>连接JTAG</li>
+</ul>
+<h2 id="使用正确的串口"><a name="使用正确的串口" class="plugin-anchor" href="#使用正确的串口"><i class="fa fa-link" aria-hidden="true"></i></a>使用正确的串口</h2>
+<ul>
+<li>LINUX: <code>/dev/serial/by-id/usb-Black_Sphere_XXX-if00</code></li>
+<li>MAC OS: 确认使用的是xxx口而不是tty.xxx口: <code>tar ext /dev/tty.usbmodemDDEasdf</code></li>
+</ul>
+<pre><code>arm-none-eabi-gdb
+  (gdb) tar ext /dev/serial/by-id/usb-Black_Sphere_XXX-if00
+  (gdb) mon swdp_scan
+  (gdb) attach 1
+  (gdb) mon option erase
+  (gdb) mon erase_mass
+  (gdb) load tapv1_bl.elf
+        ...
+        Transfer rate: 17 KB/sec, 828 bytes/write.
+  (gdb) kill
+</code></pre><h3 id="j-link"><a name="j-link" class="plugin-anchor" href="#j-link"><i class="fa fa-link" aria-hidden="true"></i></a>J-Link</h3>
+<p>关于 <a href="https://www.segger.com/jlink-gdb-server.html" target="_blank">J-Link GDB server</a>的教程点进去就行了。</p>
+<h4 id="必备条件"><a name="必备条件" class="plugin-anchor" href="#必备条件"><i class="fa fa-link" aria-hidden="true"></i></a>必备条件</h4>
+<p>从Segger官网下载<a href="https://www.segger.com/downloads/jlink" target="_blank">J-Link</a> 软件并按照其教程进行安装。</p>
+<h4 id="运行jlink-gdb"><a name="运行jlink-gdb" class="plugin-anchor" href="#运行jlink-gdb"><i class="fa fa-link" aria-hidden="true"></i></a>运行JLink GDB</h4>
+<p>FMUv1:</p>
+<pre><code class="lang-bash">JLinkGDBServer -select USB=0 -device STM32F405RG -if SWD-DP -speed 20000
+</code></pre>
+<p>AeroFC:</p>
+<pre><code class="lang-bash">JLinkGDBServer -select USB=0 -device STM32F429AI -if SWD-DP -speed 20000
+</code></pre>
+<h4 id="连接gdb"><a name="连接gdb" class="plugin-anchor" href="#连接gdb"><i class="fa fa-link" aria-hidden="true"></i></a>连接GDB</h4>
+<pre><code class="lang-bash">arm-none-eabi-gdb
+  (gdb) tar ext :2331
+  (gdb) load aerofcv1_bl.elf
+</code></pre>
+<h2 id="故障检测"><a name="故障检测" class="plugin-anchor" href="#故障检测"><i class="fa fa-link" aria-hidden="true"></i></a>故障检测</h2>
+<p>如果上述任意一条指令没有找到，要么你就是没有使用Blackmagic探针，或者是软件过时了。首先尝试升级探针软件。</p>
+<p>如果出现这个错误： <code>Error erasing flash with vFlashErase packet</code></p>
+<p>断开目标连接（同时让JTAG保持连接），进而运行下列指令</p>
+<pre><code>mon tpwr disable
+swdp_scan
+attach 1
+load tapv1_bl.elf
+</code></pre><p>此举将禁用目标连接的电源并尝试另一个刷写循环。</p>
+
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class="search-results-count"></span> results matching "<span class="search-query"></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
+        </div>
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class="search-query"></span>"</h1>
+            
+        </div>
+    </div>
+</div>
+
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+                
+                <a href="http://dev.px4.io/zh/advanced/out_of_tree_modules.html" class="navigation navigation-prev " aria-label="Previous page: 外部模块">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+                
+                
+                <a href="http://dev.px4.io/zh/test_and_ci/" class="navigation navigation-next " aria-label="Next page: 测试和持续集成">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+                
+            
+        
+    </div>
+
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"translated_page":"https://github.com/PX4/Devguide/blob/master/en/software_update/stm32_bootloader.md","translated_sha":"95b39d747851dd01c1fe5d36b24e59ec865e323e","title":"STM32 Bootloader","level":"1.11.7","depth":2,"next":{"title":"测试和持续集成","level":"1.12","depth":1,"path":"test_and_ci/README.md","ref":"test_and_ci/README.md","articles":[{"title":"Unit Tests","level":"1.12.1","depth":2,"url":"https://dev.px4.io/en/test_and_ci/unit_tests.html","ref":"https://dev.px4.io/en/test_and_ci/unit_tests.html","articles":[]},{"title":"持续集成","level":"1.12.2","depth":2,"path":"test_and_ci/continous_integration.md","ref":"test_and_ci/continous_integration.md","articles":[]},{"title":"Jenkins持续集成环境","level":"1.12.3","depth":2,"path":"test_and_ci/jenkins_ci.md","ref":"test_and_ci/jenkins_ci.md","articles":[]},{"title":"综合测试","level":"1.12.4","depth":2,"path":"test_and_ci/integration_testing.md","ref":"test_and_ci/integration_testing.md","articles":[]},{"title":"Docker容器","level":"1.12.5","depth":2,"path":"test_and_ci/docker.md","ref":"test_and_ci/docker.md","articles":[]},{"title":"维护","level":"1.12.6","depth":2,"path":"test_and_ci/maintenance.md","ref":"test_and_ci/maintenance.md","articles":[]}]},"previous":{"title":"外部模块","level":"1.11.6","depth":2,"path":"advanced/out_of_tree_modules.md","ref":"advanced/out_of_tree_modules.md","articles":[]},"dir":"ltr"},"config":{"plugins":["youtube","richquotes@git+https://github.com/Dronecode/gitbook-plugin-richquotes.git","collapsible-menu","anchors","page-toc-button","ga","language-picker","custom-favicon","bulk-redirect@git+https://github.com/Dronecode/gitbook-plugin-bulk-redirect.git","toolbar@git+https://github.com/hamishwillee/gitbook-plugin-toolbar.git","validate-links","versions-select@git+https://github.com/Dronecode/gitbook-plugin-versions-select.git","mathjax@git+https://github.com/Dronecode/plugin-mathjax.git#update_cdn","mermaid","-stub-out-blocks@git+https://github.com/hamishwillee/gitbook-plugin-stub-out-blocks.git","theme-dronecode@git+https://github.com/dronecode/theme-dronecode.git"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"theme-dronecode":{"logo":{"logo_large":"gitbook-plugin-theme-dronecode/images/dronecode_top_bar_logo_full.png","logo_small":"gitbook-plugin-theme-dronecode/images/dronecode_top_bar_logo_small.png","url":"https://www.dronecode.org/"}},"validate-links":{"defaultScheme":"https","local":"warn","remote":"disabled"},"collapsible-menu":{},"language-picker":{"grid-columns":3},"youtube":{},"search":{},"mermaid":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"versions-select":{"type":"branches"},"fontsettings":{"theme":"white","family":"sans","size":2},"richquotes":{"tip":{"alert":"success","picto":"fa-thumbs-o-up"}},"highlight":{},"favicon":"favicon.ico","page-toc-button":{},"bulk-redirect":{"basepath":"/","redirectsFile":"redirects.json"},"custom-favicon":{},"mathjax":{"forceSVG":false,"version":"2.7.1"},"ga":{"configuration":"auto","token":"UA-33658859-3"},"versions":{"gitbookConfigURL":"https://raw.githubusercontent.com/PX4/Devguide/master/book.json"},"toolbar":{"buttons":[{"label":"Bug tracker","icon":"fa fa-bug","position":"left","url":"https://github.com/PX4/Devguide/issues/new?title=Doc+Bugv1.8.2:+{{title}}&body=DESCRIBE+PROBLEM+WITH+DOCS+HERE%0A%0ABug+Page:+[{{title}}]({{url}})"},{"label":"GitHub","icon":"fa fa-github","url":"https://github.com/PX4/Devguide"},{"label":"Edit page on github","icon":"fa fa-pencil-square-o","position":"left","url":"https://github.com/PX4/Devguide/edit/master/{{filepath_lang}}"}]},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false},"anchors":{}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{"logo":"./assets/site/logo_pro_small.png"},"title":"PX4 v1.8.2 Developer Guide","language":"zh","gitbook":"*"},"file":{"path":"software_update/stm32_bootloader.md","mtime":"2019-01-09T22:39:23.964Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2019-01-09T22:40:46.510Z"},"basePath":"..","book":{"language":"zh"}});
+        });
+    </script>
+</div>
+
+    
+
+        
+    <script src="STM32%20Bootloader%20%C2%B7%20PX4%20v1.8.2%20Developer%20Guide_files/gitbook.js"></script>
+    <script src="STM32%20Bootloader%20%C2%B7%20PX4%20v1.8.2%20Developer%20Guide_files/theme.js"></script>
+    
+        
+        <script src="STM32%20Bootloader%20%C2%B7%20PX4%20v1.8.2%20Developer%20Guide_files/plugin_003.js"></script>
+        
+    
+        
+        <script src="STM32%20Bootloader%20%C2%B7%20PX4%20v1.8.2%20Developer%20Guide_files/plugin.js"></script>
+        
+    
+        
+        <script src="STM32%20Bootloader%20%C2%B7%20PX4%20v1.8.2%20Developer%20Guide_files/plugin_002.js"></script>
+        
+    
+        
+        <script src="STM32%20Bootloader%20%C2%B7%20PX4%20v1.8.2%20Developer%20Guide_files/plugin_005.js"></script>
+        
+    
+        
+        <script src="STM32%20Bootloader%20%C2%B7%20PX4%20v1.8.2%20Developer%20Guide_files/buttons.js"></script>
+        
+    
+        
+        <script src="STM32%20Bootloader%20%C2%B7%20PX4%20v1.8.2%20Developer%20Guide_files/plugin_004.js"></script>
+        
+    
+        
+        <script src="STM32%20Bootloader%20%C2%B7%20PX4%20v1.8.2%20Developer%20Guide_files/MathJax.js"></script></body></html>

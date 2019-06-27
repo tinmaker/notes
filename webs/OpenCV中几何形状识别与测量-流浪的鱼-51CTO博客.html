@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link type="favicon" rel="shortcut icon" href="https://blog.51cto.com/favicon.ico">
+        <title>OpenCV中几何形状识别与测量-流浪的鱼-51CTO博客</title>
+    <meta name="keywords" content="OpenCV,Python,图像处理,形状识别,几何分析">
+<meta name="description" content="基于Python+OpenCV3.4 实现图像分析与策略，识别三角形、矩形、多边形、圆、计算它们的重心、周长与面积，等二值图像测量与分析的主要操作！">    <link href="OpenCV%E4%B8%AD%E5%87%A0%E4%BD%95%E5%BD%A2%E7%8A%B6%E8%AF%86%E5%88%AB%E4%B8%8E%E6%B5%8B%E9%87%8F-%E6%B5%81%E6%B5%AA%E7%9A%84%E9%B1%BC-51CTO%E5%8D%9A%E5%AE%A2_files/header.css" rel="stylesheet"><link href="OpenCV%E4%B8%AD%E5%87%A0%E4%BD%95%E5%BD%A2%E7%8A%B6%E8%AF%86%E5%88%AB%E4%B8%8E%E6%B5%8B%E9%87%8F-%E6%B5%81%E6%B5%AA%E7%9A%84%E9%B1%BC-51CTO%E5%8D%9A%E5%AE%A2_files/other.css" rel="stylesheet"><link href="OpenCV%E4%B8%AD%E5%87%A0%E4%BD%95%E5%BD%A2%E7%8A%B6%E8%AF%86%E5%88%AB%E4%B8%8E%E6%B5%8B%E9%87%8F-%E6%B5%81%E6%B5%AA%E7%9A%84%E9%B1%BC-51CTO%E5%8D%9A%E5%AE%A2_files/right.css" rel="stylesheet"><link href="OpenCV%E4%B8%AD%E5%87%A0%E4%BD%95%E5%BD%A2%E7%8A%B6%E8%AF%86%E5%88%AB%E4%B8%8E%E6%B5%8B%E9%87%8F-%E6%B5%81%E6%B5%AA%E7%9A%84%E9%B1%BC-51CTO%E5%8D%9A%E5%AE%A2_files/blog_details.css" rel="stylesheet"><link href="OpenCV%E4%B8%AD%E5%87%A0%E4%BD%95%E5%BD%A2%E7%8A%B6%E8%AF%86%E5%88%AB%E4%B8%8E%E6%B5%8B%E9%87%8F-%E6%B5%81%E6%B5%AA%E7%9A%84%E9%B1%BC-51CTO%E5%8D%9A%E5%AE%A2_files/highlight.css" rel="stylesheet">
+    <script type="text/javascript" async="" src="OpenCV%E4%B8%AD%E5%87%A0%E4%BD%95%E5%BD%A2%E7%8A%B6%E8%AF%86%E5%88%AB%E4%B8%8E%E6%B5%8B%E9%87%8F-%E6%B5%81%E6%B5%AA%E7%9A%84%E9%B1%BC-51CTO%E5%8D%9A%E5%AE%A2_files/vds.js"></script><script src="OpenCV%E4%B8%AD%E5%87%A0%E4%BD%95%E5%BD%A2%E7%8A%B6%E8%AF%86%E5%88%AB%E4%B8%8E%E6%B5%8B%E9%87%8F-%E6%B5%81%E6%B5%AA%E7%9A%84%E9%B1%BC-51CTO%E5%8D%9A%E5%AE%A2_files/push.js"></script><script src="OpenCV%E4%B8%AD%E5%87%A0%E4%BD%95%E5%BD%A2%E7%8A%B6%E8%AF%86%E5%88%AB%E4%B8%8E%E6%B5%8B%E9%87%8F-%E6%B5%81%E6%B5%AA%E7%9A%84%E9%B1%BC-51CTO%E5%8D%9A%E5%AE%A2_files/hm.js"></script><script>
+        var HOME_URL = 'https://home.51cto.com/';
+    </script>
+    <script src="OpenCV%E4%B8%AD%E5%87%A0%E4%BD%95%E5%BD%A2%E7%8A%B6%E8%AF%86%E5%88%AB%E4%B8%8E%E6%B5%8B%E9%87%8F-%E6%B5%81%E6%B5%AA%E7%9A%84%E9%B1%BC-51CTO%E5%8D%9A%E5%AE%A2_files/jquery_002.js"></script><script src="OpenCV%E4%B8%AD%E5%87%A0%E4%BD%95%E5%BD%A2%E7%8A%B6%E8%AF%86%E5%88%AB%E4%B8%8E%E6%B5%8B%E9%87%8F-%E6%B5%81%E6%B5%AA%E7%9A%84%E9%B1%BC-51CTO%E5%8D%9A%E5%AE%A2_files/cookie.js"></script><script src="OpenCV%E4%B8%AD%E5%87%A0%E4%BD%95%E5%BD%A2%E7%8A%B6%E8%AF%86%E5%88%AB%E4%B8%8E%E6%B5%8B%E9%87%8F-%E6%B5%81%E6%B5%AA%E7%9A%84%E9%B1%BC-51CTO%E5%8D%9A%E5%AE%A2_files/login.js"></script><script src="OpenCV%E4%B8%AD%E5%87%A0%E4%BD%95%E5%BD%A2%E7%8A%B6%E8%AF%86%E5%88%AB%E4%B8%8E%E6%B5%8B%E9%87%8F-%E6%B5%81%E6%B5%AA%E7%9A%84%E9%B1%BC-51CTO%E5%8D%9A%E5%AE%A2_files/common.js"></script><script src="OpenCV%E4%B8%AD%E5%87%A0%E4%BD%95%E5%BD%A2%E7%8A%B6%E8%AF%86%E5%88%AB%E4%B8%8E%E6%B5%8B%E9%87%8F-%E6%B5%81%E6%B5%AA%E7%9A%84%E9%B1%BC-51CTO%E5%8D%9A%E5%AE%A2_files/mbox.js"></script><script src="OpenCV%E4%B8%AD%E5%87%A0%E4%BD%95%E5%BD%A2%E7%8A%B6%E8%AF%86%E5%88%AB%E4%B8%8E%E6%B5%8B%E9%87%8F-%E6%B5%81%E6%B5%AA%E7%9A%84%E9%B1%BC-51CTO%E5%8D%9A%E5%AE%A2_files/follow.js"></script><script src="OpenCV%E4%B8%AD%E5%87%A0%E4%BD%95%E5%BD%A2%E7%8A%B6%E8%AF%86%E5%88%AB%E4%B8%8E%E6%B5%8B%E9%87%8F-%E6%B5%81%E6%B5%AA%E7%9A%84%E9%B1%BC-51CTO%E5%8D%9A%E5%AE%A2_files/vip.js"></script><script src="OpenCV%E4%B8%AD%E5%87%A0%E4%BD%95%E5%BD%A2%E7%8A%B6%E8%AF%86%E5%88%AB%E4%B8%8E%E6%B5%8B%E9%87%8F-%E6%B5%81%E6%B5%AA%E7%9A%84%E9%B1%BC-51CTO%E5%8D%9A%E5%AE%A2_files/window.js"></script><script src="OpenCV%E4%B8%AD%E5%87%A0%E4%BD%95%E5%BD%A2%E7%8A%B6%E8%AF%86%E5%88%AB%E4%B8%8E%E6%B5%8B%E9%87%8F-%E6%B5%81%E6%B5%AA%E7%9A%84%E9%B1%BC-51CTO%E5%8D%9A%E5%AE%A2_files/share.js"></script><style></style><link rel="stylesheet" href="OpenCV%E4%B8%AD%E5%87%A0%E4%BD%95%E5%BD%A2%E7%8A%B6%E8%AF%86%E5%88%AB%E4%B8%8E%E6%B5%8B%E9%87%8F-%E6%B5%81%E6%B5%AA%E7%9A%84%E9%B1%BC-51CTO%E5%8D%9A%E5%AE%A2_files/share_style0_16.css"></head>
+<body>
+<img src="OpenCV%E4%B8%AD%E5%87%A0%E4%BD%95%E5%BD%A2%E7%8A%B6%E8%AF%86%E5%88%AB%E4%B8%8E%E6%B5%8B%E9%87%8F-%E6%B5%81%E6%B5%AA%E7%9A%84%E9%B1%BC-51CTO%E5%8D%9A%E5%AE%A2_files/share_default.jpg" style="width:0; height:0; position:absolute;" border="0">
+<style type="text/css">
+	.service-btn{
+		width: 53px;
+height: 36px;
+color: #1ac6fe;
+line-height: 16px;
+padding-top: 50px;
+		display: inline-block;
+		background: url(https://s1.51cto.com/images/blog/201811/02/463350acf4c693cfb3dc248bc8a2a0eb.png) no-repeat center;
+	}
+	.service-btn:hover{
+		background: url(https://s1.51cto.com/images/blog/201811/02/2d5fa2ff4eb9ef66847aff20ba4c8bae.png) no-repeat center;
+height: 36px;
+color: #fff;
+line-height: 16px;
+padding-top: 50px;
+	}
+</style>
+<!--[if lt IE 9]>
+  <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+  <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+<![endif]-->
+<div id="topbanner14" style="position: relative;width:100%;height:40px;background:url(https://s1.51cto.com/images/blog/201905/09/35b614858be88dc3aa22df9d911acb79.jpg)">
+<a class="close fl" href="javascript:;" style="position:absolute;width:13px;height:13px;top:0px;z-index: 20;background: url('https://s1.51cto.com/images/blog/201808/23/0363c65f527ea7c9880ab5f275303d1a.png') 0 0 no-repeat;background-size: 100% 100%;left: 50%;margin-left: 587px;"></a>
+<a href="https://blog.51cto.com/cloumn/composedetail?id=9&amp;pc" target="_blank">
+  <img src="OpenCV%E4%B8%AD%E5%87%A0%E4%BD%95%E5%BD%A2%E7%8A%B6%E8%AF%86%E5%88%AB%E4%B8%8E%E6%B5%8B%E9%87%8F-%E6%B5%81%E6%B5%AA%E7%9A%84%E9%B1%BC-51CTO%E5%8D%9A%E5%AE%A2_files/d82b6251b6923be0ee6899d541dd5013.jpg" alt="" style="position:absolute;width:1200px;height:40px;margin-left: -600px;left:50%;z-index: 10;">
+</a>
+</div>
+<script>
+    $("#topbanner14").on("click",".close",function(){
+        $("#topbanner14").remove();
+    })
+</script>
+<div class="Header">
+  <div class="Page ">
+    <h1 class="Logo"><a href="https://blog.51cto.com/">Logo</a></h1>
+    <ul class="Navigates fl">
+      <li><a href="https://blog.51cto.com/">首页</a></li>
+      <li><a href="https://blog.51cto.com/original">文章</a></li>
+      <li><a href="https://blog.51cto.com/blog/follow">关注</a></li>
+      <li class="">
+        <a class="column-stress" href="https://blog.51cto.com/cloumn/index" target="_blank">订阅专栏</a>
+      </li>
+                    
+      
+    </ul>
+    <ul class="Navigates Navigates-right fr">
+      <li class="more maps">
+        <a href="javascript:void(0);">网站导航</a>
+        <div>
+            <a href="https://edu.51cto.com/" target="_blank">学院</a>
+            <a href="https://blog.51cto.com/" target="_blank">博客</a>
+            <a href="http://down.51cto.com/" target="_blank">下载</a>
+            <a href="https://home.51cto.com/" target="_blank">家园</a>
+            <a href="http://bbs.51cto.com/" target="_blank">论坛</a>
+            <a href="http://x.51cto.com/" target="_blank">CTO训练营</a>
+            <!--a href=" http://club.51cto.com?blog" target="_blank">CTO俱乐部</a-->
+            <a href="http://wot.51cto.com/" target="_blank">WOT</a>
+            <a href="http://www.51cto.com/" target="_blank">51CTO</a>
+            <i class="arrow"></i>
+        </div>
+      </li>
+                <li><a href="https://blog.51cto.com/site/login?reback=https%3A%2F%2Fblog.51cto.com%2Fgloomyfish%2F2104134%3Flb&amp;logintype=reg" target="_self">注册</a></li>
+          <li class="login"><a href="https://blog.51cto.com/site/login?reback=https%3A%2F%2Fblog.51cto.com%2Fgloomyfish%2F2104134%3Flb" target="_self">登录</a></li>
+                        <li class="mRead">
+          <a href="javascript:;">手机阅读</a>
+          <div>
+            <img src="OpenCV%E4%B8%AD%E5%87%A0%E4%BD%95%E5%BD%A2%E7%8A%B6%E8%AF%86%E5%88%AB%E4%B8%8E%E6%B5%8B%E9%87%8F-%E6%B5%81%E6%B5%AA%E7%9A%84%E9%B1%BC-51CTO%E5%8D%9A%E5%AE%A2_files/blog_qr.png">
+            <p>扫一扫体验手机阅读</p>
+            <i class="arrow"></i>
+          </div>
+        </li>
+            <li class="search"><a href="https://blog.51cto.com/search/index" target="_self">搜索</a></li>
+                  <li class="write"><a href="javascript:;" onclick="Login()">写文章</a></li>
+                  </ul>
+
+          <div class="clear"></div>
+  </div>
+</div>
+<script src="OpenCV%E4%B8%AD%E5%87%A0%E4%BD%95%E5%BD%A2%E7%8A%B6%E8%AF%86%E5%88%AB%E4%B8%8E%E6%B5%8B%E9%87%8F-%E6%B5%81%E6%B5%AA%E7%9A%84%E9%B1%BC-51CTO%E5%8D%9A%E5%AE%A2_files/box.js"></script> 
+<script>
+    var isLogin = '0';
+    var userId = '';
+    var imgpath = 'https://s1.51cto.com/';
+    var BLOG_URL = 'https://blog.51cto.com/';
+    var msg_num_url = '/index/ajax-msg-num';
+    $('.msg-follow, .msg-follow-max').eq(1).css({top: '91px'});
+    $('.msg-follow, .msg-follow-max').eq(2).css({top: '121px'});
+    setTimeout(function(){
+            $.ajax({
+                url:msg_num_url,
+                type:"get",
+                dataType:'json',
+                success:function(res){
+                    if(res.status == '0'){
+                       //
+                       var hasNewMsg = false;
+                       if(res.data.msgNum > 0 && !$('#myMsg i').hasClass('dot')){
+                            $('#myMsg i').addClass('dot');
+                            hasNewMsg = true;
+                       }
+                       if(res.data.notifyNum > 0 && !$('#myNotify i').hasClass('dot')){
+                           $('#myNotify i').addClass('dot');
+                           hasNewMsg = true;
+                       }
+                       if(res.data.recommend_new > 0 && !$('#myRecommend i').hasClass('dot')){
+                           $('#myRecommend i').addClass('dot');
+                           hasNewMsg = true;
+                       }
+                       if(hasNewMsg && !$('#myAllMsg i').hasClass('dot')){
+                           $('#myAllMsg i').addClass('dot');
+                       }
+                    }
+
+                }
+            });
+    },70);
+    //广告图
+$(function(){
+     new AutoAD({
+      ADD:$('<a href="https://blog.51cto.com/cloumn/composedetail?id=4&pc" class="closeMB" target="_blank" styel="display:block;"><img src="https://s1.51cto.com/images/blog/201905/15/68fa50845c8a3b873b9d151956748ccb.jpg"></a><a class="closeMB" style="position: absolute;right:2px;top: 3px;width: 50px;height: 40px;cursor: pointer;" href="javascript:;"></a>'),
+      W:500,
+      H:400,
+      cookie:'blog_activity_blog64',
+      mask:"#000",
+      ts:'21600',
+      noCBtn: true
+    }) 
+})    
+</script>
+ <script src="OpenCV%E4%B8%AD%E5%87%A0%E4%BD%95%E5%BD%A2%E7%8A%B6%E8%AF%86%E5%88%AB%E4%B8%8E%E6%B5%8B%E9%87%8F-%E6%B5%81%E6%B5%AA%E7%9A%84%E9%B1%BC-51CTO%E5%8D%9A%E5%AE%A2_files/entrance.js" id="zhichiScript" class="zhiCustomBtn" data-args="manual=true"></script>
+<a href="javascript:;" class="zhiCustomBtn" style="position: fixed;z-index: 2147483583;width: 60px;height: 6px;text-align: center;bottom:275px;right:0px;">
+<span class="service-btn">在线<br>客服</span>
+</a>
+
+<script type="text/javascript">
+var zhiManager = (getzhiSDKInstance());
+zhiManager.on("load", function() {
+    zhiManager.initBtnDOM();
+});
+//zhiManager.set('title','垃圾/广告信息举报');
+zhiManager.set('powered',false);
+zhiManager.set('color', '4285f4');
+zhiManager.set('customBtn', 'true');
+zhiManager.set('moduleType',2);
+zhiManager.set('size',{'width':360,'height':500});
+
+zhiManager.set('userinfo', {partnerId:'',uname:'',params:'{"用户名":""}'});
+zhiManager.set('customMargin', 20);
+zhiManager.set('horizontal', 20);
+zhiManager.set('vertical', 90);
+zhiManager.set('preVisitArgs',{'preVisitUrl': document.referrer?document.referrer:''});
+zhiManager.set('curVisitArgs',{'curVisitUrl': location.href,curVisitTitle:document.title,});
+</script>
+<div class="Content-box" style="min-height: 1041px;">
+    	<link rel="stylesheet" href="OpenCV%E4%B8%AD%E5%87%A0%E4%BD%95%E5%BD%A2%E7%8A%B6%E8%AF%86%E5%88%AB%E4%B8%8E%E6%B5%8B%E9%87%8F-%E6%B5%81%E6%B5%AA%E7%9A%84%E9%B1%BC-51CTO%E5%8D%9A%E5%AE%A2_files/mdeShow.css">
+<link rel="stylesheet" href="OpenCV%E4%B8%AD%E5%87%A0%E4%BD%95%E5%BD%A2%E7%8A%B6%E8%AF%86%E5%88%AB%E4%B8%8E%E6%B5%8B%E9%87%8F-%E6%B5%81%E6%B5%AA%E7%9A%84%E9%B1%BC-51CTO%E5%8D%9A%E5%AE%A2_files/tinyscrollbar.css">
+<script type="text/javascript" src="OpenCV%E4%B8%AD%E5%87%A0%E4%BD%95%E5%BD%A2%E7%8A%B6%E8%AF%86%E5%88%AB%E4%B8%8E%E6%B5%8B%E9%87%8F-%E6%B5%81%E6%B5%AA%E7%9A%84%E9%B1%BC-51CTO%E5%8D%9A%E5%AE%A2_files/jquery.js"></script>
+<div class="Content Index" style="padding-bottom: 50px;">
+	<div class="Page M764">
+		<!-- left start -->
+		<div class="artical-Left-blog">
+			<div class="status">
+	        					<a class="tab_name original">原创</a>
+				<a class="tab_name translation">推荐</a>			</div>
+			<h1 class="artical-title">OpenCV中几何形状识别与测量</h1>
+			<div class="artical-title-list">
+				<div class="is-vip-bg-6 fl">
+					<a href="https://blog.51cto.com/gloomyfish" class="a-img" target="_blank"><img class="is-vip-img is-vip-img-4" data-uid="8837804" src="OpenCV%E4%B8%AD%E5%87%A0%E4%BD%95%E5%BD%A2%E7%8A%B6%E8%AF%86%E5%88%AB%E4%B8%8E%E6%B5%8B%E9%87%8F-%E6%B5%81%E6%B5%AA%E7%9A%84%E9%B1%BC-51CTO%E5%8D%9A%E5%AE%A2_files/b2d0ddbeec66ea6f07929d6550e5a396.jpg"></a>
+				</div>
+				<a href="https://blog.51cto.com/gloomyfish" class="name fl" target="_blank" style="margin-right:0;">gloomyfish</a>
+									                	                    <a id="checkFollow1_8837804" class="checkFollow-btn on fl" style="margin-left:8px;">关注</a>
+	                	            				<a class="comment comment-num fr"><font class="comment_number">10</font>人评论</a>
+				<span class="fr"></span>
+				<a href="javascript:;" class="read fr">113104人阅读</a>
+				<a href="javascript:;" class="time fr">2018-04-16 20:44:55</a>
+				<div class="clear"></div>
+			</div>
+							<div class="artical-content-bak main-content">
+					<div class="con artical-content editor-preview-side"><p>经常看到有学习
+OpenCV不久的人提问，如何识别一些简单的几何形状与它们的颜色，其实通过OpenCV的轮廓发现与几何分析相关的函数，只需不到100行的代码就可
+以很好的实现这些简单几何形状识别与对象测量相关操作。本文就会演示给大家如何通过OpenCV 轮廓发现与几何分析相关函数实现如下功能：</p>
+<hr>
+<ul>
+<li>几何形状识别（识别三角形、四边形/矩形、多边形、圆）</li>
+<li>计算几何形状面积与周长、中心位置</li>
+<li>
+<h2>提取几何形状的颜色</h2>
+</li>
+</ul>
+<p>在具体代码实现与程序演示之前，我们先要搞清楚一些概念。</p>
+<h3>一：基本概念与函数介绍</h3>
+<p><strong>1. 轮廓(contours)</strong>  </p>
+<p>什么是轮廓，简单说轮廓就是一些列点相连组成形状、它们拥有同样的颜色、轮廓发现在图像的对象分析、对象检测等方面是非常有用的工具，在
+OpenCV中使用轮廓发现相关函数时候要求输入图像是二值图像，这样便于轮廓提取、边缘提取等操作。轮廓发现的函数与参数解释如下：  </p>
+<pre><code class="hljs diff">findContours(image, mode, method, contours=None, hierarchy=None, offset=None)
+<span class="hljs-deletion">- image输入/输出的二值图像</span>
+<span class="hljs-deletion">- mode 迒回轮廓的结构、可以是List、Tree、External</span>
+<span class="hljs-deletion">- method 轮廓点的编码方式，基本是基于链式编码</span>
+<span class="hljs-deletion">- contours 迒回的轮廓集合</span>
+<span class="hljs-deletion">- hieracrchy 迒回的轮廓层次关系</span>
+<span class="hljs-deletion">- offset 点是否有位移</span></code></pre>
+<p><strong>2. 多边形逼近</strong><br>多边形逼近，是通过对轮廓外形无限逼近，删除非关键点、得到轮廓的关键点，不断逼近轮廓真实形状的方法，OpenCV中多边形逼近的函数与参数解释如下：</p>
+<pre><code class="hljs diff">approxPolyDP(curve, epsilon, closed, approxCurve=None)
+<span class="hljs-deletion">- curve 表示输入的轮廓点集合</span>
+<span class="hljs-deletion">- epsilon 表示逼近曲率，越小表示相似逼近越厉害</span>
+<span class="hljs-deletion">- close 是否闭合</span></code></pre>
+<p><strong>3. 几何距计算</strong><br>图像几何距是图像的几何特征，高阶几何距中心化之后具有特征不变性，可以产<br>生Hu距输出，用于形状匹配等操作，这里我们通过计算一阶几何距得到指定轮廓的中心位置，计算几何距的函数与参数解释如下：</p>
+<pre><code class="hljs cpp">moments(<span class="hljs-built_in">array</span>, binaryImage=None)
+- <span class="hljs-built_in">array</span>表示指定输入轮廓
+- binaryImage默认为None</code></pre>
+<h3>二：代码实现与演示</h3>
+<p>整个代码实现分为如下几步完成</p>
+<ol>
+<li>加载图像，</li>
+<li>图像二值化</li>
+<li>轮廓发现</li>
+<li>几何形状识别</li>
+<li>测量周长、面积、计算中心</li>
+<li>颜色提取<br>完整的源代码如下：</li>
+</ol>
+<pre><code class="hljs python"><span class="hljs-comment">####################################################</span>
+<span class="hljs-comment">#   作者:zhigang,</span>
+<span class="hljs-comment">####################################################</span>
+<span class="hljs-keyword">import</span> cv2 <span class="hljs-keyword">as</span> cv
+<span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ShapeAnalysis</span>:</span>
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span><span class="hljs-params">(self)</span>:</span>
+        self.shapes = {<span class="hljs-string">'triangle'</span>: <span class="hljs-number">0</span>, <span class="hljs-string">'rectangle'</span>: <span class="hljs-number">0</span>, <span class="hljs-string">'polygons'</span>: <span class="hljs-number">0</span>, <span class="hljs-string">'circles'</span>: <span class="hljs-number">0</span>}
+
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">analysis</span><span class="hljs-params">(self, frame)</span>:</span>
+        h, w, ch = frame.shape
+        result = np.zeros((h, w, ch), dtype=np.uint8)
+        <span class="hljs-comment"># 二值化图像</span>
+        print(<span class="hljs-string">"start to detect lines...\n"</span>)
+        gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
+        ret, binary = cv.threshold(gray, <span class="hljs-number">0</span>, <span class="hljs-number">255</span>, cv.THRESH_BINARY_INV | cv.THRESH_OTSU)
+        cv.imshow(<span class="hljs-string">"input image"</span>, frame)
+
+        out_binary, contours, hierarchy = cv.findContours(binary, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+        <span class="hljs-keyword">for</span> cnt <span class="hljs-keyword">in</span> range(len(contours)):
+            <span class="hljs-comment"># 提取与绘制轮廓</span>
+            cv.drawContours(result, contours, cnt, (<span class="hljs-number">0</span>, <span class="hljs-number">255</span>, <span class="hljs-number">0</span>), <span class="hljs-number">2</span>)
+
+            <span class="hljs-comment"># 轮廓逼近</span>
+            epsilon = <span class="hljs-number">0.01</span> * cv.arcLength(contours[cnt], <span class="hljs-keyword">True</span>)
+            approx = cv.approxPolyDP(contours[cnt], epsilon, <span class="hljs-keyword">True</span>)
+
+            <span class="hljs-comment"># 分析几何形状</span>
+            corners = len(approx)
+            shape_type = <span class="hljs-string">""</span>
+            <span class="hljs-keyword">if</span> corners == <span class="hljs-number">3</span>:
+                count = self.shapes[<span class="hljs-string">'triangle'</span>]
+                count = count+<span class="hljs-number">1</span>
+                self.shapes[<span class="hljs-string">'triangle'</span>] = count
+                shape_type = <span class="hljs-string">"三角形"</span>
+            <span class="hljs-keyword">if</span> corners == <span class="hljs-number">4</span>:
+                count = self.shapes[<span class="hljs-string">'rectangle'</span>]
+                count = count + <span class="hljs-number">1</span>
+                self.shapes[<span class="hljs-string">'rectangle'</span>] = count
+                shape_type = <span class="hljs-string">"矩形"</span>
+            <span class="hljs-keyword">if</span> corners &gt;= <span class="hljs-number">10</span>:
+                count = self.shapes[<span class="hljs-string">'circles'</span>]
+                count = count + <span class="hljs-number">1</span>
+                self.shapes[<span class="hljs-string">'circles'</span>] = count
+                shape_type = <span class="hljs-string">"圆形"</span>
+            <span class="hljs-keyword">if</span> <span class="hljs-number">4</span> &lt; corners &lt; <span class="hljs-number">10</span>:
+                count = self.shapes[<span class="hljs-string">'polygons'</span>]
+                count = count + <span class="hljs-number">1</span>
+                self.shapes[<span class="hljs-string">'polygons'</span>] = count
+                shape_type = <span class="hljs-string">"多边形"</span>
+
+            <span class="hljs-comment"># 求解中心位置</span>
+            mm = cv.moments(contours[cnt])
+            cx = int(mm[<span class="hljs-string">'m10'</span>] / mm[<span class="hljs-string">'m00'</span>])
+            cy = int(mm[<span class="hljs-string">'m01'</span>] / mm[<span class="hljs-string">'m00'</span>])
+            cv.circle(result, (cx, cy), <span class="hljs-number">3</span>, (<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">255</span>), <span class="hljs-number">-1</span>)
+
+            <span class="hljs-comment"># 颜色分析</span>
+            color = frame[cy][cx]
+            color_str = <span class="hljs-string">"("</span> + str(color[<span class="hljs-number">0</span>]) + <span class="hljs-string">", "</span> + str(color[<span class="hljs-number">1</span>]) + <span class="hljs-string">", "</span> + str(color[<span class="hljs-number">2</span>]) + <span class="hljs-string">")"</span>
+
+            <span class="hljs-comment"># 计算面积与周长</span>
+            p = cv.arcLength(contours[cnt], <span class="hljs-keyword">True</span>)
+            area = cv.contourArea(contours[cnt])
+            print(<span class="hljs-string">"周长: %.3f, 面积: %.3f 颜色: %s 形状: %s "</span>% (p, area, color_str, shape_type))
+
+        cv.imshow(<span class="hljs-string">"Analysis Result"</span>, self.draw_text_info(result))
+        cv.imwrite(<span class="hljs-string">"D:/test-result.png"</span>, self.draw_text_info(result))
+        <span class="hljs-keyword">return</span> self.shapes
+
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">draw_text_info</span><span class="hljs-params">(self, image)</span>:</span>
+        c1 = self.shapes[<span class="hljs-string">'triangle'</span>]
+        c2 = self.shapes[<span class="hljs-string">'rectangle'</span>]
+        c3 = self.shapes[<span class="hljs-string">'polygons'</span>]
+        c4 = self.shapes[<span class="hljs-string">'circles'</span>]
+        cv.putText(image, <span class="hljs-string">"triangle: "</span>+str(c1), (<span class="hljs-number">10</span>, <span class="hljs-number">20</span>), cv.FONT_HERSHEY_PLAIN, <span class="hljs-number">1.2</span>, (<span class="hljs-number">255</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>), <span class="hljs-number">1</span>)
+        cv.putText(image, <span class="hljs-string">"rectangle: "</span> + str(c2), (<span class="hljs-number">10</span>, <span class="hljs-number">40</span>), cv.FONT_HERSHEY_PLAIN, <span class="hljs-number">1.2</span>, (<span class="hljs-number">255</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>), <span class="hljs-number">1</span>)
+        cv.putText(image, <span class="hljs-string">"polygons: "</span> + str(c3), (<span class="hljs-number">10</span>, <span class="hljs-number">60</span>), cv.FONT_HERSHEY_PLAIN, <span class="hljs-number">1.2</span>, (<span class="hljs-number">255</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>), <span class="hljs-number">1</span>)
+        cv.putText(image, <span class="hljs-string">"circles: "</span> + str(c4), (<span class="hljs-number">10</span>, <span class="hljs-number">80</span>), cv.FONT_HERSHEY_PLAIN, <span class="hljs-number">1.2</span>, (<span class="hljs-number">255</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>), <span class="hljs-number">1</span>)
+        <span class="hljs-keyword">return</span> image
+
+<span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">"__main__"</span>:
+    src = cv.imread(<span class="hljs-string">"D:/javaopencv/gem_test.png"</span>)
+    ld = ShapeAnalysis()
+    ld.analysis(src)
+    cv.waitKey(<span class="hljs-number">0</span>)
+    cv.destroyAllWindows()</code></pre>
+<p>原图<br><img src="OpenCV%E4%B8%AD%E5%87%A0%E4%BD%95%E5%BD%A2%E7%8A%B6%E8%AF%86%E5%88%AB%E4%B8%8E%E6%B5%8B%E9%87%8F-%E6%B5%81%E6%B5%AA%E7%9A%84%E9%B1%BC-51CTO%E5%8D%9A%E5%AE%A2_files/8a5760fb07eaae1b7dcc40f09ce22682.png" alt="OpenCV中几何形状识别与测量" style="cursor: pointer;"></p>
+<p>运行结果：<br><img src="OpenCV%E4%B8%AD%E5%87%A0%E4%BD%95%E5%BD%A2%E7%8A%B6%E8%AF%86%E5%88%AB%E4%B8%8E%E6%B5%8B%E9%87%8F-%E6%B5%81%E6%B5%AA%E7%9A%84%E9%B1%BC-51CTO%E5%8D%9A%E5%AE%A2_files/890e0b78436732b2f9c6eee4f4edeced.png" alt="OpenCV中几何形状识别与测量" style="cursor: pointer;"></p>
+<p>控制台输出：<br><img src="OpenCV%E4%B8%AD%E5%87%A0%E4%BD%95%E5%BD%A2%E7%8A%B6%E8%AF%86%E5%88%AB%E4%B8%8E%E6%B5%8B%E9%87%8F-%E6%B5%81%E6%B5%AA%E7%9A%84%E9%B1%BC-51CTO%E5%8D%9A%E5%AE%A2_files/244b29b905b1feae9995c9933d050243.png" alt="OpenCV中几何形状识别与测量" style="cursor: pointer;"></p>
+<p><strong>欢迎继续关注本博客，学习OpenCV Python教程</strong></p>
+<p><a href="http://edu.51cto.com/course/11324.html" style="color: rgb(66, 133, 244);">Python+OpenCV3.3图像处理视频教程</a></p></div>
+				</div>
+													<div class="artical-copyright mt26">©著作权归作者所有：来自51CTO博客作者gloomyfish的原创作品，如需转载，请注明出处，否则将追究法律责任</div>
+									<div class="for-tag mt26">
+																						<a href="https://blog.51cto.com/search/result?q=OpenCV" target="_blank">OpenCV</a>
+																								<a href="https://blog.51cto.com/search/result?q=Python" target="_blank">Python</a>
+																								<a href="https://blog.51cto.com/search/result?q=%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86" target="_blank">图像处理</a>
+																																					                				<div class="clear"></div>
+			</div>
+			<div class="more-list">
+				<p class="is-praise fl "><span type="1" blog_id="2104134" userid="8837804">6</span></p>
+				<div class="share-box fr">
+					<p class="share"><i></i>分享</p>
+					<div class="bdsharebuttonbox bdshare-button-style0-16" data-bd-bind="1557905660316">
+					  <span></span>
+					  <a class="bds_tsina" data-cmd="tsina" title="分享到新浪微博">微博</a>
+					  <a class="bds_sqq" data-cmd="sqq" title="分享到QQ好友">QQ</a>
+					  <a class="bds_weixin" data-cmd="weixin" title="分享到微信">微信</a>
+					  <img src="OpenCV%E4%B8%AD%E5%87%A0%E4%BD%95%E5%BD%A2%E7%8A%B6%E8%AF%86%E5%88%AB%E4%B8%8E%E6%B5%8B%E9%87%8F-%E6%B5%81%E6%B5%AA%E7%9A%84%E9%B1%BC-51CTO%E5%8D%9A%E5%AE%A2_files/qr-url.png">
+					</div>
+				</div>
+				<p class="favorites favorites-opt fr"><i></i>收藏</p>
+								<div class="clear"></div>
+			</div>
+							<div class="artical-list">
+	            					<a class="fl" href="https://blog.51cto.com/gloomyfish/2095418" title="OpenCV DNN之YOLO实时对象检测">
+						上一篇：OpenCV DNN之YOLO实...</a>
+	            	            					<a class="fr" href="https://blog.51cto.com/gloomyfish/2105427" title="VGG卷积神经网络模型解析">
+						下一篇：VGG卷积神经网络模型解析</a>
+	            					<div class="clear"></div>
+				</div>
+						<div class="author-module">
+				<div class="is-vip-bg-6 fl">
+					<a href="https://blog.51cto.com/gloomyfish" class="a-img" target="_blank">
+						<img class="is-vip-img is-vip-img-4" data-uid="8837804" src="OpenCV%E4%B8%AD%E5%87%A0%E4%BD%95%E5%BD%A2%E7%8A%B6%E8%AF%86%E5%88%AB%E4%B8%8E%E6%B5%8B%E9%87%8F-%E6%B5%81%E6%B5%AA%E7%9A%84%E9%B1%BC-51CTO%E5%8D%9A%E5%AE%A2_files/b2d0ddbeec66ea6f07929d6550e5a396.jpg">
+					</a>
+				</div>
+				<div class="author-module-center fl">
+					<a class="h2" href="https://blog.51cto.com/gloomyfish" target="_blank" style="display:inline-block;">gloomyfish</a>
+										<h3>198篇文章，101W+人气，126粉丝</h3>
+					<h4>知不足者好学，耻下问者自满</h4>				</div>
+									<div class="author-module-right author-checkFollow fr">
+          	                  <a id="checkFollow2_8837804" class="follow-1 checkFollow on">关注</a>
+              					</div>
+        				<div class="clear"></div>
+			</div>
+		</div>
+		<div class="artical-Left" id="comment">
+			<!-- 发布评论 -->
+			<div class="comment-creat">
+				<div class="is-vip-bg-6 fl">
+					<a href="https://blog.51cto.com/gloomyfish" class="header-img" target="_blank">
+						<img src="OpenCV%E4%B8%AD%E5%87%A0%E4%BD%95%E5%BD%A2%E7%8A%B6%E8%AF%86%E5%88%AB%E4%B8%8E%E6%B5%8B%E9%87%8F-%E6%B5%81%E6%B5%AA%E7%9A%84%E9%B1%BC-51CTO%E5%8D%9A%E5%AE%A2_files/noavatar_middle.gif">
+					</a>
+				</div>
+				<div class="first-publish fr publish_user_id">
+					<textarea class="textareadiv textareadiv-publish" name="" id="" placeholder="提问和评论都可以，用心的回复会被更多人看到和认可" maxlength="500"></textarea>
+					<div class="comment-push">
+						<p class="msg fl">Ctrl+Enter&nbsp;发布</p>
+													<p class="publish-btn blue-btn fr" flag="1">发布</p>
+												<p class="cancel-btn cancel-btn-1 fr">取消</p>
+						<div class="clear"></div>
+					</div>
+					<input class="user_id" value="8837804" type="hidden">
+					<input class="reply_id" value="2104134" type="hidden">
+					<input class="first_pid" value="" type="hidden">
+				</div>
+				<div class="clear"></div>
+			</div>
+							<div class="comment-number" id="comment_pl">
+					<p class="number fl"><span class="comment_number">10</span>条评论</p>
+					<a class="time-last time fr comment-sort" id="sort-desc" flag="desc" page="1">按时间倒序</a>
+				    <a class="time-first time fr comment-sort on" id="sort-asc" flag="asc" page="2">按时间正序</a>
+				    <div class="clear"></div>
+				</div>
+						<div class="commentList"><div class="commentList-box cbox-704722" id="704722"><div class="comment-1 publish_user_id reply_id_box comment_number-list" rid="704722"><div class="top"><div class="is-vip-bg-6 fl header-con"><a href="https://blog.51cto.com/12216931" class="header-img"><img class="is-vip-img-bg is-vip-img-4" src="OpenCV%E4%B8%AD%E5%87%A0%E4%BD%95%E5%BD%A2%E7%8A%B6%E8%AF%86%E5%88%AB%E4%B8%8E%E6%B5%8B%E9%87%8F-%E6%B5%81%E6%B5%AA%E7%9A%84%E9%B1%BC-51CTO%E5%8D%9A%E5%AE%A2_files/noavatar_middle.gif"></a></div><div class="head-right jf-list-box"><p class="name"><a href="https://blog.51cto.com/12216931">wx580f5ca239a53</a></p><div class="time"><span class="fl">1楼&nbsp;&nbsp;2018-04-17 15:24:58</span><span class="reply-btn fr" data-type="1"></span><span class="zan fr" blog_id="704722" type="2" userid="12206931"></span><div class="clear"></div></div><input class="reply_id" value="704722" type="hidden"><input class="user_id" value="12206931" type="hidden"><input class="first_pid" value="704722" type="hidden"></div></div><div class="con">假如又有一个长方形一半是红色一办是蓝色,识别得就不准确了。</div></div><div class="comment-2"><ul class="comment-2-list" flag="704722"></ul></div></div><div class="commentList-box cbox-704841" id="704841"><div class="comment-1 publish_user_id reply_id_box comment_number-list" rid="704841"><div class="top"><div class="is-vip-bg-6 fl header-con"><a href="https://blog.51cto.com/itsoul" class="header-img"><img class="is-vip-img-bg is-vip-img-4" src="OpenCV%E4%B8%AD%E5%87%A0%E4%BD%95%E5%BD%A2%E7%8A%B6%E8%AF%86%E5%88%AB%E4%B8%8E%E6%B5%8B%E9%87%8F-%E6%B5%81%E6%B5%AA%E7%9A%84%E9%B1%BC-51CTO%E5%8D%9A%E5%AE%A2_files/6434cb8d3e220756197e8623fe9da58f.jpg"><i class="vip-icon vip-icon-4"></i></a></div><div class="head-right jf-list-box"><p class="name"><a href="https://blog.51cto.com/itsoul">IT圈老男孩</a></p><div class="time"><span class="fl">2楼&nbsp;&nbsp;2018-04-17 22:01:49</span><span class="reply-btn fr" data-type="1"></span><span class="zan fr" blog_id="704841" type="2" userid="8658374"></span><div class="clear"></div></div><input class="reply_id" value="704841" type="hidden"><input class="user_id" value="8658374" type="hidden"><input class="first_pid" value="704841" type="hidden"></div></div><div class="con">看着有点晕，我要好好整理下思路</div></div><div class="comment-2"><ul class="comment-2-list" flag="704841"></ul></div></div><div class="commentList-box cbox-711577" id="711577"><div class="comment-1 publish_user_id reply_id_box comment_number-list" rid="711577"><div class="top"><div class="is-vip-bg-6 fl header-con"><a href="https://blog.51cto.com/13824942" class="header-img"><img class="is-vip-img-bg is-vip-img-4" src="OpenCV%E4%B8%AD%E5%87%A0%E4%BD%95%E5%BD%A2%E7%8A%B6%E8%AF%86%E5%88%AB%E4%B8%8E%E6%B5%8B%E9%87%8F-%E6%B5%81%E6%B5%AA%E7%9A%84%E9%B1%BC-51CTO%E5%8D%9A%E5%AE%A2_files/noavatar_middle.gif"></a></div><div class="head-right jf-list-box"><p class="name"><a href="https://blog.51cto.com/13824942">wx5b2cb86477894</a></p><div class="time"><span class="fl">3楼&nbsp;&nbsp;2018-06-22 17:00:14</span><span class="reply-btn fr" data-type="1"></span><span class="zan fr" blog_id="711577" type="2" userid="13814942"></span><div class="clear"></div></div><input class="reply_id" value="711577" type="hidden"><input class="user_id" value="13814942" type="hidden"><input class="first_pid" value="711577" type="hidden"></div></div><div class="con">在不 ？能不能帮帮我我在做这个东西。</div></div><div class="comment-2"><ul class="comment-2-list" flag="711577"></ul></div></div><div class="commentList-box cbox-711578" id="711578"><div class="comment-1 publish_user_id reply_id_box comment_number-list" rid="711578"><div class="top"><div class="is-vip-bg-6 fl header-con"><a href="https://blog.51cto.com/13824942" class="header-img"><img class="is-vip-img-bg is-vip-img-4" src="OpenCV%E4%B8%AD%E5%87%A0%E4%BD%95%E5%BD%A2%E7%8A%B6%E8%AF%86%E5%88%AB%E4%B8%8E%E6%B5%8B%E9%87%8F-%E6%B5%81%E6%B5%AA%E7%9A%84%E9%B1%BC-51CTO%E5%8D%9A%E5%AE%A2_files/noavatar_middle.gif"></a></div><div class="head-right jf-list-box"><p class="name"><a href="https://blog.51cto.com/13824942">wx5b2cb86477894</a></p><div class="time"><span class="fl">4楼&nbsp;&nbsp;2018-06-22 17:00:48</span><span class="reply-btn fr" data-type="1"></span><span class="zan fr" blog_id="711578" type="2" userid="13814942"></span><div class="clear"></div></div><input class="reply_id" value="711578" type="hidden"><input class="user_id" value="13814942" type="hidden"><input class="first_pid" value="711578" type="hidden"></div></div><div class="con">我做物体形状识别 。</div></div><div class="comment-2"><ul class="comment-2-list" flag="711578"></ul></div></div><div class="commentList-box cbox-711579" id="711579"><div class="comment-1 publish_user_id reply_id_box comment_number-list" rid="711579"><div class="top"><div class="is-vip-bg-6 fl header-con"><a href="https://blog.51cto.com/13824942" class="header-img"><img class="is-vip-img-bg is-vip-img-4" src="OpenCV%E4%B8%AD%E5%87%A0%E4%BD%95%E5%BD%A2%E7%8A%B6%E8%AF%86%E5%88%AB%E4%B8%8E%E6%B5%8B%E9%87%8F-%E6%B5%81%E6%B5%AA%E7%9A%84%E9%B1%BC-51CTO%E5%8D%9A%E5%AE%A2_files/noavatar_middle.gif"></a></div><div class="head-right jf-list-box"><p class="name"><a href="https://blog.51cto.com/13824942">wx5b2cb86477894</a></p><div class="time"><span class="fl">5楼&nbsp;&nbsp;2018-06-22 17:01:57</span><span class="reply-btn fr" data-type="1"></span><span class="zan fr" blog_id="711579" type="2" userid="13814942"></span><div class="clear"></div></div><input class="reply_id" value="711579" type="hidden"><input class="user_id" value="13814942" type="hidden"><input class="first_pid" value="711579" type="hidden"></div></div><div class="con">c++ 编的</div></div><div class="comment-2"><ul class="comment-2-list" flag="711579"></ul></div></div><div class="commentList-box cbox-714850" id="714850"><div class="comment-1 publish_user_id reply_id_box comment_number-list" rid="714850"><div class="top"><div class="is-vip-bg-6 fl header-con"><a href="https://blog.51cto.com/13891446" class="header-img"><img class="is-vip-img-bg is-vip-img-4" src="OpenCV%E4%B8%AD%E5%87%A0%E4%BD%95%E5%BD%A2%E7%8A%B6%E8%AF%86%E5%88%AB%E4%B8%8E%E6%B5%8B%E9%87%8F-%E6%B5%81%E6%B5%AA%E7%9A%84%E9%B1%BC-51CTO%E5%8D%9A%E5%AE%A2_files/noavatar_middle.gif"></a></div><div class="head-right jf-list-box"><p class="name"><a href="https://blog.51cto.com/13891446">wx5b5bb98217a8c</a></p><div class="time"><span class="fl">6楼&nbsp;&nbsp;2018-07-28 08:34:33</span><span class="reply-btn fr" data-type="1"></span><span class="zan fr" blog_id="714850" type="2" userid="13881446"></span><div class="clear"></div></div><input class="reply_id" value="714850" type="hidden"><input class="user_id" value="13881446" type="hidden"><input class="first_pid" value="714850" type="hidden"></div></div><div class="con">对于我们这种菜鸟简直太有帮助了，就是我们引用后希望不要介意</div></div><div class="comment-2"><ul class="comment-2-list" flag="714850"></ul></div></div><div class="commentList-box cbox-717837" id="717837"><div class="comment-1 publish_user_id reply_id_box comment_number-list" rid="717837"><div class="top"><div class="is-vip-bg-6 fl header-con"><a href="https://blog.51cto.com/1048220" class="header-img"><img class="is-vip-img-bg is-vip-img-4" src="OpenCV%E4%B8%AD%E5%87%A0%E4%BD%95%E5%BD%A2%E7%8A%B6%E8%AF%86%E5%88%AB%E4%B8%8E%E6%B5%8B%E9%87%8F-%E6%B5%81%E6%B5%AA%E7%9A%84%E9%B1%BC-51CTO%E5%8D%9A%E5%AE%A2_files/noavatar_middle.gif"></a></div><div class="head-right jf-list-box"><p class="name"><a href="https://blog.51cto.com/1048220">xb337826003</a></p><div class="time"><span class="fl">7楼&nbsp;&nbsp;2018-09-01 12:02:13</span><span class="reply-btn fr" data-type="1">1</span><span class="zan fr" blog_id="717837" type="2" userid="1038220"></span><div class="clear"></div></div><input class="reply_id" value="717837" type="hidden"><input class="user_id" value="1038220" type="hidden"><input class="first_pid" value="717837" type="hidden"></div></div><div class="con">出现错误<br>Traceback (most recent call last):<br>  File "D:/Python37/temp2.py", line 83, in &lt;module&gt;<br>    ld.analysis(src)<br>  File "D:/Python37/temp2.py", line 52, in analysis<br>    cx = int(mm['m10'] / mm['m00'])<br>ZeroDivisionError: float division by zero</div></div><div class="comment-2"><ul class="comment-2-list" flag="717837"><li class="publish_user_id jf-list-box reply_id_box comment_number-list comment-2-cb cbox-723747"><div class="top 8837804c_i_r14036161"><a class="name fl" href="https://blog.51cto.com/14046161">wx5bd5fa2fdab23</a><a class="name fl" href="https://blog.51cto.com/1048220">:@xb337826003&nbsp;</a><div class="clear"></div></div><div class="con">我也出现这个报错了耶，请问你找到解决方法了么？</div><div class="bot"><p class="time">2018-11-22 17:00:06</p><p class="reply reply-btn" data-type="2">回复</p><div class="clear"></div></div><input class="reply_id" value="723747" type="hidden"><input class="user_id" value="14036161" type="hidden"><input class="first_pid" value="717837" type="hidden"></li></ul></div></div><div class="commentList-box cbox-725093" id="725093"><div class="comment-1 publish_user_id reply_id_box comment_number-list" rid="725093"><div class="top"><div class="is-vip-bg-6 fl header-con"><a href="https://blog.51cto.com/14129573" class="header-img"><img class="is-vip-img-bg is-vip-img-4" src="OpenCV%E4%B8%AD%E5%87%A0%E4%BD%95%E5%BD%A2%E7%8A%B6%E8%AF%86%E5%88%AB%E4%B8%8E%E6%B5%8B%E9%87%8F-%E6%B5%81%E6%B5%AA%E7%9A%84%E9%B1%BC-51CTO%E5%8D%9A%E5%AE%A2_files/noavatar_middle.gif"></a></div><div class="head-right jf-list-box"><p class="name"><a href="https://blog.51cto.com/14129573">wx5c10bb378cd79</a></p><div class="time"><span class="fl">8楼&nbsp;&nbsp;2018-12-12 15:46:54</span><span class="reply-btn fr" data-type="1"></span><span class="zan fr" blog_id="725093" type="2" userid="14119573"></span><div class="clear"></div></div><input class="reply_id" value="725093" type="hidden"><input class="user_id" value="14119573" type="hidden"><input class="first_pid" value="725093" type="hidden"></div></div><div class="con">出现错误了</div></div><div class="comment-2"><ul class="comment-2-list" flag="725093"></ul></div></div><div class="commentList-box cbox-730011" id="730011"><div class="comment-1 publish_user_id reply_id_box comment_number-list" rid="730011"><div class="top"><div class="is-vip-bg-6 fl header-con"><a href="https://blog.51cto.com/2871079" class="header-img"><img class="is-vip-img-bg is-vip-img-4" src="OpenCV%E4%B8%AD%E5%87%A0%E4%BD%95%E5%BD%A2%E7%8A%B6%E8%AF%86%E5%88%AB%E4%B8%8E%E6%B5%8B%E9%87%8F-%E6%B5%81%E6%B5%AA%E7%9A%84%E9%B1%BC-51CTO%E5%8D%9A%E5%AE%A2_files/noavatar_middle.gif"></a></div><div class="head-right jf-list-box"><p class="name"><a href="https://blog.51cto.com/2871079">yuchi0902</a></p><div class="time"><span class="fl">9楼&nbsp;&nbsp;2019-03-20 13:34:00</span><span class="reply-btn fr" data-type="1"></span><span class="zan fr" blog_id="730011" type="2" userid="2861079"></span><div class="clear"></div></div><input class="reply_id" value="730011" type="hidden"><input class="user_id" value="2861079" type="hidden"><input class="first_pid" value="730011" type="hidden"></div></div><div class="con">mark</div></div><div class="comment-2"><ul class="comment-2-list" flag="730011"></ul></div></div></div>
+			<!-- page -->
+			<div class="act_pageList_box"></div>
+		</div>
+		<!-- end left -->
+		<!-- right start -->
+		<div class="Blog-Right artical-Right">
+			<a class="catalog"></a>
+			<a class="scrollTop" href="javascript:void(0);" onclick="$(window).scrollTop(0);"></a>
+		<div class="directoryBox"><span class="top-icon"></span><div class="list directory"><ul class="directory-list"><li class="lv1">提取几何形状的颜色</li><li class="lv3">一：基本概念与函数介绍</li><li class="lv3">二：代码实现与演示</li><div class="arrow"></div></ul></div><span class="bot-icon"></span></div></div>
+		<!-- end right  -->
+	</div>
+			<div class="special-column">
+			<div class="Page M764">
+													<div class="column-2">
+						<h2 class="column-tit">猜你喜欢</h2>
+						<div class="column-box">
+															<a class="white-space" href="https://blog.51cto.com/gloomyfish/2356197?source=dra" target="_blank">对象检测网络中的NMS算法实现详解</a>
+															<a class="white-space left-list" href="https://blog.51cto.com/gloomyfish/2348169?source=dra" target="_blank">使用DCGAN实现人脸图像生成</a>
+															<a class="white-space" href="https://blog.51cto.com/11623741/2093582?source=drt" target="_blank">python爬取百度图片代码</a>
+															<a class="white-space left-list" href="https://blog.51cto.com/zhou123/1312791?source=drt" target="_blank">python学习——python中执行shell命令</a>
+															<a class="white-space" href="https://blog.51cto.com/5iqiong/806230?source=drt" target="_blank">遍历python字典几种方法</a>
+															<a class="white-space left-list" href="https://blog.51cto.com/piziyin/568426?source=drt" target="_blank">python string与list互转</a>
+															<a class="white-space" href="https://blog.51cto.com/drizzlewalk/448874?source=drt" target="_blank">python下的MySQLdb使用</a>
+															<a class="white-space left-list" href="https://blog.51cto.com/yangrong/1339593?source=drt" target="_blank">python socket编程详细介绍</a>
+															<a class="white-space" href="https://blog.51cto.com/m51cto/2051945?source=drt" target="_blank">python之钉钉机器人zabbix报警</a>
+															<a class="white-space left-list" href="https://blog.51cto.com/wangwei007/1100587?source=drt" target="_blank">python join 和 split的常用使用方法</a>
+															<a class="white-space" href="https://blog.51cto.com/pmghong/1349978?source=drt" target="_blank">Python 学习笔记 （6）—— 读写文件</a>
+															<a class="white-space left-list" href="https://blog.51cto.com/ipseek/789896?source=drt" target="_blank">Python学习笔记整理(六)Python中的字典</a>
+															<a class="white-space" href="https://blog.51cto.com/yangsir/2164445?source=drh" target="_blank">2018“硅谷技划”随笔(三)：人工智能火热背后的真正温度</a>
+															<a class="white-space left-list" href="https://blog.51cto.com/yixianwei/2128294?source=drh" target="_blank">集成学习lgb库调参的粒子群方法</a>
+															<a class="white-space" href="https://blog.51cto.com/yixianwei/2116117?source=drh" target="_blank">常用的集成学习方法</a>
+															<a class="white-space left-list" href="https://blog.51cto.com/yixianwei/2111980?source=drh" target="_blank">司机乘客匹配中的距离和最小问题</a>
+															<a class="white-space" href="https://blog.51cto.com/l0086/2103015?source=drh" target="_blank">微信小程序使用百度语音识别成功后，小程序端cancel了请求</a>
+															<a class="white-space left-list" href="https://blog.51cto.com/yixianwei/2102984?source=drh" target="_blank">降维算法中的PCA方法</a>
+															<a class="white-space" href="https://blog.51cto.com/xuan97916/2095236?source=drh" target="_blank">【机器学习】Numpy&amp;Pandas 快速入门笔记</a>
+															<a class="white-space left-list" href="https://blog.51cto.com/8764888/2086258?source=drh" target="_blank">京东金融大数据竞赛猪脸识别（5）- 识别方法之一</a>
+														<div class="clear"></div>
+						</div>
+					</div>
+							</div>
+		</div>
+		<div class="group_img_box">
+		<div class="group_git_box">
+                	 <img src="OpenCV%E4%B8%AD%E5%87%A0%E4%BD%95%E5%BD%A2%E7%8A%B6%E8%AF%86%E5%88%AB%E4%B8%8E%E6%B5%8B%E9%87%8F-%E6%B5%81%E6%B5%AA%E7%9A%84%E9%B1%BC-51CTO%E5%8D%9A%E5%AE%A2_files/f92360e227f9d91cdff7ea95120630ef.png" style="width:70px;height:70px;"> 	
+			<!--<img src="https://s1.51cto.com/images/blog/201810/22/078772c84eb23213ea90f577d9316ce4.png"/>-->
+        		</div>
+			<div class="group_code_box">
+			<img src="OpenCV%E4%B8%AD%E5%87%A0%E4%BD%95%E5%BD%A2%E7%8A%B6%E8%AF%86%E5%88%AB%E4%B8%8E%E6%B5%8B%E9%87%8F-%E6%B5%81%E6%B5%AA%E7%9A%84%E9%B1%BC-51CTO%E5%8D%9A%E5%AE%A2_files/left-qr.jpg" width="130" height="130">
+			<p>扫一扫,领取大礼包</p>
+		</div>
+	</div>		
+	<div class="the-lowest-bg">
+		<div class="the-lowest Page M764">
+			<p class="is-praise fl "><span type="1" blog_id="2104134" userid="8837804">6</span></p>
+			<p class="b-favorites favorites-opt fl"><i></i><b>3</b></p>
+			<a class="b-reply fl"><i></i><font class="comment_number">10</font></a>
+			<div class="b-share fl">
+				<i></i>分享
+				<div class="bdsharebuttonbox bdshare-button-style0-16" data-bd-bind="1557905660316">
+				  <a class="bds_tsina p2" data-cmd="tsina" title="分享到新浪微博"></a>
+				  <a class="bds_sqq p3" data-cmd="sqq" title="分享到QQ好友"></a>
+				  <a class="bds_weixin p1" data-cmd="weixin" title="分享到微信"><em class="code-icon"></em><img class="code-img" src="OpenCV%E4%B8%AD%E5%87%A0%E4%BD%95%E5%BD%A2%E7%8A%B6%E8%AF%86%E5%88%AB%E4%B8%8E%E6%B5%8B%E9%87%8F-%E6%B5%81%E6%B5%AA%E7%9A%84%E9%B1%BC-51CTO%E5%8D%9A%E5%AE%A2_files/qr-url.png"></a>
+				</div>
+			</div>
+      				<div class="b-fllow author-checkFollow fr" style="margin-left: 20px;">
+                        <a id="checkFollow3_8837804" class="follow-1 checkFollow on">关注</a>
+          				</div>
+      						<a href="https://blog.51cto.com/gloomyfish" class="b-name fr">gloomyfish</a>
+			<div class="is-vip-bg-6 fr">
+				<a href="https://blog.51cto.com/gloomyfish" class="b-img"><img class="is-vip-img is-vip-img-4" data-uid="8837804" src="OpenCV%E4%B8%AD%E5%87%A0%E4%BD%95%E5%BD%A2%E7%8A%B6%E8%AF%86%E5%88%AB%E4%B8%8E%E6%B5%8B%E9%87%8F-%E6%B5%81%E6%B5%AA%E7%9A%84%E9%B1%BC-51CTO%E5%8D%9A%E5%AE%A2_files/b2d0ddbeec66ea6f07929d6550e5a396.jpg"></a>
+			</div>
+			<div class="clear"></div>
+
+		</div>
+	</div>
+</div>
+<!-- 老博文美观处理 -->
+<script src="OpenCV%E4%B8%AD%E5%87%A0%E4%BD%95%E5%BD%A2%E7%8A%B6%E8%AF%86%E5%88%AB%E4%B8%8E%E6%B5%8B%E9%87%8F-%E6%B5%81%E6%B5%AA%E7%9A%84%E9%B1%BC-51CTO%E5%8D%9A%E5%AE%A2_files/countDown.js"></script>
+<script>
+	var praise_url = 'https://blog.51cto.com/praise/praise'
+    	addReply_url = 'https://blog.51cto.com/comments/add'
+    	removeUrl = 'https://blog.51cto.com/comments/del'
+    	blog_id = '2104134'
+    	pv_log_info = {
+            'pv_type':'blog',
+            'user_id':'8837804',
+            'blog_id':'2104134'
+        };
+    	rid = '0'
+    	is_comment = '0'
+    	comment_list = '/blog/ajax-comment-list'
+    	comment_sort = "asc"
+    	index_url = 'https://blog.51cto.com/gloomyfish';
+    	uc_url = 'https://ucenter.51cto.com/'
+    	blog_url = 'https://blog.51cto.com/'
+    	img_url = 'https://static1.51cto.com/edu/blog/'
+    	i_user_id = ''
+    	c_user_id ='8837804'
+    	collect_url = 'https://blog.51cto.com/collect/add'
+    	is_old = '0'
+    	nicknameurl = 'https://blog.51cto.com/gloomyfish'
+    	nickname = 'gloomyfish'
+    	myself = window.location.href;
+	$('.you-like-list li:odd').css({'margin-left': '10%'});
+	$('.column-box a:odd').addClass('left-list')
+	$('.myUrl').text(myself).click(function(){window.open(myself)})
+	setTimeout(function(){$('.Footer').css({'margin-top':'-50px'})},50)
+    		function FollowBtnSucc(e){//1:未关注,2:已关注,3:互相关注
+		    if(e==2||e==3){
+		        $.post('/index/wxbind',{uid:userId},function(res){
+		            if(res.data.wxBind == 0){//没绑定
+	                    if(getCookie('follow1'))return false;
+	                    box1()
+	                }else{
+	                    if(getCookie('follow2'))return false;
+	                    box2()
+	                }
+		        },'json')
+		    }
+		}
+		FollowBtn = new Follow($('#checkFollow1_8837804'),'8837804','1',['on','in','mutual','off']);
+		FollowBtn.success=FollowBtnSucc;
+		FollowBtn = new Follow($('#checkFollow2_8837804'),'8837804','1',['on','in','mutual','off']);
+		FollowBtn.success=FollowBtnSucc;
+		FollowBtn = new Follow($('#checkFollow3_8837804'),'8837804','1',['on','in','mutual','off']);
+		FollowBtn.success=FollowBtnSucc;
+        	if(is_old==1){
+    // SyntaxHighlighter.all();
+    insertCodeElement("\u7ecf\u5e38\u770b\u5230\u6709\u5b66\u4e60OpenCV\u4e0d\u4e45\u7684\u4eba\u63d0\u95ee\uff0c\u5982\u4f55\u8bc6\u522b\u4e00\u4e9b\u7b80\u5355\u7684\u51e0\u4f55\u5f62\u72b6\u4e0e\u5b83\u4eec\u7684\u989c\u8272\uff0c\u5176\u5b9e\u901a\u8fc7OpenCV\u7684\u8f6e\u5ed3\u53d1\u73b0\u4e0e\u51e0\u4f55\u5206\u6790\u76f8\u5173\u7684\u51fd\u6570\uff0c\u53ea\u9700\u4e0d\u5230100\u884c\u7684\u4ee3\u7801\u5c31\u53ef\u4ee5\u5f88\u597d\u7684\u5b9e\u73b0\u8fd9\u4e9b\u7b80\u5355\u51e0\u4f55\u5f62\u72b6\u8bc6\u522b\u4e0e\u5bf9\u8c61\u6d4b\u91cf\u76f8\u5173\u64cd\u4f5c\u3002\u672c\u6587\u5c31\u4f1a\u6f14\u793a\u7ed9\u5927\u5bb6\u5982\u4f55\u901a\u8fc7OpenCV \u8f6e\u5ed3\u53d1\u73b0\u4e0e\u51e0\u4f55\u5206\u6790\u76f8\u5173\u51fd\u6570\u5b9e\u73b0\u5982\u4e0b\u529f\u80fd\uff1a\n\n-----\n- \u51e0\u4f55\u5f62\u72b6\u8bc6\u522b\uff08\u8bc6\u522b\u4e09\u89d2\u5f62\u3001\u56db\u8fb9\u5f62\/\u77e9\u5f62\u3001\u591a\u8fb9\u5f62\u3001\u5706\uff09\n- \u8ba1\u7b97\u51e0\u4f55\u5f62\u72b6\u9762\u79ef\u4e0e\u5468\u957f\u3001\u4e2d\u5fc3\u4f4d\u7f6e\n- \u63d0\u53d6\u51e0\u4f55\u5f62\u72b6\u7684\u989c\u8272\n----\n\n\u5728\u5177\u4f53\u4ee3\u7801\u5b9e\u73b0\u4e0e\u7a0b\u5e8f\u6f14\u793a\u4e4b\u524d\uff0c\u6211\u4eec\u5148\u8981\u641e\u6e05\u695a\u4e00\u4e9b\u6982\u5ff5\u3002\n\n### \u4e00\uff1a\u57fa\u672c\u6982\u5ff5\u4e0e\u51fd\u6570\u4ecb\u7ecd\n**1. \u8f6e\u5ed3(contours)**  \n\n\u4ec0\u4e48\u662f\u8f6e\u5ed3\uff0c\u7b80\u5355\u8bf4\u8f6e\u5ed3\u5c31\u662f\u4e00\u4e9b\u5217\u70b9\u76f8\u8fde\u7ec4\u6210\u5f62\u72b6\u3001\u5b83\u4eec\u62e5\u6709\u540c\u6837\u7684\u989c\u8272\u3001\u8f6e\u5ed3\u53d1\u73b0\u5728\u56fe\u50cf\u7684\u5bf9\u8c61\u5206\u6790\u3001\u5bf9\u8c61\u68c0\u6d4b\u7b49\u65b9\u9762\u662f\u975e\u5e38\u6709\u7528\u7684\u5de5\u5177\uff0c\u5728OpenCV\u4e2d\u4f7f\u7528\u8f6e\u5ed3\u53d1\u73b0\u76f8\u5173\u51fd\u6570\u65f6\u5019\u8981\u6c42\u8f93\u5165\u56fe\u50cf\u662f\u4e8c\u503c\u56fe\u50cf\uff0c\u8fd9\u6837\u4fbf\u4e8e\u8f6e\u5ed3\u63d0\u53d6\u3001\u8fb9\u7f18\u63d0\u53d6\u7b49\u64cd\u4f5c\u3002\u8f6e\u5ed3\u53d1\u73b0\u7684\u51fd\u6570\u4e0e\u53c2\u6570\u89e3\u91ca\u5982\u4e0b\uff1a  \n\t\n```\nfindContours(image, mode, method, contours=None, hierarchy=None, offset=None)\n- image\u8f93\u5165\/\u8f93\u51fa\u7684\u4e8c\u503c\u56fe\u50cf\n- mode \u8fd2\u56de\u8f6e\u5ed3\u7684\u7ed3\u6784\u3001\u53ef\u4ee5\u662fList\u3001Tree\u3001External\n- method \u8f6e\u5ed3\u70b9\u7684\u7f16\u7801\u65b9\u5f0f\uff0c\u57fa\u672c\u662f\u57fa\u4e8e\u94fe\u5f0f\u7f16\u7801\n- contours \u8fd2\u56de\u7684\u8f6e\u5ed3\u96c6\u5408\n- hieracrchy \u8fd2\u56de\u7684\u8f6e\u5ed3\u5c42\u6b21\u5173\u7cfb\n- offset \u70b9\u662f\u5426\u6709\u4f4d\u79fb\n```\n\n**2. \u591a\u8fb9\u5f62\u903c\u8fd1**\n\u591a\u8fb9\u5f62\u903c\u8fd1\uff0c\u662f\u901a\u8fc7\u5bf9\u8f6e\u5ed3\u5916\u5f62\u65e0\u9650\u903c\u8fd1\uff0c\u5220\u9664\u975e\u5173\u952e\u70b9\u3001\u5f97\u5230\u8f6e\u5ed3\u7684\u5173\u952e\u70b9\uff0c\u4e0d\u65ad\u903c\u8fd1\u8f6e\u5ed3\u771f\u5b9e\u5f62\u72b6\u7684\u65b9\u6cd5\uff0cOpenCV\u4e2d\u591a\u8fb9\u5f62\u903c\u8fd1\u7684\u51fd\u6570\u4e0e\u53c2\u6570\u89e3\u91ca\u5982\u4e0b\uff1a\n```\napproxPolyDP(curve, epsilon, closed, approxCurve=None)\n- curve \u8868\u793a\u8f93\u5165\u7684\u8f6e\u5ed3\u70b9\u96c6\u5408\n- epsilon \u8868\u793a\u903c\u8fd1\u66f2\u7387\uff0c\u8d8a\u5c0f\u8868\u793a\u76f8\u4f3c\u903c\u8fd1\u8d8a\u5389\u5bb3\n- close \u662f\u5426\u95ed\u5408\n```\n**3. \u51e0\u4f55\u8ddd\u8ba1\u7b97**\n\u56fe\u50cf\u51e0\u4f55\u8ddd\u662f\u56fe\u50cf\u7684\u51e0\u4f55\u7279\u5f81\uff0c\u9ad8\u9636\u51e0\u4f55\u8ddd\u4e2d\u5fc3\u5316\u4e4b\u540e\u5177\u6709\u7279\u5f81\u4e0d\u53d8\u6027\uff0c\u53ef\u4ee5\u4ea7\n\u751fHu\u8ddd\u8f93\u51fa\uff0c\u7528\u4e8e\u5f62\u72b6\u5339\u914d\u7b49\u64cd\u4f5c\uff0c\u8fd9\u91cc\u6211\u4eec\u901a\u8fc7\u8ba1\u7b97\u4e00\u9636\u51e0\u4f55\u8ddd\u5f97\u5230\u6307\u5b9a\u8f6e\u5ed3\u7684\u4e2d\u5fc3\u4f4d\u7f6e\uff0c\u8ba1\u7b97\u51e0\u4f55\u8ddd\u7684\u51fd\u6570\u4e0e\u53c2\u6570\u89e3\u91ca\u5982\u4e0b\uff1a\n```\nmoments(array, binaryImage=None)\n- array\u8868\u793a\u6307\u5b9a\u8f93\u5165\u8f6e\u5ed3\n- binaryImage\u9ed8\u8ba4\u4e3aNone\n```\n### \u4e8c\uff1a\u4ee3\u7801\u5b9e\u73b0\u4e0e\u6f14\u793a\n\u6574\u4e2a\u4ee3\u7801\u5b9e\u73b0\u5206\u4e3a\u5982\u4e0b\u51e0\u6b65\u5b8c\u6210\n1. \u52a0\u8f7d\u56fe\u50cf\uff0c\n2. \u56fe\u50cf\u4e8c\u503c\u5316\n3. \u8f6e\u5ed3\u53d1\u73b0\n4. \u51e0\u4f55\u5f62\u72b6\u8bc6\u522b\n5. \u6d4b\u91cf\u5468\u957f\u3001\u9762\u79ef\u3001\u8ba1\u7b97\u4e2d\u5fc3\n6. \u989c\u8272\u63d0\u53d6\n\u5b8c\u6574\u7684\u6e90\u4ee3\u7801\u5982\u4e0b\uff1a\n\n```\n####################################################\n#   \u4f5c\u8005:zhigang,\n####################################################\nimport cv2 as cv\nimport numpy as np\n\n\nclass ShapeAnalysis:\n    def __init__(self):\n        self.shapes = {'triangle': 0, 'rectangle': 0, 'polygons': 0, 'circles': 0}\n\n    def analysis(self, frame):\n        h, w, ch = frame.shape\n        result = np.zeros((h, w, ch), dtype=np.uint8)\n        # \u4e8c\u503c\u5316\u56fe\u50cf\n        print(\"start to detect lines...\\n\")\n        gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)\n        ret, binary = cv.threshold(gray, 0, 255, cv.THRESH_BINARY_INV | cv.THRESH_OTSU)\n        cv.imshow(\"input image\", frame)\n\n        out_binary, contours, hierarchy = cv.findContours(binary, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)\n        for cnt in range(len(contours)):\n            # \u63d0\u53d6\u4e0e\u7ed8\u5236\u8f6e\u5ed3\n            cv.drawContours(result, contours, cnt, (0, 255, 0), 2)\n\n            # \u8f6e\u5ed3\u903c\u8fd1\n            epsilon = 0.01 * cv.arcLength(contours[cnt], True)\n            approx = cv.approxPolyDP(contours[cnt], epsilon, True)\n\n            # \u5206\u6790\u51e0\u4f55\u5f62\u72b6\n            corners = len(approx)\n            shape_type = \"\"\n            if corners == 3:\n                count = self.shapes['triangle']\n                count = count+1\n                self.shapes['triangle'] = count\n                shape_type = \"\u4e09\u89d2\u5f62\"\n            if corners == 4:\n                count = self.shapes['rectangle']\n                count = count + 1\n                self.shapes['rectangle'] = count\n                shape_type = \"\u77e9\u5f62\"\n            if corners >= 10:\n                count = self.shapes['circles']\n                count = count + 1\n                self.shapes['circles'] = count\n                shape_type = \"\u5706\u5f62\"\n            if 4 < corners < 10:\n                count = self.shapes['polygons']\n                count = count + 1\n                self.shapes['polygons'] = count\n                shape_type = \"\u591a\u8fb9\u5f62\"\n\n\n            # \u6c42\u89e3\u4e2d\u5fc3\u4f4d\u7f6e\n            mm = cv.moments(contours[cnt])\n            cx = int(mm['m10'] \/ mm['m00'])\n            cy = int(mm['m01'] \/ mm['m00'])\n            cv.circle(result, (cx, cy), 3, (0, 0, 255), -1)\n\n            # \u989c\u8272\u5206\u6790\n            color = frame[cy][cx]\n            color_str = \"(\" + str(color[0]) + \", \" + str(color[1]) + \", \" + str(color[2]) + \")\"\n\n            # \u8ba1\u7b97\u9762\u79ef\u4e0e\u5468\u957f\n            p = cv.arcLength(contours[cnt], True)\n            area = cv.contourArea(contours[cnt])\n            print(\"\u5468\u957f: %.3f, \u9762\u79ef: %.3f \u989c\u8272: %s \u5f62\u72b6: %s \"% (p, area, color_str, shape_type))\n\n\n        cv.imshow(\"Analysis Result\", self.draw_text_info(result))\n        cv.imwrite(\"D:\/test-result.png\", self.draw_text_info(result))\n        return self.shapes\n\n    def draw_text_info(self, image):\n        c1 = self.shapes['triangle']\n        c2 = self.shapes['rectangle']\n        c3 = self.shapes['polygons']\n        c4 = self.shapes['circles']\n        cv.putText(image, \"triangle: \"+str(c1), (10, 20), cv.FONT_HERSHEY_PLAIN, 1.2, (255, 0, 0), 1)\n        cv.putText(image, \"rectangle: \" + str(c2), (10, 40), cv.FONT_HERSHEY_PLAIN, 1.2, (255, 0, 0), 1)\n        cv.putText(image, \"polygons: \" + str(c3), (10, 60), cv.FONT_HERSHEY_PLAIN, 1.2, (255, 0, 0), 1)\n        cv.putText(image, \"circles: \" + str(c4), (10, 80), cv.FONT_HERSHEY_PLAIN, 1.2, (255, 0, 0), 1)\n        return image\n\n\nif __name__ == \"__main__\":\n    src = cv.imread(\"D:\/javaopencv\/gem_test.png\")\n    ld = ShapeAnalysis()\n    ld.analysis(src)\n    cv.waitKey(0)\n    cv.destroyAllWindows()\n```\n\n\u539f\u56fe\n![](https:\/\/s1.51cto.com\/images\/blog\/201804\/16\/8a5760fb07eaae1b7dcc40f09ce22682.png?x-oss-process=image\/watermark,size_16,text_QDUxQ1RP5Y2a5a6i,color_FFFFFF,t_100,g_se,x_10,y_10,shadow_90,type_ZmFuZ3poZW5naGVpdGk=)\n\n\u8fd0\u884c\u7ed3\u679c\uff1a\n![](https:\/\/s1.51cto.com\/images\/blog\/201804\/16\/890e0b78436732b2f9c6eee4f4edeced.png?x-oss-process=image\/watermark,size_16,text_QDUxQ1RP5Y2a5a6i,color_FFFFFF,t_100,g_se,x_10,y_10,shadow_90,type_ZmFuZ3poZW5naGVpdGk=)\n\n\u63a7\u5236\u53f0\u8f93\u51fa\uff1a\n![](https:\/\/s1.51cto.com\/images\/blog\/201804\/16\/244b29b905b1feae9995c9933d050243.png?x-oss-process=image\/watermark,size_16,text_QDUxQ1RP5Y2a5a6i,color_FFFFFF,t_100,g_se,x_10,y_10,shadow_90,type_ZmFuZ3poZW5naGVpdGk=)\n\n**\u6b22\u8fce\u7ee7\u7eed\u5173\u6ce8\u672c\u535a\u5ba2\uff0c\u5b66\u4e60OpenCV Python\u6559\u7a0b**\n\n[Python+OpenCV3.3\u56fe\u50cf\u5904\u7406\u89c6\u9891\u6559\u7a0b](http:\/\/edu.51cto.com\/course\/11324.html)\n", '#result');
+  }
+
+  function insertCodeElement(content, container){
+    container = container || document;
+    // 创建一个 div 来放置获取到的内容，这样就可以把 content 字符串内容转换成 dom
+    // 方便我们对这个 dom 进行操作（只是创建 div，并没有插入到文档，他只存在于内存中）
+    var parent = document.createElement('div');
+    parent.innerHTML = content;
+
+    // 找到 parent 中的所有 pre 标签，并遍历
+    var $pres = $(parent).find('pre');
+    $pres.each(function(index, el) {
+      var $el = $(el),
+          html = $el.html(),
+          code = document.createElement('code'),
+          elClass = $el.attr('class');
+      if(!elClass) {return};
+          // 获取 pre 标签中，class 属性中包含的本段代码所有的编程语言
+      var language = elClass.substring(6, elClass.indexOf(';'));
+
+      code.className = 'language-' + language;
+      code.innerHTML = html;
+
+      $el.html(code);
+    });
+
+    $(container).html(parent.innerHTML);
+
+    // 最后，调用 Prism 的方法来高亮代码
+    Prism.highlightAll();
+  }
+	window._bd_share_config={
+    "common":{
+      "bdText":"OpenCV中几何形状识别与测量",
+      "bdDesc":$("#abstract_bdshare").text(),
+      "bdMini":"2",
+      "bdMiniList":false,
+      "bdPic":"https://s1.51cto.com/images/201710/25/bd540a4f14d822f6e69087758699358b.jpg",
+      "bdStyle":"0",
+      "bdSize":"16"
+    },
+    "share":{}
+  };
+  with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+  setTimeout(function(){
+  	$('.bdsharebuttonbox a').removeAttr('title')
+  },1000);
+
+	var now_time = 1557905657; //当前时间
+  setInterval(function(){now_time+=0.01},10);
+
+  // 初始化页面
+  updatePage();
+  // 页面tab切换
+  zDate.visibilityAction(function () {
+    zDate.getServerTime(function (e) {
+      var updateResult = new Date(e).getTime();
+      now_time = +updateResult.toString().substr(0, 10);
+      updatePage();
+    });
+   })
+  // 定时刷新现在时间
+  setInterval(function () {
+    zDate.getServerTime(function (e) {
+      var updateResult = new Date(e).getTime();
+      now_time = +updateResult.toString().substr(0, 10);
+      updatePage();
+    });
+  }, 1000*60*2);
+  // 页面刷新
+  function updatePage() {
+    $('.presell').each(function(index, item) {
+      var end_time = $(this).data('end'); // 结束时间
+      if (!end_time) {
+        return;
+      }
+      var me = $(this);
+      if (me.lastTime) {
+        clearInterval(me.lastTime);
+        me.lastTime = null;
+      } else {
+        me.lastTime = setInterval(function() {
+          zDate.setLastTimePc(me.find('.timespan'), (end_time*1000-now_time*1000), me.lastTime, function() {
+						me.parents('.right').find('.cloumn-subscribe').removeClass('presell-color');
+						me.remove();
+						$('.pre-tips').remove();
+					});
+        }, 10);
+      }
+    });
+  }
+		//二维码显示
+		$(".group_git_box").hover(function(){
+			$(this).parents('.group_img_box').find(".group_code_box").show()
+		},function(){
+			$(this).parents('.group_img_box').find(".group_code_box").hide()
+		})  
+</script>
+</div>
+<script src="OpenCV%E4%B8%AD%E5%87%A0%E4%BD%95%E5%BD%A2%E7%8A%B6%E8%AF%86%E5%88%AB%E4%B8%8E%E6%B5%8B%E9%87%8F-%E6%B5%81%E6%B5%AA%E7%9A%84%E9%B1%BC-51CTO%E5%8D%9A%E5%AE%A2_files/marked.js"></script><script src="OpenCV%E4%B8%AD%E5%87%A0%E4%BD%95%E5%BD%A2%E7%8A%B6%E8%AF%86%E5%88%AB%E4%B8%8E%E6%B5%8B%E9%87%8F-%E6%B5%81%E6%B5%AA%E7%9A%84%E9%B1%BC-51CTO%E5%8D%9A%E5%AE%A2_files/highlight.js"></script><script src="OpenCV%E4%B8%AD%E5%87%A0%E4%BD%95%E5%BD%A2%E7%8A%B6%E8%AF%86%E5%88%AB%E4%B8%8E%E6%B5%8B%E9%87%8F-%E6%B5%81%E6%B5%AA%E7%9A%84%E9%B1%BC-51CTO%E5%8D%9A%E5%AE%A2_files/detail_mp.js"></script><script src="OpenCV%E4%B8%AD%E5%87%A0%E4%BD%95%E5%BD%A2%E7%8A%B6%E8%AF%86%E5%88%AB%E4%B8%8E%E6%B5%8B%E9%87%8F-%E6%B5%81%E6%B5%AA%E7%9A%84%E9%B1%BC-51CTO%E5%8D%9A%E5%AE%A2_files/detail.js"></script><script src="OpenCV%E4%B8%AD%E5%87%A0%E4%BD%95%E5%BD%A2%E7%8A%B6%E8%AF%86%E5%88%AB%E4%B8%8E%E6%B5%8B%E9%87%8F-%E6%B5%81%E6%B5%AA%E7%9A%84%E9%B1%BC-51CTO%E5%8D%9A%E5%AE%A2_files/details_new.js"></script><script src="OpenCV%E4%B8%AD%E5%87%A0%E4%BD%95%E5%BD%A2%E7%8A%B6%E8%AF%86%E5%88%AB%E4%B8%8E%E6%B5%8B%E9%87%8F-%E6%B5%81%E6%B5%AA%E7%9A%84%E9%B1%BC-51CTO%E5%8D%9A%E5%AE%A2_files/copy.js"></script>    
+<div style="display:none">
+    <iframe scrolling="no" src="http://log.51cto.com/pageview.php?frompos=blog_art" width="0" height="0" frameborder="0"></iframe>
+</div>
+
+<script src="OpenCV%E4%B8%AD%E5%87%A0%E4%BD%95%E5%BD%A2%E7%8A%B6%E8%AF%86%E5%88%AB%E4%B8%8E%E6%B5%8B%E9%87%8F-%E6%B5%81%E6%B5%AA%E7%9A%84%E9%B1%BC-51CTO%E5%8D%9A%E5%AE%A2_files/pvlog.js"></script>
+<script>
+  $(".gotop").click(function(){$(window).scrollTop(0)})
+</script>
+
+
+    <script type="text/javascript">
+    //百度统计代码
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?2283d46608159c3b39fc9f1178809c21";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+
+    //自动推送链接
+    (function(){
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        }
+        else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+    </script>
+
+    <script type="text/javascript">
+      var _vds = _vds || [];
+      window._vds = _vds;
+      (function(){
+        _vds.push(['setAccountId', '8c51975c40edfb67']);
+        (function() {
+          var vds = document.createElement('script');
+          vds.type='text/javascript';
+          vds.async = true;
+          vds.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'assets.growingio.com/vds.js';
+          var s = document.getElementsByTagName('script')[0];
+          s.parentNode.insertBefore(vds, s);
+        })();
+      })();
+      //document.write(decodeURI("%3Cscript src='https://tongji.51cto.com/frontend/tj.gif' type='text/javascript'%3E%3C/script%3E"));
+    </script>
+    
+<script>
+  var uid = '';
+  var BLOG_URL = 'https://blog.51cto.com/';
+</script>
+<script src="OpenCV%E4%B8%AD%E5%87%A0%E4%BD%95%E5%BD%A2%E7%8A%B6%E8%AF%86%E5%88%AB%E4%B8%8E%E6%B5%8B%E9%87%8F-%E6%B5%81%E6%B5%AA%E7%9A%84%E9%B1%BC-51CTO%E5%8D%9A%E5%AE%A2_files/jquery_003.js"></script>
+<script src="OpenCV%E4%B8%AD%E5%87%A0%E4%BD%95%E5%BD%A2%E7%8A%B6%E8%AF%86%E5%88%AB%E4%B8%8E%E6%B5%8B%E9%87%8F-%E6%B5%81%E6%B5%AA%E7%9A%84%E9%B1%BC-51CTO%E5%8D%9A%E5%AE%A2_files/time-on-page.js" charset="utf-8"></script>
+<script>
+    (function(){
+        var wh=$(window).height(),fh=$('.Footer').outerHeight(true),hh=$('.Header').outerHeight(true)
+        $('.Content-box').css({'min-height': wh-fh-hh})
+    })()
+</script>
+
+
+<div id="Mask" style="overflow: hidden; z-index: 9999998; width: 100%; height: 1102px; position: fixed; top: 0px; left: 0px; background: rgb(0, 0, 0) none repeat scroll 0% 0%; opacity: 0.6;"></div><div style="position: fixed; left: 673.5px; z-index: 9999999; overflow: hidden; width: 500px; height: 400px; padding: 3px; top: 351px;"><a href="https://blog.51cto.com/cloumn/composedetail?id=4&amp;pc" class="closeMB" target="_blank" styel="display:block;"><img src="OpenCV%E4%B8%AD%E5%87%A0%E4%BD%95%E5%BD%A2%E7%8A%B6%E8%AF%86%E5%88%AB%E4%B8%8E%E6%B5%8B%E9%87%8F-%E6%B5%81%E6%B5%AA%E7%9A%84%E9%B1%BC-51CTO%E5%8D%9A%E5%AE%A2_files/68fa50845c8a3b873b9d151956748ccb.jpg"></a><a class="closeMB" style="position: absolute;right:2px;top: 3px;width: 50px;height: 40px;cursor: pointer;" href="javascript:;"></a></div><div id="zhichiBtnBox" style="position: fixed; z-index: 2147483583; box-shadow: rgba(15, 66, 76, 0.25) 0px 0px 14px 0px; width: 60px; height: 60px; border-radius: 50%; background-color: rgb(66, 133, 244); background-image: url(&quot;//www.sobot.com/chat/frame/imgs/icon.png&quot;); background-repeat: no-repeat; background-position: 18px -58px; right: 40px; bottom: 90px; display: none;"><a hidefocus="" id="zhichiBtn" style="position:relative;text-decoration: none; outline: none; font-family: Microsoft Yahei, Arial, Helvetica; color: #fff; font-size: 16px; display: inline-block; margin: 0; padding: 0; border: none; line-height:43px; float:none;width:100%;height:100%;border-radius:50%;"><span class="zc-advice-icon-btn-title" style="box-shadow: rgba(107, 113, 114, 0.15) 0px 2px 4px 0px; border: 1px solid rgb(235, 239, 240); font-family: Microsoft Yahei, Arial, Helvetica; color: rgb(85, 85, 86); font-size: 13px; margin: 0px; padding: 0px 5px; text-align: right; background: rgb(255, 255, 255) none repeat scroll 0% 0%; position: absolute; top: 15px; right: 70px; text-overflow: ellipsis; white-space: nowrap; word-break: normal; display: none; border-radius: 3px; height: 30px; line-height: 30px;">咨询在线客服</span></a><i style="position:absolute;top:0px;right:0px;padding:1px;line-height:20px;text-align:center;color:#fff;font-weight:bold;height:18px;min-width:18px;background-color:#ed5c5c;border-radius:18px;font-size:12px;display:none;font-style:normal;" id="zhichiCount"></i></div><script src="OpenCV%E4%B8%AD%E5%87%A0%E4%BD%95%E5%BD%A2%E7%8A%B6%E8%AF%86%E5%88%AB%E4%B8%8E%E6%B5%8B%E9%87%8F-%E6%B5%81%E6%B5%AA%E7%9A%84%E9%B1%BC-51CTO%E5%8D%9A%E5%AE%A2_files/offlineMsgSize.json"></script></body></html>

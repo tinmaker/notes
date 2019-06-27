@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="zh-cn"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="origin">
+    <title>opencv的实用研究--分析轮廓并寻找边界点 - jsxyhelu - 博客园</title>
+<meta property="og:description" content="opencv的实用研究--分析轮廓并寻找边界点 ​ 轮廓是图像处理中非常常见的。对现实中的图像进行采样、色彩变化、灰度变化之后，能够处理得到的是“轮廓”。它直接地反应你了需要分析对象的边界特征。而对轮">
+    <link type="text/css" rel="stylesheet" href="opencv%E7%9A%84%E5%AE%9E%E7%94%A8%E7%A0%94%E7%A9%B6--%E5%88%86%E6%9E%90%E8%BD%AE%E5%BB%93%E5%B9%B6%E5%AF%BB%E6%89%BE%E8%BE%B9%E7%95%8C%E7%82%B9%20-%20jsxyhelu%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/blog-common.css">
+<link type="text/css" rel="stylesheet" href="opencv%E7%9A%84%E5%AE%9E%E7%94%A8%E7%A0%94%E7%A9%B6--%E5%88%86%E6%9E%90%E8%BD%AE%E5%BB%93%E5%B9%B6%E5%AF%BB%E6%89%BE%E8%BE%B9%E7%95%8C%E7%82%B9%20-%20jsxyhelu%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/146361.css">
+<link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="opencv%E7%9A%84%E5%AE%9E%E7%94%A8%E7%A0%94%E7%A9%B6--%E5%88%86%E6%9E%90%E8%BD%AE%E5%BB%93%E5%B9%B6%E5%AF%BB%E6%89%BE%E8%BE%B9%E7%95%8C%E7%82%B9%20-%20jsxyhelu%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/bundle-LessIsMore-mobile.css">
+    <link title="RSS" type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/jsxyhelu/rss">
+    <link title="RSD" type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/jsxyhelu/rsd.xml">
+<link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/jsxyhelu/wlwmanifest.xml">
+    <script src="opencv%E7%9A%84%E5%AE%9E%E7%94%A8%E7%A0%94%E7%A9%B6--%E5%88%86%E6%9E%90%E8%BD%AE%E5%BB%93%E5%B9%B6%E5%AF%BB%E6%89%BE%E8%BE%B9%E7%95%8C%E7%82%B9%20-%20jsxyhelu%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/amp4ads-host-v0.js"></script><script src="opencv%E7%9A%84%E5%AE%9E%E7%94%A8%E7%A0%94%E7%A9%B6--%E5%88%86%E6%9E%90%E8%BD%AE%E5%BB%93%E5%B9%B6%E5%AF%BB%E6%89%BE%E8%BE%B9%E7%95%8C%E7%82%B9%20-%20jsxyhelu%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/pubads_impl_rendering_2019050901.js"></script><script async="" src="opencv%E7%9A%84%E5%AE%9E%E7%94%A8%E7%A0%94%E7%A9%B6--%E5%88%86%E6%9E%90%E8%BD%AE%E5%BB%93%E5%B9%B6%E5%AF%BB%E6%89%BE%E8%BE%B9%E7%95%8C%E7%82%B9%20-%20jsxyhelu%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/analytics.js"></script><script src="opencv%E7%9A%84%E5%AE%9E%E7%94%A8%E7%A0%94%E7%A9%B6--%E5%88%86%E6%9E%90%E8%BD%AE%E5%BB%93%E5%B9%B6%E5%AF%BB%E6%89%BE%E8%BE%B9%E7%95%8C%E7%82%B9%20-%20jsxyhelu%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/jquery-2.js"></script>
+    <script>var currentBlogId=146361;var currentBlogApp='jsxyhelu',cb_enable_mathjax=false;var isLogined=false;</script>
+    <script src="opencv%E7%9A%84%E5%AE%9E%E7%94%A8%E7%A0%94%E7%A9%B6--%E5%88%86%E6%9E%90%E8%BD%AE%E5%BB%93%E5%B9%B6%E5%AF%BB%E6%89%BE%E8%BE%B9%E7%95%8C%E7%82%B9%20-%20jsxyhelu%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/blog-common.js" type="text/javascript"></script>
+<link rel="preload" href="opencv%E7%9A%84%E5%AE%9E%E7%94%A8%E7%A0%94%E7%A9%B6--%E5%88%86%E6%9E%90%E8%BD%AE%E5%BB%93%E5%B9%B6%E5%AF%BB%E6%89%BE%E8%BE%B9%E7%95%8C%E7%82%B9%20-%20jsxyhelu%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/integrator.js" as="script"><script type="text/javascript" src="opencv%E7%9A%84%E5%AE%9E%E7%94%A8%E7%A0%94%E7%A9%B6--%E5%88%86%E6%9E%90%E8%BD%AE%E5%BB%93%E5%B9%B6%E5%AF%BB%E6%89%BE%E8%BE%B9%E7%95%8C%E7%82%B9%20-%20jsxyhelu%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/integrator.js"></script><script src="opencv%E7%9A%84%E5%AE%9E%E7%94%A8%E7%A0%94%E7%A9%B6--%E5%88%86%E6%9E%90%E8%BD%AE%E5%BB%93%E5%B9%B6%E5%AF%BB%E6%89%BE%E8%BE%B9%E7%95%8C%E7%82%B9%20-%20jsxyhelu%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/pubads_impl_2019050901.js" async=""></script></head>
+<body>
+<a name="top"></a>
+
+
+<div id="home">
+<div id="header">
+	<div id="blogTitle">
+		
+<!--done-->
+<div class="title"><a id="Header1_HeaderTitle" class="headermaintitle" href="https://www.cnblogs.com/jsxyhelu/">GreenOpen专注图像处理</a></div>
+<div class="subtitle">利用有限资源，达到既定目标！</div>
+
+
+
+		
+	</div><!--end: blogTitle 博客的标题和副标题 -->
+	<div id="navigator">
+		
+<ul id="navList">
+<li id="nav_sitehome"><a id="blog_nav_sitehome" class="menu" href="https://www.cnblogs.com/">博客园</a></li>
+<li id="nav_myhome"><a id="blog_nav_myhome" class="menu" href="https://www.cnblogs.com/jsxyhelu/">首页</a></li>
+<li id="nav_newpost"><a id="blog_nav_newpost" class="menu" rel="nofollow" href="https://i.cnblogs.com/EditPosts.aspx?opt=1">新随笔</a></li>
+<li id="nav_contact"><a id="blog_nav_contact" class="menu" rel="nofollow" href="https://msg.cnblogs.com/send/jsxyhelu">联系</a></li>
+<li id="nav_rss"><a id="blog_nav_rss" class="menu" href="https://www.cnblogs.com/jsxyhelu/rss">订阅</a>
+<!--<a id="blog_nav_rss_image" class="aHeaderXML" href="https://www.cnblogs.com/jsxyhelu/rss"><img src="//www.cnblogs.com/images/xml.gif" alt="订阅" /></a>--></li>
+<li id="nav_admin"><a id="blog_nav_admin" class="menu" rel="nofollow" href="https://i.cnblogs.com/">管理</a></li>
+</ul>
+
+		<div class="blogStats">
+			
+			<div id="blog_stats">
+<!--done-->
+随笔-325&nbsp;
+文章-0&nbsp;
+评论-96&nbsp;
+</div>
+			
+		</div><!--end: blogStats -->
+	</div><!--end: navigator 博客导航栏 -->
+</div><!--end: header 头部 -->
+<div id="main">
+	<div id="mainContent">
+	<div class="forFlow">
+		
+        <div id="post_detail">
+<!--done-->
+<div id="topics">
+	<div class="post">
+		<h1 class="postTitle">
+			<a id="cb_post_title_url" class="postTitle2" href="https://www.cnblogs.com/jsxyhelu/p/5106760.html">opencv的实用研究--分析轮廓并寻找边界点</a>
+		</h1>
+		<div class="clear"></div>
+		<div class="postBody">
+			<div id="cnblogs_post_body" class="blogpost-body"><div style="text-align: center;"><span style="font-size: 18pt;">opencv的实用研究--分析轮廓并寻找边界点</span></div>
+<div><span style="font-size: 12pt;" data-wiz-span="data-wiz-span">​ &nbsp; &nbsp; &nbsp;轮廓是图像处理中非常常见的。对现实中的图像进行采样、色彩变化、灰度变化之后，能够处理得到的是“轮廓”。它直接地反应你了需要分析对象的边界特征。而对轮廓的分析，实际上也就是对原图像特征的分析。</span></div>
+<div><span style="font-size: 12pt;" data-wiz-span="data-wiz-span">&nbsp; &nbsp; &nbsp; 在Opencv中，已经实现了基础的轮廓算法，但是相比较于比如halcon这样的专业软件，在轮廓处理这块的功能还是比较缺乏的。这里就通过一个具体问题，说明自己的学习研究。不对之处欢迎批评。</span></div>
+<div><span style="font-size: 12pt;" data-wiz-span="data-wiz-span">&nbsp; &nbsp; &nbsp; &nbsp;P.S这里的轮廓处理相关函数，已经包涵在GOBase中，具体可以到公告中找Github.</span></div>
+<div><span style="font-size: medium;"><span style="line-height: 24px;"><strong>一、问题提出</strong></span></span></div>
+<div><span style="font-size: 12pt;" data-wiz-span="data-wiz-span">&nbsp; &nbsp; &nbsp; 那么如果对于一个简单的图像，比如</span></div>
+<div style="text-align: center;"><img src="opencv%E7%9A%84%E5%AE%9E%E7%94%A8%E7%A0%94%E7%A9%B6--%E5%88%86%E6%9E%90%E8%BD%AE%E5%BB%93%E5%B9%B6%E5%AF%BB%E6%89%BE%E8%BE%B9%E7%95%8C%E7%82%B9%20-%20jsxyhelu%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/508489-20160106200353340-1182128557.png" alt="" name="" border="0"></div>
+<div><span style="font-size: 16px; line-height: 24px;">&nbsp; &nbsp; &nbsp; 已经获得了最大物体的轮廓，比如</span></div>
+<div>
+<div>
+<div class="cnblogs_Highlighter sh-gutter">
+<div><div id="highlighter_244724" class="syntaxhighlighter  cpp"><div class="toolbar"><span><a href="#" class="toolbar_item command_help help">?</a></span></div><table cellspacing="0" cellpadding="0" border="0"><tbody><tr><td class="gutter"><div class="line number1 index0 alt2">1</div><div class="line number2 index1 alt1">2</div><div class="line number3 index2 alt2">3</div><div class="line number4 index3 alt1">4</div><div class="line number5 index4 alt2">5</div><div class="line number6 index5 alt1">6</div></td><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="cpp comments">//灰度域变化</code></div><div class="line number2 index1 alt1"><code class="cpp spaces">&nbsp;&nbsp;</code><code class="cpp plain">threshold(gray,gray,0,255,THRESH_BINARY_INV);</code></div><div class="line number3 index2 alt2"><code class="cpp spaces">&nbsp;&nbsp;</code><code class="cpp plain">GaussianBlur(gray,gray,Size(3,3),0,0);</code></div><div class="line number4 index3 alt1"><code class="cpp spaces">&nbsp;&nbsp;</code><code class="cpp comments">//寻找和绘制轮廓</code></div><div class="line number5 index4 alt2"><code class="cpp spaces">&nbsp;&nbsp;</code><code class="cpp plain">VP bigestContour = FindBigestContour(gray);</code></div><div class="line number6 index5 alt1"><code class="cpp spaces">&nbsp;&nbsp;</code><code class="cpp plain">contours.push_back(bigestContour);&nbsp; </code></div></div></td></tr></tbody></table></div></div>
+</div>
+<p>　　</p>
+</div>
+<div>&nbsp;</div>
+</div>
+<div style="text-align: center;"><span style="font-size: 16px; line-height: 24px;">&nbsp; &nbsp;&nbsp;</span><img style="font-size: 10.5pt; line-height: 1.5;" src="opencv%E7%9A%84%E5%AE%9E%E7%94%A8%E7%A0%94%E7%A9%B6--%E5%88%86%E6%9E%90%E8%BD%AE%E5%BB%93%E5%B9%B6%E5%AF%BB%E6%89%BE%E8%BE%B9%E7%95%8C%E7%82%B9%20-%20jsxyhelu%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/508489-20160106200353715-1654267084.png" alt="" name="" border="0"></div>
+<div><span style="font-size: 12pt;" data-wiz-span="data-wiz-span">&nbsp; &nbsp; &nbsp;由于在opencv里面，轮廓是以</span>
+<div><ol class="linenums" style="padding-left: 0px;">
+<li class="L0" style="list-style-type: none; padding-left: 0px;">
+<div class="cnblogs_Highlighter sh-gutter">
+<div><div id="highlighter_951756" class="syntaxhighlighter  cpp"><div class="toolbar"><span><a href="#" class="toolbar_item command_help help">?</a></span></div><table cellspacing="0" cellpadding="0" border="0"><tbody><tr><td class="gutter"><div class="line number1 index0 alt2">1</div></td><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="cpp plain">vector&lt;vector&lt;point&gt;&gt;</code></div></div></td></tr></tbody></table></div></div>
+</div>
+</li>
+</ol></div>
+<span style="font-family: NSimSun; font-size: 9pt; line-height: 1.5;"><span style="color: rgba(0, 0, 0, 0);"><span style="font-size: 12pt;" data-wiz-span="data-wiz-span">&nbsp; &nbsp;</span></span></span><span style="font-size: 10.5pt; line-height: 1.5;"><span style="font-size: 12pt;" data-wiz-span="data-wiz-span">保存的，那</span></span><span style="font-size: 10.5pt; line-height: 1.5;"><span style="font-size: 12pt;" data-wiz-span="data-wiz-span">么如何获得这个轮廓的四个顶点了？</span></span></div>
+<div><span style="font-size: 10.5pt; line-height: 1.5;"><span style="font-size: 12pt;" data-wiz-span="data-wiz-span">&nbsp; &nbsp; &nbsp;尝试直接打印轮廓中第一个点，那么的确是左上角</span></span></div>
+<div style="text-align: center;"><img src="opencv%E7%9A%84%E5%AE%9E%E7%94%A8%E7%A0%94%E7%A9%B6--%E5%88%86%E6%9E%90%E8%BD%AE%E5%BB%93%E5%B9%B6%E5%AF%BB%E6%89%BE%E8%BE%B9%E7%95%8C%E7%82%B9%20-%20jsxyhelu%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/508489-20160106200353981-927656793.png" alt="" name="" border="0"><span style="font-size: 10.5pt; line-height: 1.5;"><br></span></div>
+<div><span style="font-size: 12pt;" data-wiz-span="data-wiz-span">但是不具有通用性，在一些比较复杂的图片上面效果不行,比如</span></div>
+<div style="text-align: center;"><img src="opencv%E7%9A%84%E5%AE%9E%E7%94%A8%E7%A0%94%E7%A9%B6--%E5%88%86%E6%9E%90%E8%BD%AE%E5%BB%93%E5%B9%B6%E5%AF%BB%E6%89%BE%E8%BE%B9%E7%95%8C%E7%82%B9%20-%20jsxyhelu%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/508489-20160106200354371-23551079.jpg" alt="" name="" border="0"></div>
+<div><span style="font-size: 12pt;" data-wiz-span="data-wiz-span">那么也就是说，必须通过特征分析的方法获得已经获得的轮廓中点的特性，而opencv本身没有提供相关功能。</span></div>
+<div><span style="font-size: 12pt;" data-wiz-span="data-wiz-span"><strong style="font-size: medium;">二、直观的解决</strong><br></span></div>
+<div><span style="font-size: 12pt;" data-wiz-span="data-wiz-span">&nbsp; &nbsp; &nbsp; 现在，对于“左上”和“右下”的两个点，是比较好分析的。因为在所有的包含在轮廓中的点中，他们一个是x,y同时最小的，一个是x,y同时最大的。</span></div>
+<div><span style="font-size: 12pt;" data-wiz-span="data-wiz-span">&nbsp; &nbsp; &nbsp; 比较复杂的是“左下”和"右上"两个点，</span><span style="font-size: 16px; line-height: 24px;">因为他们的数值不是非常有特征，</span><span style="font-size: 12pt; line-height: 1.5;">比较容易产生混淆。这个时候，如果仅仅是通过x,y值来分析，即使是对于简单图像，也很难得到稳定的结果。</span></div>
+<div>
+<div><ol class="linenums" style="padding-left: 0px;">
+<li class="L0" style="list-style-type: none; padding-left: 0px;">
+<div class="cnblogs_Highlighter sh-gutter">
+<div><div id="highlighter_329763" class="syntaxhighlighter  cpp"><div class="toolbar"><span><a href="#" class="toolbar_item command_help help">?</a></span></div><table cellspacing="0" cellpadding="0" border="0"><tbody><tr><td class="gutter"><div class="line number1 index0 alt2">1</div><div class="line number2 index1 alt1">2</div><div class="line number3 index2 alt2">3</div><div class="line number4 index3 alt1">4</div><div class="line number5 index4 alt2">5</div><div class="line number6 index5 alt1">6</div><div class="line number7 index6 alt2">7</div><div class="line number8 index7 alt1">8</div><div class="line number9 index8 alt2">9</div><div class="line number10 index9 alt1">10</div><div class="line number11 index10 alt2">11</div><div class="line number12 index11 alt1">12</div><div class="line number13 index12 alt2">13</div><div class="line number14 index13 alt1">14</div><div class="line number15 index14 alt2">15</div><div class="line number16 index15 alt1">16</div><div class="line number17 index16 alt2">17</div><div class="line number18 index17 alt1">18</div><div class="line number19 index18 alt2">19</div><div class="line number20 index19 alt1">20</div><div class="line number21 index20 alt2">21</div><div class="line number22 index21 alt1">22</div><div class="line number23 index22 alt2">23</div><div class="line number24 index23 alt1">24</div><div class="line number25 index24 alt2">25</div><div class="line number26 index25 alt1">26</div><div class="line number27 index26 alt2">27</div><div class="line number28 index27 alt1">28</div><div class="line number29 index28 alt2">29</div><div class="line number30 index29 alt1">30</div><div class="line number31 index30 alt2">31</div></td><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="cpp color1 bold">int</code> <code class="cpp plain">itopleft =65535;</code></div><div class="line number2 index1 alt1"><code class="cpp color1 bold">int</code> <code class="cpp plain">idownright =0;</code></div><div class="line number3 index2 alt2"><code class="cpp plain">Point ptopleft;</code></div><div class="line number4 index3 alt1"><code class="cpp plain">Point pdownright;</code></div><div class="line number5 index4 alt2"><code class="cpp plain">Point pdownleft;</code></div><div class="line number6 index5 alt1"><code class="cpp keyword bold">for</code><code class="cpp plain">(</code><code class="cpp color1 bold">int</code> <code class="cpp plain">i=0;i&lt;bigestContour.size();i++){</code></div><div class="line number7 index6 alt2"><code class="cpp comments">//左上</code></div><div class="line number8 index7 alt1"><code class="cpp keyword bold">if</code><code class="cpp plain">(bigestContour[i].x + bigestContour[i].y &lt;itopleft){</code></div><div class="line number9 index8 alt2"><code class="cpp plain">itopleft = bigestContour[i].x + bigestContour[i].y ;</code></div><div class="line number10 index9 alt1"><code class="cpp plain">ptopleft = bigestContour[i];</code></div><div class="line number11 index10 alt2"><code class="cpp plain">}</code></div><div class="line number12 index11 alt1"><code class="cpp comments">//右下</code></div><div class="line number13 index12 alt2"><code class="cpp keyword bold">if</code><code class="cpp plain">(bigestContour[i].x+bigestContour[i].y&gt;idownright){</code></div><div class="line number14 index13 alt1"><code class="cpp plain">idownright = bigestContour[i].x+bigestContour[i].y;</code></div><div class="line number15 index14 alt2"><code class="cpp plain">pdownright = bigestContour[i];</code></div><div class="line number16 index15 alt1"><code class="cpp plain">}</code></div><div class="line number17 index16 alt2"><code class="cpp plain">}</code></div><div class="line number18 index17 alt1"><code class="cpp color1 bold">int</code> <code class="cpp plain">idownleft =65534;</code></div><div class="line number19 index18 alt2"><code class="cpp comments">//对于左下的点来说，应该是所有y大于左上的点中，x最小的</code></div><div class="line number20 index19 alt1"><code class="cpp keyword bold">for</code><code class="cpp plain">(</code><code class="cpp color1 bold">int</code> <code class="cpp plain">i=0;i&lt;bigestContour.size();i++){</code></div><div class="line number21 index20 alt2"><code class="cpp keyword bold">if</code><code class="cpp plain">(bigestContour[i].y&gt;ptopleft.y){</code></div><div class="line number22 index21 alt1"><code class="cpp keyword bold">if</code><code class="cpp plain">(bigestContour[i].x&lt;idownleft){</code></div><div class="line number23 index22 alt2"><code class="cpp plain">idownleft = bigestContour[i].x;</code></div><div class="line number24 index23 alt1"><code class="cpp plain">pdownleft = bigestContour[i];</code></div><div class="line number25 index24 alt2"><code class="cpp plain">}</code></div><div class="line number26 index25 alt1"><code class="cpp plain">}</code></div><div class="line number27 index26 alt2"><code class="cpp plain">}</code></div><div class="line number28 index27 alt1"><code class="cpp comments">//绘制</code></div><div class="line number29 index28 alt2"><code class="cpp plain">circle(board,ptopleft,10,Scalar(255),5);</code></div><div class="line number30 index29 alt1"><code class="cpp plain">circle(board,pdownright,10,Scalar(255),5);</code></div><div class="line number31 index30 alt2"><code class="cpp plain">circle(board,pdownleft,10,Scalar(255),5);</code></div></div></td></tr></tbody></table></div></div>
+</div>
+<p>　　</p>
+</li>
+</ol></div>
+<div><strong style="font-size: medium; line-height: 24px;">三、利用模型来解决</strong></div>
+</div>
+<div><span style="font-size: 12pt; line-height: 1.5;">&nbsp; &nbsp; &nbsp; 那么，直观的方法是不稳定的。这个时候，我想到在进行图像处理的时候，有所谓“特征点”的说法。比较常见的比如</span>harris<span style="font-size: 12pt; line-height: 1.5;">/shift/surf。那么我是否能够通过分析轮廓图像，找到轮廓图像特征点的方法找到我需要的边角了？</span></div>
+<div><span style="font-size: 12pt; line-height: 1.5;">&nbsp; &nbsp; &nbsp; 编码实现：</span></div>
+<div>
+<div class="cnblogs_Highlighter sh-gutter">
+<div><div id="highlighter_189393" class="syntaxhighlighter  cpp"><div class="toolbar"><span><a href="#" class="toolbar_item command_help help">?</a></span></div><table cellspacing="0" cellpadding="0" border="0"><tbody><tr><td class="gutter"><div class="line number1 index0 alt2">1</div><div class="line number2 index1 alt1">2</div><div class="line number3 index2 alt2">3</div><div class="line number4 index3 alt1">4</div><div class="line number5 index4 alt2">5</div><div class="line number6 index5 alt1">6</div><div class="line number7 index6 alt2">7</div><div class="line number8 index7 alt1">8</div><div class="line number9 index8 alt2">9</div><div class="line number10 index9 alt1">10</div><div class="line number11 index10 alt2">11</div><div class="line number12 index11 alt1">12</div><div class="line number13 index12 alt2">13</div><div class="line number14 index13 alt1">14</div><div class="line number15 index14 alt2">15</div><div class="line number16 index15 alt1">16</div><div class="line number17 index16 alt2">17</div><div class="line number18 index17 alt1">18</div><div class="line number19 index18 alt2">19</div></td><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="cpp comments">///在board上寻找角点</code></div><div class="line number2 index1 alt1"><code class="cpp comments">///// Detector parameters&nbsp; </code></div><div class="line number3 index2 alt2"><code class="cpp color1 bold">int</code> <code class="cpp plain">blockSize = 2;&nbsp; </code></div><div class="line number4 index3 alt1"><code class="cpp color1 bold">int</code> <code class="cpp plain">apertureSize = 3;&nbsp; </code></div><div class="line number5 index4 alt2"><code class="cpp color1 bold">double</code> <code class="cpp plain">k = 0.04;&nbsp; </code></div><div class="line number6 index5 alt1"><code class="cpp color1 bold">int</code> <code class="cpp plain">thresh = 1;</code></div><div class="line number7 index6 alt2"><code class="cpp comments">/// Detecting corners&nbsp; </code></div><div class="line number8 index7 alt1"><code class="cpp plain">board.convertTo(board,CV_32F);</code></div><div class="line number9 index8 alt2"><code class="cpp plain">cornerHarris( board,dst,2,3,0.04);</code></div><div class="line number10 index9 alt1"><code class="cpp comments">///// Normalizing&nbsp; </code></div><div class="line number11 index10 alt2"><code class="cpp plain">normalize( dst, dst_norm, 0, 255, NORM_MINMAX, CV_32FC1, Mat() );&nbsp; </code></div><div class="line number12 index11 alt1"><code class="cpp plain">convertScaleAbs( dst_norm, dst_norm_scaled );&nbsp;&nbsp; </code></div><div class="line number13 index12 alt2"><code class="cpp comments">///// Drawing a circle around corners&nbsp; </code></div><div class="line number14 index13 alt1"><code class="cpp keyword bold">for</code><code class="cpp plain">( </code><code class="cpp color1 bold">int</code> <code class="cpp plain">j = 0; j &lt; dst_norm.rows ; j++ )&nbsp; { </code></div><div class="line number15 index14 alt2"><code class="cpp spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="cpp keyword bold">for</code><code class="cpp plain">( </code><code class="cpp color1 bold">int</code> <code class="cpp plain">i = 0; i &lt; dst_norm.cols; i++ )&nbsp; {&nbsp; </code></div><div class="line number16 index15 alt1"><code class="cpp spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="cpp keyword bold">if</code><code class="cpp plain">( (</code><code class="cpp color1 bold">int</code><code class="cpp plain">) dst_norm.at&lt;</code><code class="cpp color1 bold">float</code><code class="cpp plain">&gt;(j,i) &gt; thresh )&nbsp; {&nbsp;&nbsp; </code></div><div class="line number17 index16 alt2"><code class="cpp plain">circle( dst_norm_scaled, Point( i, j ), 5,&nbsp; Scalar(0), 2, 8, 0 );&nbsp;&nbsp; </code></div><div class="line number18 index17 alt1"><code class="cpp plain">circle(src,Point( i, j ), 5,&nbsp; Scalar(255,0,0), -1, 8, 0 );&nbsp; </code></div><div class="line number19 index18 alt2"><code class="cpp plain">}&nbsp; &lt;br&gt;}&lt;br&gt;}</code></div></div></td></tr></tbody></table></div></div>
+</div>
+<p>　　</p>
+<ol class="linenums" style="padding-left: 0px;">
+<li class="L1" style="list-style-type: none; padding-left: 0px;"><span style="line-height: 1.5;">&nbsp; &nbsp;</span></li>
+</ol></div>
+<div><span style="font-size: 12pt;" data-wiz-span="data-wiz-span">得到结果</span></div>
+<div style="text-align: center;"><img src="opencv%E7%9A%84%E5%AE%9E%E7%94%A8%E7%A0%94%E7%A9%B6--%E5%88%86%E6%9E%90%E8%BD%AE%E5%BB%93%E5%B9%B6%E5%AF%BB%E6%89%BE%E8%BE%B9%E7%95%8C%E7%82%B9%20-%20jsxyhelu%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/508489-20160106200354950-2050795805.png" alt="" name="" border="0"></div>
+<div><span style="font-size: 12pt;" data-wiz-span="data-wiz-span">NICE，在图像中已经明显的显示出来了4个边界点，再加上已经有的两个点，得到结果不成问题。</span></div>
+<div><span style="font-size: 12pt;" data-wiz-span="data-wiz-span"><strong style="font-size: medium;">四、问题进一步研究</strong><br></span></div>
+<div><span style="font-size: 12pt;" data-wiz-span="data-wiz-span">&nbsp;
+ &nbsp; &nbsp; 
+但是这里其实是用了一个“投机取巧”的方法，那就是使用图像处理的才使用的harris算法来分析轮廓。opencv默认实现的harris速度慢且会内
+存移除。用在这个简单的例子里面看似可以，但是无法处理现实问题。所以就必须分析原理。</span></div>
+<div><span style="font-size: 12pt;" data-wiz-span="data-wiz-span">&nbsp;
+ &nbsp; &nbsp; 
+做图像处理有一段时间了，我经常反思回忆，在图像处理中，能够稳定解决问题的，往往依靠的是“先验知识，本质特征”；越是分析逼近图像的本质特征，越能够
+发现稳定的解决方法。比如对于轮廓的角来说，很容易想到处于边角的点和两边的点肯定具有一定的关系，而这种关系具有特征性。</span></div>
+<div><span style="font-size: 12pt;" data-wiz-span="data-wiz-span">&nbsp; &nbsp; &nbsp; 所以有目的地寻找论文，很快就有了成果：</span></div>
+<div><span style="font-size: 12pt;" data-wiz-span="data-wiz-span">&nbsp;</span></div>
+<div>
+<div style="text-align: center; font-size: 14px; line-height: 21px;"><img src="opencv%E7%9A%84%E5%AE%9E%E7%94%A8%E7%A0%94%E7%A9%B6--%E5%88%86%E6%9E%90%E8%BD%AE%E5%BB%93%E5%B9%B6%E5%AF%BB%E6%89%BE%E8%BE%B9%E7%95%8C%E7%82%B9%20-%20jsxyhelu%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/508489-20160106200355653-824790143.bin" alt="" name="" border="0"></div>
+<div style="font-size: 14px; line-height: 21px;">&nbsp;</div>
+<div style="text-align: center; font-size: 14px; line-height: 21px;"><img src="opencv%E7%9A%84%E5%AE%9E%E7%94%A8%E7%A0%94%E7%A9%B6--%E5%88%86%E6%9E%90%E8%BD%AE%E5%BB%93%E5%B9%B6%E5%AF%BB%E6%89%BE%E8%BE%B9%E7%95%8C%E7%82%B9%20-%20jsxyhelu%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/508489-20160106200356137-1401252592.png" alt="" name="" border="0"></div>
+<div style="text-align: center; font-size: 14px; line-height: 21px;"><img src="opencv%E7%9A%84%E5%AE%9E%E7%94%A8%E7%A0%94%E7%A9%B6--%E5%88%86%E6%9E%90%E8%BD%AE%E5%BB%93%E5%B9%B6%E5%AF%BB%E6%89%BE%E8%BE%B9%E7%95%8C%E7%82%B9%20-%20jsxyhelu%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/508489-20160106200356528-1049348314.png" alt="" name="" border="0"></div>
+<div style="text-align: center; font-size: 14px; line-height: 21px;"><img src="opencv%E7%9A%84%E5%AE%9E%E7%94%A8%E7%A0%94%E7%A9%B6--%E5%88%86%E6%9E%90%E8%BD%AE%E5%BB%93%E5%B9%B6%E5%AF%BB%E6%89%BE%E8%BE%B9%E7%95%8C%E7%82%B9%20-%20jsxyhelu%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/508489-20160106200356981-1221011420.png" alt="" name="" border="0"></div>
+<div style="text-align: center; font-size: 14px; line-height: 21px;"><img src="opencv%E7%9A%84%E5%AE%9E%E7%94%A8%E7%A0%94%E7%A9%B6--%E5%88%86%E6%9E%90%E8%BD%AE%E5%BB%93%E5%B9%B6%E5%AF%BB%E6%89%BE%E8%BE%B9%E7%95%8C%E7%82%B9%20-%20jsxyhelu%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/508489-20160106200357731-454025957.png" alt="" name="" border="0"></div>
+<div style="text-align: center; font-size: 14px; line-height: 21px;"><img src="opencv%E7%9A%84%E5%AE%9E%E7%94%A8%E7%A0%94%E7%A9%B6--%E5%88%86%E6%9E%90%E8%BD%AE%E5%BB%93%E5%B9%B6%E5%AF%BB%E6%89%BE%E8%BE%B9%E7%95%8C%E7%82%B9%20-%20jsxyhelu%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/508489-20160106200358371-3429414.jpg" alt="" name="" border="0"></div>
+<div style="text-align: center; font-size: 14px; line-height: 21px;"><img src="opencv%E7%9A%84%E5%AE%9E%E7%94%A8%E7%A0%94%E7%A9%B6--%E5%88%86%E6%9E%90%E8%BD%AE%E5%BB%93%E5%B9%B6%E5%AF%BB%E6%89%BE%E8%BE%B9%E7%95%8C%E7%82%B9%20-%20jsxyhelu%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/508489-20160106200359028-1985040588.png" alt="" name="" border="0"></div>
+<div style="text-align: center; font-size: 14px; line-height: 21px;"><img src="opencv%E7%9A%84%E5%AE%9E%E7%94%A8%E7%A0%94%E7%A9%B6--%E5%88%86%E6%9E%90%E8%BD%AE%E5%BB%93%E5%B9%B6%E5%AF%BB%E6%89%BE%E8%BE%B9%E7%95%8C%E7%82%B9%20-%20jsxyhelu%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/508489-20160106200359684-1115522899.jpg" alt="" name="" border="0"></div>
+<div style="text-align: center; font-size: 14px; line-height: 21px;"><img src="opencv%E7%9A%84%E5%AE%9E%E7%94%A8%E7%A0%94%E7%A9%B6--%E5%88%86%E6%9E%90%E8%BD%AE%E5%BB%93%E5%B9%B6%E5%AF%BB%E6%89%BE%E8%BE%B9%E7%95%8C%E7%82%B9%20-%20jsxyhelu%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/508489-20160106200359934-71847638.png" alt="" border="0"></div>
+<div>&nbsp; &nbsp; &nbsp;<span style="font-size: 12pt;" data-wiz-span="data-wiz-span"> 对于我的研究来说，这篇论文两个贡献：一个是告知</span><span style="font-size: 10.5pt; line-height: 1.5;"><span style="font-size: 12pt;" data-wiz-span="data-wiz-span">首先要对图像进行高斯模糊，这个是我之前没有想到的。特别是对于现实世界中的轮廓，这种方法效果很好。因为边角经过模糊，那么还是边角，但毛刺经过模糊，能够有效去除。</span></span></div>
+<div><span style="font-size: 10.5pt; line-height: 1.5;"><span style="font-size: 12pt;" data-wiz-span="data-wiz-span">&nbsp; &nbsp; &nbsp; &nbsp;论文中的算法实现是比较简单的，并且给出了简化算法，直接编码验证：</span></span></div>
+<div>
+<div><ol class="linenums" style="padding-left: 0px;">
+<li class="L0" style="list-style-type: none; padding-left: 0px;"><code class="language-c"><code class="language-c"><span class="pln">&nbsp;</span></code></code>
+<div class="cnblogs_Highlighter sh-gutter">
+<div><div id="highlighter_529971" class="syntaxhighlighter  cpp"><div class="toolbar"><span><a href="#" class="toolbar_item command_help help">?</a></span></div><table cellspacing="0" cellpadding="0" border="0"><tbody><tr><td class="gutter"><div class="line number1 index0 alt2">1</div><div class="line number2 index1 alt1">2</div><div class="line number3 index2 alt2">3</div><div class="line number4 index3 alt1">4</div><div class="line number5 index4 alt2">5</div><div class="line number6 index5 alt1">6</div><div class="line number7 index6 alt2">7</div><div class="line number8 index7 alt1">8</div><div class="line number9 index8 alt2">9</div><div class="line number10 index9 alt1">10</div><div class="line number11 index10 alt2">11</div><div class="line number12 index11 alt1">12</div><div class="line number13 index12 alt2">13</div><div class="line number14 index13 alt1">14</div><div class="line number15 index14 alt2">15</div><div class="line number16 index15 alt1">16</div><div class="line number17 index16 alt2">17</div><div class="line number18 index17 alt1">18</div><div class="line number19 index18 alt2">19</div><div class="line number20 index19 alt1">20</div><div class="line number21 index20 alt2">21</div><div class="line number22 index21 alt1">22</div><div class="line number23 index22 alt2">23</div><div class="line number24 index23 alt1">24</div><div class="line number25 index24 alt2">25</div><div class="line number26 index25 alt1">26</div><div class="line number27 index26 alt2">27</div><div class="line number28 index27 alt1">28</div><div class="line number29 index28 alt2">29</div><div class="line number30 index29 alt1">30</div></td><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="cpp comments">//遍历轮廓，求出所有支撑角度</code></div><div class="line number2 index1 alt1"><code class="cpp spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="cpp color1 bold">int</code> <code class="cpp plain">icount = bigestContour.size();</code></div><div class="line number3 index2 alt2"><code class="cpp spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="cpp color1 bold">float</code> <code class="cpp plain">fmax = -1;</code><code class="cpp comments">//用于保存局部最大值</code></div><div class="line number4 index3 alt1"><code class="cpp spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="cpp color1 bold">int</code>&nbsp;&nbsp; <code class="cpp plain">imax = -1;</code></div><div class="line number5 index4 alt2"><code class="cpp spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="cpp color1 bold">bool</code>&nbsp; <code class="cpp plain">bstart = </code><code class="cpp keyword bold">false</code><code class="cpp plain">;</code></div><div class="line number6 index5 alt1"><code class="cpp spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="cpp keyword bold">for</code> <code class="cpp plain">(</code><code class="cpp color1 bold">int</code> <code class="cpp plain">i=0;i&lt;bigestContour.size();i++){</code></div><div class="line number7 index6 alt2"><code class="cpp spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="cpp plain">Point2f pa = (Point2f)bigestContour[(i+icount-7)%icount];</code></div><div class="line number8 index7 alt1"><code class="cpp spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="cpp plain">Point2f pb = (Point2f)bigestContour[(i+icount+7)%icount];</code></div><div class="line number9 index8 alt2"><code class="cpp spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="cpp plain">Point2f pc = (Point2f)bigestContour[i];</code></div><div class="line number10 index9 alt1"><code class="cpp spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="cpp comments">//两支撑点距离</code></div><div class="line number11 index10 alt2"><code class="cpp spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="cpp color1 bold">float</code> <code class="cpp plain">fa = getDistance(pa,pb);</code></div><div class="line number12 index11 alt1"><code class="cpp spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="cpp color1 bold">float</code> <code class="cpp plain">fb = getDistance(pa,pc)+getDistance(pb,pc);</code></div><div class="line number13 index12 alt2"><code class="cpp spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="cpp color1 bold">float</code> <code class="cpp plain">fang = fa/fb;</code></div><div class="line number14 index13 alt1"><code class="cpp spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="cpp color1 bold">float</code> <code class="cpp plain">fsharp = 1-fang;</code></div><div class="line number15 index14 alt2"><code class="cpp spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="cpp keyword bold">if</code> <code class="cpp plain">(fsharp&gt;0.05){</code></div><div class="line number16 index15 alt1"><code class="cpp spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="cpp plain">bstart = </code><code class="cpp keyword bold">true</code><code class="cpp plain">;</code></div><div class="line number17 index16 alt2"><code class="cpp spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="cpp keyword bold">if</code> <code class="cpp plain">(fsharp&gt;fmax){</code></div><div class="line number18 index17 alt1"><code class="cpp spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="cpp plain">fmax = fsharp;</code></div><div class="line number19 index18 alt2"><code class="cpp spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="cpp plain">imax = i;</code></div><div class="line number20 index19 alt1"><code class="cpp spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="cpp plain">}</code></div><div class="line number21 index20 alt2"><code class="cpp spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="cpp plain">}</code><code class="cpp keyword bold">else</code><code class="cpp plain">{</code></div><div class="line number22 index21 alt1"><code class="cpp spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="cpp keyword bold">if</code> <code class="cpp plain">(bstart){</code></div><div class="line number23 index22 alt2"><code class="cpp spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="cpp plain">circle(board,bigestContour[imax],10,Scalar(255),1);</code></div><div class="line number24 index23 alt1"><code class="cpp spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="cpp plain">circle(src,bigestContour[imax],10,Scalar(255,255,255),1);</code></div><div class="line number25 index24 alt2"><code class="cpp spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="cpp plain">imax&nbsp; = -1;</code></div><div class="line number26 index25 alt1"><code class="cpp spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="cpp plain">fmax&nbsp; = -1;</code></div><div class="line number27 index26 alt2"><code class="cpp spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="cpp plain">bstart = </code><code class="cpp keyword bold">false</code><code class="cpp plain">;</code></div><div class="line number28 index27 alt1"><code class="cpp spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="cpp plain">}</code></div><div class="line number29 index28 alt2"><code class="cpp spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="cpp plain">}</code></div><div class="line number30 index29 alt1"><code class="cpp spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="cpp plain">}&nbsp; </code></div></div></td></tr></tbody></table></div></div>
+</div>
+<p>　　</p>
+</li>
+</ol></div>
+<div>&nbsp; &nbsp; &nbsp; 编码过程中，相比较于原文，有两处优化（原文中应该也提到了，但是没有明说）：一是通过取模，使得所有的轮廓点都参与运算；二是通过比较，取出角点的局部最大值。</div>
+</div>
+<div>&nbsp; &nbsp; &nbsp; 实现效果，比较理想：</div>
+<div style="text-align: center;"><img src="opencv%E7%9A%84%E5%AE%9E%E7%94%A8%E7%A0%94%E7%A9%B6--%E5%88%86%E6%9E%90%E8%BD%AE%E5%BB%93%E5%B9%B6%E5%AF%BB%E6%89%BE%E8%BE%B9%E7%95%8C%E7%82%B9%20-%20jsxyhelu%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/508489-20160106200400356-290651187.png" alt="" name="" border="0"></div>
+</div>
+<div>
+<div style="text-align: center;"><span style="font-size: 12pt;" data-wiz-span="data-wiz-span">&nbsp;</span></div>
+<div>&nbsp;</div>
+</div>
+<div><span style="font-size: 12pt;" data-wiz-span="data-wiz-span"><strong>五、小结反思</strong></span></div>
+<div><span style="font-size: 12pt;" data-wiz-span="data-wiz-span">1、掌握知识，如果不能归纳数学模型，并且编码实现，不叫真正掌握；</span></div>
+<div><span style="font-size: 12pt;" data-wiz-span="data-wiz-span">2、分析研究，如果从简单的情况开始，控制变量，往往能够左右逢源。</span></div>
+<p>&nbsp;</p></div><div id="MySignature" style="display: block;">目前方向：图像拼接融合、图像识别 
+联系方式：jsxyhelu@foxmail.com</div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+<div id="BlogPostCategory">分类: <a href="https://www.cnblogs.com/jsxyhelu/category/927451.html" target="_blank">算法 Mfc Csharp 和 Android</a></div>
+<div id="EntryTag">标签: <a href="https://www.cnblogs.com/jsxyhelu/tag/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E4%BE%8B/">项目实例</a></div>
+<div id="blog_post_info"><div id="green_channel">
+        <a href="javascript:void(0);" id="green_channel_digg" onclick="DiggIt(5106760,cb_blogId,1);green_channel_success(this,'谢谢推荐！');">好文要顶</a>
+            <a id="green_channel_follow" onclick="follow('e8821081-2c94-e211-9010-c3d7423e3b07');" href="javascript:void(0);">关注我</a>
+    <a id="green_channel_favorite" onclick="AddToWz(cb_entryId);return false;" href="javascript:void(0);">收藏该文</a>
+    <a id="green_channel_weibo" href="javascript:void(0);" title="分享至新浪微博" onclick="ShareToTsina()"><img src="opencv%E7%9A%84%E5%AE%9E%E7%94%A8%E7%A0%94%E7%A9%B6--%E5%88%86%E6%9E%90%E8%BD%AE%E5%BB%93%E5%B9%B6%E5%AF%BB%E6%89%BE%E8%BE%B9%E7%95%8C%E7%82%B9%20-%20jsxyhelu%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/icon_weibo_24.png" alt=""></a>
+    <a id="green_channel_wechat" href="javascript:void(0);" title="分享至微信" onclick="shareOnWechat()"><img src="opencv%E7%9A%84%E5%AE%9E%E7%94%A8%E7%A0%94%E7%A9%B6--%E5%88%86%E6%9E%90%E8%BD%AE%E5%BB%93%E5%B9%B6%E5%AF%BB%E6%89%BE%E8%BE%B9%E7%95%8C%E7%82%B9%20-%20jsxyhelu%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/wechat.png" alt=""></a>
+</div>
+<div id="author_profile">
+    <div id="author_profile_info" class="author_profile_info">
+            <a href="http://home.cnblogs.com/u/jsxyhelu/" target="_blank"><img src="opencv%E7%9A%84%E5%AE%9E%E7%94%A8%E7%A0%94%E7%A9%B6--%E5%88%86%E6%9E%90%E8%BD%AE%E5%BB%93%E5%B9%B6%E5%AF%BB%E6%89%BE%E8%BE%B9%E7%95%8C%E7%82%B9%20-%20jsxyhelu%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/sample_face.gif" class="author_avatar" alt=""></a>
+        <div id="author_profile_detail" class="author_profile_info">
+            <a href="http://home.cnblogs.com/u/jsxyhelu/">jsxyhelu</a><br>
+            <a href="http://home.cnblogs.com/u/jsxyhelu/followees">关注 - 7</a><br>
+            <a href="http://home.cnblogs.com/u/jsxyhelu/followers">粉丝 - 178</a>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div id="author_profile_honor"></div>
+    <div id="author_profile_follow">
+                <a href="javascript:void(0);" onclick="follow('e8821081-2c94-e211-9010-c3d7423e3b07');return false;">+加关注</a>
+    </div>
+</div>
+<div id="div_digg">
+    <div class="diggit" onclick="votePost(5106760,'Digg')">
+        <span class="diggnum" id="digg_count">0</span>
+    </div>
+    <div class="buryit" onclick="votePost(5106760,'Bury')">
+        <span class="burynum" id="bury_count">0</span>
+    </div>
+    <div class="clear"></div>
+    <div class="diggword" id="digg_tips">
+    </div>
+</div>
+<script type="text/javascript">
+    currentDiggType = 0;
+</script></div>
+<div class="clear"></div>
+<div id="post_next_prev"><a href="https://www.cnblogs.com/jsxyhelu/p/5092517.html" class="p_n_p_prefix">« </a> 上一篇：<a href="https://www.cnblogs.com/jsxyhelu/p/5092517.html" title="发布于2015-12-31 18:49">wpf的研究和反思</a><br><a href="https://www.cnblogs.com/jsxyhelu/p/5174346.html" class="p_n_p_prefix">» </a> 下一篇：<a href="https://www.cnblogs.com/jsxyhelu/p/5174346.html" title="发布于2016-02-01 07:17">花40分钟写一个-CBIR引擎-代码公开</a><br></div>
+</div>
+
+
+		</div>
+		<div class="postDesc">posted @ <span id="post-date">2016-01-06 20:04</span> <a href="https://www.cnblogs.com/jsxyhelu/">jsxyhelu</a> 阅读(<span id="post_view_count">6748</span>) 评论(<span id="post_comment_count">0</span>)  <a href="https://i.cnblogs.com/EditPosts.aspx?postid=5106760" rel="nofollow">编辑</a> <a href="#" onclick="AddToWz(5106760);return false;">收藏</a></div>
+	</div>
+	<script type="text/javascript">var allowComments=true,cb_blogId=146361,cb_entryId=5106760,cb_blogApp=currentBlogApp,cb_blogUserGuid='e8821081-2c94-e211-9010-c3d7423e3b07',cb_entryCreatedDate='2016/1/6 20:04:00';loadViewCount(cb_entryId);var cb_postType=1;var isMarkdown=false;</script>
+	
+</div><!--end: topics 文章、评论容器-->
+</div><a name="!comments"></a><div id="blog-comments-placeholder"></div><script type="text/javascript">var commentManager = new blogCommentManager();commentManager.renderComments(0);</script>
+<div id="comment_form" class="commentform">
+<a name="commentform"></a>
+<div id="divCommentShow"></div>
+<div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="#" onclick="return RefreshPage();">刷新页面</a><a href="#top">返回顶部</a></div>
+<div id="comment_form_container"><div class="login_tips">注册用户登录后才能发表评论，请 <a rel="nofollow" href="javascript:void(0);" class="underline" onclick="return login('commentform');">登录</a> 或 <a rel="nofollow" href="javascript:void(0);" class="underline" onclick="return register();">注册</a>，<a href="http://www.cnblogs.com/">访问</a>网站首页。</div></div>
+<div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+<div id="ad_t2"><a href="http://www.ucancode.com/index.htm" target="_blank" onclick="ga('send', 'event', 'Link', 'click', 'T2-工控')">【推荐】超50万C++/C#源码: 大型实时仿真组态图形源码</a><br><a href="https://www.bagevent.com/event/2195041?bag_track=13072958" target="_blank" onclick="ga('send', 'event', 'Link', 'click', 'T2-看雪')">【活动】看雪2019安全开发者峰会，共话安全领域焦点</a><br><a href="https://ke.qq.com/adActivity.html?name=xiangxueketang2" target="_blank" onclick="ga('send', 'event', 'Link', 'click', 'T2-享学')">【培训】Java程序员年薪40W，他1年走了别人5年的路</a><br></div>
+<div id="opt_under_post"></div>
+<script async="async" src="opencv%E7%9A%84%E5%AE%9E%E7%94%A8%E7%A0%94%E7%A9%B6--%E5%88%86%E6%9E%90%E8%BD%AE%E5%BB%93%E5%B9%B6%E5%AF%BB%E6%89%BE%E8%BE%B9%E7%95%8C%E7%82%B9%20-%20jsxyhelu%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/gpt.js"></script>
+<script>
+  var googletag = googletag || {};
+  googletag.cmd = googletag.cmd || [];
+</script>
+<script>
+  googletag.cmd.push(function() {
+        googletag.defineSlot('/1090369/C1', [300, 250], 'div-gpt-ad-1546353474406-0').addService(googletag.pubads());
+        googletag.defineSlot('/1090369/C2', [468, 60], 'div-gpt-ad-1539008685004-0').addService(googletag.pubads());
+        googletag.pubads().enableSingleRequest();
+        googletag.enableServices();
+  });
+</script>
+<div id="cnblogs_c1" class="c_ad_block">
+    <div id="div-gpt-ad-1546353474406-0" style="height:250px; width:300px;" data-google-query-id="CLDSoeSCneICFZ4cKgodPKcLSA"><div id="google_ads_iframe_/1090369/C1_0__container__" style="border: 0pt none;"><iframe id="google_ads_iframe_/1090369/C1_0" title="3rd party ad content" name="google_ads_iframe_/1090369/C1_0" scrolling="no" marginwidth="0" marginheight="0" style="border: 0px none; vertical-align: bottom;" srcdoc="" data-google-container-id="1" data-load-complete="true" width="300" height="250" frameborder="0"></iframe></div></div>
+</div>
+<div id="under_post_news" style="display: none;"></div>
+<div id="cnblogs_c2" class="c_ad_block">
+    <div id="div-gpt-ad-1539008685004-0" style="height:60px; width:468px;" data-google-query-id="CLHSoeSCneICFZ4cKgodPKcLSA"><div id="google_ads_iframe_/1090369/C2_0__container__" style="border: 0pt none;"><iframe id="google_ads_iframe_/1090369/C2_0" title="3rd party ad content" name="google_ads_iframe_/1090369/C2_0" scrolling="no" marginwidth="0" marginheight="0" style="border: 0px none; vertical-align: bottom;" srcdoc="" data-google-container-id="2" data-load-complete="true" width="468" height="60" frameborder="0"></iframe></div></div>
+</div>
+<div id="under_post_kb"><div class="itnews c_ad_block"><b>最新新闻</b>：<br> ·  <a href="https://news.cnblogs.com/n/625331/" target="_blank">深网|万达百货更名苏宁易购广场 改造店5月底亮相</a><br> ·  <a href="https://news.cnblogs.com/n/625330/" target="_blank">圈重点！腾讯全球数字生态大会带来不一样的智慧医疗</a><br> ·  <a href="https://news.cnblogs.com/n/625329/" target="_blank">3岁娃成“社交万人迷”？别再被天价“情商培训班”忽悠了</a><br> ·  <a href="https://news.cnblogs.com/n/625328/" target="_blank">国产手机十年厮杀过后，为何只剩下华为带着米OV?</a><br> ·  <a href="https://news.cnblogs.com/n/625327/" target="_blank">英国宣布5G将在7月3日上线，兼容四款5G手机</a><br>» <a href="http://news.cnblogs.com/" title="IT新闻" target="_blank">更多新闻...</a></div></div>
+<div id="HistoryToday" class="c_ad_block"></div>
+<script type="text/javascript">
+ if(enablePostBottom()) {
+    codeHighlight();
+    fixPostBody();
+    setTimeout(function () { incrementViewCount(cb_entryId); }, 50);
+    deliverT2();
+    deliverC1();
+    deliverC2();    
+    loadNewsAndKb();
+    loadBlogSignature();
+    LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+    GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+    loadOptUnderPost();
+    GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);  
+}
+</script>
+</div>
+
+    
+	</div><!--end: forFlow -->
+	</div><!--end: mainContent 主体内容容器-->
+
+	<div id="sideBar">
+		<div id="sideBarMain">
+			
+<!--done-->
+<div class="newsItem">
+<h3 class="catListTitle">公告</h3>
+	<div id="blog-news"><p>我的视频教程(炼数成金）</p>
+<a href="http://www.dataguru.cn/article-12140-1.html"><img src="opencv%E7%9A%84%E5%AE%9E%E7%94%A8%E7%A0%94%E7%A9%B6--%E5%88%86%E6%9E%90%E8%BD%AE%E5%BB%93%E5%B9%B6%E5%AF%BB%E6%89%BE%E8%BE%B9%E7%95%8C%E7%82%B9%20-%20jsxyhelu%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/111038jzs1zz11sx11snj6.jpg" alt="123" width="191" height="222"></a>
+<p>我的视频教程(51CTO）</p>
+<a href="http://edu.51cto.com/course/15717.html"><img src="opencv%E7%9A%84%E5%AE%9E%E7%94%A8%E7%A0%94%E7%A9%B6--%E5%88%86%E6%9E%90%E8%BD%AE%E5%BB%93%E5%B9%B6%E5%AF%BB%E6%89%BE%E8%BE%B9%E7%95%8C%E7%82%B9%20-%20jsxyhelu%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/508489-20181107223844326-505010834.png" alt="123" width="191" height="222"></a>
+<a href="http://edu.51cto.com/course/12754.html"><img src="opencv%E7%9A%84%E5%AE%9E%E7%94%A8%E7%A0%94%E7%A9%B6--%E5%88%86%E6%9E%90%E8%BD%AE%E5%BB%93%E5%B9%B6%E5%AF%BB%E6%89%BE%E8%BE%B9%E7%95%8C%E7%82%B9%20-%20jsxyhelu%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/t_android.jpg" alt="123" width="191" height="222"></a>
+<a href="http://edu.51cto.com/course/12160.html"><img src="opencv%E7%9A%84%E5%AE%9E%E7%94%A8%E7%A0%94%E7%A9%B6--%E5%88%86%E6%9E%90%E8%BD%AE%E5%BB%93%E5%B9%B6%E5%AF%BB%E6%89%BE%E8%BE%B9%E7%95%8C%E7%82%B9%20-%20jsxyhelu%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/t_pi.JPG" alt="123" width="191" height="222"></a>
+<a href="http://edu.51cto.com/course/course_id-8781.html"><img src="opencv%E7%9A%84%E5%AE%9E%E7%94%A8%E7%A0%94%E7%A9%B6--%E5%88%86%E6%9E%90%E8%BD%AE%E5%BB%93%E5%B9%B6%E5%AF%BB%E6%89%BE%E8%BE%B9%E7%95%8C%E7%82%B9%20-%20jsxyhelu%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/508489-20170404200157472-777658712.jpg" alt="123"></a>
+<a href="http://edu.51cto.com/course/10381.html"><img src="opencv%E7%9A%84%E5%AE%9E%E7%94%A8%E7%A0%94%E7%A9%B6--%E5%88%86%E6%9E%90%E8%BD%AE%E5%BB%93%E5%B9%B6%E5%AF%BB%E6%89%BE%E8%BE%B9%E7%95%8C%E7%82%B9%20-%20jsxyhelu%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/508489-20170704114224222-1896788039.jpg" alt="123"></a>
+<a href="http://edu.51cto.com/course/course_id-8637.html"><img src="opencv%E7%9A%84%E5%AE%9E%E7%94%A8%E7%A0%94%E7%A9%B6--%E5%88%86%E6%9E%90%E8%BD%AE%E5%BB%93%E5%B9%B6%E5%AF%BB%E6%89%BE%E8%BE%B9%E7%95%8C%E7%82%B9%20-%20jsxyhelu%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/508489-20170326144719361-1318745706.jpg" alt="123"></a>
+<a href="http://edu.51cto.com/course/course_id-9313.html"><img src="opencv%E7%9A%84%E5%AE%9E%E7%94%A8%E7%A0%94%E7%A9%B6--%E5%88%86%E6%9E%90%E8%BD%AE%E5%BB%93%E5%B9%B6%E5%AF%BB%E6%89%BE%E8%BE%B9%E7%95%8C%E7%82%B9%20-%20jsxyhelu%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/508489-20170522135800132-29180512.jpg" alt="123"></a>
+<p>如果有问题可以在博客中直接提问，或者加入 《学习OpenCV3》互助群</p>
+<a href="https://www.cnblogs.com/jsxyhelu/p/jsxyhelu.cnblogs.com"><img src="opencv%E7%9A%84%E5%AE%9E%E7%94%A8%E7%A0%94%E7%A9%B6--%E5%88%86%E6%9E%90%E8%BD%AE%E5%BB%93%E5%B9%B6%E5%AF%BB%E6%89%BE%E8%BE%B9%E7%95%8C%E7%82%B9%20-%20jsxyhelu%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/508489-20170326144732080-962593968.jpg" alt="123"></a>
+<p>需要博客内容的具体代码，可以将需求直接发给我</p>
+<a href="https://www.wjx.top/jq/30595392.aspx"><img src="opencv%E7%9A%84%E5%AE%9E%E7%94%A8%E7%A0%94%E7%A9%B6--%E5%88%86%E6%9E%90%E8%BD%AE%E5%BB%93%E5%B9%B6%E5%AF%BB%E6%89%BE%E8%BE%B9%E7%95%8C%E7%82%B9%20-%20jsxyhelu%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/508489-20181111193755027-849784777.png" alt="123"></a><div id="profile_block">昵称：<a href="https://home.cnblogs.com/u/jsxyhelu/">jsxyhelu</a><br>园龄：<a href="https://home.cnblogs.com/u/jsxyhelu/" title="入园时间：2013-03-24">6年1个月</a><br>粉丝：<a href="https://home.cnblogs.com/u/jsxyhelu/followers/">178</a><br>关注：<a href="https://home.cnblogs.com/u/jsxyhelu/followees/">7</a><div id="p_b_follow"><a href="javascript:void(0);" onclick="follow('e8821081-2c94-e211-9010-c3d7423e3b07')">+加关注</a></div><script>getFollowStatus('e8821081-2c94-e211-9010-c3d7423e3b07')</script></div></div><script type="text/javascript">loadBlogNews();</script>
+</div>
+
+			<div id="calendar"><div id="blog-calendar" style=""><table id="blogCalendar" class="Cal" title="Calendar" cellspacing="0" cellpadding="0">
+	<tbody><tr><td colspan="7"><table class="CalTitle" cellspacing="0">
+		<tbody><tr><td class="CalNextPrev"><a href="javascript:void(0);" onclick="loadBlogCalendar('2019/04/01');return false;">&lt;</a></td><td align="center">2019年5月</td><td class="CalNextPrev" align="right"><a href="javascript:void(0);" onclick="loadBlogCalendar('2019/06/01');return false;">&gt;</a></td></tr>
+	</tbody></table></td></tr><tr><th class="CalDayHeader" abbr="日" scope="col" align="center">日</th><th class="CalDayHeader" abbr="一" scope="col" align="center">一</th><th class="CalDayHeader" abbr="二" scope="col" align="center">二</th><th class="CalDayHeader" abbr="三" scope="col" align="center">三</th><th class="CalDayHeader" abbr="四" scope="col" align="center">四</th><th class="CalDayHeader" abbr="五" scope="col" align="center">五</th><th class="CalDayHeader" abbr="六" scope="col" align="center">六</th></tr><tr><td class="CalOtherMonthDay" align="center">28</td><td class="CalOtherMonthDay" align="center">29</td><td class="CalOtherMonthDay" align="center">30</td><td align="center">1</td><td align="center">2</td><td align="center"><a href="https://www.cnblogs.com/jsxyhelu/archive/2019/05/03.html"><u>3</u></a></td><td class="CalWeekendDay" align="center">4</td></tr><tr><td class="CalWeekendDay" align="center"><a href="https://www.cnblogs.com/jsxyhelu/archive/2019/05/05.html"><u>5</u></a></td><td align="center">6</td><td align="center">7</td><td align="center">8</td><td align="center">9</td><td align="center">10</td><td class="CalWeekendDay" align="center">11</td></tr><tr><td class="CalWeekendDay" align="center">12</td><td align="center">13</td><td align="center">14</td><td class="CalTodayDay" align="center">15</td><td align="center">16</td><td align="center">17</td><td class="CalWeekendDay" align="center">18</td></tr><tr><td class="CalWeekendDay" align="center">19</td><td align="center">20</td><td align="center">21</td><td align="center">22</td><td align="center">23</td><td align="center">24</td><td class="CalWeekendDay" align="center">25</td></tr><tr><td class="CalWeekendDay" align="center">26</td><td align="center">27</td><td align="center">28</td><td align="center">29</td><td align="center">30</td><td align="center">31</td><td class="CalOtherMonthDay" align="center">1</td></tr><tr><td class="CalOtherMonthDay" align="center">2</td><td class="CalOtherMonthDay" align="center">3</td><td class="CalOtherMonthDay" align="center">4</td><td class="CalOtherMonthDay" align="center">5</td><td class="CalOtherMonthDay" align="center">6</td><td class="CalOtherMonthDay" align="center">7</td><td class="CalOtherMonthDay" align="center">8</td></tr>
+</tbody></table></div><script type="text/javascript">loadBlogDefaultCalendar();</script></div>
+			
+			<div id="leftcontentcontainer">
+				<div id="blog-sidecolumn"><div id="sidebar_search" class="sidebar-block">
+<div id="sidebar_search" class="mySearch">
+<h3 class="catListTitle">搜索</h3>
+<div id="sidebar_search_box">
+<div id="widget_my_zzk" class="div_my_zzk"><input id="q" onkeydown="return zzk_go_enter(event);" class="input_my_zzk" type="text">&nbsp;<input onclick="zzk_go()" value="找找看" id="btnZzk" class="btn_my_zzk" type="button"></div>
+<div id="widget_my_google" class="div_my_zzk"><input name="google_q" id="google_q" onkeydown="return google_go_enter(event)" class="input_my_zzk" type="text">&nbsp;<input onclick="google_go()" value="谷歌搜索" class="btn_my_zzk" type="button"></div>
+</div>
+</div>
+
+</div><div id="sidebar_shortcut" class="sidebar-block">
+<div class="catListLink">
+<h3 class="catListTitle">常用链接</h3>
+<ul>
+<li><a href="https://www.cnblogs.com/jsxyhelu/p/" title="我的博客的随笔列表">我的随笔</a></li><li><a href="https://www.cnblogs.com/jsxyhelu/MyComments.html" title="我发表过的评论列表">我的评论</a></li><li><a href="https://www.cnblogs.com/jsxyhelu/OtherPosts.html" title="我评论过的随笔列表">我的参与</a></li><li><a href="https://www.cnblogs.com/jsxyhelu/RecentComments.html" title="我的博客的评论列表">最新评论</a></li><li><a href="https://www.cnblogs.com/jsxyhelu/tag/" title="我的博客的标签列表">我的标签</a></li>
+</ul>
+<div id="itemListLin_con" style="display:none;">
+<ul>
+
+</ul>
+</div>
+</div></div><div id="sidebar_toptags" class="sidebar-block">
+<div class="catListTag">
+<h3 class="catListTitle">我的标签</h3>
+<ul>
+<li><a href="https://www.cnblogs.com/jsxyhelu/tag/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E6%88%98%E6%B4%BE/">项目实战派</a>(10)</li><li><a href="https://www.cnblogs.com/jsxyhelu/tag/%E7%AE%97%E6%B3%95%E5%BA%94%E7%94%A8%E7%A0%94%E7%A9%B6/">算法应用研究</a>(6)</li><li><a href="https://www.cnblogs.com/jsxyhelu/tag/opencv/">opencv</a>(4)</li><li><a href="https://www.cnblogs.com/jsxyhelu/tag/%E6%9C%BA%E5%99%A8%E8%A7%86%E8%A7%89%E8%AE%BE%E8%AE%A1/">机器视觉设计</a>(3)</li><li><a href="https://www.cnblogs.com/jsxyhelu/tag/%E9%A1%B9%E7%9B%AE%E5%AE%9E%E4%BE%8B/">项目实例</a>(3)</li><li><a href="https://www.cnblogs.com/jsxyhelu/tag/%E8%BD%AE%E5%BB%93/">轮廓</a>(1)</li><li><a href="https://www.cnblogs.com/jsxyhelu/tag/warper/">warper</a>(1)</li><li><a href="https://www.cnblogs.com/jsxyhelu/tag/clr/">clr</a>(1)</li><li><a href="https://www.cnblogs.com/jsxyhelu/tag/contours/">contours</a>(1)</li><li><a href="https://www.cnblogs.com/jsxyhelu/tag/csharp/">csharp</a>(1)</li><li><a href="https://www.cnblogs.com/jsxyhelu/tag/">更多</a></li>
+</ul>
+</div></div><div id="sidebar_categories">
+<div class="catListPostCategory">
+<h3 class="catListTitle">随笔分类</h3>
+
+<ul>
+
+<li><a id="CatList_LinkList_0_Link_0" href="https://www.cnblogs.com/jsxyhelu/category/973988.html">《学习OpenCV3》学习手札(8)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_1" href="https://www.cnblogs.com/jsxyhelu/category/954491.html">AnswerOpencv学习(9)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_2" href="https://www.cnblogs.com/jsxyhelu/category/934446.html">GOAndroidTemplate(5)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_3" href="https://www.cnblogs.com/jsxyhelu/category/886739.html">GOCVHelper(16)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_4" href="https://www.cnblogs.com/jsxyhelu/category/927450.html">GOMfcTemplate(12)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_5" href="https://www.cnblogs.com/jsxyhelu/category/965909.html">Programming in C# Exam Ref 70-483(1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_6" href="https://www.cnblogs.com/jsxyhelu/category/927453.html">成功项目的简单展示(11)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_7" href="https://www.cnblogs.com/jsxyhelu/category/927454.html">生活的其他方面(10)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_8" href="https://www.cnblogs.com/jsxyhelu/category/927451.html">算法 Mfc Csharp 和 Android(49)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_9" href="https://www.cnblogs.com/jsxyhelu/category/927452.html">图像处理的严肃实验(76)</a> </li>
+
+</ul>
+
+</div>
+
+<div class="catListPostArchive">
+<h3 class="catListTitle">随笔档案</h3>
+
+<ul>
+
+<li><a id="CatList_LinkList_1_Link_0" href="https://www.cnblogs.com/jsxyhelu/archive/2019/05.html">2019年5月 (3)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_1" href="https://www.cnblogs.com/jsxyhelu/archive/2019/04.html">2019年4月 (8)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_2" href="https://www.cnblogs.com/jsxyhelu/archive/2019/03.html">2019年3月 (8)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_3" href="https://www.cnblogs.com/jsxyhelu/archive/2019/02.html">2019年2月 (2)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_4" href="https://www.cnblogs.com/jsxyhelu/archive/2019/01.html">2019年1月 (9)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_5" href="https://www.cnblogs.com/jsxyhelu/archive/2018/12.html">2018年12月 (3)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_6" href="https://www.cnblogs.com/jsxyhelu/archive/2018/11.html">2018年11月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_7" href="https://www.cnblogs.com/jsxyhelu/archive/2018/10.html">2018年10月 (8)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_8" href="https://www.cnblogs.com/jsxyhelu/archive/2018/09.html">2018年9月 (5)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_9" href="https://www.cnblogs.com/jsxyhelu/archive/2018/08.html">2018年8月 (4)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_10" href="https://www.cnblogs.com/jsxyhelu/archive/2018/07.html">2018年7月 (5)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_11" href="https://www.cnblogs.com/jsxyhelu/archive/2018/06.html">2018年6月 (7)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_12" href="https://www.cnblogs.com/jsxyhelu/archive/2018/05.html">2018年5月 (8)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_13" href="https://www.cnblogs.com/jsxyhelu/archive/2018/04.html">2018年4月 (15)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_14" href="https://www.cnblogs.com/jsxyhelu/archive/2018/03.html">2018年3月 (6)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_15" href="https://www.cnblogs.com/jsxyhelu/archive/2018/02.html">2018年2月 (8)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_16" href="https://www.cnblogs.com/jsxyhelu/archive/2018/01.html">2018年1月 (9)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_17" href="https://www.cnblogs.com/jsxyhelu/archive/2017/12.html">2017年12月 (12)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_18" href="https://www.cnblogs.com/jsxyhelu/archive/2017/11.html">2017年11月 (6)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_19" href="https://www.cnblogs.com/jsxyhelu/archive/2017/10.html">2017年10月 (4)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_20" href="https://www.cnblogs.com/jsxyhelu/archive/2017/09.html">2017年9月 (8)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_21" href="https://www.cnblogs.com/jsxyhelu/archive/2017/08.html">2017年8月 (12)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_22" href="https://www.cnblogs.com/jsxyhelu/archive/2017/07.html">2017年7月 (3)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_23" href="https://www.cnblogs.com/jsxyhelu/archive/2017/06.html">2017年6月 (9)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_24" href="https://www.cnblogs.com/jsxyhelu/archive/2017/05.html">2017年5月 (10)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_25" href="https://www.cnblogs.com/jsxyhelu/archive/2017/04.html">2017年4月 (7)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_26" href="https://www.cnblogs.com/jsxyhelu/archive/2017/03.html">2017年3月 (14)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_27" href="https://www.cnblogs.com/jsxyhelu/archive/2017/02.html">2017年2月 (10)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_28" href="https://www.cnblogs.com/jsxyhelu/archive/2017/01.html">2017年1月 (12)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_29" href="https://www.cnblogs.com/jsxyhelu/archive/2016/12.html">2016年12月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_30" href="https://www.cnblogs.com/jsxyhelu/archive/2016/11.html">2016年11月 (6)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_31" href="https://www.cnblogs.com/jsxyhelu/archive/2016/10.html">2016年10月 (4)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_32" href="https://www.cnblogs.com/jsxyhelu/archive/2016/09.html">2016年9月 (21)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_33" href="https://www.cnblogs.com/jsxyhelu/archive/2016/07.html">2016年7月 (4)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_34" href="https://www.cnblogs.com/jsxyhelu/archive/2016/06.html">2016年6月 (3)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_35" href="https://www.cnblogs.com/jsxyhelu/archive/2016/05.html">2016年5月 (7)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_36" href="https://www.cnblogs.com/jsxyhelu/archive/2016/02.html">2016年2月 (4)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_37" href="https://www.cnblogs.com/jsxyhelu/archive/2016/01.html">2016年1月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_38" href="https://www.cnblogs.com/jsxyhelu/archive/2015/12.html">2015年12月 (3)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_39" href="https://www.cnblogs.com/jsxyhelu/archive/2015/10.html">2015年10月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_40" href="https://www.cnblogs.com/jsxyhelu/archive/2015/08.html">2015年8月 (4)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_41" href="https://www.cnblogs.com/jsxyhelu/archive/2015/07.html">2015年7月 (9)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_42" href="https://www.cnblogs.com/jsxyhelu/archive/2015/05.html">2015年5月 (14)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_43" href="https://www.cnblogs.com/jsxyhelu/archive/2015/03.html">2015年3月 (3)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_44" href="https://www.cnblogs.com/jsxyhelu/archive/2015/01.html">2015年1月 (7)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_45" href="https://www.cnblogs.com/jsxyhelu/archive/2014/11.html">2014年11月 (2)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_46" href="https://www.cnblogs.com/jsxyhelu/archive/2014/10.html">2014年10月 (2)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_47" href="https://www.cnblogs.com/jsxyhelu/archive/2014/09.html">2014年9月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_48" href="https://www.cnblogs.com/jsxyhelu/archive/2014/08.html">2014年8月 (3)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_49" href="https://www.cnblogs.com/jsxyhelu/archive/2014/07.html">2014年7月 (4)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_50" href="https://www.cnblogs.com/jsxyhelu/archive/2014/06.html">2014年6月 (3)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_51" href="https://www.cnblogs.com/jsxyhelu/archive/2013/10.html">2013年10月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_52" href="https://www.cnblogs.com/jsxyhelu/archive/2013/05.html">2013年5月 (1)</a> </li>
+
+</ul>
+
+</div>
+
+<div class="catListImageCategory">
+<h3 class="catListTitle">相册</h3>
+
+<ul>
+
+<li><a id="CatList_LinkList_2_Link_0" href="https://www.cnblogs.com/jsxyhelu/gallery/1140714.html" rel="nofollow">logo(2)</a> </li>
+
+</ul>
+
+</div>
+
+</div><div id="sidebar_recentcomments" class="sidebar-block"><div id="recent_comments_wrap">
+<div class="catListComment">
+<h3 class="catListTitle">最新评论</h3>
+	<div id="RecentCommentsBlock"><ul>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/jsxyhelu/p/6815602.html#4218337">1. Re:Stitching模块中focalsFromHomography初步研究</a></li>
+        <li class="recent_comment_body">@深山私塾引用说得很清楚，不过好像这里得到的f0和f1，不是分别对应x轴和y轴的焦距。f0和f1应该是相机0的焦距和相机1的焦距。这里认为每个相机x轴和y轴的焦距相等，即fx=fy。参考：我用的也是这......</li>
+        <li class="recent_comment_author">--jsxyhelu</li>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/jsxyhelu/p/6815602.html#4217962">2. Re:Stitching模块中focalsFromHomography初步研究</a></li>
+        <li class="recent_comment_body">说得很清楚，不过好像这里得到的f0和f1，不是分别对应x轴和y轴的焦距。f0和f1应该是相机0的焦距和相机1的焦距。这里认为每个相机x轴和y轴的焦距相等，即fx=fy。参考：我用的也是这个假设，推出来......</li>
+        <li class="recent_comment_author">--深山私塾</li>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/jsxyhelu/p/7834416.html#4188443">3. Re:特征提取算法的综合实验（多种角度比较sift/surf/brisk/orb/akze）</a></li>
+        <li class="recent_comment_body">请问GOVCHelper.h应该怎么添加，可以分享下文件吗？谢谢</li>
+        <li class="recent_comment_author">--abcfg357</li>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/jsxyhelu/p/5904319.html#4180004">4. Re:【20160924】GOCVHelper 图像增强部分（1）</a></li>
+        <li class="recent_comment_body">支持一下</li>
+        <li class="recent_comment_author">--我不是微光</li>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/jsxyhelu/p/4219564.html#4132555">5. Re:opencv透视变换</a></li>
+        <li class="recent_comment_body">谢谢博主！！</li>
+        <li class="recent_comment_author">--模式识别中心主任</li>
+</ul>
+</div>
+</div>
+</div></div><div id="sidebar_topviewedposts" class="sidebar-block"><div id="topview_posts_wrap">
+<div class="catListView">
+<h3 class="catListTitle">阅读排行榜</h3>
+	<div id="TopViewPostsBlock"><ul><li><a href="https://www.cnblogs.com/jsxyhelu/p/4231728.html">1. 答题卡图像识别项目(18300)</a></li><li><a href="https://www.cnblogs.com/jsxyhelu/p/6579412.html">2. OpenCV使用FindContours进行二维码定位(15402)</a></li><li><a href="https://www.cnblogs.com/jsxyhelu/p/9669583.html">3. 在C#中使用OpenCV（使用OpenCVSharp）(14106)</a></li><li><a href="https://www.cnblogs.com/jsxyhelu/p/7439655.html">4. OpenCV中的新函数connectedComponentsWithStats使用(8656)</a></li><li><a href="https://www.cnblogs.com/jsxyhelu/p/6435601.html">5. CLAHE的实现和研究(8054)</a></li></ul></div>
+</div>
+</div></div><div id="sidebar_topcommentedposts" class="sidebar-block"><div id="topfeedback_posts_wrap">
+<div class="catListFeedback">
+<h3 class="catListTitle">评论排行榜</h3>
+	<div id="TopFeedbackPostsBlock"><ul><li><a href="https://www.cnblogs.com/jsxyhelu/p/4231728.html">1. 答题卡图像识别项目(21)</a></li><li><a href="https://www.cnblogs.com/jsxyhelu/p/7360357.html">2. 我学习图像处理的小结(6)</a></li><li><a href="https://www.cnblogs.com/jsxyhelu/p/7439655.html">3. OpenCV中的新函数connectedComponentsWithStats使用(6)</a></li><li><a href="https://www.cnblogs.com/jsxyhelu/p/4240043.html">4. 反人脸识别的思路和实现(6)</a></li><li><a href="https://www.cnblogs.com/jsxyhelu/archive/2013/05/18/3084981.html">5. GreenOpentoolkit自定义控件（组件）库+DemoCenter(5)</a></li></ul></div>
+</div>
+</div></div><div id="sidebar_topdiggedposts" class="sidebar-block"><div id="topdigg_posts_wrap">
+<div class="catListView">
+<h3 class="catListTitle">推荐排行榜</h3>
+<div id="TopDiggPostsBlock"><ul><li><a href="https://www.cnblogs.com/jsxyhelu/p/4231728.html">1. 答题卡图像识别项目(28)</a></li><li><a href="https://www.cnblogs.com/jsxyhelu/p/4240043.html">2. 反人脸识别的思路和实现(11)</a></li><li><a href="https://www.cnblogs.com/jsxyhelu/p/4475809.html">3. 基于SURF特征的图像与视频拼接技术的研究和实现（一）(7)</a></li><li><a href="https://www.cnblogs.com/jsxyhelu/p/4246323.html">4. 基于海康监控的图像识别设计(5)</a></li><li><a href="https://www.cnblogs.com/jsxyhelu/archive/2013/05/18/3084981.html">5. GreenOpentoolkit自定义控件（组件）库+DemoCenter(4)</a></li></ul></div>
+</div></div></div></div><script type="text/javascript">loadBlogSideColumn();</script>
+			</div>
+			
+		</div><!--end: sideBarMain -->
+	</div><!--end: sideBar 侧边栏容器 -->
+	<div class="clear"></div>
+	</div><!--end: main -->
+	<div class="clear"></div>
+	<div id="footer">
+		
+<!--done-->
+Copyright ©2019 jsxyhelu
+	</div><!--end: footer -->
+</div><!--end: home 自定义的最大容器 -->
+
+
+
+</body></html>

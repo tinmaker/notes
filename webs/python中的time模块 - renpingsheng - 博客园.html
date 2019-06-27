@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="zh-cn"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="origin">
+    <title>python中的time模块 - renpingsheng - 博客园</title>
+<meta property="og:description" content="time模块－－时间获取和转换 time模块提供各种时间相关的功能 与时间相关的模块有：time,datetime,calendar 必要说明： 这个模块的功能不是适用于所有的平台 这个模块中定义的大">
+    <link type="text/css" rel="stylesheet" href="python%E4%B8%AD%E7%9A%84time%E6%A8%A1%E5%9D%97%20-%20renpingsheng%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/blog-common.css">
+<link id="MainCss" type="text/css" rel="stylesheet" href="python%E4%B8%AD%E7%9A%84time%E6%A8%A1%E5%9D%97%20-%20renpingsheng%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/bundle-MoonlightInk.css">
+<link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="python%E4%B8%AD%E7%9A%84time%E6%A8%A1%E5%9D%97%20-%20renpingsheng%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/bundle-MoonlightInk-mobile.css">
+    <link title="RSS" type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/renpingsheng/rss">
+    <link title="RSD" type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/renpingsheng/rsd.xml">
+<link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/renpingsheng/wlwmanifest.xml">
+    <script src="python%E4%B8%AD%E7%9A%84time%E6%A8%A1%E5%9D%97%20-%20renpingsheng%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/amp4ads-host-v0.js"></script><script src="python%E4%B8%AD%E7%9A%84time%E6%A8%A1%E5%9D%97%20-%20renpingsheng%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/pubads_impl_rendering_2019050901.js"></script><script async="" src="python%E4%B8%AD%E7%9A%84time%E6%A8%A1%E5%9D%97%20-%20renpingsheng%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/analytics.js"></script><script src="python%E4%B8%AD%E7%9A%84time%E6%A8%A1%E5%9D%97%20-%20renpingsheng%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/jquery-2.js"></script>
+    <script>var currentBlogId=343659;var currentBlogApp='renpingsheng',cb_enable_mathjax=false;var isLogined=false;</script>
+    <script src="python%E4%B8%AD%E7%9A%84time%E6%A8%A1%E5%9D%97%20-%20renpingsheng%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/blog-common.js" type="text/javascript"></script>
+<link rel="preload" href="python%E4%B8%AD%E7%9A%84time%E6%A8%A1%E5%9D%97%20-%20renpingsheng%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/integrator.js" as="script"><script type="text/javascript" src="python%E4%B8%AD%E7%9A%84time%E6%A8%A1%E5%9D%97%20-%20renpingsheng%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/integrator.js"></script><script src="python%E4%B8%AD%E7%9A%84time%E6%A8%A1%E5%9D%97%20-%20renpingsheng%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/pubads_impl_2019050901.js" async=""></script></head>
+<body>
+<a name="top"></a>
+
+
+<!--done-->
+<div id="home">
+<div id="header">
+	<div id="blogTitle">
+	<a id="lnkBlogLogo" href="https://www.cnblogs.com/renpingsheng/"><img id="blogLogo" src="python%E4%B8%AD%E7%9A%84time%E6%A8%A1%E5%9D%97%20-%20renpingsheng%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/logo.gif" alt="返回主页"></a>			
+		
+<!--done-->
+<h1><a id="Header1_HeaderTitle" class="headermaintitle" href="https://www.cnblogs.com/renpingsheng/">renpingsheng</a></h1>
+<h2>路漫漫其修远兮,吾将上下而求索!</h2>
+
+
+
+		
+	</div><!--end: blogTitle 博客的标题和副标题 -->
+	<div id="navigator">
+		
+<ul id="navList">
+<li><a id="blog_nav_sitehome" class="menu" href="https://www.cnblogs.com/">博客园</a></li>
+<li><a id="blog_nav_myhome" class="menu" href="https://www.cnblogs.com/renpingsheng/">首页</a></li>
+<li></li>
+<li></li>
+<li>
+<!----></li>
+<li><a id="blog_nav_admin" class="menu" rel="nofollow" href="https://i.cnblogs.com/">管理</a></li>
+</ul>
+		<div class="blogStats">
+			
+			<div id="blog_stats">
+<span id="stats_post_count">随笔 - 161&nbsp; </span>
+<span id="stats_article_count">文章 - 1&nbsp; </span>
+<span id="stats-comment_count">评论 - 61</span>
+</div>
+			
+		</div><!--end: blogStats -->
+	</div><!--end: navigator 博客导航栏 -->
+</div><!--end: header 头部 -->
+
+<div id="main">
+	<div id="mainContent">
+	<div class="forFlow">
+		
+        <div id="post_detail">
+<!--done-->
+<div id="topics">
+	<div class="post">
+		<h1 class="postTitle">
+			<a id="cb_post_title_url" class="postTitle2" href="https://www.cnblogs.com/renpingsheng/p/6965044.html">python中的time模块</a>
+		</h1>
+		<div class="clear"></div>
+		<div class="postBody">
+			<div id="cnblogs_post_body" class="blogpost-body cnblogs-markdown"><p>time模块－－时间获取和转换</p>
+<pre><code class="hljs lua"><span class="hljs-built_in">time</span>模块提供各种时间相关的功能
+与时间相关的模块有：<span class="hljs-built_in">time</span>,datetime,calendar</code></pre>
+<h4 id="必要说明">必要说明：</h4>
+<pre><code class="hljs">这个模块的功能不是适用于所有的平台
+这个模块中定义的大部分函数是调用C平台上的同名函数实现</code></pre>
+<h3 id="一些术语和约定的解释">一些术语和约定的解释：</h3>
+<pre><code class="hljs less">    <span class="hljs-selector-tag">1</span>.时间戳(timestamp)的方式：通常来说，时间戳表示的是从<span class="hljs-selector-tag">1970</span>年<span class="hljs-selector-tag">1</span>月１日开始按秒计算的偏移量(time.gmtime(<span class="hljs-number">0</span>))此模块中的函数无法处理<span class="hljs-selector-tag">1970</span>纪元年以前的时间或太遥远的未来(处理极限取决于C函数库，对于<span class="hljs-number">32</span>位系统而言，是<span class="hljs-number">2038</span>年)
+    <span class="hljs-selector-tag">2</span><span class="hljs-selector-class">.UTC</span>(Coordinated Universal Time,世界协调时)也叫格林威治天文时间，是世界标准时间．在我国为<span class="hljs-selector-tag">UTC</span>+<span class="hljs-selector-tag">8</span>
+    <span class="hljs-selector-tag">3</span><span class="hljs-selector-class">.DST</span>(Daylight Saving Time)即夏令时
+    <span class="hljs-selector-tag">4</span>.一些实时函数的计算精度可能不同</code></pre>
+<p>时间元祖(time.struct_time)<br>
+<code>gmtime()</code>,<code>localtime()</code>和<code>strptime()</code>以时间元祖(struct_time)的形式返回</p>
+<table>
+<thead>
+<tr class="header">
+<th>索引值(index)</th>
+<th>属性(Attribute)</th>
+<th>值(Values)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>tm_year(年)</td>
+<td>(例如:2015)</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>tm_mon(月)</td>
+<td>1-12</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>tm_mday(日)</td>
+<td>1-31</td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td>tm_hour(时)</td>
+<td>0-23</td>
+</tr>
+<tr class="odd">
+<td>4</td>
+<td>tm_min(分)</td>
+<td>0-59</td>
+</tr>
+<tr class="even">
+<td>5</td>
+<td>tm_sec(秒)</td>
+<td>0-61(60代表闰秒,61是基于历史原因保留)</td>
+</tr>
+<tr class="odd">
+<td>6</td>
+<td>tm_wday(星期几)</td>
+<td>0-6(0表示星期一)</td>
+</tr>
+<tr class="even">
+<td>7</td>
+<td>tm_yday(一年中的第几天)</td>
+<td>1-366</td>
+</tr>
+<tr class="odd">
+<td>8</td>
+<td>tm_isdst(是否为夏令时)</td>
+<td>0,1,-1(-1代表夏令时)</td>
+</tr>
+</tbody>
+</table>
+<h4 id="time.altzone">time.altzone</h4>
+<pre><code class="hljs">返回格林威治西部的夏令时地区的偏移秒数，如果该地区在格林威治东部会返回负值(如西欧，包括英国)，对夏令时启用地区才能使用</code></pre>
+<h4 id="time.asctimet">time.asctime([t])</h4>
+<pre><code class="hljs css">接受时间元组并返回一个可读的形式"<span class="hljs-selector-tag">Tue</span> <span class="hljs-selector-tag">May</span> 30 17<span class="hljs-selector-pseudo">:17</span><span class="hljs-selector-pseudo">:30</span> 2017"(2017年5月30日周二17时17分30秒)的24个字符的字符串</code></pre>
+<h4 id="time.clock">time.clock()</h4>
+<pre><code class="hljs less">用以浮点数计算的秒数返回当前的<span class="hljs-selector-tag">CPU</span>时间，用来衡量不同程序的耗时，比<span class="hljs-selector-tag">time</span><span class="hljs-selector-class">.time</span>()更有用
+<span class="hljs-selector-tag">python3</span><span class="hljs-selector-class">.3</span>以后不被推荐使用，该方法依赖操作系统，建议使用<span class="hljs-selector-tag">per_counter</span>(返回系统运行时间)或<span class="hljs-selector-tag">process_time</span>(返回进程运行时间)代替</code></pre>
+<h4 id="time.ctimesecs">time.ctime([secs])</h4>
+<pre><code class="hljs less">作用相当于<span class="hljs-selector-tag">asctime</span>(localtime(secs)),未给参数相当于<span class="hljs-selector-tag">asctime</span>()</code></pre>
+<h4 id="time.gmtimesecs">time.gmtime([secs])</h4>
+<pre><code class="hljs css">接收时间辍(1970纪元年后经过的浮点秒数)并返回格林威治天文时间下的时间元组<span class="hljs-selector-tag">t</span>(<span class="hljs-selector-tag">t</span><span class="hljs-selector-class">.tm_isdst</span>始终为０)</code></pre>
+<h4 id="time.daylight">time.daylight</h4>
+<pre><code class="hljs">如果夏令时被定义，则该值为非零</code></pre>
+<h4 id="time.localtimesecs">time.localtime([secs])</h4>
+<pre><code class="hljs css">接收时间辍(1970纪元年后经过的浮点秒数)并返回当地时间下的时间元组<span class="hljs-selector-tag">t</span>(<span class="hljs-selector-tag">t</span><span class="hljs-selector-class">.tm_isdst</span>可取为０或１，取决于当地当时是不是夏令时)</code></pre>
+<h4 id="time.mktimet">time.mktime(t)</h4>
+<pre><code class="hljs">接受时间元组并返回时间辍(1970纪元年后经过的浮点秒数)</code></pre>
+<h4 id="time.perf_counter">time.perf_counter()</h4>
+<pre><code class="hljs">返回计时器的精准时间(系统的运行时间)，包含整个系统的睡眠时间．由于返回值的基准点是未定义的，所以，只有连续调用的结果之间的差才是有效的</code></pre>
+<h4 id="time.process_time">time.process_time()</h4>
+<pre><code class="hljs">返回当前进程执行CPU的时间总和，不包含睡眠时间．由于返回值的基准点是未定义的，所以只有连续调用的结果之间的差才是有效的</code></pre>
+<h4 id="time.sleepsecs">time.sleep(secs)</h4>
+<pre><code class="hljs">推迟调用线程的运行，secs的单位是秒</code></pre>
+<h4 id="time.strftimeformatt">time.strftime(format[,t])</h4>
+<pre><code class="hljs perl">把一个代表时间的元组或者struct_time(如由time.localtime()和time.gmtime()返回)转化为格式化的时间字符串．如果t未指定，将传入time.localtime()，如果元组中任命一个元素越界，将会抛出ValueError异常
+<span class="hljs-keyword">format</span>格式如下：
+    %a      本地(<span class="hljs-keyword">local</span>)简化星期名称
+    %A      本地完整星期名称
+    %b      本地简化月份名称
+    %B      本地完整月份名称
+    %c      本地相应的日期和时间表示
+    %d      一个月中的第几天(<span class="hljs-number">01</span>-<span class="hljs-number">31</span>)
+    %H      一天中的第几个小时(<span class="hljs-number">24</span>小时制，<span class="hljs-number">00</span>-<span class="hljs-number">23</span>)
+    %l      一天中的第几个小时(<span class="hljs-number">12</span>小时制，<span class="hljs-number">01</span>-<span class="hljs-number">12</span>)
+    %j      一年中的第几天(<span class="hljs-number">01</span>-<span class="hljs-number">366</span>)
+    %m      月份(<span class="hljs-number">01</span>-<span class="hljs-number">12</span>)
+    %M      分钟数(<span class="hljs-number">00</span>-<span class="hljs-number">59</span>)
+    %p      本地am或者pm的相应符
+    %S      秒(<span class="hljs-number">01</span>-<span class="hljs-number">61</span>)
+    %U      一年中的星期数(<span class="hljs-number">00</span>-<span class="hljs-number">53</span>,星期天是一个星期的开始,第一个星期天之前的所有天数都放在第０周)
+    %w      一个星期中的第几天(<span class="hljs-number">0</span>-<span class="hljs-number">6</span>,<span class="hljs-number">0</span>是星期天)
+    %W      和%U基本相同，不同的是%W以星期一为一个星期的开始
+    %x      本地相应日期
+    %X      本地相应时间
+    %y      去掉世纪的年份(<span class="hljs-number">00</span>-<span class="hljs-number">99</span>)
+    %Y      完整的年份       
+    %z      用+HHMM或者-HHMM表示距离格林威治的时区偏移(H代表十进制的小时数，M代表十进制的分钟数)
+    %Z      时区的名字(如果不存在为空字符)
+    %%      %号本身
+            %p只有与%I配合使用才有效果
+            当使用strptime()函数时，只有当在这年中的周数和天数被确定的时候%U和%W才会被计算</code></pre>
+<h4 id="time.strptimestringformat">time.strptime(string[,format])</h4>
+<pre><code class="hljs less">把一个格式化时间字符串转化为<span class="hljs-selector-tag">struct_time</span>,实际上它和<span class="hljs-selector-tag">strftie</span>()是逆操作</code></pre>
+<h4 id="time.time">time.time()</h4>
+<pre><code class="hljs">返回当前时间的时间戳(1970元年后的浮点秒数)</code></pre>
+<h4 id="time.timezone">time.timezone()</h4>
+<pre><code class="hljs">是当地时区(未启动夏令时)距离格林威治的偏移秒数(美洲＞０，欧洲大部分，亚洲，非洲&lt;＝０)</code></pre>
+<h4 id="time.tzname">time.tzname</h4>
+<pre><code class="hljs">包含两个字符串的元组，第一是当地夏令时区的名称，第二是当地的DST时区的名称</code></pre>
+<p>下面是一些经常会用到的例子</p>
+<pre><code class="hljs python"><span class="hljs-comment">#!/usr/bin/env python</span>
+<span class="hljs-comment"># -*- coding: utf-8 -*-</span>
+<span class="hljs-keyword">from</span> __future__ <span class="hljs-keyword">import</span> division
+<span class="hljs-keyword">import</span> time
+<span class="hljs-keyword">import</span> datetime
+    
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">parse_timestr</span><span class="hljs-params">(time_str, flag=True)</span>:</span>
+    <span class="hljs-string">"""
+    把时间字符串转换为时间戳格式
+    :param time_str: 时间字符串,格式为：2019-01-01 12:12:12 或 2019-01-01
+    :param flag: 标志位，决定输入时间字符串的格式
+    :return: 时间戳格式
+    """</span>
+    <span class="hljs-keyword">if</span> flag:
+        struct_time = time.strptime(time_str, <span class="hljs-string">"%Y-%m-%d %H:%M:%S"</span>)  <span class="hljs-comment"># 2019-01-01 12:12:12</span>
+    <span class="hljs-keyword">else</span>:
+        struct_time = time.strptime(time_str, <span class="hljs-string">"%Y-%m-%d"</span>)  <span class="hljs-comment"># 2019-01-01</span>
+    <span class="hljs-keyword">return</span> time.mktime(struct_time)
+
+
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">parse_month</span><span class="hljs-params">(month_str, flag=True)</span>:</span>
+    <span class="hljs-string">"""
+    把月份字符串转化为时间戳
+    :param month_str: 月份，例如：2019-01 或者 2019.01
+    :param flag: 标志位，控制输入月份字符串的格式
+    :return:
+    """</span>
+    <span class="hljs-keyword">if</span> flag:
+        struct_time = time.strptime(month_str, <span class="hljs-string">"%Y-%m"</span>)
+    <span class="hljs-keyword">else</span>:
+        struct_time = time.strptime(month_str, <span class="hljs-string">"%Y.%m"</span>)
+    <span class="hljs-keyword">return</span> time.mktime(struct_time)
+
+
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">parse_timestamp</span><span class="hljs-params">(time_stamp, flag=True)</span>:</span>
+    <span class="hljs-string">"""
+    把时间戳转换为时间字符串
+    :param time_stamp: 时间戳
+    :param flag: 标志位，可以指定输出时间字符串的格式
+    :return: 时间字符串,格式为：2019-01-01 12:12:12 或 2019-01-01
+    """</span>
+    localtime = time.localtime(time_stamp)
+    <span class="hljs-keyword">if</span> flag:
+        time_str = time.strftime(<span class="hljs-string">"%Y-%m-%d %H:%M:%S"</span>, localtime)
+    <span class="hljs-keyword">else</span>:
+        time_str = time.strftime(<span class="hljs-string">"%Y-%m-%d"</span>, localtime)
+    <span class="hljs-keyword">return</span> time_str
+
+
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">day_range</span><span class="hljs-params">(interval_day)</span>:</span>
+    <span class="hljs-string">"""
+    获取指定天内的时间字符串的列表
+    :return:
+    """</span>
+    c_time = (int(time.time() / (<span class="hljs-number">24</span> * <span class="hljs-number">3600</span>)) + <span class="hljs-number">1</span>) * <span class="hljs-number">24</span> * <span class="hljs-number">3600</span>
+    day_range_str = c_time - <span class="hljs-number">24</span> * <span class="hljs-number">3600</span> * interval_day
+
+    day_list = [parse_timestamp(t, flag=<span class="hljs-keyword">False</span>) <span class="hljs-keyword">for</span> t <span class="hljs-keyword">in</span> range(day_range_str, c_time, <span class="hljs-number">3600</span> * <span class="hljs-number">24</span>)]
+    <span class="hljs-keyword">return</span> day_list
+
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">is_workday</span><span class="hljs-params">(time_str)</span>:</span>
+    <span class="hljs-string">"""
+    传入时间字符串，判断传入时间字符串是否是工作日
+    :param time_str: 必须是时间字符串类型，比如："2019-01-21 14:30:31"
+    :return: True/False，是否为非工作日
+    """</span>
+    tmp = time.strptime(time_str, <span class="hljs-string">"%Y-%m-%d %H:%M:%S"</span>)
+    workday_list = [<span class="hljs-string">"Mon"</span>, <span class="hljs-string">"Tue"</span>, <span class="hljs-string">"Wed"</span>, <span class="hljs-string">"Thu"</span>, <span class="hljs-string">"Fri"</span>]
+    holiday_list = [<span class="hljs-string">"Sat"</span>, <span class="hljs-string">"Sun"</span>]
+
+    week = time.strftime(<span class="hljs-string">"%a"</span>, tmp)
+    <span class="hljs-keyword">if</span> week <span class="hljs-keyword">in</span> workday_list:
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">True</span>
+    <span class="hljs-keyword">else</span>:
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">False</span>
+
+
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">is_holiday</span><span class="hljs-params">(time_str)</span>:</span>
+    <span class="hljs-string">"""
+    传入时间字符串，判断传入时间字符串是否是工作日
+    :param time_str: 必须是时间字符串类型，比如："2019-01-21 14:30:31"
+    :return: True/False，是否为非工作日
+    """</span>
+    tmp = time.strptime(time_str, <span class="hljs-string">"%Y-%m-%d %H:%M:%S"</span>)
+    workday_list = [<span class="hljs-string">"Mon"</span>, <span class="hljs-string">"Tue"</span>, <span class="hljs-string">"Wed"</span>, <span class="hljs-string">"Thu"</span>, <span class="hljs-string">"Fri"</span>]
+    holiday_list = [<span class="hljs-string">"Sat"</span>, <span class="hljs-string">"Sun"</span>]
+
+    week = time.strftime(<span class="hljs-string">"%a"</span>, tmp)
+    <span class="hljs-keyword">if</span> week <span class="hljs-keyword">in</span> holiday_list:
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">True</span>
+    <span class="hljs-keyword">else</span>:
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">False</span>
+
+
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_day_list</span><span class="hljs-params">(start_timestamp, end_timestamp, flag=True)</span>:</span>
+    <span class="hljs-string">"""
+    传入开始时间戳和结束时间戳，获取时间段内的日期列表
+    :param start_timestamp: 开始时间戳
+    :param end_timestamp: 结束时间戳
+    :param flag: 标志位
+    :return: 日期列表
+    """</span>
+    tmp = range(int(start_timestamp), int(end_timestamp), <span class="hljs-number">3600</span> * <span class="hljs-number">24</span>)
+    <span class="hljs-keyword">if</span> flag:
+        tmp_range = [{<span class="hljs-string">"day_str"</span>: parse_timestamp(i, flag=<span class="hljs-keyword">False</span>)} <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> tmp]
+    <span class="hljs-keyword">else</span>:
+        tmp_range = [parse_timestamp(i, flag=<span class="hljs-keyword">False</span>) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> tmp]
+    <span class="hljs-keyword">return</span> tmp_range
+
+
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_workday_count</span><span class="hljs-params">(start_timestamp, end_timestamp)</span>:</span>
+    <span class="hljs-string">"""
+    获取30天内的工作日天数
+    :return:
+    """</span>
+    day_list = range(int(start_timestamp), int(end_timestamp) + <span class="hljs-number">3600</span> * <span class="hljs-number">24</span>, <span class="hljs-number">3600</span> * <span class="hljs-number">24</span>)
+    day_str_list = [parse_timestamp(i, flag=<span class="hljs-keyword">False</span>) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> day_list <span class="hljs-keyword">if</span> is_workday(parse_timestamp(i))]
+    day_str_list = [d <span class="hljs-keyword">for</span> d <span class="hljs-keyword">in</span> day_str_list <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> is_fading(d)]
+    <span class="hljs-keyword">return</span> len(day_str_list)
+    
+
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">cover_timestr_to_datetime</span><span class="hljs-params">(timestr, flag=True)</span>:</span>
+    <span class="hljs-string">"""
+    把时间字符串转化为datetime
+    :param timestr: 时间字符串，例如：2019-01-01 12:12:12 或者 2019.01.01 12:12:12
+    :param flag: 标志位，控制输入时间字符串的格式
+    :return:
+    """</span>
+    <span class="hljs-keyword">if</span> flag:
+        tmp_datetime = datetime.datetime.strptime(timestr, <span class="hljs-string">"%Y-%m-%d %H:%M:%S"</span>)
+    <span class="hljs-keyword">else</span>:
+        tmp_datetime = datetime.datetime.strptime(timestr, <span class="hljs-string">"%Y.%m.%d %H:%M:%S"</span>)
+    <span class="hljs-keyword">return</span> tmp_datetime
+
+
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">parse_format_timestr</span><span class="hljs-params">(format_timestr)</span>:</span>
+    <span class="hljs-string">"""
+    将格式字符串转换为时间戳
+    :param format_timestr: 格式字符串,格式： "Sat Mar 28 22:24:24 2016"
+    :return:
+    """</span>
+    tmp_timestamp = time.mktime(time.strptime(format_timestr, <span class="hljs-string">"%a %b %d %H:%M:%S %Y"</span>))
+    <span class="hljs-keyword">return</span> tmp_timestamp
+
+
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">parse_datetime_to_string</span><span class="hljs-params">(datetime_str)</span>:</span>
+    <span class="hljs-string">"""
+    把datetime时间转化成时间字符串
+    :param datetime_str: datetime生成的时间，例子：datetime.datetime.now()
+    或者： datetime.datetime.now() - datetime.timedelta(hours=1)       # 一个小时之前
+    或者： datetime.datetime.now() - datetime.timedelta(days=1)        # 一天之前
+    :return:
+    """</span>
+    <span class="hljs-comment"># 将日期转化为字符串 datetime =&gt; string</span>
+    <span class="hljs-comment"># 在数据库中定义字段信息时为：models.DateTimeField(auto_now_add=True)</span>
+    <span class="hljs-comment"># 查询数据库之后，使用此方法把查询到的时间转换成可用的时间字符串</span>
+    <span class="hljs-comment"># when_insert__range=(an_hour_time, now_time)</span>
+    <span class="hljs-comment"># an_hour_time和 now_time 都是 datetime时间字符串，查询两个datetime时间字符串之间的数据</span>
+    <span class="hljs-keyword">return</span> datetime_str.strftime(<span class="hljs-string">'%Y-%m-%d %H:%M:%S'</span>)
+
+
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">parse_dur_time</span><span class="hljs-params">(d1, d2)</span>:</span>
+    <span class="hljs-string">"""
+    获取两个datetime时间 间隔的日期数(天数，小时数和秒数)
+    :param d1: 开始时间
+    :param d2: 结束时间
+    :return:
+    """</span>
+    dur_str = <span class="hljs-string">""</span>
+    dur_day = (d2 - d1).days
+    dur_second = (d2 - d1).seconds
+    <span class="hljs-keyword">if</span> dur_day &gt; <span class="hljs-number">0</span>:
+        dur_str += <span class="hljs-string">"%s天"</span> % str(dur_day)
+    <span class="hljs-keyword">if</span> dur_second - <span class="hljs-number">3600</span> &gt; <span class="hljs-number">0</span>:
+        dur_hour = dur_second // <span class="hljs-number">3600</span>
+        dur_str += <span class="hljs-string">"%s小时"</span> % str(dur_hour)
+    <span class="hljs-keyword">if</span> (dur_second % <span class="hljs-number">3600</span>) &gt; <span class="hljs-number">60</span>:
+        dur_minute = (dur_second % <span class="hljs-number">3600</span>) // <span class="hljs-number">60</span>
+        dur_str += <span class="hljs-string">"%s分钟"</span> % str(dur_minute)
+    dur_str += <span class="hljs-string">"%s秒"</span> % str(dur_second % <span class="hljs-number">60</span>)
+    <span class="hljs-keyword">return</span> dur_str</code></pre>
+</div><div id="MySignature"></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+<div id="BlogPostCategory">分类: <a href="https://www.cnblogs.com/renpingsheng/category/977681.html" target="_blank">python学习笔记</a></div>
+<div id="EntryTag">标签: <a href="https://www.cnblogs.com/renpingsheng/tag/python/">python</a>, <a href="https://www.cnblogs.com/renpingsheng/tag/time/">time</a></div>
+<div id="blog_post_info"><div id="green_channel">
+        <a href="javascript:void(0);" id="green_channel_digg" onclick="DiggIt(6965044,cb_blogId,1);green_channel_success(this,'谢谢推荐！');">好文要顶</a>
+            <a id="green_channel_follow" onclick="follow('d34470a0-9110-e711-845c-ac853d9f53ac');" href="javascript:void(0);">关注我</a>
+    <a id="green_channel_favorite" onclick="AddToWz(cb_entryId);return false;" href="javascript:void(0);">收藏该文</a>
+    <a id="green_channel_weibo" href="javascript:void(0);" title="分享至新浪微博" onclick="ShareToTsina()"><img src="python%E4%B8%AD%E7%9A%84time%E6%A8%A1%E5%9D%97%20-%20renpingsheng%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/icon_weibo_24.png" alt=""></a>
+    <a id="green_channel_wechat" href="javascript:void(0);" title="分享至微信" onclick="shareOnWechat()"><img src="python%E4%B8%AD%E7%9A%84time%E6%A8%A1%E5%9D%97%20-%20renpingsheng%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/wechat.png" alt=""></a>
+</div>
+<div id="author_profile">
+    <div id="author_profile_info" class="author_profile_info">
+            <a href="http://home.cnblogs.com/u/renpingsheng/" target="_blank"><img src="python%E4%B8%AD%E7%9A%84time%E6%A8%A1%E5%9D%97%20-%20renpingsheng%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/20180211165134.png" class="author_avatar" alt=""></a>
+        <div id="author_profile_detail" class="author_profile_info">
+            <a href="http://home.cnblogs.com/u/renpingsheng/">renpingsheng</a><br>
+            <a href="http://home.cnblogs.com/u/renpingsheng/followees">关注 - 18</a><br>
+            <a href="http://home.cnblogs.com/u/renpingsheng/followers">粉丝 - 136</a>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div id="author_profile_honor"></div>
+    <div id="author_profile_follow">
+                <a href="javascript:void(0);" onclick="follow('d34470a0-9110-e711-845c-ac853d9f53ac');return false;">+加关注</a>
+    </div>
+</div>
+<div id="div_digg">
+    <div class="diggit" onclick="votePost(6965044,'Digg')">
+        <span class="diggnum" id="digg_count">3</span>
+    </div>
+    <div class="buryit" onclick="votePost(6965044,'Bury')">
+        <span class="burynum" id="bury_count">0</span>
+    </div>
+    <div class="clear"></div>
+    <div class="diggword" id="digg_tips">
+    </div>
+</div>
+<script type="text/javascript">
+    currentDiggType = 0;
+</script></div>
+<div class="clear"></div>
+<div id="post_next_prev"><a href="https://www.cnblogs.com/renpingsheng/p/6936874.html" class="p_n_p_prefix">« </a> 上一篇：<a href="https://www.cnblogs.com/renpingsheng/p/6936874.html" title="发布于2017-06-03 11:55">CentOS6.9编译安装nginx1.4.7</a><br><a href="https://www.cnblogs.com/renpingsheng/p/6972109.html" class="p_n_p_prefix">» </a> 下一篇：<a href="https://www.cnblogs.com/renpingsheng/p/6972109.html" title="发布于2017-06-09 15:25">python字符串常用的方法解析</a><br></div>
+</div>
+
+
+		</div>
+		<div class="postDesc">posted @ <span id="post-date">2017-06-08 22:07</span> <a href="https://www.cnblogs.com/renpingsheng/">renpingsheng</a> 阅读(<span id="post_view_count">47500</span>) 评论(<span id="post_comment_count">0</span>)  <a href="https://i.cnblogs.com/EditPosts.aspx?postid=6965044" rel="nofollow">编辑</a> <a href="#" onclick="AddToWz(6965044);return false;">收藏</a></div>
+	</div>
+	<script src="python%E4%B8%AD%E7%9A%84time%E6%A8%A1%E5%9D%97%20-%20renpingsheng%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/highlight.js"></script><script>markdown_highlight();</script><script type="text/javascript">var allowComments=true,cb_blogId=343659,cb_entryId=6965044,cb_blogApp=currentBlogApp,cb_blogUserGuid='d34470a0-9110-e711-845c-ac853d9f53ac',cb_entryCreatedDate='2017/6/8 22:07:00';loadViewCount(cb_entryId);var cb_postType=1;var isMarkdown=true;</script>
+	
+</div><!--end: topics 文章、评论容器-->
+</div><a name="!comments"></a><div id="blog-comments-placeholder"></div><script type="text/javascript">var commentManager = new blogCommentManager();commentManager.renderComments(0);</script>
+<div id="comment_form" class="commentform">
+<a name="commentform"></a>
+<div id="divCommentShow"></div>
+<div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="#" onclick="return RefreshPage();">刷新页面</a><a href="#top">返回顶部</a></div>
+<div id="comment_form_container"><div class="login_tips">注册用户登录后才能发表评论，请 <a rel="nofollow" href="javascript:void(0);" class="underline" onclick="return login('commentform');">登录</a> 或 <a rel="nofollow" href="javascript:void(0);" class="underline" onclick="return register();">注册</a>，<a href="http://www.cnblogs.com/">访问</a>网站首页。</div></div>
+<div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+<div id="ad_t2"><a href="http://www.ucancode.com/index.htm" target="_blank" onclick="ga('send', 'event', 'Link', 'click', 'T2-工控')">【推荐】超50万C++/C#源码: 大型实时仿真组态图形源码</a><br><a href="https://www.bagevent.com/event/2195041?bag_track=13072958" target="_blank" onclick="ga('send', 'event', 'Link', 'click', 'T2-看雪')">【活动】看雪2019安全开发者峰会，共话安全领域焦点</a><br><a href="https://ke.qq.com/adActivity.html?name=xiangxueketang2" target="_blank" onclick="ga('send', 'event', 'Link', 'click', 'T2-享学')">【培训】Java程序员年薪40W，他1年走了别人5年的路</a><br></div>
+<div id="opt_under_post"></div>
+<script async="async" src="python%E4%B8%AD%E7%9A%84time%E6%A8%A1%E5%9D%97%20-%20renpingsheng%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/gpt.js"></script>
+<script>
+  var googletag = googletag || {};
+  googletag.cmd = googletag.cmd || [];
+</script>
+<script>
+  googletag.cmd.push(function() {
+        googletag.defineSlot('/1090369/C1', [300, 250], 'div-gpt-ad-1546353474406-0').addService(googletag.pubads());
+        googletag.defineSlot('/1090369/C2', [468, 60], 'div-gpt-ad-1539008685004-0').addService(googletag.pubads());
+        googletag.pubads().enableSingleRequest();
+        googletag.enableServices();
+  });
+</script>
+<div id="cnblogs_c1" class="c_ad_block">
+    <div id="div-gpt-ad-1546353474406-0" style="height:250px; width:300px;" data-google-query-id="CJeqqeeBneICFQW7lgodErUKNw"><div id="google_ads_iframe_/1090369/C1_0__container__" style="border: 0pt none;"><iframe id="google_ads_iframe_/1090369/C1_0" title="3rd party ad content" name="google_ads_iframe_/1090369/C1_0" scrolling="no" marginwidth="0" marginheight="0" style="border: 0px none; vertical-align: bottom;" srcdoc="" data-google-container-id="1" data-load-complete="true" width="300" height="250" frameborder="0"></iframe></div></div>
+</div>
+<div id="under_post_news"><div class="itnews c_ad_block"><b>相关博文：</b><br>·  <a href="https://www.cnblogs.com/Yanjy-OnlyOne/p/10106223.html" target="_blank" onclick="clickRecomItmem(10106223)">python时间模块详解（time模块）</a><br>·  <a href="https://www.cnblogs.com/rendawei/p/7061794.html" target="_blank" onclick="clickRecomItmem(7061794)">Python模块之time：时间获取和转换</a><br>·  <a href="https://www.cnblogs.com/HCT118/p/5767360.html" target="_blank" onclick="clickRecomItmem(5767360)">python 中time模块使用</a><br>·  <a href="https://www.cnblogs.com/ming5218/p/10168078.html" target="_blank" onclick="clickRecomItmem(10168078)">Pythontime模块</a><br>·  <a href="https://www.cnblogs.com/fengjunjie-w/p/7514044.html" target="_blank" onclick="clickRecomItmem(7514044)">Python--26 简单定制 计时器</a><br></div></div>
+<div id="cnblogs_c2" class="c_ad_block">
+    <div id="div-gpt-ad-1539008685004-0" style="height:60px; width:468px;" data-google-query-id="CJiqqeeBneICFQW7lgodErUKNw"><div id="google_ads_iframe_/1090369/C2_0__container__" style="border: 0pt none;"><iframe id="google_ads_iframe_/1090369/C2_0" title="3rd party ad content" name="google_ads_iframe_/1090369/C2_0" scrolling="no" marginwidth="0" marginheight="0" style="border: 0px none; vertical-align: bottom;" srcdoc="" data-google-container-id="2" data-load-complete="true" width="468" height="60" frameborder="0"></iframe></div></div>
+</div>
+<div id="under_post_kb"><div class="itnews c_ad_block"><b>最新新闻</b>：<br> ·  <a href="https://news.cnblogs.com/n/625332/" target="_blank">日本显示器公司连续第五年亏损 宣布裁员1000人</a><br> ·  <a href="https://news.cnblogs.com/n/625331/" target="_blank">深网|万达百货更名苏宁易购广场 改造店5月底亮相</a><br> ·  <a href="https://news.cnblogs.com/n/625330/" target="_blank">圈重点！腾讯全球数字生态大会带来不一样的智慧医疗</a><br> ·  <a href="https://news.cnblogs.com/n/625329/" target="_blank">3岁娃成“社交万人迷”？别再被天价“情商培训班”忽悠了</a><br> ·  <a href="https://news.cnblogs.com/n/625328/" target="_blank">国产手机十年厮杀过后，为何只剩下华为带着米OV?</a><br>» <a href="http://news.cnblogs.com/" title="IT新闻" target="_blank">更多新闻...</a></div></div>
+<div id="HistoryToday" class="c_ad_block"></div>
+<script type="text/javascript">
+ if(enablePostBottom()) {
+    codeHighlight();
+    fixPostBody();
+    setTimeout(function () { incrementViewCount(cb_entryId); }, 50);
+    deliverT2();
+    deliverC1();
+    deliverC2();    
+    loadNewsAndKb();
+    loadBlogSignature();
+    LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+    GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+    loadOptUnderPost();
+    GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);  
+}
+</script>
+</div>
+
+    
+	</div><!--end: forFlow -->
+	</div><!--end: mainContent 主体内容容器-->
+
+	<div id="sideBar">
+		<div id="sideBarMain">
+			
+<!--done-->
+<div class="newsItem">
+<h3 class="catListTitle">公告</h3>
+	<div id="blog-news"><div id="profile_block">昵称：<a href="https://home.cnblogs.com/u/renpingsheng/">renpingsheng</a><br>园龄：<a href="https://home.cnblogs.com/u/renpingsheng/" title="入园时间：2017-03-24">2年1个月</a><br>粉丝：<a href="https://home.cnblogs.com/u/renpingsheng/followers/">136</a><br>关注：<a href="https://home.cnblogs.com/u/renpingsheng/followees/">18</a><div id="p_b_follow"><a href="javascript:void(0);" onclick="follow('d34470a0-9110-e711-845c-ac853d9f53ac')">+加关注</a></div><script>getFollowStatus('d34470a0-9110-e711-845c-ac853d9f53ac')</script></div></div><script type="text/javascript">loadBlogNews();</script>
+</div>
+
+			<div id="blog-calendar" style=""><table id="blogCalendar" class="Cal" title="Calendar" cellspacing="0" cellpadding="0">
+	<tbody><tr><td colspan="7"><table class="CalTitle" cellspacing="0">
+		<tbody><tr><td class="CalNextPrev"><a href="javascript:void(0);" onclick="loadBlogCalendar('2019/04/01');return false;">&lt;</a></td><td align="center">2019年5月</td><td class="CalNextPrev" align="right"><a href="javascript:void(0);" onclick="loadBlogCalendar('2019/06/01');return false;">&gt;</a></td></tr>
+	</tbody></table></td></tr><tr><th class="CalDayHeader" abbr="日" scope="col" align="center">日</th><th class="CalDayHeader" abbr="一" scope="col" align="center">一</th><th class="CalDayHeader" abbr="二" scope="col" align="center">二</th><th class="CalDayHeader" abbr="三" scope="col" align="center">三</th><th class="CalDayHeader" abbr="四" scope="col" align="center">四</th><th class="CalDayHeader" abbr="五" scope="col" align="center">五</th><th class="CalDayHeader" abbr="六" scope="col" align="center">六</th></tr><tr><td class="CalOtherMonthDay" align="center">28</td><td class="CalOtherMonthDay" align="center">29</td><td class="CalOtherMonthDay" align="center">30</td><td align="center">1</td><td align="center">2</td><td align="center">3</td><td class="CalWeekendDay" align="center">4</td></tr><tr><td class="CalWeekendDay" align="center">5</td><td align="center">6</td><td align="center">7</td><td align="center">8</td><td align="center">9</td><td align="center">10</td><td class="CalWeekendDay" align="center">11</td></tr><tr><td class="CalWeekendDay" align="center">12</td><td align="center">13</td><td align="center">14</td><td class="CalTodayDay" align="center">15</td><td align="center">16</td><td align="center">17</td><td class="CalWeekendDay" align="center">18</td></tr><tr><td class="CalWeekendDay" align="center">19</td><td align="center">20</td><td align="center">21</td><td align="center">22</td><td align="center">23</td><td align="center">24</td><td class="CalWeekendDay" align="center">25</td></tr><tr><td class="CalWeekendDay" align="center">26</td><td align="center">27</td><td align="center">28</td><td align="center">29</td><td align="center">30</td><td align="center">31</td><td class="CalOtherMonthDay" align="center">1</td></tr><tr><td class="CalOtherMonthDay" align="center">2</td><td class="CalOtherMonthDay" align="center">3</td><td class="CalOtherMonthDay" align="center">4</td><td class="CalOtherMonthDay" align="center">5</td><td class="CalOtherMonthDay" align="center">6</td><td class="CalOtherMonthDay" align="center">7</td><td class="CalOtherMonthDay" align="center">8</td></tr>
+</tbody></table></div><script type="text/javascript">loadBlogDefaultCalendar();</script>
+			
+			<div id="leftcontentcontainer">
+				<div id="blog-sidecolumn"><div id="sidebar_search" class="sidebar-block">
+<div id="sidebar_search" class="mySearch">
+<h3 class="catListTitle">搜索</h3>
+<div id="sidebar_search_box">
+
+<div id="widget_my_google" class="div_my_zzk"><input name="google_q" id="google_q" onkeydown="return google_go_enter(event)" class="input_my_zzk" type="text">&nbsp;<input onclick="google_go()" value="谷歌搜索" class="btn_my_zzk" type="button"></div>
+</div>
+</div>
+
+</div><div id="sidebar_recentposts" class="sidebar-block">
+<div class="catListEssay">
+<h3 class="catListTitle">最新随笔</h3>
+<ul>
+<li><a href="https://www.cnblogs.com/renpingsheng/p/10776254.html">1. git的学习笔记(二):git远程操作</a></li><li><a href="https://www.cnblogs.com/renpingsheng/p/10582698.html">2. MongoDB数据库(二):增删查改</a></li><li><a href="https://www.cnblogs.com/renpingsheng/p/10576805.html">3. MongoDB数据库(一):基本操作</a></li><li><a href="https://www.cnblogs.com/renpingsheng/p/10202914.html">4. 高可用Redis(十三)：Redis缓存的使用和设计</a></li><li><a href="https://www.cnblogs.com/renpingsheng/p/9862485.html">5. 高可用Redis(十二)：Redis Cluster</a></li><li><a href="https://www.cnblogs.com/renpingsheng/p/9833740.html">6. 高可用Redis(十一)：使用redis-trib.rb工具搭建集群</a></li><li><a href="https://www.cnblogs.com/renpingsheng/p/9813959.html">7. 高可用Redis(十)：Redis原生命令搭建集群</a></li><li><a href="https://www.cnblogs.com/renpingsheng/p/9803838.html">8. 高可用Redis(九)：Redis Sentinel</a></li><li><a href="https://www.cnblogs.com/renpingsheng/p/9796899.html">9. 高可用Redis(八)：Redis主从复制</a></li><li><a href="https://www.cnblogs.com/renpingsheng/p/9786806.html">10. 高可用Redis(七)：Redis持久化</a></li>
+</ul>
+</div>
+</div><div id="sidebar_toptags" class="sidebar-block">
+<div class="catListTag">
+<h3 class="catListTitle">我的标签</h3>
+<ul>
+<li><a href="https://www.cnblogs.com/renpingsheng/tag/python/">python</a>(50)</li><li><a href="https://www.cnblogs.com/renpingsheng/tag/Django/">Django</a>(28)</li><li><a href="https://www.cnblogs.com/renpingsheng/tag/HTML/">HTML</a>(16)</li><li><a href="https://www.cnblogs.com/renpingsheng/tag/flask/">flask</a>(14)</li><li><a href="https://www.cnblogs.com/renpingsheng/tag/CSS/">CSS</a>(14)</li><li><a href="https://www.cnblogs.com/renpingsheng/tag/redis/">redis</a>(14)</li><li><a href="https://www.cnblogs.com/renpingsheng/tag/mysql/">mysql</a>(10)</li><li><a href="https://www.cnblogs.com/renpingsheng/tag/MariaDB/">MariaDB</a>(9)</li><li><a href="https://www.cnblogs.com/renpingsheng/tag/CentOS/">CentOS</a>(9)</li><li><a href="https://www.cnblogs.com/renpingsheng/tag/Form/">Form</a>(9)</li><li><a href="https://www.cnblogs.com/renpingsheng/tag/">更多</a></li>
+</ul>
+</div></div><div id="sidebar_categories">
+<div id="sidebar_postcategory" class="catListPostCategory sidebar-block">
+<h3 class="catListTitle">随笔分类</h3>
+
+<ul>
+
+<li><a id="CatList_LinkList_0_Link_0" href="https://www.cnblogs.com/renpingsheng/category/1285406.html">Django RESTframework学习笔记(2)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_1" href="https://www.cnblogs.com/renpingsheng/category/1083496.html">Django学习笔记(28)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_2" href="https://www.cnblogs.com/renpingsheng/category/1193950.html">flask学习记录(14)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_3" href="https://www.cnblogs.com/renpingsheng/category/977680.html">linux学习笔记(41)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_4" href="https://www.cnblogs.com/renpingsheng/category/1425685.html">MongoDB学习笔记(2)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_5" href="https://www.cnblogs.com/renpingsheng/category/977681.html">python学习笔记(100)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_6" href="https://www.cnblogs.com/renpingsheng/category/1317158.html">Redis学习记录(13)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_7" href="https://www.cnblogs.com/renpingsheng/category/1285407.html">Vue学习笔记(1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_8" href="https://www.cnblogs.com/renpingsheng/category/1046159.html">前端学习(29)</a> </li>
+
+</ul>
+
+</div>
+
+<div id="sidebar_postarchive" class="catListPostArchive sidebar-block">
+<h3 class="catListTitle">随笔档案</h3>
+
+<ul>
+
+<li><a id="CatList_LinkList_1_Link_0" href="https://www.cnblogs.com/renpingsheng/archive/2019/04.html">2019年4月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_1" href="https://www.cnblogs.com/renpingsheng/archive/2019/03.html">2019年3月 (2)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_2" href="https://www.cnblogs.com/renpingsheng/archive/2018/12.html">2018年12月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_3" href="https://www.cnblogs.com/renpingsheng/archive/2018/10.html">2018年10月 (13)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_4" href="https://www.cnblogs.com/renpingsheng/archive/2018/09.html">2018年9月 (5)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_5" href="https://www.cnblogs.com/renpingsheng/archive/2018/08.html">2018年8月 (3)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_6" href="https://www.cnblogs.com/renpingsheng/archive/2018/07.html">2018年7月 (3)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_7" href="https://www.cnblogs.com/renpingsheng/archive/2018/06.html">2018年6月 (6)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_8" href="https://www.cnblogs.com/renpingsheng/archive/2018/05.html">2018年5月 (6)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_9" href="https://www.cnblogs.com/renpingsheng/archive/2018/04.html">2018年4月 (3)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_10" href="https://www.cnblogs.com/renpingsheng/archive/2018/03.html">2018年3月 (5)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_11" href="https://www.cnblogs.com/renpingsheng/archive/2018/02.html">2018年2月 (3)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_12" href="https://www.cnblogs.com/renpingsheng/archive/2018/01.html">2018年1月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_13" href="https://www.cnblogs.com/renpingsheng/archive/2017/11.html">2017年11月 (14)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_14" href="https://www.cnblogs.com/renpingsheng/archive/2017/10.html">2017年10月 (12)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_15" href="https://www.cnblogs.com/renpingsheng/archive/2017/09.html">2017年9月 (10)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_16" href="https://www.cnblogs.com/renpingsheng/archive/2017/08.html">2017年8月 (29)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_17" href="https://www.cnblogs.com/renpingsheng/archive/2017/07.html">2017年7月 (23)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_18" href="https://www.cnblogs.com/renpingsheng/archive/2017/06.html">2017年6月 (19)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_19" href="https://www.cnblogs.com/renpingsheng/archive/2017/05.html">2017年5月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_20" href="https://www.cnblogs.com/renpingsheng/archive/2017/04.html">2017年4月 (1)</a> </li>
+
+</ul>
+
+</div>
+
+<div id="sidebar_articlecategory" class="catListArticleCategory sidebar-block">
+<h3 class="catListTitle">文章分类</h3>
+
+<ul>
+
+<li><a id="CatList_LinkList_2_Link_0" href="https://www.cnblogs.com/renpingsheng/category/997551.html">linux学习记录</a> </li>
+
+<li><a id="CatList_LinkList_2_Link_1" href="https://www.cnblogs.com/renpingsheng/category/1193255.html">python学习记录</a> </li>
+
+<li><a id="CatList_LinkList_2_Link_2" href="https://www.cnblogs.com/renpingsheng/category/1193254.html">前端学习记录(1)</a> </li>
+
+</ul>
+
+</div>
+
+<div id="sidebar_articlearchive" class="catListArticleArchive sidebar-block">
+<h3 class="catListTitle">文章档案</h3>
+
+<ul>
+
+<li><a id="CatList_LinkList_3_Link_0" href="https://www.cnblogs.com/renpingsheng/archives/2018/04.html" rel="nofollow">2018年4月 (1)</a> </li>
+
+</ul>
+
+</div>
+
+</div><div id="sidebar_scorerank" class="sidebar-block">
+<div class="catListBlogRank">
+<h3 class="catListTitle">积分与排名</h3>
+<ul>
+	<li class="liScore">
+		积分 -	111334
+	</li>
+	<li class="liRank">
+		排名 -	4125
+	</li>
+</ul>
+</div>
+
+
+</div><div id="sidebar_topviewedposts" class="sidebar-block"><div id="topview_posts_wrap">
+<div class="catListView">
+<h3 class="catListTitle">阅读排行榜</h3>
+	<div id="TopViewPostsBlock"><ul><li><a href="https://www.cnblogs.com/renpingsheng/p/7845096.html">1. CentOS7系统配置国内yum源和epel源(54151)</a></li><li><a href="https://www.cnblogs.com/renpingsheng/p/6965044.html">2. python中的time模块(47498)</a></li><li><a href="https://www.cnblogs.com/renpingsheng/p/7171950.html">3. python中math模块常用的方法整理(36010)</a></li><li><a href="https://www.cnblogs.com/renpingsheng/p/7065565.html">4. python3中，os.path模块下常用的用法总结(26455)</a></li><li><a href="https://www.cnblogs.com/renpingsheng/p/7755312.html">5. python3的zip函数(12617)</a></li><li><a href="https://www.cnblogs.com/renpingsheng/p/7461193.html">6. 使用Django实现分页器功能(8728)</a></li><li><a href="https://www.cnblogs.com/renpingsheng/p/7260974.html">7. python3操作socketserver(8153)</a></li><li><a href="https://www.cnblogs.com/renpingsheng/p/7688134.html">8. CORS跨域请求之简单请求与非简单请求(6581)</a></li><li><a href="https://www.cnblogs.com/renpingsheng/p/7482680.html">9. python生成随机图形验证码(6113)</a></li><li><a href="https://www.cnblogs.com/renpingsheng/p/7202818.html">10. python中的线程之semaphore信号量(5298)</a></li></ul></div>
+</div>
+</div></div><div id="sidebar_topdiggedposts" class="sidebar-block"><div id="topdigg_posts_wrap">
+<div class="catListView">
+<h3 class="catListTitle">推荐排行榜</h3>
+<div id="TopDiggPostsBlock"><ul><li><a href="https://www.cnblogs.com/renpingsheng/p/7534897.html">1. Django中请求的生命周期(6)</a></li><li><a href="https://www.cnblogs.com/renpingsheng/p/7171950.html">2. python中math模块常用的方法整理(5)</a></li><li><a href="https://www.cnblogs.com/renpingsheng/p/7845096.html">3. CentOS7系统配置国内yum源和epel源(4)</a></li><li><a href="https://www.cnblogs.com/renpingsheng/p/6965044.html">4. python中的time模块(3)</a></li><li><a href="https://www.cnblogs.com/renpingsheng/p/7642805.html">5. Django的思维导图(2)</a></li><li><a href="https://www.cnblogs.com/renpingsheng/p/7461193.html">6. 使用Django实现分页器功能(2)</a></li><li><a href="https://www.cnblogs.com/renpingsheng/p/7583550.html">7. Django查询数据库性能优化(2)</a></li><li><a href="https://www.cnblogs.com/renpingsheng/p/7566647.html">8. Django中的信号及其用法(2)</a></li><li><a href="https://www.cnblogs.com/renpingsheng/p/9813959.html">9. 高可用Redis(十)：Redis原生命令搭建集群(2)</a></li><li><a href="https://www.cnblogs.com/renpingsheng/p/8433212.html">10. python中的闭包函数(2)</a></li></ul></div>
+</div></div></div></div><script type="text/javascript">loadBlogSideColumn();</script>
+			</div>
+			
+		</div><!--end: sideBarMain -->
+	</div><!--end: sideBar 侧边栏容器 -->
+	<div class="clear"></div>
+	</div><!--end: main -->
+	<div class="clear"></div>
+	<div id="footer">
+		
+<!--done-->
+Copyright ©2019 renpingsheng
+	</div><!--end: footer -->
+</div><!--end: home 自定义的最大容器 -->
+
+
+
+</body></html>

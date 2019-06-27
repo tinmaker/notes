@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="zh-cn"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="never">
+    <title>谈一谈 MPU6050 姿态融合（转） - DChipNau - 博客园</title>
+<meta property="og:description" content="姿态角（Euler角）pitch yaw roll飞行器的姿态角并不是指哪个角度，是三个角度的统称。它们是：俯仰、滚转、偏航。你可以想象是飞机围绕XYZ三个轴分别转动形成的夹角。地面坐标系（earth">
+    <link type="text/css" rel="stylesheet" href="%E8%B0%88%E4%B8%80%E8%B0%88%20MPU6050%20%E5%A7%BF%E6%80%81%E8%9E%8D%E5%90%88%EF%BC%88%E8%BD%AC%EF%BC%89%20-%20DChipNau%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/blog-common.css">
+<link id="MainCss" type="text/css" rel="stylesheet" href="%E8%B0%88%E4%B8%80%E8%B0%88%20MPU6050%20%E5%A7%BF%E6%80%81%E8%9E%8D%E5%90%88%EF%BC%88%E8%BD%AC%EF%BC%89%20-%20DChipNau%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/bundle-Banlieue13.css">
+<link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="%E8%B0%88%E4%B8%80%E8%B0%88%20MPU6050%20%E5%A7%BF%E6%80%81%E8%9E%8D%E5%90%88%EF%BC%88%E8%BD%AC%EF%BC%89%20-%20DChipNau%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/bundle-Banlieue13-mobile.css">
+    <link title="RSS" type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/dchipnau/rss">
+    <link title="RSD" type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/dchipnau/rsd.xml">
+<link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/dchipnau/wlwmanifest.xml">
+    <script src="%E8%B0%88%E4%B8%80%E8%B0%88%20MPU6050%20%E5%A7%BF%E6%80%81%E8%9E%8D%E5%90%88%EF%BC%88%E8%BD%AC%EF%BC%89%20-%20DChipNau%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/amp4ads-host-v0.js"></script><script src="%E8%B0%88%E4%B8%80%E8%B0%88%20MPU6050%20%E5%A7%BF%E6%80%81%E8%9E%8D%E5%90%88%EF%BC%88%E8%BD%AC%EF%BC%89%20-%20DChipNau%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/pubads_impl_rendering_2019050901.js"></script><script async="" src="%E8%B0%88%E4%B8%80%E8%B0%88%20MPU6050%20%E5%A7%BF%E6%80%81%E8%9E%8D%E5%90%88%EF%BC%88%E8%BD%AC%EF%BC%89%20-%20DChipNau%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/analytics.js"></script><script src="%E8%B0%88%E4%B8%80%E8%B0%88%20MPU6050%20%E5%A7%BF%E6%80%81%E8%9E%8D%E5%90%88%EF%BC%88%E8%BD%AC%EF%BC%89%20-%20DChipNau%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/jquery-2.js"></script>
+    <script>var currentBlogId=255187;var currentBlogApp='dchipnau',cb_enable_mathjax=false;var isLogined=false;</script>
+    <script src="%E8%B0%88%E4%B8%80%E8%B0%88%20MPU6050%20%E5%A7%BF%E6%80%81%E8%9E%8D%E5%90%88%EF%BC%88%E8%BD%AC%EF%BC%89%20-%20DChipNau%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/blog-common.js" type="text/javascript"></script>
+<link rel="preload" href="%E8%B0%88%E4%B8%80%E8%B0%88%20MPU6050%20%E5%A7%BF%E6%80%81%E8%9E%8D%E5%90%88%EF%BC%88%E8%BD%AC%EF%BC%89%20-%20DChipNau%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/integrator.js" as="script"><script type="text/javascript" src="%E8%B0%88%E4%B8%80%E8%B0%88%20MPU6050%20%E5%A7%BF%E6%80%81%E8%9E%8D%E5%90%88%EF%BC%88%E8%BD%AC%EF%BC%89%20-%20DChipNau%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/integrator.js"></script><script src="%E8%B0%88%E4%B8%80%E8%B0%88%20MPU6050%20%E5%A7%BF%E6%80%81%E8%9E%8D%E5%90%88%EF%BC%88%E8%BD%AC%EF%BC%89%20-%20DChipNau%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/pubads_impl_2019050901.js" async=""></script></head>
+<body>
+<a name="top"></a>
+
+
+<!--done-->
+<div id="home">
+<div id="header">
+	<div id="blogTitle">
+	<a id="lnkBlogLogo" href="https://www.cnblogs.com/dchipnau/"><img id="blogLogo" src="%E8%B0%88%E4%B8%80%E8%B0%88%20MPU6050%20%E5%A7%BF%E6%80%81%E8%9E%8D%E5%90%88%EF%BC%88%E8%BD%AC%EF%BC%89%20-%20DChipNau%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/logo.gif" alt="返回主页"></a>			
+		
+<!--done-->
+<h1><a id="Header1_HeaderTitle" class="headermaintitle" href="https://www.cnblogs.com/dchipnau/">DChipNau</a></h1>
+<h2>铅刀虽钝 岂无一割之用</h2>
+
+
+
+		
+	</div><!--end: blogTitle 博客的标题和副标题 -->
+</div><!--end: header 头部 -->
+
+<div id="main">
+	<div id="mainContent">
+	<div class="forFlow">
+		<div id="navigator">
+			
+<ul id="navList">
+	<li><a id="blog_nav_sitehome" class="menu" href="https://www.cnblogs.com/">博客园</a></li>
+	<li></li>
+	<li><a id="blog_nav_newpost" class="menu" rel="nofollow" href="https://i.cnblogs.com/EditPosts.aspx?opt=1">新随笔</a></li>
+	<li></li>
+	<li><a id="blog_nav_admin" class="menu" rel="nofollow" href="https://i.cnblogs.com/">管理</a></li>
+	<li><a id="blog_nav_rss" class="menu" href="https://www.cnblogs.com/dchipnau/rss">订阅</a>
+	<a id="blog_nav_rss_image" class="aHeaderXML" href="https://www.cnblogs.com/dchipnau/rss"><img src="%E8%B0%88%E4%B8%80%E8%B0%88%20MPU6050%20%E5%A7%BF%E6%80%81%E8%9E%8D%E5%90%88%EF%BC%88%E8%BD%AC%EF%BC%89%20-%20DChipNau%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/xml.gif" alt="订阅"></a></li>
+</ul>
+
+
+			<div class="blogStats">
+				
+				<div id="blog_stats">
+<!--done-->
+随笔- 137&nbsp;
+文章- 0&nbsp;
+评论- 4&nbsp;
+</div>
+				
+			</div><!--end: blogStats -->
+		</div><!--end: navigator 博客导航栏 -->
+		
+        <div id="post_detail">
+<!--done-->
+<div id="topics">
+	<div class="post">
+		<h1 class="postTitle">
+			<a id="cb_post_title_url" class="postTitle2" href="https://www.cnblogs.com/dchipnau/p/5310088.html">谈一谈 MPU6050 姿态融合（转）</a>
+		</h1>
+		<div class="clear"></div>
+		<div class="postBody">
+			<div id="cnblogs_post_body" class="blogpost-body"><p>姿态角（Euler角）pitch yaw roll<br>飞行器的姿态角并不是指哪个角度，是三个角度的统称。<br>它们是：俯仰、滚转、偏航。你可以想象是飞机围绕XYZ三个轴分别转动形成的夹角。<br><br>地面坐标系（earth-surface inertial reference frame）Sg--------OXgYgZg<br>&lt;ignore_js_op&gt;<img id="aimg_272900" src="%E8%B0%88%E4%B8%80%E8%B0%88%20MPU6050%20%E5%A7%BF%E6%80%81%E8%9E%8D%E5%90%88%EF%BC%88%E8%BD%AC%EF%BC%89%20-%20DChipNau%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/104446yaivexiv6qs16wsg.png" alt="">&nbsp;<br>①在地面上选一点Og<br>②使Xg轴在水平面内并指向某一方向<br>③Zg轴垂直于地面并指向地心(重力方向)<br>④Yg轴在水平面内垂直于Xg轴，其指向按右手定则确定<br><br>机体坐标系(Aircraft-body coordinate frame)Sb-------OXYZ<br>&lt;ignore_js_op&gt;<img id="aimg_272903" src="%E8%B0%88%E4%B8%80%E8%B0%88%20MPU6050%20%E5%A7%BF%E6%80%81%E8%9E%8D%E5%90%88%EF%BC%88%E8%BD%AC%EF%BC%89%20-%20DChipNau%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/104832pr5mem0ipvspzs6f.png" alt="">&nbsp;<br><br>①原点O取在飞机质心处，坐标系与飞机固连<br>②x轴在飞机对称平面内并平行于飞机的设计轴线指向机头<br>③y轴垂直于飞机对称平面指向机身右方<br>④z轴在飞机对称平面内，与x轴垂直并指向机身下方<br><br>欧拉角/姿态角（Euler Angle）<br>&lt;ignore_js_op&gt;<img id="aimg_272905" src="%E8%B0%88%E4%B8%80%E8%B0%88%20MPU6050%20%E5%A7%BF%E6%80%81%E8%9E%8D%E5%90%88%EF%BC%88%E8%BD%AC%EF%BC%89%20-%20DChipNau%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/105146w5e9ezjz99wbott1.png" alt="">&nbsp;<br>&lt;ignore_js_op&gt;<img id="aimg_272906" src="%E8%B0%88%E4%B8%80%E8%B0%88%20MPU6050%20%E5%A7%BF%E6%80%81%E8%9E%8D%E5%90%88%EF%BC%88%E8%BD%AC%EF%BC%89%20-%20DChipNau%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/105319nmhq7t5hoomtsy5z.png" alt="">&nbsp;<br><br>机体坐标系与地面坐标系的关系是三个Euler角，反应了飞机相对地面的姿态。<br>俯仰角θ（pitch）：机体坐标系X轴与水平面的夹角。当X轴的正半轴位于过坐标原点的水平面之上（抬头）时，俯仰角为正，否则为负。<br>&lt;ignore_js_op&gt;<img id="aimg_272908" class="zoom" src="%E8%B0%88%E4%B8%80%E8%B0%88%20MPU6050%20%E5%A7%BF%E6%80%81%E8%9E%8D%E5%90%88%EF%BC%88%E8%BD%AC%EF%BC%89%20-%20DChipNau%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/105443yypdpt1fhgd6gp16.gif" alt="" width="502">&nbsp;<br><br>偏航角ψ（yaw）：<br>机体坐标系xb轴在水平面上投影与地面坐标系xg轴（在水平面上，指向目标为正）之间的夹角，由xg轴逆时针转至机体xb的投影线时，偏航角为正，即机头右偏航为正，反之为负。<br>&lt;ignore_js_op&gt;<img id="aimg_272909" class="zoom" src="%E8%B0%88%E4%B8%80%E8%B0%88%20MPU6050%20%E5%A7%BF%E6%80%81%E8%9E%8D%E5%90%88%EF%BC%88%E8%BD%AC%EF%BC%89%20-%20DChipNau%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/105537d2ltzivqm99n0oi8.gif" alt="" width="504">&nbsp;<br><br>滚转角Φ（roll）：机体坐标系zb轴与通过机体xb轴的铅垂面间的夹角，机体向右滚为正，反之为负。<br>&lt;ignore_js_op&gt;<img id="aimg_272910" class="zoom" src="%E8%B0%88%E4%B8%80%E8%B0%88%20MPU6050%20%E5%A7%BF%E6%80%81%E8%9E%8D%E5%90%88%EF%BC%88%E8%BD%AC%EF%BC%89%20-%20DChipNau%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/105636wbm6tezvc6kag6ja.gif" alt="" width="504"></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>首先要明确，MPU6050 是一款姿态传感器，使用它就是为了得到待测物体（如四轴、平衡小车） x、y、z 轴的倾角（俯仰角 
+Pitch、滚转角 Roll、偏航角 Yaw） 。我们通过 I2C 读取到 MPU6050 的六个数据（三轴加速度 AD 值、三轴角速度 AD 
+值）经过姿态融合后就可以得到 Pitch、Roll、Yaw 角。</p>
+<p>本帖主要介绍三种姿态融合算法：四元数法 、一阶互补算法和卡尔曼滤波算法。</p>
+<p><br><br><br></p>
+<p>一、四元数法</p>
+<p>关于四元数的一些概念和计算就不写上来了，我也不懂。我能告诉你的是：通过下面的算法，可以把六个数据转化成四元数（q0、q1、q2、q3），然后四元数转化成欧拉角（P、R、Y 角）。</p>
+<p>
+<br><br></p>
+<p>&nbsp; &nbsp; &nbsp; &nbsp; 虽然 MPU6050 自带的 DMP库可以直接输出四元数，减轻 STM32 的运算负担， 这里在此没有使用，因为我是用 STM32 的硬件 I2C 读取 MPU6050 数据的（<a href="http://bbs.elecfans.com/forum.php?mod=viewthread&amp;tid=485014&amp;page=1#pid3625735" target="_blank">http://bbs.elecfans.com/forum.ph ... 4&amp;page=1#pid3625735</a>），DMP
+库需要对 I2C 函数进行修改，如 DMP 库中的 I2C 写：i2c_write(st.hw-&gt;addr, 
+st.reg-&gt;pwr_mgmt_1, 1, &amp;(data[0]))；有4个输入变量，而 STM32 硬件 I2C 的 I2C 
+写为：void MPU6050_I2C_ByteWrite(u8 slaveAddr, u8 pBuffer, u8 writeAddr)，只有
+ 3 个输入量（这之间的差异好像是由于 MPU6050 的 DMP 库是针对 MSP430&nbsp;<a class="relatedlink" href="http://bbs.elecfans.com/zhuti_mcu_1.html" target="_blank">单片机</a>写的），所以必须进行修改，但是改固件库是一件很痛苦的事，你们应该都懂。当然，如果你用模拟 I2C 的话，是容易实现的，网上的 DMP 移植几乎都是基于模拟 I2C 的。</p>
+<div class="blockcode">
+<div id="code_U9p">&nbsp;</div>
+
+复制代码</div>
+<p>
+<br><br></p>
+<p>#include&lt;math.h&gt;</p>
+<p>#include "stm32f10x.h"</p>
+<p>//---------------------------------------------------------------------------------------------------</p>
+<p>// 变量定义</p>
+<p>&nbsp;</p>
+<p>#define Kp 100.0f&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; 
+&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;// 
+比例增益支配率收敛到加速度计/磁强计</p>
+<p>#define Ki 0.002f&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp; // 积分增益支配率的陀螺仪偏见的衔接</p>
+<p>#define halfT 0.001f&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp; // 采样周期的一半</p>
+<p>&nbsp;</p>
+<p>float q0 = 1, q1 = 0, q2 = 0, q3 = 0;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp; // 四元数的元素，代表估计方向</p>
+<p>float exInt = 0, eyInt = 0, ezInt = 0;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;// 按比例缩小积分误差</p>
+<p>&nbsp;</p>
+<p>float Yaw,Pitch,Roll;&nbsp;&nbsp;//偏航角，俯仰角，翻滚角</p>
+<p>
+<br><br></p>
+<p>void IMUupdate(float gx, float gy, float gz, float ax, float ay, float az)</p>
+<p>{</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;float norm;</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;float vx, vy, vz;</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;float ex, ey, ez;&nbsp;&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;// 测量正常化</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;norm = sqrt(ax*ax + ay*ay + az*az);&nbsp; &nbsp;&nbsp; &nbsp;</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;ax = ax / norm;&nbsp; 
+&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp; 
+//单位化</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;ay = ay / norm;</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;az = az / norm;&nbsp; &nbsp;&nbsp; &nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;// 估计方向的重力</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;vx = 2*(q1*q3 - q0*q2);</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;vy = 2*(q0*q1 + q2*q3);</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;vz = q0*q0 - q1*q1 - q2*q2 + q3*q3;</p>
+<p>&nbsp;</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;// 错误的领域和方向传感器测量参考方向之间的交叉乘积的总和</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;ex = (ay*vz - az*vy);</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;ey = (az*vx - ax*vz);</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;ez = (ax*vy - ay*vx);</p>
+<p>&nbsp;</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;// 积分误差比例积分增益</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;exInt = exInt + ex*Ki;</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;eyInt = eyInt + ey*Ki;</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;ezInt = ezInt + ez*Ki;</p>
+<p>&nbsp;</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;// 调整后的陀螺仪测量</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;gx = gx + Kp*ex + exInt;</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;gy = gy + Kp*ey + eyInt;</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;gz = gz + Kp*ez + ezInt;</p>
+<p>&nbsp;</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;// 整合四元数率和正常化</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;q0 = q0 + (-q1*gx - q2*gy - q3*gz)*halfT;</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;q1 = q1 + (q0*gx + q2*gz - q3*gy)*halfT;</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;q2 = q2 + (q0*gy - q1*gz + q3*gx)*halfT;</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;q3 = q3 + (q0*gz + q1*gy - q2*gx)*halfT;&nbsp;&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;// 正常化四元</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;norm = sqrt(q0*q0 + q1*q1 + q2*q2 + q3*q3);</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;q0 = q0 / norm;</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;q1 = q1 / norm;</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;q2 = q2 / norm;</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;q3 = q3 / norm;</p>
+<p>&nbsp;</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;Pitch&nbsp;&nbsp;= asin(-2 * q1 * q3 + 2 * q0* q2)* 57.3; // pitch ,转换为度数</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;Roll = atan2(2 * q2 * q3 + 2 * q0 * q1, -2 * q1 * q1 - 2 * q2* q2 + 1)* 57.3; // rollv</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;//Yaw = atan2(2*(q1*q2 + 
+q0*q3),q0*q0+q1*q1-q2*q2-q3*q3) * 57.3;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; 
+&nbsp;&nbsp; &nbsp;&nbsp; &nbsp; //此处没有价值，注掉</p>
+<p>}</p>
+<p>
+<br><br><br></p>
+<p>&nbsp; &nbsp; &nbsp; 要注意的的是，四元数算法输出的是三个量 Pitch、Roll 和 Yaw，运算量很大。而像平衡小车这样的例子只需要一个角（Pitch 或 Roll ）就可以满足工作要求，个人觉得做平衡小车最好不用四元数法。</p>
+<p>
+<br><br><br></p>
+<p>二、一阶互补算法</p>
+<p>&nbsp; &nbsp; &nbsp; &nbsp;MPU6050 可以输出三轴的加速度和角速度。通过加速度和角速度都可以得到 
+Pitch 和 Roll 角（加速度不能得到 Yaw 角），就是说有两组 Pitch、Roll 
+角，到底应该选哪组呢？别急，先分析一下。MPU6050 的加速度计和陀螺仪各有优缺点，三轴的加速度值没有累积误差，且通过算 
+tan()&nbsp;&nbsp;可以得到倾角，但是它包含的噪声太多（因为待测物运动时会产生加速度，电机运行时振动会产生加速度等），不能直接使
+用；陀螺仪对外界振动影响小，精度高，通过对角速度积分可以得到倾角，但是会产生累积误差。所以，不能单独使用 MPU6050 
+的加速度计或陀螺仪来得到倾角，需要互补。一阶互补算法的思想就是给加速度和陀螺仪不同的权值，把它们结合到一起，进行修正。得到 Pitch 
+角的程序如下：</p>
+<p>
+<br><br></p>
+<div class="blockcode">
+<div id="code_Vw3">&nbsp;</div>
+
+复制代码</div>
+<p>
+<br><br></p>
+<p>//一阶互补滤波</p>
+<p>float K1 =0.1; // 对加速度计取值的权重</p>
+<p>float dt=0.001;//注意：dt的取值为滤波器采样时间</p>
+<p>float angle;</p>
+<p>&nbsp;</p>
+<p>angle_ax=atan(ax/az)*57.3;&nbsp; &nbsp;&nbsp;&nbsp;//加速度得到的角度</p>
+<p>gy=(float)gyo[1]/7510.0;&nbsp; &nbsp;&nbsp; &nbsp; //陀螺仪得到的角速度</p>
+<p>Pitch = yijiehubu(angle_ax,gy);</p>
+<p>&nbsp;</p>
+<p>float yijiehubu(float angle_m, float gyro_m)//采集后计算的角度和角加速度</p>
+<p>{</p>
+<p>&nbsp; &nbsp;&nbsp;&nbsp;angle = K1 * angle_m + (1-K1) * (angle + gyro_m * dt);</p>
+<p>&nbsp; &nbsp;&nbsp;&nbsp;return angle;</p>
+<p>}</p>
+<p>
+<br><br><br></p>
+<p>&nbsp; &nbsp; 互补算法只能得到一个倾角，这在平衡车项目中够用了，而在四轴飞行器设计中还需要 Roll 和 Yaw，就需要两个 互补算法，我是这样写的，注意变量不要搞混：</p>
+<div class="blockcode">
+<div id="code_yp3">&nbsp;</div>
+
+复制代码</div>
+<p>
+<br><br></p>
+<p>//一阶互补滤波</p>
+<p>float K1 =0.1; // 对加速度计取值的权重</p>
+<p>float dt=0.001;//注意：dt的取值为滤波器采样时间</p>
+<p>float angle_P,angle_R;</p>
+<p>
+<br><br></p>
+<p>float yijiehubu_P(float angle_m, float gyro_m)//采集后计算的角度和角加速度</p>
+<p>{</p>
+<p>&nbsp; &nbsp;&nbsp;&nbsp;angle_P = K1 * angle_m + (1-K1) * (angle_P + gyro_m * dt);</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;return angle_P;</p>
+<p>}</p>
+<p>&nbsp;</p>
+<p>float yijiehubu_R(float angle_m, float gyro_m)//采集后计算的角度和角加速度</p>
+<p>{</p>
+<p>&nbsp; &nbsp;&nbsp;&nbsp;angle_R = K1 * angle_m + (1-K1) * (angle_R + gyro_m * dt);</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;return angle_R;</p>
+<p>}</p>
+<p>单靠 MPU6050 无法准确得到 Yaw 角，需要和地磁传感器结合使用。</p>
+<p>
+<br><br><br><br><br></p>
+<p>三、卡尔曼滤波</p>
+<p>&nbsp; &nbsp; &nbsp; 其实卡尔曼滤波和一阶互补有些相似，输入也是一样的。卡尔曼原理以及什么5个公式等等的，我也不太懂，就不写了，感兴趣的话可以上网查。在此给出具体程序，和一阶互补算法一样，每次卡尔曼滤波只能得到一个方向的角度。</p>
+<p>
+<br><br></p>
+<div class="blockcode">
+<div id="code_l1B">&nbsp;</div>
+
+复制代码</div>
+<p>
+<br><br><br><br></p>
+<p>#include&lt;math.h&gt;</p>
+<p>#include "stm32f10x.h"</p>
+<p>#include "Kalman_Filter.h"</p>
+<p>
+<br><br><br></p>
+<p>//卡尔曼滤波参数与函数</p>
+<p>float dt=0.001;//注意：dt的取值为kalman滤波器采样时间</p>
+<p>float angle, angle_dot;//角度和角速度</p>
+<p>float P[2][2] = {{ 1, 0 },</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;{ 0, 1 }};</p>
+<p>float Pdot[4] ={ 0,0,0,0};</p>
+<p>float Q_angle=0.001, Q_gyro=0.005; //角度数据置信度,角速度数据置信度</p>
+<p>float R_angle=0.5 ,C_0 = 1;</p>
+<p>float q_bias, angle_err, PCt_0, PCt_1, E, K_0, K_1, t_0, t_1;</p>
+<p>&nbsp;</p>
+<p>//卡尔曼滤波</p>
+<p>float Kalman_Filter(float angle_m, float gyro_m)//angleAx 和 gyroGy</p>
+<p>{</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;angle+=(gyro_m-q_bias) * dt;</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;angle_err = angle_m - angle;</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;Pdot[0]=Q_angle - P[0][1] - P[1][0];</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;Pdot[1]=- P[1][1];</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;Pdot[2]=- P[1][1];</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;Pdot[3]=Q_gyro;</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;P[0][0] += Pdot[0] * dt;</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;P[0][1] += Pdot[1] * dt;</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;P[1][0] += Pdot[2] * dt;</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;P[1][1] += Pdot[3] * dt;</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;PCt_0 = C_0 * P[0][0];</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;PCt_1 = C_0 * P[1][0];</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;E = R_angle + C_0 * PCt_0;</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;K_0 = PCt_0 / E;</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;K_1 = PCt_1 / E;</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;t_0 = PCt_0;</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;t_1 = C_0 * P[0][1];</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;P[0][0] -= K_0 * t_0;</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;P[0][1] -= K_0 * t_1;</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;P[1][0] -= K_1 * t_0;</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;P[1][1] -= K_1 * t_1;</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;angle += K_0 * angle_err; //最优角度</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;q_bias += K_1 * angle_err;</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;angle_dot = gyro_m-q_bias;//最优角速度</p>
+<p>&nbsp;</p>
+<p>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;return angle；</p>
+<p>}</p>
+<p>
+<br><br><br><br><br></p>
+<p>&nbsp; &nbsp; &nbsp; 作个总结：三种融合算法都能够输出姿态角（Pitch 和 Roll ），一次四元数法可以输出 P、R、Y 三个倾角，计算量比较大。一阶互补和卡尔曼滤波每次只能输出一个轴的姿态角。</p></div><div id="MySignature"></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+<div id="BlogPostCategory">分类: <a href="https://www.cnblogs.com/dchipnau/category/758636.html" target="_blank">stm32单片机</a></div>
+<div id="EntryTag"></div>
+<div id="blog_post_info"><div id="green_channel">
+        <a href="javascript:void(0);" id="green_channel_digg" onclick="DiggIt(5310088,cb_blogId,1);green_channel_success(this,'谢谢推荐！');">好文要顶</a>
+            <a id="green_channel_follow" onclick="follow('5862811b-e990-e511-9fc1-ac853d9f53cc');" href="javascript:void(0);">关注我</a>
+    <a id="green_channel_favorite" onclick="AddToWz(cb_entryId);return false;" href="javascript:void(0);">收藏该文</a>
+    <a id="green_channel_weibo" href="javascript:void(0);" title="分享至新浪微博" onclick="ShareToTsina()"><img src="%E8%B0%88%E4%B8%80%E8%B0%88%20MPU6050%20%E5%A7%BF%E6%80%81%E8%9E%8D%E5%90%88%EF%BC%88%E8%BD%AC%EF%BC%89%20-%20DChipNau%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/icon_weibo_24.png" alt=""></a>
+    <a id="green_channel_wechat" href="javascript:void(0);" title="分享至微信" onclick="shareOnWechat()"><img src="%E8%B0%88%E4%B8%80%E8%B0%88%20MPU6050%20%E5%A7%BF%E6%80%81%E8%9E%8D%E5%90%88%EF%BC%88%E8%BD%AC%EF%BC%89%20-%20DChipNau%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/wechat.png" alt=""></a>
+</div>
+<div id="author_profile">
+    <div id="author_profile_info" class="author_profile_info">
+            <a href="http://home.cnblogs.com/u/dchipnau/" target="_blank"><img src="%E8%B0%88%E4%B8%80%E8%B0%88%20MPU6050%20%E5%A7%BF%E6%80%81%E8%9E%8D%E5%90%88%EF%BC%88%E8%BD%AC%EF%BC%89%20-%20DChipNau%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/sample_face.gif" class="author_avatar" alt=""></a>
+        <div id="author_profile_detail" class="author_profile_info">
+            <a href="http://home.cnblogs.com/u/dchipnau/">DChipNau</a><br>
+            <a href="http://home.cnblogs.com/u/dchipnau/followees">关注 - 1</a><br>
+            <a href="http://home.cnblogs.com/u/dchipnau/followers">粉丝 - 10</a>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div id="author_profile_honor"></div>
+    <div id="author_profile_follow">
+                <a href="javascript:void(0);" onclick="follow('5862811b-e990-e511-9fc1-ac853d9f53cc');return false;">+加关注</a>
+    </div>
+</div>
+<div id="div_digg">
+    <div class="diggit" onclick="votePost(5310088,'Digg')">
+        <span class="diggnum" id="digg_count">0</span>
+    </div>
+    <div class="buryit" onclick="votePost(5310088,'Bury')">
+        <span class="burynum" id="bury_count">0</span>
+    </div>
+    <div class="clear"></div>
+    <div class="diggword" id="digg_tips">
+    </div>
+</div>
+<script type="text/javascript">
+    currentDiggType = 0;
+</script></div>
+<div class="clear"></div>
+<div id="post_next_prev"><a href="https://www.cnblogs.com/dchipnau/p/5296728.html" class="p_n_p_prefix">« </a> 上一篇：<a href="https://www.cnblogs.com/dchipnau/p/5296728.html" title="发布于2016-03-19 23:19">python下调用c语言代码</a><br><a href="https://www.cnblogs.com/dchipnau/p/5422631.html" class="p_n_p_prefix">» </a> 下一篇：<a href="https://www.cnblogs.com/dchipnau/p/5422631.html" title="发布于2016-04-22 20:13">搭建最简单的流媒体系统（服务器和客户端）</a><br></div>
+</div>
+
+
+		</div>
+		<div class="postDesc">posted @ <span id="post-date">2016-03-23 10:47</span> <a href="https://www.cnblogs.com/dchipnau/">DChipNau</a> 阅读(<span id="post_view_count">35246</span>) 评论(<span id="post_comment_count">2</span>)  <a href="https://i.cnblogs.com/EditPosts.aspx?postid=5310088" rel="nofollow">编辑</a> <a href="#" onclick="AddToWz(5310088);return false;">收藏</a></div>
+	</div>
+	<script type="text/javascript">var allowComments=true,cb_blogId=255187,cb_entryId=5310088,cb_blogApp=currentBlogApp,cb_blogUserGuid='5862811b-e990-e511-9fc1-ac853d9f53cc',cb_entryCreatedDate='2016/3/23 10:47:00';loadViewCount(cb_entryId);var cb_postType=1;var isMarkdown=false;</script>
+	
+</div><!--end: topics 文章、评论容器-->
+</div><a name="!comments"></a><div id="blog-comments-placeholder"><div id="comments_pager_top"></div>
+<!--done-->
+<br>
+<div class="feedback_area_title">评论</div>
+<div class="feedbackNoItems"></div>
+	
+
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="#3575967" class="layer">#1楼</a><a name="3575967" id="comment_anchor_3575967"></a> <span class="comment_date">2016-12-08 17:08</span> | <a id="a_comment_author_3575967" href="https://www.cnblogs.com/bigzhao/" target="_blank">viavia</a> <a href="http://msg.cnblogs.com/send/viavia" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3575967" class="blog_comment_body">楼主，你好，我用MPU6050内部集成的DMP读取到9个量。分别是三轴加速度，三轴角速度，三轴角度。我想请教你，这个三轴角度是你说的欧拉角（pitch、yaw、roll）吗？</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3575967,'Digg',this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3575967,'Bury',this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="#3790921" class="layer">#2楼</a><a name="3790921" id="comment_anchor_3790921"></a><span id="comment-maxId" style="display:none;">3790921</span><span id="comment-maxDate" style="display:none;">2017/9/20 14:36:12</span> <span class="comment_date">2017-09-20 14:36</span> | <a id="a_comment_author_3790921" href="https://www.cnblogs.com/we1238/" target="_blank">刘梢</a> <a href="http://msg.cnblogs.com/send/%E5%88%98%E6%A2%A2" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3790921" class="blog_comment_body">感谢您的分享</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3790921,'Digg',this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3790921,'Bury',this)">反对(0)</a></div><span id="comment_3790921_avatar" style="display:none;">http://pic.cnblogs.com/face/1085466/20170802162309.png</span>
+			</div>
+		</div>
+	<div id="comments_pager_bottom"></div></div><script type="text/javascript">var commentManager = new blogCommentManager();commentManager.renderComments(0);</script>
+<div id="comment_form" class="commentform">
+<a name="commentform"></a>
+<div id="divCommentShow"></div>
+<div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="#" onclick="return RefreshPage();">刷新页面</a><a href="#top">返回顶部</a></div>
+<div id="comment_form_container"><div class="login_tips">注册用户登录后才能发表评论，请 <a rel="nofollow" href="javascript:void(0);" class="underline" onclick="return login('commentform');">登录</a> 或 <a rel="nofollow" href="javascript:void(0);" class="underline" onclick="return register();">注册</a>，<a href="http://www.cnblogs.com/">访问</a>网站首页。</div></div>
+<div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+<div id="ad_t2"><a href="http://www.ucancode.com/index.htm" target="_blank" onclick="ga('send', 'event', 'Link', 'click', 'T2-工控')">【推荐】超50万C++/C#源码: 大型实时仿真组态图形源码</a><br><a href="https://www.bagevent.com/event/2195041?bag_track=13072958" target="_blank" onclick="ga('send', 'event', 'Link', 'click', 'T2-看雪')">【活动】看雪2019安全开发者峰会，共话安全领域焦点</a><br><a href="https://ke.qq.com/adActivity.html?name=xiangxueketang2" target="_blank" onclick="ga('send', 'event', 'Link', 'click', 'T2-享学')">【培训】Java程序员年薪40W，他1年走了别人5年的路</a><br></div>
+<div id="opt_under_post"></div>
+<script async="async" src="%E8%B0%88%E4%B8%80%E8%B0%88%20MPU6050%20%E5%A7%BF%E6%80%81%E8%9E%8D%E5%90%88%EF%BC%88%E8%BD%AC%EF%BC%89%20-%20DChipNau%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/gpt.js"></script>
+<script>
+  var googletag = googletag || {};
+  googletag.cmd = googletag.cmd || [];
+</script>
+<script>
+  googletag.cmd.push(function() {
+        googletag.defineSlot('/1090369/C1', [300, 250], 'div-gpt-ad-1546353474406-0').addService(googletag.pubads());
+        googletag.defineSlot('/1090369/C2', [468, 60], 'div-gpt-ad-1539008685004-0').addService(googletag.pubads());
+        googletag.pubads().enableSingleRequest();
+        googletag.enableServices();
+  });
+</script>
+<div id="cnblogs_c1" class="c_ad_block">
+    <div id="div-gpt-ad-1546353474406-0" style="height:250px; width:300px;" data-google-query-id="CIm0mZaBneICFQseKgodw_gCNw"><div id="google_ads_iframe_/1090369/C1_0__container__" style="border: 0pt none;"><iframe id="google_ads_iframe_/1090369/C1_0" title="3rd party ad content" name="google_ads_iframe_/1090369/C1_0" scrolling="no" marginwidth="0" marginheight="0" style="border: 0px none; vertical-align: bottom;" srcdoc="" data-google-container-id="1" data-load-complete="true" width="300" height="250" frameborder="0"></iframe></div></div>
+</div>
+<div id="under_post_news" style="display: none;"></div>
+<div id="cnblogs_c2" class="c_ad_block">
+    <div id="div-gpt-ad-1539008685004-0" style="height:60px; width:468px;" data-google-query-id="CIq0mZaBneICFQseKgodw_gCNw"><div id="google_ads_iframe_/1090369/C2_0__container__" style="border: 0pt none;"><iframe id="google_ads_iframe_/1090369/C2_0" title="3rd party ad content" name="google_ads_iframe_/1090369/C2_0" scrolling="no" marginwidth="0" marginheight="0" style="border: 0px none; vertical-align: bottom;" srcdoc="" data-google-container-id="2" data-load-complete="true" width="468" height="60" frameborder="0"></iframe></div></div>
+</div>
+<div id="under_post_kb"><div class="itnews c_ad_block"><b>最新新闻</b>：<br> ·  <a href="https://news.cnblogs.com/n/625331/" target="_blank">深网|万达百货更名苏宁易购广场 改造店5月底亮相</a><br> ·  <a href="https://news.cnblogs.com/n/625330/" target="_blank">圈重点！腾讯全球数字生态大会带来不一样的智慧医疗</a><br> ·  <a href="https://news.cnblogs.com/n/625329/" target="_blank">3岁娃成“社交万人迷”？别再被天价“情商培训班”忽悠了</a><br> ·  <a href="https://news.cnblogs.com/n/625328/" target="_blank">国产手机十年厮杀过后，为何只剩下华为带着米OV?</a><br> ·  <a href="https://news.cnblogs.com/n/625327/" target="_blank">英国宣布5G将在7月3日上线，兼容四款5G手机</a><br>» <a href="http://news.cnblogs.com/" title="IT新闻" target="_blank">更多新闻...</a></div></div>
+<div id="HistoryToday" class="c_ad_block"></div>
+<script type="text/javascript">
+ if(enablePostBottom()) {
+    codeHighlight();
+    fixPostBody();
+    setTimeout(function () { incrementViewCount(cb_entryId); }, 50);
+    deliverT2();
+    deliverC1();
+    deliverC2();    
+    loadNewsAndKb();
+    loadBlogSignature();
+    LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+    GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+    loadOptUnderPost();
+    GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);  
+}
+</script>
+</div>
+
+    
+	</div><!--end: forFlow -->
+	</div><!--end: mainContent 主体内容容器-->
+
+	<div id="sideBar">
+		<div id="sideBarMain">
+			
+			<div id="calendar"><div id="blog-calendar" style=""><table id="blogCalendar" class="Cal" title="Calendar" cellspacing="0" cellpadding="0">
+	<tbody><tr><td colspan="7"><table class="CalTitle" cellspacing="0">
+		<tbody><tr><td class="CalNextPrev"><a href="javascript:void(0);" onclick="loadBlogCalendar('2019/04/01');return false;">&lt;</a></td><td align="center">2019年5月</td><td class="CalNextPrev" align="right"><a href="javascript:void(0);" onclick="loadBlogCalendar('2019/06/01');return false;">&gt;</a></td></tr>
+	</tbody></table></td></tr><tr><th class="CalDayHeader" abbr="日" scope="col" align="center">日</th><th class="CalDayHeader" abbr="一" scope="col" align="center">一</th><th class="CalDayHeader" abbr="二" scope="col" align="center">二</th><th class="CalDayHeader" abbr="三" scope="col" align="center">三</th><th class="CalDayHeader" abbr="四" scope="col" align="center">四</th><th class="CalDayHeader" abbr="五" scope="col" align="center">五</th><th class="CalDayHeader" abbr="六" scope="col" align="center">六</th></tr><tr><td class="CalOtherMonthDay" align="center">28</td><td class="CalOtherMonthDay" align="center">29</td><td class="CalOtherMonthDay" align="center">30</td><td align="center">1</td><td align="center">2</td><td align="center">3</td><td class="CalWeekendDay" align="center">4</td></tr><tr><td class="CalWeekendDay" align="center">5</td><td align="center">6</td><td align="center">7</td><td align="center">8</td><td align="center">9</td><td align="center">10</td><td class="CalWeekendDay" align="center">11</td></tr><tr><td class="CalWeekendDay" align="center">12</td><td align="center">13</td><td align="center">14</td><td class="CalTodayDay" align="center">15</td><td align="center">16</td><td align="center">17</td><td class="CalWeekendDay" align="center">18</td></tr><tr><td class="CalWeekendDay" align="center">19</td><td align="center">20</td><td align="center">21</td><td align="center">22</td><td align="center">23</td><td align="center">24</td><td class="CalWeekendDay" align="center">25</td></tr><tr><td class="CalWeekendDay" align="center">26</td><td align="center">27</td><td align="center">28</td><td align="center">29</td><td align="center">30</td><td align="center">31</td><td class="CalOtherMonthDay" align="center">1</td></tr><tr><td class="CalOtherMonthDay" align="center">2</td><td class="CalOtherMonthDay" align="center">3</td><td class="CalOtherMonthDay" align="center">4</td><td class="CalOtherMonthDay" align="center">5</td><td class="CalOtherMonthDay" align="center">6</td><td class="CalOtherMonthDay" align="center">7</td><td class="CalOtherMonthDay" align="center">8</td></tr>
+</tbody></table></div><script type="text/javascript">loadBlogDefaultCalendar();</script></div>
+			
+			<div id="leftcontentcontainer">
+				<div id="blog-sidecolumn"><div id="sidebar_search" class="sidebar-block"></div><div id="sidebar_shortcut" class="sidebar-block">
+<div class="catListLink">
+<h3 class="catListTitle">常用链接</h3>
+<ul>
+<li><a href="https://www.cnblogs.com/dchipnau/p/" title="我的博客的随笔列表">我的随笔</a></li><li><a href="https://www.cnblogs.com/dchipnau/MyComments.html" title="我发表过的评论列表">我的评论</a></li><li><a href="https://www.cnblogs.com/dchipnau/OtherPosts.html" title="我评论过的随笔列表">我的参与</a></li><li><a href="https://www.cnblogs.com/dchipnau/RecentComments.html" title="我的博客的评论列表">最新评论</a></li><li><a href="https://www.cnblogs.com/dchipnau/tag/" title="我的博客的标签列表">我的标签</a></li>
+<li><a id="itemListLink" onclick="this.blur();WarpClass('itemListLink', 'itemListLin_con');return false;" href="#">更多链接</a></li>
+</ul>
+<div id="itemListLin_con" style="display:none;">
+<ul>
+
+</ul>
+</div>
+</div></div><div id="sidebar_toptags" class="sidebar-block">
+<div class="catListTag">
+<h3 class="catListTitle">我的标签</h3>
+<ul>
+<li><a href="https://www.cnblogs.com/dchipnau/tag/shell/">shell</a>(2)</li><li><a href="https://www.cnblogs.com/dchipnau/tag/live555/">live555</a>(2)</li><li><a href="https://www.cnblogs.com/dchipnau/tag/png/">png</a>(1)</li><li><a href="https://www.cnblogs.com/dchipnau/tag/python/">python</a>(1)</li><li><a href="https://www.cnblogs.com/dchipnau/tag/activate-power-mode/">activate-power-mode</a>(1)</li><li><a href="https://www.cnblogs.com/dchipnau/tag/atom/">atom</a>(1)</li><li><a href="https://www.cnblogs.com/dchipnau/tag/c%E8%AF%AD%E8%A8%80/">c语言</a>(1)</li><li><a href="https://www.cnblogs.com/dchipnau/tag/doEventLoop/">doEventLoop</a>(1)</li><li><a href="https://www.cnblogs.com/dchipnau/tag/fcitx/">fcitx</a>(1)</li><li><a href="https://www.cnblogs.com/dchipnau/tag/http/">http</a>(1)</li><li><a href="https://www.cnblogs.com/dchipnau/tag/">更多</a></li>
+</ul>
+</div></div><div id="sidebar_categories">
+<div class="catListPostCategory">
+<h3 class="catListTitle">随笔分类</h3>
+
+<ul>
+
+<li><a id="CatList_LinkList_0_Link_0" href="https://www.cnblogs.com/dchipnau/category/758626.html">ACM刷题(40)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_1" href="https://www.cnblogs.com/dchipnau/category/796653.html">ARM9(13)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_2" href="https://www.cnblogs.com/dchipnau/category/758731.html">C++(1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_3" href="https://www.cnblogs.com/dchipnau/category/758638.html">linux C(14)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_4" href="https://www.cnblogs.com/dchipnau/category/758635.html">linux内核(8)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_5" href="https://www.cnblogs.com/dchipnau/category/758637.html">linux驱动(14)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_6" href="https://www.cnblogs.com/dchipnau/category/758634.html">linux使用(13)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_7" href="https://www.cnblogs.com/dchipnau/category/824044.html">live555源码分析(3)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_8" href="https://www.cnblogs.com/dchipnau/category/802648.html">python(1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_9" href="https://www.cnblogs.com/dchipnau/category/758636.html">stm32单片机(13)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_10" href="https://www.cnblogs.com/dchipnau/category/830864.html">tinyhttpd源码分析(1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_11" href="https://www.cnblogs.com/dchipnau/category/758676.html">焊接和PCB制作(3)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_12" href="https://www.cnblogs.com/dchipnau/category/782228.html">机器学习(5)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_13" href="https://www.cnblogs.com/dchipnau/category/796844.html">流媒体相关(4)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_14" href="https://www.cnblogs.com/dchipnau/category/836074.html">网络编程(1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_15" href="https://www.cnblogs.com/dchipnau/category/758677.html">我的黑科技工坊(3)</a> </li>
+
+</ul>
+
+</div>
+
+<div class="catListPostArchive">
+<h3 class="catListTitle">随笔档案</h3>
+
+<ul>
+
+<li><a id="CatList_LinkList_1_Link_0" href="https://www.cnblogs.com/dchipnau/archive/2016/05.html">2016年5月 (7)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_1" href="https://www.cnblogs.com/dchipnau/archive/2016/04.html">2016年4月 (2)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_2" href="https://www.cnblogs.com/dchipnau/archive/2016/03.html">2016年3月 (55)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_3" href="https://www.cnblogs.com/dchipnau/archive/2016/02.html">2016年2月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_4" href="https://www.cnblogs.com/dchipnau/archive/2016/01.html">2016年1月 (3)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_5" href="https://www.cnblogs.com/dchipnau/archive/2015/12.html">2015年12月 (14)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_6" href="https://www.cnblogs.com/dchipnau/archive/2015/11.html">2015年11月 (9)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_7" href="https://www.cnblogs.com/dchipnau/archive/2014/08.html">2014年8月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_8" href="https://www.cnblogs.com/dchipnau/archive/2014/07.html">2014年7月 (3)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_9" href="https://www.cnblogs.com/dchipnau/archive/2012/02.html">2012年2月 (2)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_10" href="https://www.cnblogs.com/dchipnau/archive/2011/11.html">2011年11月 (12)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_11" href="https://www.cnblogs.com/dchipnau/archive/2011/10.html">2011年10月 (14)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_12" href="https://www.cnblogs.com/dchipnau/archive/2011/09.html">2011年9月 (14)</a> </li>
+
+</ul>
+
+</div>
+
+</div><div id="sidebar_scorerank" class="sidebar-block">
+<div class="catListBlogRank">
+<h3 class="catListTitle">积分与排名</h3>
+<ul>
+	<li class="liScore">
+		积分 -	55225
+	</li><li class="liRank">
+		排名 -	10122
+	</li>
+</ul>
+</div>
+
+
+</div><div id="sidebar_recentcomments" class="sidebar-block"><div id="recent_comments_wrap">
+<div class="catListComment">
+<h3 class="catListTitle">最新评论</h3>
+
+	<div id="RecentCommentsBlock"><ul>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/dchipnau/p/5310088.html#3790921">1. Re:谈一谈 MPU6050 姿态融合（转）</a></li>
+        <li class="recent_comment_body">感谢您的分享</li>
+        <li class="recent_comment_author">--刘梢</li>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/dchipnau/p/5310088.html#3575967">2. Re:谈一谈 MPU6050 姿态融合（转）</a></li>
+        <li class="recent_comment_body">楼主，你好，我用MPU6050内部集成的DMP读取到9个量。分别是三轴加速度，三轴角速度，三轴角度。我想请教你，这个三轴角度是你说的欧拉角（pitch、yaw、roll）吗？</li>
+        <li class="recent_comment_author">--viavia</li>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/dchipnau/p/5043575.html#3378711">3. Re:内核调试和系统调用劫持</a></li>
+        <li class="recent_comment_body">您好，请问你这个代码能换个地方上传吗？这个不知道怎么下载。。。<br>另外这个方法能一次性把所有系统调用劫持了吗？</li>
+        <li class="recent_comment_author">--MrYip</li>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/dchipnau/p/5255566.html#3375519">4. Re:stm32 视频小车</a></li>
+        <li class="recent_comment_body">非常详细了，对初学者还是有难度的～！</li>
+        <li class="recent_comment_author">--DelphiSeattle</li>
+</ul>
+</div>
+</div>
+</div></div><div id="sidebar_topviewedposts" class="sidebar-block"><div id="topview_posts_wrap">
+<div class="catListView">
+<h3 class="catListTitle">阅读排行榜</h3>
+	<div id="TopViewPostsBlock"><ul><li><a href="https://www.cnblogs.com/dchipnau/p/5310088.html">1. 谈一谈 MPU6050 姿态融合（转）(35242)</a></li><li><a href="https://www.cnblogs.com/dchipnau/p/5043591.html">2. 内核空间与用户空间的通信方式(8679)</a></li><li><a href="https://www.cnblogs.com/dchipnau/p/5043543.html">3. stm32最小系统制作（原理图，PCB图，焊接等）(6463)</a></li><li><a href="https://www.cnblogs.com/dchipnau/p/5458943.html">4. 1.live555源码分析----RSTPServer创建过程分析(3828)</a></li><li><a href="https://www.cnblogs.com/dchipnau/p/5255509.html">5. stm32和cortex M3学习内核简单总结(3566)</a></li></ul></div>
+</div>
+</div></div><div id="sidebar_topcommentedposts" class="sidebar-block"><div id="topfeedback_posts_wrap">
+<div class="catListFeedback">
+<h3 class="catListTitle">评论排行榜</h3>
+	<div id="TopFeedbackPostsBlock"><ul><li><a href="https://www.cnblogs.com/dchipnau/p/5310088.html">1. 谈一谈 MPU6050 姿态融合（转）(2)</a></li><li><a href="https://www.cnblogs.com/dchipnau/p/5255566.html">2. stm32 视频小车(1)</a></li><li><a href="https://www.cnblogs.com/dchipnau/p/5043575.html">3. 内核调试和系统调用劫持(1)</a></li></ul></div>
+</div>
+</div></div></div><script type="text/javascript">loadBlogSideColumn();</script>
+			</div>
+			
+		</div><!--end: sideBarMain -->
+	</div><!--end: sideBar 侧边栏容器 -->
+	<div class="clear"></div>
+	</div><!--end: main -->
+	<div class="clear"></div>
+	<div id="footer">
+		
+<!--done-->
+Copyright ©2019 DChipNau
+	</div><!--end: footer -->
+</div><!--end: home 自定义的最大容器 -->
+
+
+
+</body></html>

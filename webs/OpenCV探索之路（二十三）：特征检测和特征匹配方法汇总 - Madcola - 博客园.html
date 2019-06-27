@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="zh-cn"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="origin">
+    <title>OpenCV探索之路（二十三）：特征检测和特征匹配方法汇总 - Madcola - 博客园</title>
+<meta property="og:description" content="一幅图像中总存在着其独特的像素点，这些点我们可以认为就是这幅图像的特征，成为特征点。计算机视觉领域中的很重要的图像特征匹配就是一特征点为基础而进行的，所以，如何定义和找出一幅图像中的特征点就非常重要。">
+    <link type="text/css" rel="stylesheet" href="OpenCV%E6%8E%A2%E7%B4%A2%E4%B9%8B%E8%B7%AF%EF%BC%88%E4%BA%8C%E5%8D%81%E4%B8%89%EF%BC%89%EF%BC%9A%E7%89%B9%E5%BE%81%E6%A3%80%E6%B5%8B%E5%92%8C%E7%89%B9%E5%BE%81%E5%8C%B9%E9%85%8D%E6%96%B9%E6%B3%95%E6%B1%87%E6%80%BB%20-%20Madcola%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/blog-common.css">
+<link id="MainCss" type="text/css" rel="stylesheet" href="OpenCV%E6%8E%A2%E7%B4%A2%E4%B9%8B%E8%B7%AF%EF%BC%88%E4%BA%8C%E5%8D%81%E4%B8%89%EF%BC%89%EF%BC%9A%E7%89%B9%E5%BE%81%E6%A3%80%E6%B5%8B%E5%92%8C%E7%89%B9%E5%BE%81%E5%8C%B9%E9%85%8D%E6%96%B9%E6%B3%95%E6%B1%87%E6%80%BB%20-%20Madcola%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/bundle-SimpleMemory.css">
+<link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="OpenCV%E6%8E%A2%E7%B4%A2%E4%B9%8B%E8%B7%AF%EF%BC%88%E4%BA%8C%E5%8D%81%E4%B8%89%EF%BC%89%EF%BC%9A%E7%89%B9%E5%BE%81%E6%A3%80%E6%B5%8B%E5%92%8C%E7%89%B9%E5%BE%81%E5%8C%B9%E9%85%8D%E6%96%B9%E6%B3%95%E6%B1%87%E6%80%BB%20-%20Madcola%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/bundle-SimpleMemory-mobile.css">
+    <link title="RSS" type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/skyfsm/rss">
+    <link title="RSD" type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/skyfsm/rsd.xml">
+<link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/skyfsm/wlwmanifest.xml">
+    <script src="OpenCV%E6%8E%A2%E7%B4%A2%E4%B9%8B%E8%B7%AF%EF%BC%88%E4%BA%8C%E5%8D%81%E4%B8%89%EF%BC%89%EF%BC%9A%E7%89%B9%E5%BE%81%E6%A3%80%E6%B5%8B%E5%92%8C%E7%89%B9%E5%BE%81%E5%8C%B9%E9%85%8D%E6%96%B9%E6%B3%95%E6%B1%87%E6%80%BB%20-%20Madcola%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/amp4ads-host-v0.js"></script><script src="OpenCV%E6%8E%A2%E7%B4%A2%E4%B9%8B%E8%B7%AF%EF%BC%88%E4%BA%8C%E5%8D%81%E4%B8%89%EF%BC%89%EF%BC%9A%E7%89%B9%E5%BE%81%E6%A3%80%E6%B5%8B%E5%92%8C%E7%89%B9%E5%BE%81%E5%8C%B9%E9%85%8D%E6%96%B9%E6%B3%95%E6%B1%87%E6%80%BB%20-%20Madcola%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/pubads_impl_rendering_2019050901.js"></script><script async="" src="OpenCV%E6%8E%A2%E7%B4%A2%E4%B9%8B%E8%B7%AF%EF%BC%88%E4%BA%8C%E5%8D%81%E4%B8%89%EF%BC%89%EF%BC%9A%E7%89%B9%E5%BE%81%E6%A3%80%E6%B5%8B%E5%92%8C%E7%89%B9%E5%BE%81%E5%8C%B9%E9%85%8D%E6%96%B9%E6%B3%95%E6%B1%87%E6%80%BB%20-%20Madcola%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/analytics.js"></script><script src="OpenCV%E6%8E%A2%E7%B4%A2%E4%B9%8B%E8%B7%AF%EF%BC%88%E4%BA%8C%E5%8D%81%E4%B8%89%EF%BC%89%EF%BC%9A%E7%89%B9%E5%BE%81%E6%A3%80%E6%B5%8B%E5%92%8C%E7%89%B9%E5%BE%81%E5%8C%B9%E9%85%8D%E6%96%B9%E6%B3%95%E6%B1%87%E6%80%BB%20-%20Madcola%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/jquery-2.js"></script>
+    <script>var currentBlogId=327280;var currentBlogApp='skyfsm',cb_enable_mathjax=true;var isLogined=false;</script>
+    <script type="text/x-mathjax-config;executed=true">
+    MathJax.Hub.Config({
+        tex2jax: { inlineMath: [['$','$'], ['\\(','\\)']], processClass: 'math', processEscapes: true },
+        TeX: { 
+            equationNumbers: { autoNumber: ['AMS'], useLabelIds: true }, 
+            extensions: ['extpfeil.js'],
+            Macros: {bm: "\\boldsymbol"}
+        },
+        'HTML-CSS': { linebreaks: { automatic: true } },
+        SVG: { linebreaks: { automatic: true } }
+        });
+    </script><script src="OpenCV%E6%8E%A2%E7%B4%A2%E4%B9%8B%E8%B7%AF%EF%BC%88%E4%BA%8C%E5%8D%81%E4%B8%89%EF%BC%89%EF%BC%9A%E7%89%B9%E5%BE%81%E6%A3%80%E6%B5%8B%E5%92%8C%E7%89%B9%E5%BE%81%E5%8C%B9%E9%85%8D%E6%96%B9%E6%B3%95%E6%B1%87%E6%80%BB%20-%20Madcola%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/MathJax.js"></script>
+<script src="OpenCV%E6%8E%A2%E7%B4%A2%E4%B9%8B%E8%B7%AF%EF%BC%88%E4%BA%8C%E5%8D%81%E4%B8%89%EF%BC%89%EF%BC%9A%E7%89%B9%E5%BE%81%E6%A3%80%E6%B5%8B%E5%92%8C%E7%89%B9%E5%BE%81%E5%8C%B9%E9%85%8D%E6%96%B9%E6%B3%95%E6%B1%87%E6%80%BB%20-%20Madcola%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/blog-common.js" type="text/javascript"></script>
+<style type="text/css">.MathJax_Hover_Frame {border-radius: .25em; -webkit-border-radius: .25em; -moz-border-radius: .25em; -khtml-border-radius: .25em; box-shadow: 0px 0px 15px #83A; -webkit-box-shadow: 0px 0px 15px #83A; -moz-box-shadow: 0px 0px 15px #83A; -khtml-box-shadow: 0px 0px 15px #83A; border: 1px solid #A6D ! important; display: inline-block; position: absolute}
+.MathJax_Menu_Button .MathJax_Hover_Arrow {position: absolute; cursor: pointer; display: inline-block; border: 2px solid #AAA; border-radius: 4px; -webkit-border-radius: 4px; -moz-border-radius: 4px; -khtml-border-radius: 4px; font-family: 'Courier New',Courier; font-size: 9px; color: #F0F0F0}
+.MathJax_Menu_Button .MathJax_Hover_Arrow span {display: block; background-color: #AAA; border: 1px solid; border-radius: 3px; line-height: 0; padding: 4px}
+.MathJax_Hover_Arrow:hover {color: white!important; border: 2px solid #CCC!important}
+.MathJax_Hover_Arrow:hover span {background-color: #CCC!important}
+</style><style type="text/css">#MathJax_About {position: fixed; left: 50%; width: auto; text-align: center; border: 3px outset; padding: 1em 2em; background-color: #DDDDDD; color: black; cursor: default; font-family: message-box; font-size: 120%; font-style: normal; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; z-index: 201; border-radius: 15px; -webkit-border-radius: 15px; -moz-border-radius: 15px; -khtml-border-radius: 15px; box-shadow: 0px 10px 20px #808080; -webkit-box-shadow: 0px 10px 20px #808080; -moz-box-shadow: 0px 10px 20px #808080; -khtml-box-shadow: 0px 10px 20px #808080; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+#MathJax_About.MathJax_MousePost {outline: none}
+.MathJax_Menu {position: absolute; background-color: white; color: black; width: auto; padding: 5px 0px; border: 1px solid #CCCCCC; margin: 0; cursor: default; font: menu; text-align: left; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; z-index: 201; border-radius: 5px; -webkit-border-radius: 5px; -moz-border-radius: 5px; -khtml-border-radius: 5px; box-shadow: 0px 10px 20px #808080; -webkit-box-shadow: 0px 10px 20px #808080; -moz-box-shadow: 0px 10px 20px #808080; -khtml-box-shadow: 0px 10px 20px #808080; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+.MathJax_MenuItem {padding: 1px 2em; background: transparent}
+.MathJax_MenuArrow {position: absolute; right: .5em; padding-top: .25em; color: #666666; font-size: .75em}
+.MathJax_MenuActive .MathJax_MenuArrow {color: white}
+.MathJax_MenuArrow.RTL {left: .5em; right: auto}
+.MathJax_MenuCheck {position: absolute; left: .7em}
+.MathJax_MenuCheck.RTL {right: .7em; left: auto}
+.MathJax_MenuRadioCheck {position: absolute; left: .7em}
+.MathJax_MenuRadioCheck.RTL {right: .7em; left: auto}
+.MathJax_MenuLabel {padding: 1px 2em 3px 1.33em; font-style: italic}
+.MathJax_MenuRule {border-top: 1px solid #DDDDDD; margin: 4px 3px}
+.MathJax_MenuDisabled {color: GrayText}
+.MathJax_MenuActive {background-color: #606872; color: white}
+.MathJax_MenuDisabled:focus, .MathJax_MenuLabel:focus {background-color: #E8E8E8}
+.MathJax_ContextMenu:focus {outline: none}
+.MathJax_ContextMenu .MathJax_MenuItem:focus {outline: none}
+#MathJax_AboutClose {top: .2em; right: .2em}
+.MathJax_Menu .MathJax_MenuClose {top: -10px; left: -10px}
+.MathJax_MenuClose {position: absolute; cursor: pointer; display: inline-block; border: 2px solid #AAA; border-radius: 18px; -webkit-border-radius: 18px; -moz-border-radius: 18px; -khtml-border-radius: 18px; font-family: 'Courier New',Courier; font-size: 24px; color: #F0F0F0}
+.MathJax_MenuClose span {display: block; background-color: #AAA; border: 1.5px solid; border-radius: 18px; -webkit-border-radius: 18px; -moz-border-radius: 18px; -khtml-border-radius: 18px; line-height: 0; padding: 8px 0 6px}
+.MathJax_MenuClose:hover {color: white!important; border: 2px solid #CCC!important}
+.MathJax_MenuClose:hover span {background-color: #CCC!important}
+.MathJax_MenuClose:hover:focus {outline: none}
+</style><style type="text/css">.MathJax_Preview .MJXf-math {color: inherit!important}
+</style><style type="text/css">.MJX_Assistive_MathML {position: absolute!important; top: 0; left: 0; clip: rect(1px, 1px, 1px, 1px); padding: 1px 0 0 0!important; border: 0!important; height: 1px!important; width: 1px!important; overflow: hidden!important; display: block!important; -webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none}
+.MJX_Assistive_MathML.MJX_Assistive_MathML_Block {width: 100%!important}
+</style><style type="text/css">#MathJax_Zoom {position: absolute; background-color: #F0F0F0; overflow: auto; display: block; z-index: 301; padding: .5em; border: 1px solid black; margin: 0; font-weight: normal; font-style: normal; text-align: left; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; -webkit-box-sizing: content-box; -moz-box-sizing: content-box; box-sizing: content-box; box-shadow: 5px 5px 15px #AAAAAA; -webkit-box-shadow: 5px 5px 15px #AAAAAA; -moz-box-shadow: 5px 5px 15px #AAAAAA; -khtml-box-shadow: 5px 5px 15px #AAAAAA; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+#MathJax_ZoomOverlay {position: absolute; left: 0; top: 0; z-index: 300; display: inline-block; width: 100%; height: 100%; border: 0; padding: 0; margin: 0; background-color: white; opacity: 0; filter: alpha(opacity=0)}
+#MathJax_ZoomFrame {position: relative; display: inline-block; height: 0; width: 0}
+#MathJax_ZoomEventTrap {position: absolute; left: 0; top: 0; z-index: 302; display: inline-block; border: 0; padding: 0; margin: 0; background-color: white; opacity: 0; filter: alpha(opacity=0)}
+</style><style type="text/css">.MathJax_Preview {color: #888}
+#MathJax_Message {position: fixed; left: 1px; bottom: 2px; background-color: #E6E6E6; border: 1px solid #959595; margin: 0px; padding: 2px 8px; z-index: 102; color: black; font-size: 80%; width: auto; white-space: nowrap}
+#MathJax_MSIE_Frame {position: absolute; top: 0; left: 0; width: 0px; z-index: 101; border: 0px; margin: 0px; padding: 0px}
+.MathJax_Error {color: #CC0000; font-style: italic}
+</style><style type="text/css">.MJXp-script {font-size: .8em}
+.MJXp-right {-webkit-transform-origin: right; -moz-transform-origin: right; -ms-transform-origin: right; -o-transform-origin: right; transform-origin: right}
+.MJXp-bold {font-weight: bold}
+.MJXp-italic {font-style: italic}
+.MJXp-scr {font-family: MathJax_Script,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-frak {font-family: MathJax_Fraktur,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-sf {font-family: MathJax_SansSerif,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-cal {font-family: MathJax_Caligraphic,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-mono {font-family: MathJax_Typewriter,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-largeop {font-size: 150%}
+.MJXp-largeop.MJXp-int {vertical-align: -.2em}
+.MJXp-math {display: inline-block; line-height: 1.2; text-indent: 0; font-family: 'Times New Roman',Times,STIXGeneral,serif; white-space: nowrap; border-collapse: collapse}
+.MJXp-display {display: block; text-align: center; margin: 1em 0}
+.MJXp-math span {display: inline-block}
+.MJXp-box {display: block!important; text-align: center}
+.MJXp-box:after {content: " "}
+.MJXp-rule {display: block!important; margin-top: .1em}
+.MJXp-char {display: block!important}
+.MJXp-mo {margin: 0 .15em}
+.MJXp-mfrac {margin: 0 .125em; vertical-align: .25em}
+.MJXp-denom {display: inline-table!important; width: 100%}
+.MJXp-denom > * {display: table-row!important}
+.MJXp-surd {vertical-align: top}
+.MJXp-surd > * {display: block!important}
+.MJXp-script-box > *  {display: table!important; height: 50%}
+.MJXp-script-box > * > * {display: table-cell!important; vertical-align: top}
+.MJXp-script-box > *:last-child > * {vertical-align: bottom}
+.MJXp-script-box > * > * > * {display: block!important}
+.MJXp-mphantom {visibility: hidden}
+.MJXp-munderover {display: inline-table!important}
+.MJXp-over {display: inline-block!important; text-align: center}
+.MJXp-over > * {display: block!important}
+.MJXp-munderover > * {display: table-row!important}
+.MJXp-mtable {vertical-align: .25em; margin: 0 .125em}
+.MJXp-mtable > * {display: inline-table!important; vertical-align: middle}
+.MJXp-mtr {display: table-row!important}
+.MJXp-mtd {display: table-cell!important; text-align: center; padding: .5em 0 0 .5em}
+.MJXp-mtr > .MJXp-mtd:first-child {padding-left: 0}
+.MJXp-mtr:first-child > .MJXp-mtd {padding-top: 0}
+.MJXp-mlabeledtr {display: table-row!important}
+.MJXp-mlabeledtr > .MJXp-mtd:first-child {padding-left: 0}
+.MJXp-mlabeledtr:first-child > .MJXp-mtd {padding-top: 0}
+.MJXp-merror {background-color: #FFFF88; color: #CC0000; border: 1px solid #CC0000; padding: 1px 3px; font-style: normal; font-size: 90%}
+.MJXp-scale0 {-webkit-transform: scaleX(.0); -moz-transform: scaleX(.0); -ms-transform: scaleX(.0); -o-transform: scaleX(.0); transform: scaleX(.0)}
+.MJXp-scale1 {-webkit-transform: scaleX(.1); -moz-transform: scaleX(.1); -ms-transform: scaleX(.1); -o-transform: scaleX(.1); transform: scaleX(.1)}
+.MJXp-scale2 {-webkit-transform: scaleX(.2); -moz-transform: scaleX(.2); -ms-transform: scaleX(.2); -o-transform: scaleX(.2); transform: scaleX(.2)}
+.MJXp-scale3 {-webkit-transform: scaleX(.3); -moz-transform: scaleX(.3); -ms-transform: scaleX(.3); -o-transform: scaleX(.3); transform: scaleX(.3)}
+.MJXp-scale4 {-webkit-transform: scaleX(.4); -moz-transform: scaleX(.4); -ms-transform: scaleX(.4); -o-transform: scaleX(.4); transform: scaleX(.4)}
+.MJXp-scale5 {-webkit-transform: scaleX(.5); -moz-transform: scaleX(.5); -ms-transform: scaleX(.5); -o-transform: scaleX(.5); transform: scaleX(.5)}
+.MJXp-scale6 {-webkit-transform: scaleX(.6); -moz-transform: scaleX(.6); -ms-transform: scaleX(.6); -o-transform: scaleX(.6); transform: scaleX(.6)}
+.MJXp-scale7 {-webkit-transform: scaleX(.7); -moz-transform: scaleX(.7); -ms-transform: scaleX(.7); -o-transform: scaleX(.7); transform: scaleX(.7)}
+.MJXp-scale8 {-webkit-transform: scaleX(.8); -moz-transform: scaleX(.8); -ms-transform: scaleX(.8); -o-transform: scaleX(.8); transform: scaleX(.8)}
+.MJXp-scale9 {-webkit-transform: scaleX(.9); -moz-transform: scaleX(.9); -ms-transform: scaleX(.9); -o-transform: scaleX(.9); transform: scaleX(.9)}
+.MathJax_PHTML .noError {vertical-align: ; font-size: 90%; text-align: left; color: black; padding: 1px 3px; border: 1px solid}
+</style><link rel="preload" href="OpenCV%E6%8E%A2%E7%B4%A2%E4%B9%8B%E8%B7%AF%EF%BC%88%E4%BA%8C%E5%8D%81%E4%B8%89%EF%BC%89%EF%BC%9A%E7%89%B9%E5%BE%81%E6%A3%80%E6%B5%8B%E5%92%8C%E7%89%B9%E5%BE%81%E5%8C%B9%E9%85%8D%E6%96%B9%E6%B3%95%E6%B1%87%E6%80%BB%20-%20Madcola%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/integrator.js" as="script"><script type="text/javascript" src="OpenCV%E6%8E%A2%E7%B4%A2%E4%B9%8B%E8%B7%AF%EF%BC%88%E4%BA%8C%E5%8D%81%E4%B8%89%EF%BC%89%EF%BC%9A%E7%89%B9%E5%BE%81%E6%A3%80%E6%B5%8B%E5%92%8C%E7%89%B9%E5%BE%81%E5%8C%B9%E9%85%8D%E6%96%B9%E6%B3%95%E6%B1%87%E6%80%BB%20-%20Madcola%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/integrator.js"></script><script src="OpenCV%E6%8E%A2%E7%B4%A2%E4%B9%8B%E8%B7%AF%EF%BC%88%E4%BA%8C%E5%8D%81%E4%B8%89%EF%BC%89%EF%BC%9A%E7%89%B9%E5%BE%81%E6%A3%80%E6%B5%8B%E5%92%8C%E7%89%B9%E5%BE%81%E5%8C%B9%E9%85%8D%E6%96%B9%E6%B3%95%E6%B1%87%E6%80%BB%20-%20Madcola%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/pubads_impl_2019050901.js" async=""></script></head>
+<body><div id="MathJax_Message" style="display: none;"></div>
+<a name="top"></a>
+
+
+<!--done-->
+<div id="home">
+<div id="header">
+	<div id="blogTitle">
+	<a id="lnkBlogLogo" href="https://www.cnblogs.com/skyfsm/"><img id="blogLogo" src="OpenCV%E6%8E%A2%E7%B4%A2%E4%B9%8B%E8%B7%AF%EF%BC%88%E4%BA%8C%E5%8D%81%E4%B8%89%EF%BC%89%EF%BC%9A%E7%89%B9%E5%BE%81%E6%A3%80%E6%B5%8B%E5%92%8C%E7%89%B9%E5%BE%81%E5%8C%B9%E9%85%8D%E6%96%B9%E6%B3%95%E6%B1%87%E6%80%BB%20-%20Madcola%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/logo.gif" alt="返回主页"></a>			
+		
+<!--done-->
+<h1><a id="Header1_HeaderTitle" class="headermaintitle" href="https://www.cnblogs.com/skyfsm/">冠军的试炼</a></h1>
+<h2>悟已往之不谏，知来者之可追</h2>
+
+
+
+		
+	</div><!--end: blogTitle 博客的标题和副标题 -->
+	<div id="navigator">
+		
+<ul id="navList">
+<li><a id="blog_nav_sitehome" class="menu" href="https://www.cnblogs.com/">博客园</a></li>
+<li><a id="blog_nav_myhome" class="menu" href="https://www.cnblogs.com/skyfsm/">首页</a></li>
+<li><a id="blog_nav_newpost" class="menu" rel="nofollow" href="https://i.cnblogs.com/EditPosts.aspx?opt=1">新随笔</a></li>
+<li><a id="blog_nav_contact" class="menu" rel="nofollow" href="https://msg.cnblogs.com/send/Madcola">联系</a></li>
+<li><a id="blog_nav_rss" class="menu" href="https://www.cnblogs.com/skyfsm/rss">订阅</a>
+<!--<a id="blog_nav_rss_image" class="aHeaderXML" href="https://www.cnblogs.com/skyfsm/rss"><img src="//www.cnblogs.com/images/xml.gif" alt="订阅" /></a>--></li>
+<li><a id="blog_nav_admin" class="menu" rel="nofollow" href="https://i.cnblogs.com/">管理</a></li>
+</ul>
+		<div class="blogStats">
+			
+			<div id="blog_stats">
+<span id="stats_post_count">随笔 - 69&nbsp; </span>
+<span id="stats_article_count">文章 - 0&nbsp; </span>
+<span id="stats-comment_count">评论 - 726</span>
+</div>
+			
+		</div><!--end: blogStats -->
+	</div><!--end: navigator 博客导航栏 -->
+</div><!--end: header 头部 -->
+
+<div id="main">
+	<div id="mainContent">
+	<div class="forFlow">
+		
+        <div id="post_detail">
+<!--done-->
+<div id="topics">
+	<div class="post">
+		<h1 class="postTitle">
+			<a id="cb_post_title_url" class="postTitle2" href="https://www.cnblogs.com/skyfsm/p/7401523.html">OpenCV探索之路（二十三）：特征检测和特征匹配方法汇总</a>
+		</h1>
+		<div class="clear"></div>
+		<div class="postBody">
+			<div id="cnblogs_post_body" class="blogpost-body cnblogs-markdown"><p>一
+幅图像中总存在着其独特的像素点，这些点我们可以认为就是这幅图像的特征，成为特征点。计算机视觉领域中的很重要的图像特征匹配就是一特征点为基础而进行
+的，所以，如何定义和找出一幅图像中的特征点就非常重要。这篇文章我总结了视觉领域最常用的几种特征点以及特征匹配的方法。</p>
+<p>在计算机视觉领域，兴趣点（也称关键点或特征点）的概念已经得到了广泛的应用， 包括目标识别、 图像配准、 视觉跟踪、 三维重建等。 
+这个概念的原理是， 从图像中选取某些特征点并对图像进行局部分析，而非观察整幅图像。 
+只要图像中有足够多可检测的兴趣点，并且这些兴趣点各不相同且特征稳定， 能被精确地定位，上述方法就十分有效。</p>
+<p>以下是实验用的图像：第一幅是手机抓拍的风景图，第二幅是遥感图像。<br>
+<img src="OpenCV%E6%8E%A2%E7%B4%A2%E4%B9%8B%E8%B7%AF%EF%BC%88%E4%BA%8C%E5%8D%81%E4%B8%89%EF%BC%89%EF%BC%9A%E7%89%B9%E5%BE%81%E6%A3%80%E6%B5%8B%E5%92%8C%E7%89%B9%E5%BE%81%E5%8C%B9%E9%85%8D%E6%96%B9%E6%B3%95%E6%B1%87%E6%80%BB%20-%20Madcola%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/1093303-20170820212133209-1189369196.png"></p>
+<p><img src="OpenCV%E6%8E%A2%E7%B4%A2%E4%B9%8B%E8%B7%AF%EF%BC%88%E4%BA%8C%E5%8D%81%E4%B8%89%EF%BC%89%EF%BC%9A%E7%89%B9%E5%BE%81%E6%A3%80%E6%B5%8B%E5%92%8C%E7%89%B9%E5%BE%81%E5%8C%B9%E9%85%8D%E6%96%B9%E6%B3%95%E6%B1%87%E6%80%BB%20-%20Madcola%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/1093303-20170820212154100-1689140389.png"></p>
+<h2 id="surf">1.SURF</h2>
+<p>特征检测的视觉不变性是一个非常重要的概念。 但是要解决尺度不变性问题，难度相当大。 为解决这一问题，计算机视觉界引入了尺度不变特征的概念。
+ 它的理念是， 不仅在任何尺度下拍摄的物体都能检测到一致的关键点，而且每个被检测的特征点都对应一个尺度因子。 
+理想情况下，对于两幅图像中不同尺度的的同一个物体点， 计算得到的两个尺度因子之间的比率应该等于图像尺度的比率。近几年， 
+人们提出了多种尺度不变特征，本节介绍其中的一种：SURF特征。 SURF全称为“加速稳健特征”（Speeded Up Robust 
+Feature），我们将会看到，它们不仅是尺度不变特征，而且是具有较高计算效率的特征。</p>
+<p>我们首先进行常规的特征提取和特征点匹配，看看效果如何。</p>
+<pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">"highgui/highgui.hpp"</span>    </span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">"opencv2/nonfree/nonfree.hpp"</span>    </span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">"opencv2/legacy/legacy.hpp"</span>   </span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;iostream&gt;  </span></span>
+
+<span class="hljs-keyword">using</span> <span class="hljs-keyword">namespace</span> cv;
+<span class="hljs-keyword">using</span> <span class="hljs-keyword">namespace</span> <span class="hljs-built_in">std</span>;
+
+
+<span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span>
+</span>{
+    Mat image01 = imread(<span class="hljs-string">"2.jpg"</span>, <span class="hljs-number">1</span>);    <span class="hljs-comment">//右图</span>
+    Mat image02 = imread(<span class="hljs-string">"1.jpg"</span>, <span class="hljs-number">1</span>);    <span class="hljs-comment">//左图</span>
+    namedWindow(<span class="hljs-string">"p2"</span>, <span class="hljs-number">0</span>);
+    namedWindow(<span class="hljs-string">"p1"</span>, <span class="hljs-number">0</span>);
+    imshow(<span class="hljs-string">"p2"</span>, image01);
+    imshow(<span class="hljs-string">"p1"</span>, image02);
+
+    <span class="hljs-comment">//灰度图转换  </span>
+    Mat image1, image2;
+    cvtColor(image01, image1, CV_RGB2GRAY);
+    cvtColor(image02, image2, CV_RGB2GRAY);
+
+
+    <span class="hljs-comment">//提取特征点    </span>
+    <span class="hljs-function">SurfFeatureDetector <span class="hljs-title">surfDetector</span><span class="hljs-params">(<span class="hljs-number">800</span>)</span></span>;  <span class="hljs-comment">// 海塞矩阵阈值，在这里调整精度，值越大点越少，越精准 </span>
+    <span class="hljs-built_in">vector</span>&lt;KeyPoint&gt; keyPoint1, keyPoint2;
+    surfDetector.detect(image1, keyPoint1);
+    surfDetector.detect(image2, keyPoint2);
+
+    <span class="hljs-comment">//特征点描述，为下边的特征点匹配做准备    </span>
+    SurfDescriptorExtractor SurfDescriptor;
+    Mat imageDesc1, imageDesc2;
+    SurfDescriptor.compute(image1, keyPoint1, imageDesc1);
+    SurfDescriptor.compute(image2, keyPoint2, imageDesc2);
+
+    <span class="hljs-comment">//获得匹配特征点，并提取最优配对     </span>
+    FlannBasedMatcher matcher;
+    <span class="hljs-built_in">vector</span>&lt;DMatch&gt; matchePoints;
+
+    matcher.match(imageDesc1, imageDesc2, matchePoints, Mat());
+    <span class="hljs-built_in">cout</span> &lt;&lt; <span class="hljs-string">"total match points: "</span> &lt;&lt; matchePoints.size() &lt;&lt; <span class="hljs-built_in">endl</span>;
+
+
+    Mat img_match;
+    drawMatches(image01, keyPoint1, image02, keyPoint2, matchePoints, img_match);
+    namedWindow(<span class="hljs-string">"match"</span>, <span class="hljs-number">0</span>);
+    imshow(<span class="hljs-string">"match"</span>,img_match);
+    imwrite(<span class="hljs-string">"match.jpg"</span>, img_match);
+
+    waitKey();
+    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;
+}
+</code></pre>
+<p><img src="OpenCV%E6%8E%A2%E7%B4%A2%E4%B9%8B%E8%B7%AF%EF%BC%88%E4%BA%8C%E5%8D%81%E4%B8%89%EF%BC%89%EF%BC%9A%E7%89%B9%E5%BE%81%E6%A3%80%E6%B5%8B%E5%92%8C%E7%89%B9%E5%BE%81%E5%8C%B9%E9%85%8D%E6%96%B9%E6%B3%95%E6%B1%87%E6%80%BB%20-%20Madcola%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/1093303-20170820212218287-635160018.png"></p>
+<p><img src="OpenCV%E6%8E%A2%E7%B4%A2%E4%B9%8B%E8%B7%AF%EF%BC%88%E4%BA%8C%E5%8D%81%E4%B8%89%EF%BC%89%EF%BC%9A%E7%89%B9%E5%BE%81%E6%A3%80%E6%B5%8B%E5%92%8C%E7%89%B9%E5%BE%81%E5%8C%B9%E9%85%8D%E6%96%B9%E6%B3%95%E6%B1%87%E6%80%BB%20-%20Madcola%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/1093303-20170820212240100-1015383154.png"></p>
+<p>由上面的特征点匹配的效果来看，匹配的效果还是相当糟糕的，如果我们拿着这样子的匹配结果去实现图像拼接或者物体追踪，效果肯定是极差的。所以我们
+需要进一步筛选匹配点，来获取优秀的匹配点，这就是所谓的“去粗取精”。这里我们采用了Lowe’s算法来进一步获取优秀匹配点。</p>
+<p>为了排除因为图像遮挡和背景混乱而产生的无匹配关系的关键点，SIFT的作者Lowe提出了比较最近邻距离与次近邻距离的SIFT匹配方式：取一幅
+图像中的一个SIFT关键点，并找出其与另一幅图像中欧式距离最近的前两个关键点，在这两个关键点中，如果最近的距离除以次近的距离得到的比率ratio
+少于某个阈值T，则接受这一对匹配点。因为对于错误匹配，由于特征空间的高维性，相似的距离可能有大量其他的错误匹配，从而它的ratio值比较高。显然
+降低这个比例阈值T，SIFT匹配点数目会减少，但更加稳定，反之亦然。</p>
+<p>Lowe推荐ratio的阈值为0.8，但作者对大量任意存在尺度、旋转和亮度变化的两幅图片进行匹配，结果表明ratio取值在0. 4~0. 6 之间最佳，小于0. 4的很少有匹配点，大于0. 6的则存在大量错误匹配点，所以建议ratio的取值原则如下:</p>
+<p>ratio=0. 4：对于准确度要求高的匹配；</p>
+<p>ratio=0. 6：对于匹配点数目要求比较多的匹配；</p>
+<p>ratio=0. 5：一般情况下。</p>
+<pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">"highgui/highgui.hpp"</span>    </span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">"opencv2/nonfree/nonfree.hpp"</span>    </span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">"opencv2/legacy/legacy.hpp"</span>   </span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;iostream&gt;  </span></span>
+
+<span class="hljs-keyword">using</span> <span class="hljs-keyword">namespace</span> cv;
+<span class="hljs-keyword">using</span> <span class="hljs-keyword">namespace</span> <span class="hljs-built_in">std</span>;
+
+
+<span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span>
+</span>{
+
+    Mat image01 = imread(<span class="hljs-string">"g2.jpg"</span>, <span class="hljs-number">1</span>);    
+    Mat image02 = imread(<span class="hljs-string">"g4.jpg"</span>, <span class="hljs-number">1</span>);    
+    imshow(<span class="hljs-string">"p2"</span>, image01);
+    imshow(<span class="hljs-string">"p1"</span>, image02);
+
+    <span class="hljs-comment">//灰度图转换  </span>
+    Mat image1, image2;
+    cvtColor(image01, image1, CV_RGB2GRAY);
+    cvtColor(image02, image2, CV_RGB2GRAY);
+
+
+    <span class="hljs-comment">//提取特征点    </span>
+    <span class="hljs-function">SurfFeatureDetector <span class="hljs-title">surfDetector</span><span class="hljs-params">(<span class="hljs-number">2000</span>)</span></span>;  <span class="hljs-comment">// 海塞矩阵阈值，在这里调整精度，值越大点越少，越精准 </span>
+    <span class="hljs-built_in">vector</span>&lt;KeyPoint&gt; keyPoint1, keyPoint2;
+    surfDetector.detect(image1, keyPoint1);
+    surfDetector.detect(image2, keyPoint2);
+
+    <span class="hljs-comment">//特征点描述，为下边的特征点匹配做准备    </span>
+    SurfDescriptorExtractor SurfDescriptor;
+    Mat imageDesc1, imageDesc2;
+    SurfDescriptor.compute(image1, keyPoint1, imageDesc1);
+    SurfDescriptor.compute(image2, keyPoint2, imageDesc2);
+
+    FlannBasedMatcher matcher;
+    <span class="hljs-built_in">vector</span>&lt;<span class="hljs-built_in">vector</span>&lt;DMatch&gt; &gt; matchePoints;
+    <span class="hljs-built_in">vector</span>&lt;DMatch&gt; GoodMatchePoints;
+
+    <span class="hljs-built_in">vector</span>&lt;Mat&gt; train_desc(<span class="hljs-number">1</span>, imageDesc1);
+    matcher.add(train_desc);
+    matcher.train();
+
+    matcher.knnMatch(imageDesc2, matchePoints, <span class="hljs-number">2</span>);
+    <span class="hljs-built_in">cout</span> &lt;&lt; <span class="hljs-string">"total match points: "</span> &lt;&lt; matchePoints.size() &lt;&lt; <span class="hljs-built_in">endl</span>;
+
+    <span class="hljs-comment">// Lowe's algorithm,获取优秀匹配点</span>
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; matchePoints.size(); i++)
+    {
+        <span class="hljs-keyword">if</span> (matchePoints[i][<span class="hljs-number">0</span>].distance &lt; <span class="hljs-number">0.6</span> * matchePoints[i][<span class="hljs-number">1</span>].distance)
+        {
+            GoodMatchePoints.push_back(matchePoints[i][<span class="hljs-number">0</span>]);
+        }
+    }
+
+    Mat first_match;
+    drawMatches(image02, keyPoint2, image01, keyPoint1, GoodMatchePoints, first_match);
+    imshow(<span class="hljs-string">"first_match "</span>, first_match);
+    waitKey();
+    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;
+}</code></pre>
+<p><img src="OpenCV%E6%8E%A2%E7%B4%A2%E4%B9%8B%E8%B7%AF%EF%BC%88%E4%BA%8C%E5%8D%81%E4%B8%89%EF%BC%89%EF%BC%9A%E7%89%B9%E5%BE%81%E6%A3%80%E6%B5%8B%E5%92%8C%E7%89%B9%E5%BE%81%E5%8C%B9%E9%85%8D%E6%96%B9%E6%B3%95%E6%B1%87%E6%80%BB%20-%20Madcola%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/1093303-20170820212259365-455584147.png"></p>
+<p><img src="OpenCV%E6%8E%A2%E7%B4%A2%E4%B9%8B%E8%B7%AF%EF%BC%88%E4%BA%8C%E5%8D%81%E4%B8%89%EF%BC%89%EF%BC%9A%E7%89%B9%E5%BE%81%E6%A3%80%E6%B5%8B%E5%92%8C%E7%89%B9%E5%BE%81%E5%8C%B9%E9%85%8D%E6%96%B9%E6%B3%95%E6%B1%87%E6%80%BB%20-%20Madcola%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/1093303-20170820212313865-2051271305.png"></p>
+<p>为了体现所谓的尺度不变形，我特意加入了额外一组图片来测试<br>
+<img src="OpenCV%E6%8E%A2%E7%B4%A2%E4%B9%8B%E8%B7%AF%EF%BC%88%E4%BA%8C%E5%8D%81%E4%B8%89%EF%BC%89%EF%BC%9A%E7%89%B9%E5%BE%81%E6%A3%80%E6%B5%8B%E5%92%8C%E7%89%B9%E5%BE%81%E5%8C%B9%E9%85%8D%E6%96%B9%E6%B3%95%E6%B1%87%E6%80%BB%20-%20Madcola%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/1093303-20170820212345600-1630990141.png"></p>
+<p>由特征点匹配的效果来看，现在的特征点匹配应该是非常精准了，因为我们已经把不合格的匹配点统统移除出去了。</p>
+<h2 id="sift">2.SIFT</h2>
+<p>SURF算法是SIFT算法的加速版， 而SIFT（尺度不变特征转换， ScaleInvariant Feature Transform） 
+是另一种著名的尺度不变特征检测法。我们知道，SURF相对于SIFT而言，特征点检测的速度有着极大的提升，所以在一些实时视频流物体匹配上有着很强的
+应用。而SIFT因为其巨大的特征计算量而使得特征点提取的过程异常花费时间，所以在一些注重速度的场合难有应用场景。但是SIFT相对于SURF的优点
+就是，由于SIFT基于浮点内核计算特征点，因此通常认为， 
+SIFT算法检测的特征在空间和尺度上定位更加精确，所以在要求匹配极度精准且不考虑匹配速度的场合可以考虑使用SIFT算法。</p>
+<p>SIFT特征检测的代码我们仅需要对上面的SURF代码作出一丁点修改即可。</p>
+<pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">"highgui/highgui.hpp"</span>    </span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">"opencv2/nonfree/nonfree.hpp"</span>    </span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">"opencv2/legacy/legacy.hpp"</span>   </span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;iostream&gt;  </span></span>
+
+<span class="hljs-keyword">using</span> <span class="hljs-keyword">namespace</span> cv;
+<span class="hljs-keyword">using</span> <span class="hljs-keyword">namespace</span> <span class="hljs-built_in">std</span>;
+
+
+<span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span>
+</span>{
+    Mat image01 = imread(<span class="hljs-string">"1.jpg"</span>, <span class="hljs-number">1</span>);    <span class="hljs-comment">//右图</span>
+    Mat image02 = imread(<span class="hljs-string">"2.jpg"</span>, <span class="hljs-number">1</span>);    <span class="hljs-comment">//左图</span>
+    namedWindow(<span class="hljs-string">"p2"</span>, <span class="hljs-number">0</span>);
+    namedWindow(<span class="hljs-string">"p1"</span>, <span class="hljs-number">0</span>);
+    imshow(<span class="hljs-string">"p2"</span>, image01);
+    imshow(<span class="hljs-string">"p1"</span>, image02);
+
+    <span class="hljs-comment">//灰度图转换  </span>
+    Mat image1, image2;
+    cvtColor(image01, image1, CV_RGB2GRAY);
+    cvtColor(image02, image2, CV_RGB2GRAY);
+
+
+    <span class="hljs-comment">//提取特征点    </span>
+    <span class="hljs-function">SiftFeatureDetector <span class="hljs-title">siftDetector</span><span class="hljs-params">(<span class="hljs-number">2000</span>)</span></span>;  <span class="hljs-comment">// 海塞矩阵阈值，在这里调整精度，值越大点越少，越精准 </span>
+    <span class="hljs-built_in">vector</span>&lt;KeyPoint&gt; keyPoint1, keyPoint2;
+    siftDetector.detect(image1, keyPoint1);
+    siftDetector.detect(image2, keyPoint2);
+
+    <span class="hljs-comment">//特征点描述，为下边的特征点匹配做准备    </span>
+    SiftDescriptorExtractor SiftDescriptor;
+    Mat imageDesc1, imageDesc2;
+    SiftDescriptor.compute(image1, keyPoint1, imageDesc1);
+    SiftDescriptor.compute(image2, keyPoint2, imageDesc2);
+
+    <span class="hljs-comment">//获得匹配特征点，并提取最优配对     </span>
+    FlannBasedMatcher matcher;
+    <span class="hljs-built_in">vector</span>&lt;DMatch&gt; matchePoints;
+
+    matcher.match(imageDesc1, imageDesc2, matchePoints, Mat());
+    <span class="hljs-built_in">cout</span> &lt;&lt; <span class="hljs-string">"total match points: "</span> &lt;&lt; matchePoints.size() &lt;&lt; <span class="hljs-built_in">endl</span>;
+
+
+    Mat img_match;
+    drawMatches(image01, keyPoint1, image02, keyPoint2, matchePoints, img_match);
+
+    imshow(<span class="hljs-string">"match"</span>,img_match);
+    imwrite(<span class="hljs-string">"match.jpg"</span>, img_match);
+
+    waitKey();
+    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;
+}
+</code></pre>
+<p><img src="OpenCV%E6%8E%A2%E7%B4%A2%E4%B9%8B%E8%B7%AF%EF%BC%88%E4%BA%8C%E5%8D%81%E4%B8%89%EF%BC%89%EF%BC%9A%E7%89%B9%E5%BE%81%E6%A3%80%E6%B5%8B%E5%92%8C%E7%89%B9%E5%BE%81%E5%8C%B9%E9%85%8D%E6%96%B9%E6%B3%95%E6%B1%87%E6%80%BB%20-%20Madcola%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/1093303-20170820212425146-2033484892.png"></p>
+<p><img src="OpenCV%E6%8E%A2%E7%B4%A2%E4%B9%8B%E8%B7%AF%EF%BC%88%E4%BA%8C%E5%8D%81%E4%B8%89%EF%BC%89%EF%BC%9A%E7%89%B9%E5%BE%81%E6%A3%80%E6%B5%8B%E5%92%8C%E7%89%B9%E5%BE%81%E5%8C%B9%E9%85%8D%E6%96%B9%E6%B3%95%E6%B1%87%E6%80%BB%20-%20Madcola%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/1093303-20170820212441646-1492135611.png"></p>
+<p>没有经过点筛选的匹配效果同样糟糕。下面继续采用Lowe‘s的算法选出优秀匹配点。</p>
+<pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">"highgui/highgui.hpp"</span>    </span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">"opencv2/nonfree/nonfree.hpp"</span>    </span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">"opencv2/legacy/legacy.hpp"</span>   </span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;iostream&gt;  </span></span>
+
+<span class="hljs-keyword">using</span> <span class="hljs-keyword">namespace</span> cv;
+<span class="hljs-keyword">using</span> <span class="hljs-keyword">namespace</span> <span class="hljs-built_in">std</span>;
+
+
+<span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span>
+</span>{
+
+    Mat image01 = imread(<span class="hljs-string">"1.jpg"</span>, <span class="hljs-number">1</span>);
+    Mat image02 = imread(<span class="hljs-string">"2.jpg"</span>, <span class="hljs-number">1</span>);
+    imshow(<span class="hljs-string">"p2"</span>, image01);
+    imshow(<span class="hljs-string">"p1"</span>, image02);
+
+    <span class="hljs-comment">//灰度图转换  </span>
+    Mat image1, image2;
+    cvtColor(image01, image1, CV_RGB2GRAY);
+    cvtColor(image02, image2, CV_RGB2GRAY);
+
+
+    <span class="hljs-comment">//提取特征点    </span>
+    <span class="hljs-function">SiftFeatureDetector <span class="hljs-title">siftDetector</span><span class="hljs-params">(<span class="hljs-number">800</span>)</span></span>;  <span class="hljs-comment">// 海塞矩阵阈值，在这里调整精度，值越大点越少，越精准 </span>
+    <span class="hljs-built_in">vector</span>&lt;KeyPoint&gt; keyPoint1, keyPoint2;
+    siftDetector.detect(image1, keyPoint1);
+    siftDetector.detect(image2, keyPoint2);
+
+    <span class="hljs-comment">//特征点描述，为下边的特征点匹配做准备    </span>
+    SiftDescriptorExtractor SiftDescriptor;
+    Mat imageDesc1, imageDesc2;
+    SiftDescriptor.compute(image1, keyPoint1, imageDesc1);
+    SiftDescriptor.compute(image2, keyPoint2, imageDesc2);
+
+    FlannBasedMatcher matcher;
+    <span class="hljs-built_in">vector</span>&lt;<span class="hljs-built_in">vector</span>&lt;DMatch&gt; &gt; matchePoints;
+    <span class="hljs-built_in">vector</span>&lt;DMatch&gt; GoodMatchePoints;
+
+    <span class="hljs-built_in">vector</span>&lt;Mat&gt; train_desc(<span class="hljs-number">1</span>, imageDesc1);
+    matcher.add(train_desc);
+    matcher.train();
+
+    matcher.knnMatch(imageDesc2, matchePoints, <span class="hljs-number">2</span>);
+    <span class="hljs-built_in">cout</span> &lt;&lt; <span class="hljs-string">"total match points: "</span> &lt;&lt; matchePoints.size() &lt;&lt; <span class="hljs-built_in">endl</span>;
+
+    <span class="hljs-comment">// Lowe's algorithm,获取优秀匹配点</span>
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; matchePoints.size(); i++)
+    {
+        <span class="hljs-keyword">if</span> (matchePoints[i][<span class="hljs-number">0</span>].distance &lt; <span class="hljs-number">0.6</span> * matchePoints[i][<span class="hljs-number">1</span>].distance)
+        {
+            GoodMatchePoints.push_back(matchePoints[i][<span class="hljs-number">0</span>]);
+        }
+    }
+
+    Mat first_match;
+    drawMatches(image02, keyPoint2, image01, keyPoint1, GoodMatchePoints, first_match);
+    imshow(<span class="hljs-string">"first_match "</span>, first_match);
+    imwrite(<span class="hljs-string">"first_match.jpg"</span>, first_match);
+    waitKey();
+    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;
+}</code></pre>
+<p><img src="OpenCV%E6%8E%A2%E7%B4%A2%E4%B9%8B%E8%B7%AF%EF%BC%88%E4%BA%8C%E5%8D%81%E4%B8%89%EF%BC%89%EF%BC%9A%E7%89%B9%E5%BE%81%E6%A3%80%E6%B5%8B%E5%92%8C%E7%89%B9%E5%BE%81%E5%8C%B9%E9%85%8D%E6%96%B9%E6%B3%95%E6%B1%87%E6%80%BB%20-%20Madcola%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/1093303-20170820212505912-1111300123.png"></p>
+<p><img src="OpenCV%E6%8E%A2%E7%B4%A2%E4%B9%8B%E8%B7%AF%EF%BC%88%E4%BA%8C%E5%8D%81%E4%B8%89%EF%BC%89%EF%BC%9A%E7%89%B9%E5%BE%81%E6%A3%80%E6%B5%8B%E5%92%8C%E7%89%B9%E5%BE%81%E5%8C%B9%E9%85%8D%E6%96%B9%E6%B3%95%E6%B1%87%E6%80%BB%20-%20Madcola%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/1093303-20170820212522006-631480352.png"></p>
+<p><img src="OpenCV%E6%8E%A2%E7%B4%A2%E4%B9%8B%E8%B7%AF%EF%BC%88%E4%BA%8C%E5%8D%81%E4%B8%89%EF%BC%89%EF%BC%9A%E7%89%B9%E5%BE%81%E6%A3%80%E6%B5%8B%E5%92%8C%E7%89%B9%E5%BE%81%E5%8C%B9%E9%85%8D%E6%96%B9%E6%B3%95%E6%B1%87%E6%80%BB%20-%20Madcola%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/1093303-20170820212534021-717449057.png"></p>
+<h2 id="orb">3.ORB</h2>
+<p>ORB是ORiented Brief的简称，是brief算法的改进版。ORB算法比SIFT算法快100倍，比SURF算法快10倍。在计算机视觉领域有种说法，ORB算法的综合性能在各种测评里较其他特征提取算法是最好的。</p>
+<p>ORB算法是brief算法的改进，那么我们先说一下brief算法有什么去缺点。<br>
+BRIEF的优点在于其速度，其缺点是：</p>
+<ul>
+<li>不具备旋转不变性</li>
+<li>对噪声敏感</li>
+<li>不具备尺度不变性</li>
+</ul>
+<p>而ORB算法就是试图解决上述缺点中1和2提出的一种新概念。值得注意的是，<strong>ORB没有解决尺度不变性</strong>。</p>
+<pre><code class="hljs verilog">#<span class="hljs-keyword">include</span> <span class="hljs-string">"highgui/highgui.hpp"</span>    
+#<span class="hljs-keyword">include</span> <span class="hljs-string">"opencv2/nonfree/nonfree.hpp"</span>    
+#<span class="hljs-keyword">include</span> <span class="hljs-string">"opencv2/legacy/legacy.hpp"</span>   
+#<span class="hljs-keyword">include</span> &lt;iostream&gt;  
+
+using namespace cv;
+using namespace std;
+
+
+<span class="hljs-keyword">int</span> main()
+{
+
+    Mat image01 = imread(<span class="hljs-string">"g2.jpg"</span>, <span class="hljs-number">1</span>);
+    Mat image02 = imread(<span class="hljs-string">"g4.jpg"</span>, <span class="hljs-number">1</span>);
+    imshow(<span class="hljs-string">"p2"</span>, image01);
+    imshow(<span class="hljs-string">"p1"</span>, image02);
+
+    <span class="hljs-comment">//灰度图转换  </span>
+    Mat image1, image2;
+    cvtColor(image01, image1, CV_RGB2GRAY);
+    cvtColor(image02, image2, CV_RGB2GRAY);
+
+
+    <span class="hljs-comment">//提取特征点    </span>
+    OrbFeatureDetector OrbDetector(<span class="hljs-number">1000</span>);  <span class="hljs-comment">// 在这里调整精度，值越小点越少，越精准 </span>
+    vector&lt;KeyPoint&gt; keyPoint1, keyPoint2;
+    OrbDetector<span class="hljs-variable">.detect</span>(image1, keyPoint1);
+    OrbDetector<span class="hljs-variable">.detect</span>(image2, keyPoint2);
+
+    <span class="hljs-comment">//特征点描述，为下边的特征点匹配做准备    </span>
+    OrbDescriptorExtractor OrbDescriptor;
+    Mat imageDesc1, imageDesc2;
+    OrbDescriptor<span class="hljs-variable">.compute</span>(image1, keyPoint1, imageDesc1);
+    OrbDescriptor<span class="hljs-variable">.compute</span>(image2, keyPoint2, imageDesc2);
+
+    flann::Index flannIndex(imageDesc1, flann::LshIndexParams(<span class="hljs-number">12</span>, <span class="hljs-number">20</span>, <span class="hljs-number">2</span>), cvflann::FLANN_DIST_HAMMING);
+
+    vector&lt;DMatch&gt; GoodMatchePoints;
+
+    Mat macthIndex(imageDesc2<span class="hljs-variable">.rows</span>, <span class="hljs-number">2</span>, CV_32SC1), matchDistance(imageDesc2<span class="hljs-variable">.rows</span>, <span class="hljs-number">2</span>, CV_32FC1);
+    flannIndex<span class="hljs-variable">.knnSearch</span>(imageDesc2, macthIndex, matchDistance, <span class="hljs-number">2</span>, flann::SearchParams());
+
+    <span class="hljs-comment">// Lowe's algorithm,获取优秀匹配点</span>
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; matchDistance<span class="hljs-variable">.rows</span>; i++)
+    {
+        <span class="hljs-keyword">if</span> (matchDistance<span class="hljs-variable">.at</span>&lt;float&gt;(i,<span class="hljs-number">0</span>) &lt; <span class="hljs-number">0</span><span class="hljs-variable">.6</span> * matchDistance<span class="hljs-variable">.at</span>&lt;float&gt;(i, <span class="hljs-number">1</span>))
+        {
+            DMatch dmatches(i, macthIndex<span class="hljs-variable">.at</span>&lt;<span class="hljs-keyword">int</span>&gt;(i, <span class="hljs-number">0</span>), matchDistance<span class="hljs-variable">.at</span>&lt;float&gt;(i, <span class="hljs-number">0</span>));
+            GoodMatchePoints<span class="hljs-variable">.push_back</span>(dmatches);
+        }
+    }
+
+    Mat <span class="hljs-keyword">first_match</span>;
+    drawMatches(image02, keyPoint2, image01, keyPoint1, GoodMatchePoints, <span class="hljs-keyword">first_match</span>);
+    imshow(<span class="hljs-string">"first_match "</span>, <span class="hljs-keyword">first_match</span>);
+    imwrite(<span class="hljs-string">"first_match.jpg"</span>, <span class="hljs-keyword">first_match</span>);
+    waitKey();
+    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;
+}</code></pre>
+<p><img src="OpenCV%E6%8E%A2%E7%B4%A2%E4%B9%8B%E8%B7%AF%EF%BC%88%E4%BA%8C%E5%8D%81%E4%B8%89%EF%BC%89%EF%BC%9A%E7%89%B9%E5%BE%81%E6%A3%80%E6%B5%8B%E5%92%8C%E7%89%B9%E5%BE%81%E5%8C%B9%E9%85%8D%E6%96%B9%E6%B3%95%E6%B1%87%E6%80%BB%20-%20Madcola%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/1093303-20170820212549646-1349171691.png"></p>
+<p><img src="OpenCV%E6%8E%A2%E7%B4%A2%E4%B9%8B%E8%B7%AF%EF%BC%88%E4%BA%8C%E5%8D%81%E4%B8%89%EF%BC%89%EF%BC%9A%E7%89%B9%E5%BE%81%E6%A3%80%E6%B5%8B%E5%92%8C%E7%89%B9%E5%BE%81%E5%8C%B9%E9%85%8D%E6%96%B9%E6%B3%95%E6%B1%87%E6%80%BB%20-%20Madcola%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/1093303-20170820212604646-1165334512.png"></p>
+<h2 id="fast">4.FAST</h2>
+<p>FAST（加速分割测试获得特征， Features from Accelerated Segment Test） 。 这种算子专门用来快速检测兴趣点， 只需要对比几个像素，就可以判断是否为关键点。</p>
+<p>跟Harris检测器的情况一样， FAST算法源于对构成角点的定义。FAST对角点的定义基于候选特征点周围的图像强度值。 
+以某个点为中心作一个圆， 根据圆上的像素值判断该点是否为关键点。 如果存在这样一段圆弧， 它的连续长度超过周长的3/4， 
+并且它上面所有像素的强度值都与圆心的强度值明显不同（全部更黑或更亮） ， 那么就认定这是一个关键点。</p>
+<p>用这个算法检测兴趣点的速度非常快， 因此十分适合需要优先考虑速度的应用。 这些应用包括实时视觉跟踪、 目标识别等， 它们需要在实<br>
+时视频流中跟踪或匹配多个点。</p>
+<p>我们使用FastFeatureDetector 进行特征点提取，因为opencv没有提供fast专用的描述子提取器，所以我们借用SiftDescriptorExtractor 来实现描述子的提取。</p>
+<pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">"highgui/highgui.hpp"</span>    </span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">"opencv2/nonfree/nonfree.hpp"</span>    </span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">"opencv2/legacy/legacy.hpp"</span>   </span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;iostream&gt;  </span></span>
+
+<span class="hljs-keyword">using</span> <span class="hljs-keyword">namespace</span> cv;
+<span class="hljs-keyword">using</span> <span class="hljs-keyword">namespace</span> <span class="hljs-built_in">std</span>;
+
+
+<span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span>
+</span>{
+
+    Mat image01 = imread(<span class="hljs-string">"1.jpg"</span>, <span class="hljs-number">1</span>);
+    Mat image02 = imread(<span class="hljs-string">"2.jpg"</span>, <span class="hljs-number">1</span>);
+    imshow(<span class="hljs-string">"p2"</span>, image01);
+    imshow(<span class="hljs-string">"p1"</span>, image02);
+
+    <span class="hljs-comment">//灰度图转换  </span>
+    Mat image1, image2;
+    cvtColor(image01, image1, CV_RGB2GRAY);
+    cvtColor(image02, image2, CV_RGB2GRAY);
+
+
+    <span class="hljs-comment">//提取特征点    </span>
+    <span class="hljs-function">FastFeatureDetector <span class="hljs-title">Detector</span><span class="hljs-params">(<span class="hljs-number">50</span>)</span></span>;  <span class="hljs-comment">//阈值 </span>
+    <span class="hljs-built_in">vector</span>&lt;KeyPoint&gt; keyPoint1, keyPoint2;
+    Detector.detect(image1, keyPoint1);
+    Detector.detect(image2, keyPoint2);
+
+    <span class="hljs-comment">//特征点描述，为下边的特征点匹配做准备    </span>
+    SiftDescriptorExtractor   Descriptor;
+    Mat imageDesc1, imageDesc2;
+    Descriptor.compute(image1, keyPoint1, imageDesc1);
+    Descriptor.compute(image2, keyPoint2, imageDesc2);
+
+    BruteForceMatcher&lt; L2&lt;<span class="hljs-keyword">float</span>&gt; &gt; matcher;   
+    <span class="hljs-built_in">vector</span>&lt;<span class="hljs-built_in">vector</span>&lt;DMatch&gt; &gt; matchePoints;
+    <span class="hljs-built_in">vector</span>&lt;DMatch&gt; GoodMatchePoints;
+
+    <span class="hljs-built_in">vector</span>&lt;Mat&gt; train_desc(<span class="hljs-number">1</span>, imageDesc1);
+    matcher.add(train_desc);
+    matcher.train();
+
+    matcher.knnMatch(imageDesc2, matchePoints, <span class="hljs-number">2</span>);
+    <span class="hljs-built_in">cout</span> &lt;&lt; <span class="hljs-string">"total match points: "</span> &lt;&lt; matchePoints.size() &lt;&lt; <span class="hljs-built_in">endl</span>;
+
+    <span class="hljs-comment">// Lowe's algorithm,获取优秀匹配点</span>
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; matchePoints.size(); i++)
+    {
+        <span class="hljs-keyword">if</span> (matchePoints[i][<span class="hljs-number">0</span>].distance &lt; <span class="hljs-number">0.6</span> * matchePoints[i][<span class="hljs-number">1</span>].distance)
+        {
+            GoodMatchePoints.push_back(matchePoints[i][<span class="hljs-number">0</span>]);
+        }
+    }
+
+    Mat first_match;
+    drawMatches(image02, keyPoint2, image01, keyPoint1, GoodMatchePoints, first_match);
+    imshow(<span class="hljs-string">"first_match "</span>, first_match);
+    imwrite(<span class="hljs-string">"first_match.jpg"</span>, first_match);
+    waitKey();
+    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;
+}</code></pre>
+<p><img src="OpenCV%E6%8E%A2%E7%B4%A2%E4%B9%8B%E8%B7%AF%EF%BC%88%E4%BA%8C%E5%8D%81%E4%B8%89%EF%BC%89%EF%BC%9A%E7%89%B9%E5%BE%81%E6%A3%80%E6%B5%8B%E5%92%8C%E7%89%B9%E5%BE%81%E5%8C%B9%E9%85%8D%E6%96%B9%E6%B3%95%E6%B1%87%E6%80%BB%20-%20Madcola%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/1093303-20170820213910678-257931116.png"></p>
+<p><img src="OpenCV%E6%8E%A2%E7%B4%A2%E4%B9%8B%E8%B7%AF%EF%BC%88%E4%BA%8C%E5%8D%81%E4%B8%89%EF%BC%89%EF%BC%9A%E7%89%B9%E5%BE%81%E6%A3%80%E6%B5%8B%E5%92%8C%E7%89%B9%E5%BE%81%E5%8C%B9%E9%85%8D%E6%96%B9%E6%B3%95%E6%B1%87%E6%80%BB%20-%20Madcola%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/1093303-20170820212636537-224780077.png"></p>
+<p>如果我们把描述子换成SurfDescriptorExtractor，即FastFeatureDetector + SurfDescriptorExtractor的组合，看看效果<br>
+<img src="OpenCV%E6%8E%A2%E7%B4%A2%E4%B9%8B%E8%B7%AF%EF%BC%88%E4%BA%8C%E5%8D%81%E4%B8%89%EF%BC%89%EF%BC%9A%E7%89%B9%E5%BE%81%E6%A3%80%E6%B5%8B%E5%92%8C%E7%89%B9%E5%BE%81%E5%8C%B9%E9%85%8D%E6%96%B9%E6%B3%95%E6%B1%87%E6%80%BB%20-%20Madcola%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/1093303-20170820212648115-442584218.png"></p>
+<p>可以看出，这种组合下的特征点匹配并不精确。</p>
+<p>如果我们把描述子换成SurfDescriptorExtractor，即FastFeatureDetector + BriefDescriptorExtractor 的组合，看看效果<br>
+<img src="OpenCV%E6%8E%A2%E7%B4%A2%E4%B9%8B%E8%B7%AF%EF%BC%88%E4%BA%8C%E5%8D%81%E4%B8%89%EF%BC%89%EF%BC%9A%E7%89%B9%E5%BE%81%E6%A3%80%E6%B5%8B%E5%92%8C%E7%89%B9%E5%BE%81%E5%8C%B9%E9%85%8D%E6%96%B9%E6%B3%95%E6%B1%87%E6%80%BB%20-%20Madcola%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/1093303-20170820212658943-58676259.png"></p>
+<p>速度虽快，但是精度却差强人意。</p>
+<p>看到这里可能很多人会有疑惑：为什么FAST特征点可以用所以我们借用SiftDescriptorExtractor或者其他描述子提取器进行提取？</p>
+<p>在这里我说一下自己的理解。要完成特征点的匹配第一个步骤就是找出每幅图像的特征点，这叫做特征检测，比如我们使用
+FastFeatureDetector、SiftFeatureDetector都是特征检测的模块。我们得到这些图像的特征点后，我们就对这些特征点
+进行进一步的分析，用一些数学上的特征对其进行描述，如梯度直方图，局部随机二值特征等。所以在这一步我们可以选择其他描述子提取器对这些点进行特征描
+述，进而完成特征点的精确匹配。</p>
+<p>在opencv中，SURF,ORB,SIFT既包含FeatureDetector，又包含 DescriptorExtractor，所以我们使用上述三种算法做特征匹配时，都用其自带的方法配套使用。</p>
+<p>除此之外，如果我们相用FAST角点检测并作特征点匹配该怎么办？此时可以使用上述的FastFeatureDetector + 
+BriefDescriptorExtractor 
+的方式，这种组合方式其实就是著名的ORB算法。所以特征点检测和特征点匹配是两种不同的步骤，我们只需根据自己项目的需求对这两个步骤的方法随意组合就
+好。</p>
+<h2 id="harris角点">5.Harris角点</h2>
+<p>在图像中搜索有价值的特征点时，使用角点是一种不错的方法。 角点是很容易在图像中定位的局部特征， 并且大量存在于人造物体中（例如墙壁、 门、
+ 窗户、 桌子等产生的角点）。 角点的价值在于它是两条边缘线的接合点， 是一种二维特征，可以被精确地定位（即使是子像素级精度）。 
+与此相反的是位于均匀区域或物体轮廓上的点以及在同一物体的不同图像上很难重复精确定位的点。 Harris特征检测是检测角点的经典方法。</p>
+<p>这里仅展示GoodFeaturesToTrackDetector +　SiftDescriptorExtractor的组合方式的代码，其他组合不再演示。</p>
+<pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">"highgui/highgui.hpp"</span>    </span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">"opencv2/nonfree/nonfree.hpp"</span>    </span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">"opencv2/legacy/legacy.hpp"</span>   </span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;iostream&gt;  </span></span>
+
+<span class="hljs-keyword">using</span> <span class="hljs-keyword">namespace</span> cv;
+<span class="hljs-keyword">using</span> <span class="hljs-keyword">namespace</span> <span class="hljs-built_in">std</span>;
+
+
+<span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span>
+</span>{
+
+    Mat image01 = imread(<span class="hljs-string">"1.jpg"</span>, <span class="hljs-number">1</span>);
+    Mat image02 = imread(<span class="hljs-string">"2.jpg"</span>, <span class="hljs-number">1</span>);
+    imshow(<span class="hljs-string">"p2"</span>, image01);
+    imshow(<span class="hljs-string">"p1"</span>, image02);
+
+    <span class="hljs-comment">//灰度图转换  </span>
+    Mat image1, image2;
+    cvtColor(image01, image1, CV_RGB2GRAY);
+    cvtColor(image02, image2, CV_RGB2GRAY);
+
+
+    <span class="hljs-comment">//提取特征点    </span>
+    <span class="hljs-function">GoodFeaturesToTrackDetector <span class="hljs-title">Detector</span><span class="hljs-params">(<span class="hljs-number">500</span>)</span></span>;  <span class="hljs-comment">//最大点数,值越大，点越多</span>
+    <span class="hljs-built_in">vector</span>&lt;KeyPoint&gt; keyPoint1, keyPoint2;
+    Detector.detect(image1, keyPoint1);
+    Detector.detect(image2, keyPoint2);
+
+    <span class="hljs-comment">//特征点描述，为下边的特征点匹配做准备    </span>
+    SiftDescriptorExtractor  Descriptor;
+    Mat imageDesc1, imageDesc2;
+    Descriptor.compute(image1, keyPoint1, imageDesc1);
+    Descriptor.compute(image2, keyPoint2, imageDesc2);
+
+    BruteForceMatcher&lt; L2&lt;<span class="hljs-keyword">float</span>&gt; &gt; matcher;   
+    <span class="hljs-built_in">vector</span>&lt;<span class="hljs-built_in">vector</span>&lt;DMatch&gt; &gt; matchePoints;
+    <span class="hljs-built_in">vector</span>&lt;DMatch&gt; GoodMatchePoints;
+
+    <span class="hljs-built_in">vector</span>&lt;Mat&gt; train_desc(<span class="hljs-number">1</span>, imageDesc1);
+    matcher.add(train_desc);
+    matcher.train();
+
+    matcher.knnMatch(imageDesc2, matchePoints, <span class="hljs-number">2</span>);
+    <span class="hljs-built_in">cout</span> &lt;&lt; <span class="hljs-string">"total match points: "</span> &lt;&lt; matchePoints.size() &lt;&lt; <span class="hljs-built_in">endl</span>;
+
+    <span class="hljs-comment">// Lowe's algorithm,获取优秀匹配点</span>
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; matchePoints.size(); i++)
+    {
+        <span class="hljs-keyword">if</span> (matchePoints[i][<span class="hljs-number">0</span>].distance &lt; <span class="hljs-number">0.6</span> * matchePoints[i][<span class="hljs-number">1</span>].distance)
+        {
+            GoodMatchePoints.push_back(matchePoints[i][<span class="hljs-number">0</span>]);
+        }
+    }
+
+    Mat first_match;
+    drawMatches(image02, keyPoint2, image01, keyPoint1, GoodMatchePoints, first_match);
+    imshow(<span class="hljs-string">"first_match "</span>, first_match);
+    imwrite(<span class="hljs-string">"first_match.jpg"</span>, first_match);
+    waitKey();
+    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;
+}</code></pre>
+<p>匹配相当精准<br>
+<img src="OpenCV%E6%8E%A2%E7%B4%A2%E4%B9%8B%E8%B7%AF%EF%BC%88%E4%BA%8C%E5%8D%81%E4%B8%89%EF%BC%89%EF%BC%9A%E7%89%B9%E5%BE%81%E6%A3%80%E6%B5%8B%E5%92%8C%E7%89%B9%E5%BE%81%E5%8C%B9%E9%85%8D%E6%96%B9%E6%B3%95%E6%B1%87%E6%80%BB%20-%20Madcola%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/1093303-20170820212723928-1340925265.png"></p>
+<p><img src="OpenCV%E6%8E%A2%E7%B4%A2%E4%B9%8B%E8%B7%AF%EF%BC%88%E4%BA%8C%E5%8D%81%E4%B8%89%EF%BC%89%EF%BC%9A%E7%89%B9%E5%BE%81%E6%A3%80%E6%B5%8B%E5%92%8C%E7%89%B9%E5%BE%81%E5%8C%B9%E9%85%8D%E6%96%B9%E6%B3%95%E6%B1%87%E6%80%BB%20-%20Madcola%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/1093303-20170820212741912-1930030274.png"></p>
+<p>计算机视觉领域其实还有了很多特征检测的方法，比如HOG、Harr、LBP等，这里就不再叙述了，因为方法都是类似，我们根据自己的需求挑选相应的方法就好了。</p>
+</div><div id="MySignature"></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+<div id="BlogPostCategory">分类: <a href="https://www.cnblogs.com/skyfsm/category/1000207.html" target="_blank">opencv探索</a></div>
+<div id="EntryTag"></div>
+<div id="blog_post_info"><div id="green_channel">
+        <a href="javascript:void(0);" id="green_channel_digg" onclick="DiggIt(7401523,cb_blogId,1);green_channel_success(this,'谢谢推荐！');">好文要顶</a>
+            <a id="green_channel_follow" onclick="follow('0615e00a-49d6-e611-845c-ac853d9f53ac');" href="javascript:void(0);">关注我</a>
+    <a id="green_channel_favorite" onclick="AddToWz(cb_entryId);return false;" href="javascript:void(0);">收藏该文</a>
+    <a id="green_channel_weibo" href="javascript:void(0);" title="分享至新浪微博" onclick="ShareToTsina()"><img src="OpenCV%E6%8E%A2%E7%B4%A2%E4%B9%8B%E8%B7%AF%EF%BC%88%E4%BA%8C%E5%8D%81%E4%B8%89%EF%BC%89%EF%BC%9A%E7%89%B9%E5%BE%81%E6%A3%80%E6%B5%8B%E5%92%8C%E7%89%B9%E5%BE%81%E5%8C%B9%E9%85%8D%E6%96%B9%E6%B3%95%E6%B1%87%E6%80%BB%20-%20Madcola%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/icon_weibo_24.png" alt=""></a>
+    <a id="green_channel_wechat" href="javascript:void(0);" title="分享至微信" onclick="shareOnWechat()"><img src="OpenCV%E6%8E%A2%E7%B4%A2%E4%B9%8B%E8%B7%AF%EF%BC%88%E4%BA%8C%E5%8D%81%E4%B8%89%EF%BC%89%EF%BC%9A%E7%89%B9%E5%BE%81%E6%A3%80%E6%B5%8B%E5%92%8C%E7%89%B9%E5%BE%81%E5%8C%B9%E9%85%8D%E6%96%B9%E6%B3%95%E6%B1%87%E6%80%BB%20-%20Madcola%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/wechat.png" alt=""></a>
+</div>
+<div id="author_profile">
+    <div id="author_profile_info" class="author_profile_info">
+            <a href="http://home.cnblogs.com/u/skyfsm/" target="_blank"><img src="OpenCV%E6%8E%A2%E7%B4%A2%E4%B9%8B%E8%B7%AF%EF%BC%88%E4%BA%8C%E5%8D%81%E4%B8%89%EF%BC%89%EF%BC%9A%E7%89%B9%E5%BE%81%E6%A3%80%E6%B5%8B%E5%92%8C%E7%89%B9%E5%BE%81%E5%8C%B9%E9%85%8D%E6%96%B9%E6%B3%95%E6%B1%87%E6%80%BB%20-%20Madcola%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/20170109193150.png" class="author_avatar" alt=""></a>
+        <div id="author_profile_detail" class="author_profile_info">
+            <a href="http://home.cnblogs.com/u/skyfsm/">Madcola</a><br>
+            <a href="http://home.cnblogs.com/u/skyfsm/followees">关注 - 30</a><br>
+            <a href="http://home.cnblogs.com/u/skyfsm/followers">粉丝 - 1151</a>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div id="author_profile_honor"></div>
+    <div id="author_profile_follow">
+                <a href="javascript:void(0);" onclick="follow('0615e00a-49d6-e611-845c-ac853d9f53ac');return false;">+加关注</a>
+    </div>
+</div>
+<div id="div_digg">
+    <div class="diggit" onclick="votePost(7401523,'Digg')">
+        <span class="diggnum" id="digg_count">9</span>
+    </div>
+    <div class="buryit" onclick="votePost(7401523,'Bury')">
+        <span class="burynum" id="bury_count">0</span>
+    </div>
+    <div class="clear"></div>
+    <div class="diggword" id="digg_tips">
+    </div>
+</div>
+<script type="text/javascript">
+    currentDiggType = 0;
+</script></div>
+<div class="clear"></div>
+<div id="post_next_prev"><a href="https://www.cnblogs.com/skyfsm/p/7324346.html" class="p_n_p_prefix">« </a> 上一篇：<a href="https://www.cnblogs.com/skyfsm/p/7324346.html" title="发布于2017-08-09 11:28">OpenCV探索之路（二十二）：制作一个类“全能扫描王”的简易扫描软件</a><br><a href="https://www.cnblogs.com/skyfsm/p/7411961.html" class="p_n_p_prefix">» </a> 下一篇：<a href="https://www.cnblogs.com/skyfsm/p/7411961.html" title="发布于2017-08-22 15:49">OpenCV探索之路（二十四）图像拼接和图像融合技术</a><br></div>
+</div>
+
+
+		</div>
+		<div class="postDesc">posted @ <span id="post-date">2017-08-20 21:28</span> <a href="https://www.cnblogs.com/skyfsm/">Madcola</a> 阅读(<span id="post_view_count">45069</span>) 评论(<span id="post_comment_count">12</span>)  <a href="https://i.cnblogs.com/EditPosts.aspx?postid=7401523" rel="nofollow">编辑</a> <a href="#" onclick="AddToWz(7401523);return false;">收藏</a></div>
+	</div>
+	<script src="OpenCV%E6%8E%A2%E7%B4%A2%E4%B9%8B%E8%B7%AF%EF%BC%88%E4%BA%8C%E5%8D%81%E4%B8%89%EF%BC%89%EF%BC%9A%E7%89%B9%E5%BE%81%E6%A3%80%E6%B5%8B%E5%92%8C%E7%89%B9%E5%BE%81%E5%8C%B9%E9%85%8D%E6%96%B9%E6%B3%95%E6%B1%87%E6%80%BB%20-%20Madcola%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/highlight.js"></script><script>markdown_highlight();</script><script type="text/javascript">var allowComments=true,cb_blogId=327280,cb_entryId=7401523,cb_blogApp=currentBlogApp,cb_blogUserGuid='0615e00a-49d6-e611-845c-ac853d9f53ac',cb_entryCreatedDate='2017/8/20 21:28:00';loadViewCount(cb_entryId);var cb_postType=1;var isMarkdown=true;</script>
+	
+</div><!--end: topics 文章、评论容器-->
+</div><a name="!comments"></a><div id="blog-comments-placeholder"><div id="comments_pager_top"></div>
+<br>
+<div class="feedback_area_title">评论列表</div>
+<div class="feedbackNoItems"></div>	
+
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="#3794452" class="layer">#1楼</a><a name="3794452" id="comment_anchor_3794452"></a>  <span class="comment_date">2017-09-23 21:51</span> <a id="a_comment_author_3794452" href="http://home.cnblogs.com/u/1246488/" target="_blank">mengxiagogo</a> <a href="http://msg.cnblogs.com/send/mengxiagogo" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3794452" class="blog_comment_body">请问这两个库nonfree和legacy是要用cmake另外编译contrib才有么，我的opencv没有这两个东西</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3794452,'Digg',this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3794452,'Bury',this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="#3794459" class="layer">#2楼</a><a name="3794459" id="comment_anchor_3794459"></a>[<span class="louzhu">楼主</span>]  <span class="comment_date">2017-09-23 22:12</span> <a id="a_comment_author_3794459" href="https://www.cnblogs.com/skyfsm/" target="_blank">Madcola</a> <a href="http://msg.cnblogs.com/send/Madcola" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3794459" class="blog_comment_body"><a href="#3794452" title="查看所回复的评论" onclick="commentManager.renderComments(0,50,3794452);">@</a>
+mengxiagogo<br>nonfree只在opencv2.x版本才有，3,0版本把它移除了。<br>所以想用它的话，还是切换到2.x版本吧</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3794459,'Digg',this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3794459,'Bury',this)">反对(0)</a></div><span id="comment_3794459_avatar" style="display:none;">http://pic.cnblogs.com/face/1093303/20170109193150.png</span>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="#3876403" class="layer">#3楼</a><a name="3876403" id="comment_anchor_3876403"></a>  <span class="comment_date">2017-12-28 16:45</span> <a id="a_comment_author_3876403" href="https://www.cnblogs.com/Geo-fortune/" target="_blank">好吃的布克</a> <a href="http://msg.cnblogs.com/send/%E5%A5%BD%E5%90%83%E7%9A%84%E5%B8%83%E5%85%8B" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3876403" class="blog_comment_body"><a href="#3794452" title="查看所回复的评论" onclick="commentManager.renderComments(0,50,3794452);">@</a>
+mengxiagogo<br>是的，3之后就需要自己编译了</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3876403,'Digg',this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3876403,'Bury',this)">反对(0)</a></div><span id="comment_3876403_avatar" style="display:none;">http://pic.cnblogs.com/face/678658/20150818143806.png</span>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="#3905584" class="layer">#4楼</a><a name="3905584" id="comment_anchor_3905584"></a>  <span class="comment_date">2018-02-07 16:07</span> <a id="a_comment_author_3905584" href="http://home.cnblogs.com/u/1329706/" target="_blank">uuuuu26</a> <a href="http://msg.cnblogs.com/send/uuuuu26" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3905584" class="blog_comment_body"><a href="#3794459" title="查看所回复的评论" onclick="commentManager.renderComments(0,50,3794459);">@</a>
+Madcola<br>我自己编译了，nonfree还有，而且能用，但是legacy好像不见了，得到特征值后不知道怎么匹配好烦恼</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3905584,'Digg',this)">支持(1)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3905584,'Bury',this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="#3962002" class="layer">#5楼</a><a name="3962002" id="comment_anchor_3962002"></a>  <span class="comment_date">2018-04-26 22:23</span> <a id="a_comment_author_3962002" href="http://home.cnblogs.com/u/1382080/" target="_blank">早上好章鱼哥</a> <a href="http://msg.cnblogs.com/send/%E6%97%A9%E4%B8%8A%E5%A5%BD%E7%AB%A0%E9%B1%BC%E5%93%A5" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3962002" class="blog_comment_body">在网上找了好久也不懂harris角点如何进行匹配，不懂楼主有没有参考范例？</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3962002,'Digg',this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3962002,'Bury',this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="#4006697" class="layer">#6楼</a><a name="4006697" id="comment_anchor_4006697"></a>  <span class="comment_date">2018-06-27 11:01</span> <a id="a_comment_author_4006697" href="http://home.cnblogs.com/u/1416882/" target="_blank">Jasonyjc</a> <a href="http://msg.cnblogs.com/send/Jasonyjc" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_4006697" class="blog_comment_body">if (matchePoints[i][0].distance &lt; 0.6 * matchePoints[i][1].distance)<br>这句话报错</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4006697,'Digg',this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4006697,'Bury',this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="#4034435" class="layer">#7楼</a><a name="4034435" id="comment_anchor_4034435"></a>  <span class="comment_date">2018-08-02 20:58</span> <a id="a_comment_author_4034435" href="http://home.cnblogs.com/u/1295716/" target="_blank">wwwssss</a> <a href="http://msg.cnblogs.com/send/wwwssss" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_4034435" class="blog_comment_body">请问compute这个函数的定义在哪里能找到</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4034435,'Digg',this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4034435,'Bury',this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="#4113372" class="layer">#8楼</a><a name="4113372" id="comment_anchor_4113372"></a>  <span class="comment_date">2018-11-13 13:21</span> <a id="a_comment_author_4113372" href="https://www.cnblogs.com/jsxyhelu/" target="_blank">jsxyhelu</a> <a href="http://msg.cnblogs.com/send/jsxyhelu" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_4113372" class="blog_comment_body">很好的综述和总结！</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4113372,'Digg',this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4113372,'Bury',this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="#4125081" class="layer">#9楼</a><a name="4125081" id="comment_anchor_4125081"></a>  <span class="comment_date">2018-11-28 16:28</span> <a id="a_comment_author_4125081" href="http://home.cnblogs.com/u/1543119/" target="_blank">杂草禹</a> <a href="http://msg.cnblogs.com/send/%E6%9D%82%E8%8D%89%E7%A6%B9" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_4125081" class="blog_comment_body"><a href="#3905584" title="查看所回复的评论" onclick="commentManager.renderComments(0,50,3905584);">@</a>
+uuuuu26<br>你好，请问你现在问题解决了吗？</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4125081,'Digg',this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4125081,'Bury',this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="#4144265" class="layer">#10楼</a><a name="4144265" id="comment_anchor_4144265"></a>  <span class="comment_date">2018-12-21 00:18</span> <a id="a_comment_author_4144265" href="http://home.cnblogs.com/u/1568805/" target="_blank">Yvette11</a> <a href="http://msg.cnblogs.com/send/Yvette11" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_4144265" class="blog_comment_body">博主你好~想要请教一下用opencv做特征匹配的时候可以读取SAR哨兵一号遥感数据吗~具体文件名为：8E5C_VH_slc_list<br>打扰了，谢谢~</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4144265,'Digg',this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4144265,'Bury',this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="#4189576" class="layer">#11楼</a><a name="4189576" id="comment_anchor_4189576"></a>  <span class="comment_date">2019-02-27 15:43</span> <a id="a_comment_author_4189576" href="http://home.cnblogs.com/u/1612061/" target="_blank">顾人玉</a> <a href="http://msg.cnblogs.com/send/%E9%A1%BE%E4%BA%BA%E7%8E%89" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_4189576" class="blog_comment_body"><a href="#3794452" title="查看所回复的评论" onclick="commentManager.renderComments(0,50,3794452);">@</a>
+mengxiagogo<br>3,0之后不一样了，这篇博客的代码稍微改一下</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4189576,'Digg',this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4189576,'Bury',this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="#4189578" class="layer">#12楼</a><a name="4189578" id="comment_anchor_4189578"></a><span id="comment-maxId" style="display:none;">4189578</span><span id="comment-maxDate" style="display:none;">2019/2/27 15:43:52</span>  <span class="comment_date">2019-02-27 15:43</span> <a id="a_comment_author_4189578" href="http://home.cnblogs.com/u/1612061/" target="_blank">顾人玉</a> <a href="http://msg.cnblogs.com/send/%E9%A1%BE%E4%BA%BA%E7%8E%89" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_4189578" class="blog_comment_body"><a href="#3794452" title="查看所回复的评论" onclick="commentManager.renderComments(0,50,3794452);">@</a>
+mengxiagogo<br><a href="https://mp.csdn.net/mdeditor/87911069#" target="_blank">https://mp.csdn.net/mdeditor/87911069#</a></div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4189578,'Digg',this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4189578,'Bury',this)">反对(0)</a></div>
+			</div>
+		</div>
+	<div id="comments_pager_bottom"></div></div><script type="text/javascript">var commentManager = new blogCommentManager();commentManager.renderComments(0);</script>
+<div id="comment_form" class="commentform">
+<a name="commentform"></a>
+<div id="divCommentShow"></div>
+<div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="#" onclick="return RefreshPage();">刷新页面</a><a href="#top">返回顶部</a></div>
+<div id="comment_form_container"><div class="login_tips">注册用户登录后才能发表评论，请 <a rel="nofollow" href="javascript:void(0);" class="underline" onclick="return login('commentform');">登录</a> 或 <a rel="nofollow" href="javascript:void(0);" class="underline" onclick="return register();">注册</a>，<a href="http://www.cnblogs.com/">访问</a>网站首页。</div></div>
+<div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+<div id="ad_t2"><a href="http://www.ucancode.com/index.htm" target="_blank" onclick="ga('send', 'event', 'Link', 'click', 'T2-工控')">【推荐】超50万C++/C#源码: 大型实时仿真组态图形源码</a><br><a href="https://www.bagevent.com/event/2195041?bag_track=13072958" target="_blank" onclick="ga('send', 'event', 'Link', 'click', 'T2-看雪')">【活动】看雪2019安全开发者峰会，共话安全领域焦点</a><br><a href="https://ke.qq.com/adActivity.html?name=xiangxueketang2" target="_blank" onclick="ga('send', 'event', 'Link', 'click', 'T2-享学')">【培训】Java程序员年薪40W，他1年走了别人5年的路</a><br></div>
+<div id="opt_under_post"></div>
+<script async="async" src="OpenCV%E6%8E%A2%E7%B4%A2%E4%B9%8B%E8%B7%AF%EF%BC%88%E4%BA%8C%E5%8D%81%E4%B8%89%EF%BC%89%EF%BC%9A%E7%89%B9%E5%BE%81%E6%A3%80%E6%B5%8B%E5%92%8C%E7%89%B9%E5%BE%81%E5%8C%B9%E9%85%8D%E6%96%B9%E6%B3%95%E6%B1%87%E6%80%BB%20-%20Madcola%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/gpt.js"></script>
+<script>
+  var googletag = googletag || {};
+  googletag.cmd = googletag.cmd || [];
+</script>
+<script>
+  googletag.cmd.push(function() {
+        googletag.defineSlot('/1090369/C1', [300, 250], 'div-gpt-ad-1546353474406-0').addService(googletag.pubads());
+        googletag.defineSlot('/1090369/C2', [468, 60], 'div-gpt-ad-1539008685004-0').addService(googletag.pubads());
+        googletag.pubads().enableSingleRequest();
+        googletag.enableServices();
+  });
+</script>
+<div id="cnblogs_c1" class="c_ad_block">
+    <div id="div-gpt-ad-1546353474406-0" style="height:250px; width:300px;" data-google-query-id="CO2wzvmCneICFQ6MvQod22sMWg"><div id="google_ads_iframe_/1090369/C1_0__container__" style="border: 0pt none;"><iframe id="google_ads_iframe_/1090369/C1_0" title="3rd party ad content" name="google_ads_iframe_/1090369/C1_0" scrolling="no" marginwidth="0" marginheight="0" style="border: 0px none; vertical-align: bottom;" srcdoc="" data-google-container-id="1" data-load-complete="true" width="300" height="250" frameborder="0"></iframe></div></div>
+</div>
+<div id="under_post_news"><div class="itnews c_ad_block"><b>相关博文：</b><br>·  <a href="https://www.cnblogs.com/jukan/p/10139658.html" target="_blank" onclick="clickRecomItmem(10139658)">OpenCV探索之路（二十三）：特征检测和特征匹配方法汇总</a><br>·  <a href="https://www.cnblogs.com/wyuzl/p/7816011.html" target="_blank" onclick="clickRecomItmem(7816011)">特征检测和特征匹配方法</a><br>·  <a href="https://www.cnblogs.com/gaoyixue/p/10414301.html" target="_blank" onclick="clickRecomItmem(10414301)">利用SIFT进行特征匹配</a><br>·  <a href="https://www.cnblogs.com/mtcnn/p/9411957.html" target="_blank" onclick="clickRecomItmem(9411957)">Surf算法特征点检测与匹配</a><br>·  <a href="https://www.cnblogs.com/cfantaisie/archive/2011/06/14/2080917.html" target="_blank" onclick="clickRecomItmem(2080917)">SIFT 特征提取算法总结</a><br></div></div>
+<div id="cnblogs_c2" class="c_ad_block">
+    <div id="div-gpt-ad-1539008685004-0" style="height:60px; width:468px;" data-google-query-id="CO6wzvmCneICFQ6MvQod22sMWg"><div id="google_ads_iframe_/1090369/C2_0__container__" style="border: 0pt none;"><iframe id="google_ads_iframe_/1090369/C2_0" title="3rd party ad content" name="google_ads_iframe_/1090369/C2_0" scrolling="no" marginwidth="0" marginheight="0" style="border: 0px none; vertical-align: bottom;" srcdoc="" data-google-container-id="2" data-load-complete="true" width="468" height="60" frameborder="0"></iframe></div></div>
+</div>
+<div id="under_post_kb"><div class="itnews c_ad_block"><b>最新新闻</b>：<br> ·  <a href="https://news.cnblogs.com/n/625331/" target="_blank">深网|万达百货更名苏宁易购广场 改造店5月底亮相</a><br> ·  <a href="https://news.cnblogs.com/n/625330/" target="_blank">圈重点！腾讯全球数字生态大会带来不一样的智慧医疗</a><br> ·  <a href="https://news.cnblogs.com/n/625329/" target="_blank">3岁娃成“社交万人迷”？别再被天价“情商培训班”忽悠了</a><br> ·  <a href="https://news.cnblogs.com/n/625328/" target="_blank">国产手机十年厮杀过后，为何只剩下华为带着米OV?</a><br> ·  <a href="https://news.cnblogs.com/n/625327/" target="_blank">英国宣布5G将在7月3日上线，兼容四款5G手机</a><br>» <a href="http://news.cnblogs.com/" title="IT新闻" target="_blank">更多新闻...</a></div></div>
+<div id="HistoryToday" class="c_ad_block"></div>
+<script type="text/javascript">
+ if(enablePostBottom()) {
+    codeHighlight();
+    fixPostBody();
+    setTimeout(function () { incrementViewCount(cb_entryId); }, 50);
+    deliverT2();
+    deliverC1();
+    deliverC2();    
+    loadNewsAndKb();
+    loadBlogSignature();
+    LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+    GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+    loadOptUnderPost();
+    GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);  
+}
+</script>
+</div>
+
+    
+	</div><!--end: forFlow -->
+	</div><!--end: mainContent 主体内容容器-->
+
+	<div id="sideBar">
+		<div id="sideBarMain">
+			
+<!--done-->
+<div class="newsItem">
+<h3 class="catListTitle">公告</h3>
+	<div id="blog-news"><div id="profile_block">昵称：<a href="https://home.cnblogs.com/u/skyfsm/">Madcola</a><br>园龄：<a href="https://home.cnblogs.com/u/skyfsm/" title="入园时间：2017-01-09">2年4个月</a><br>粉丝：<a href="https://home.cnblogs.com/u/skyfsm/followers/">1151</a><br>关注：<a href="https://home.cnblogs.com/u/skyfsm/followees/">30</a><div id="p_b_follow"><a href="javascript:void(0);" onclick="follow('0615e00a-49d6-e611-845c-ac853d9f53ac')">+加关注</a></div><script>getFollowStatus('0615e00a-49d6-e611-845c-ac853d9f53ac')</script></div></div><script type="text/javascript">loadBlogNews();</script>
+</div>
+
+			<div id="blog-calendar" style=""><table id="blogCalendar" class="Cal" title="Calendar" cellspacing="0" cellpadding="0">
+	<tbody><tr><td colspan="7"><table class="CalTitle" cellspacing="0">
+		<tbody><tr><td class="CalNextPrev"><a href="javascript:void(0);" onclick="loadBlogCalendar('2019/04/01');return false;">&lt;</a></td><td align="center">2019年5月</td><td class="CalNextPrev" align="right"><a href="javascript:void(0);" onclick="loadBlogCalendar('2019/06/01');return false;">&gt;</a></td></tr>
+	</tbody></table></td></tr><tr><th class="CalDayHeader" abbr="日" scope="col" align="center">日</th><th class="CalDayHeader" abbr="一" scope="col" align="center">一</th><th class="CalDayHeader" abbr="二" scope="col" align="center">二</th><th class="CalDayHeader" abbr="三" scope="col" align="center">三</th><th class="CalDayHeader" abbr="四" scope="col" align="center">四</th><th class="CalDayHeader" abbr="五" scope="col" align="center">五</th><th class="CalDayHeader" abbr="六" scope="col" align="center">六</th></tr><tr><td class="CalOtherMonthDay" align="center">28</td><td class="CalOtherMonthDay" align="center">29</td><td class="CalOtherMonthDay" align="center">30</td><td align="center">1</td><td align="center">2</td><td align="center">3</td><td class="CalWeekendDay" align="center">4</td></tr><tr><td class="CalWeekendDay" align="center">5</td><td align="center">6</td><td align="center">7</td><td align="center">8</td><td align="center">9</td><td align="center">10</td><td class="CalWeekendDay" align="center">11</td></tr><tr><td class="CalWeekendDay" align="center">12</td><td align="center">13</td><td align="center">14</td><td class="CalTodayDay" align="center">15</td><td align="center">16</td><td align="center">17</td><td class="CalWeekendDay" align="center">18</td></tr><tr><td class="CalWeekendDay" align="center">19</td><td align="center">20</td><td align="center">21</td><td align="center">22</td><td align="center">23</td><td align="center">24</td><td class="CalWeekendDay" align="center">25</td></tr><tr><td class="CalWeekendDay" align="center">26</td><td align="center">27</td><td align="center">28</td><td align="center">29</td><td align="center">30</td><td align="center">31</td><td class="CalOtherMonthDay" align="center">1</td></tr><tr><td class="CalOtherMonthDay" align="center">2</td><td class="CalOtherMonthDay" align="center">3</td><td class="CalOtherMonthDay" align="center">4</td><td class="CalOtherMonthDay" align="center">5</td><td class="CalOtherMonthDay" align="center">6</td><td class="CalOtherMonthDay" align="center">7</td><td class="CalOtherMonthDay" align="center">8</td></tr>
+</tbody></table></div><script type="text/javascript">loadBlogDefaultCalendar();</script>
+			
+			<div id="leftcontentcontainer">
+				<div id="blog-sidecolumn"><div id="sidebar_search" class="sidebar-block">
+<div id="sidebar_search" class="mySearch">
+<h3 class="catListTitle">搜索</h3>
+<div id="sidebar_search_box">
+<div id="widget_my_zzk" class="div_my_zzk"><input id="q" onkeydown="return zzk_go_enter(event);" class="input_my_zzk" type="text">&nbsp;<input onclick="zzk_go()" value="找找看" id="btnZzk" class="btn_my_zzk" type="button"></div>
+<div id="widget_my_google" class="div_my_zzk"><input name="google_q" id="google_q" onkeydown="return google_go_enter(event)" class="input_my_zzk" type="text">&nbsp;<input onclick="google_go()" value="谷歌搜索" class="btn_my_zzk" type="button"></div>
+</div>
+</div>
+
+</div><div id="sidebar_shortcut" class="sidebar-block">
+<div class="catListLink">
+<h3 class="catListTitle">常用链接</h3>
+<ul>
+<li><a href="https://www.cnblogs.com/skyfsm/p/" title="我的博客的随笔列表">我的随笔</a></li><li><a href="https://www.cnblogs.com/skyfsm/MyComments.html" title="我发表过的评论列表">我的评论</a></li><li><a href="https://www.cnblogs.com/skyfsm/OtherPosts.html" title="我评论过的随笔列表">我的参与</a></li><li><a href="https://www.cnblogs.com/skyfsm/RecentComments.html" title="我的博客的评论列表">最新评论</a></li><li><a href="https://www.cnblogs.com/skyfsm/tag/" title="我的博客的标签列表">我的标签</a></li>
+</ul>
+<div id="itemListLin_con" style="display:none;">
+<ul>
+
+</ul>
+</div>
+</div></div><div id="sidebar_toptags" class="sidebar-block"></div><div id="sidebar_categories">
+<div id="sidebar_postcategory" class="catListPostCategory sidebar-block">
+<h3 class="catListTitle">随笔分类<span style="font-size:11px;font-weight:normal">(69)</span></h3>
+
+<ul>
+
+<li><a id="CatList_LinkList_0_Link_0" href="https://www.cnblogs.com/skyfsm/category/1012247.html">C++(1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_1" href="https://www.cnblogs.com/skyfsm/category/1304109.html">CUDA(1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_2" href="https://www.cnblogs.com/skyfsm/category/935270.html">Linux编程(12)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_3" href="https://www.cnblogs.com/skyfsm/category/1123384.html">OCR系列(8)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_4" href="https://www.cnblogs.com/skyfsm/category/1000207.html">opencv探索(28)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_5" href="https://www.cnblogs.com/skyfsm/category/1074227.html">STL(2)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_6" href="https://www.cnblogs.com/skyfsm/category/935280.html">波折岁月(4)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_7" href="https://www.cnblogs.com/skyfsm/category/1309644.html">工具技巧(1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_8" href="https://www.cnblogs.com/skyfsm/category/993807.html">机器学习之旅(5)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_9" href="https://www.cnblogs.com/skyfsm/category/1164360.html">深度学习(4)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_10" href="https://www.cnblogs.com/skyfsm/category/1085234.html">数字图像处理(3)</a> </li>
+
+</ul>
+
+</div>
+
+<div id="sidebar_postarchive" class="catListPostArchive sidebar-block">
+<h3 class="catListTitle">随笔档案<span style="font-size:11px;font-weight:normal">(69)</span></h3>
+
+<ul>
+
+<li><a id="CatList_LinkList_1_Link_0" href="https://www.cnblogs.com/skyfsm/archive/2019/02.html">2019年2月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_1" href="https://www.cnblogs.com/skyfsm/archive/2019/01.html">2019年1月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_2" href="https://www.cnblogs.com/skyfsm/archive/2018/12.html">2018年12月 (2)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_3" href="https://www.cnblogs.com/skyfsm/archive/2018/10.html">2018年10月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_4" href="https://www.cnblogs.com/skyfsm/archive/2018/09.html">2018年9月 (3)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_5" href="https://www.cnblogs.com/skyfsm/archive/2018/05.html">2018年5月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_6" href="https://www.cnblogs.com/skyfsm/archive/2018/04.html">2018年4月 (2)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_7" href="https://www.cnblogs.com/skyfsm/archive/2018/02.html">2018年2月 (6)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_8" href="https://www.cnblogs.com/skyfsm/archive/2018/01.html">2018年1月 (3)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_9" href="https://www.cnblogs.com/skyfsm/archive/2017/12.html">2017年12月 (4)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_10" href="https://www.cnblogs.com/skyfsm/archive/2017/11.html">2017年11月 (3)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_11" href="https://www.cnblogs.com/skyfsm/archive/2017/10.html">2017年10月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_12" href="https://www.cnblogs.com/skyfsm/archive/2017/09.html">2017年9月 (4)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_13" href="https://www.cnblogs.com/skyfsm/archive/2017/08.html">2017年8月 (3)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_14" href="https://www.cnblogs.com/skyfsm/archive/2017/07.html">2017年7月 (5)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_15" href="https://www.cnblogs.com/skyfsm/archive/2017/06.html">2017年6月 (4)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_16" href="https://www.cnblogs.com/skyfsm/archive/2017/05.html">2017年5月 (17)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_17" href="https://www.cnblogs.com/skyfsm/archive/2017/04.html">2017年4月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_18" href="https://www.cnblogs.com/skyfsm/archive/2017/02.html">2017年2月 (2)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_19" href="https://www.cnblogs.com/skyfsm/archive/2017/01.html">2017年1月 (5)</a> </li>
+
+</ul>
+
+</div>
+
+</div><div id="sidebar_scorerank" class="sidebar-block">
+<div class="catListBlogRank">
+<h3 class="catListTitle">积分与排名</h3>
+<ul>
+	<li class="liScore">
+		积分 -	208128
+	</li>
+	<li class="liRank">
+		排名 -	1669
+	</li>
+</ul>
+</div>
+
+
+</div><div id="sidebar_recentcomments" class="sidebar-block"><div id="recent_comments_wrap">
+<div class="catListComment">
+<h3 class="catListTitle">最新评论</h3>
+
+	<div id="RecentCommentsBlock"><ul>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/skyfsm/p/8276501.html#4254634">1. Re:Python各类图像库的图片读写方式总结</a></li>
+        <li class="recent_comment_body">厉害了，感谢博主</li>
+        <li class="recent_comment_author">--wuliytTaotao</li>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/skyfsm/p/10202575.html#4253566">2. Re:我的2018：OCR、实习和秋招</a></li>
+        <li class="recent_comment_body">喜欢你</li>
+        <li class="recent_comment_author">--灿七小烂</li>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/skyfsm/p/6806246.html#4253309">3. Re:基于深度学习的目标检测技术演进：R-CNN、Fast R-CNN、Faster R-CNN</a></li>
+        <li class="recent_comment_body">@super_zz你来写一篇大文？真是好笑...</li>
+        <li class="recent_comment_author">--xiaohe_01</li>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/skyfsm/p/8330882.html#4252618">4. Re:【Keras】基于SegNet和U-Net的遥感图像语义分割</a></li>
+        <li class="recent_comment_body">@丑丑爸爸哦，我没有用博主的数据集，我自己建的数据集做的其他分割实验，但原理都是一样的，RGB输入。...</li>
+        <li class="recent_comment_author">--疯狂的路飞</li>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/skyfsm/p/9776611.html#4252617">5. Re:【OCR技术系列之五】自然场景文本检测技术综述（CTPN, SegLink, EAST）</a></li>
+        <li class="recent_comment_body">写的很透彻</li>
+        <li class="recent_comment_author">--junboli</li>
+</ul>
+</div>
+</div>
+</div></div><div id="sidebar_topviewedposts" class="sidebar-block"><div id="topview_posts_wrap">
+<div class="catListView">
+<h3 class="catListTitle">阅读排行榜</h3>
+	<div id="TopViewPostsBlock"><ul><li><a href="https://www.cnblogs.com/skyfsm/p/6790245.html">1. 卷积神经网络CNN总结(185149)</a></li><li><a href="https://www.cnblogs.com/skyfsm/p/6806246.html">2. 基于深度学习的目标检测技术演进：R-CNN、Fast R-CNN、Faster R-CNN(182746)</a></li><li><a href="https://www.cnblogs.com/skyfsm/p/7411961.html">3. OpenCV探索之路（二十四）图像拼接和图像融合技术(74975)</a></li><li><a href="https://www.cnblogs.com/skyfsm/p/7401523.html">4. OpenCV探索之路（二十三）：特征检测和特征匹配方法汇总(45067)</a></li><li><a href="https://www.cnblogs.com/skyfsm/p/8451834.html">5. CNN网络架构演进：从LeNet到DenseNet(41741)</a></li><li><a href="https://www.cnblogs.com/skyfsm/p/6934246.html">6. C++ STL快速入门(40910)</a></li><li><a href="https://www.cnblogs.com/skyfsm/p/8443107.html">7. 【OCR技术系列之四】基于深度学习的文字识别（3755个汉字）(38640)</a></li><li><a href="https://www.cnblogs.com/skyfsm/p/6879265.html">8. OpenCV探索之路（六）：边缘检测（canny、sobel、laplacian）(38323)</a></li><li><a href="https://www.cnblogs.com/skyfsm/p/6287787.html">9. Linux编程之UDP SOCKET全攻略(35212)</a></li><li><a href="https://www.cnblogs.com/skyfsm/p/6897313.html">10. OpenCV探索之路（十四）：绘制点、直线、几何图形(32123)</a></li></ul></div>
+</div>
+</div></div><div id="sidebar_topcommentedposts" class="sidebar-block"><div id="topfeedback_posts_wrap">
+<div class="catListFeedback">
+<h3 class="catListTitle">评论排行榜</h3>
+	<div id="TopFeedbackPostsBlock"><ul><li><a href="https://www.cnblogs.com/skyfsm/p/7411961.html">1. OpenCV探索之路（二十四）图像拼接和图像融合技术(67)</a></li><li><a href="https://www.cnblogs.com/skyfsm/p/8443107.html">2. 【OCR技术系列之四】基于深度学习的文字识别（3755个汉字）(65)</a></li><li><a href="https://www.cnblogs.com/skyfsm/p/8330882.html">3. 【Keras】基于SegNet和U-Net的遥感图像语义分割(63)</a></li><li><a href="https://www.cnblogs.com/skyfsm/p/10345305.html">4. 【OCR技术系列之八】端到端不定长文本识别CRNN代码实现(29)</a></li><li><a href="https://www.cnblogs.com/skyfsm/p/8051705.html">5. 【Keras】从两个实际任务掌握图像分类(28)</a></li></ul></div>
+</div>
+</div></div><div id="sidebar_topdiggedposts" class="sidebar-block"><div id="topdigg_posts_wrap">
+<div class="catListView">
+<h3 class="catListTitle">推荐排行榜</h3>
+<div id="TopDiggPostsBlock"><ul><li><a href="https://www.cnblogs.com/skyfsm/p/6806246.html">1. 基于深度学习的目标检测技术演进：R-CNN、Fast R-CNN、Faster R-CNN(75)</a></li><li><a href="https://www.cnblogs.com/skyfsm/p/6790245.html">2. 卷积神经网络CNN总结(52)</a></li><li><a href="https://www.cnblogs.com/skyfsm/p/10202575.html">3. 我的2018：OCR、实习和秋招(19)</a></li><li><a href="https://www.cnblogs.com/skyfsm/p/8443107.html">4. 【OCR技术系列之四】基于深度学习的文字识别（3755个汉字）(19)</a></li><li><a href="https://www.cnblogs.com/skyfsm/p/8330882.html">5. 【Keras】基于SegNet和U-Net的遥感图像语义分割(18)</a></li><li><a href="https://www.cnblogs.com/skyfsm/p/7411961.html">6. OpenCV探索之路（二十四）图像拼接和图像融合技术(16)</a></li><li><a href="https://www.cnblogs.com/skyfsm/p/9613894.html">7. 我在北京实习的四个月(15)</a></li><li><a href="https://www.cnblogs.com/skyfsm/p/8451834.html">8. CNN网络架构演进：从LeNet到DenseNet(14)</a></li><li><a href="https://www.cnblogs.com/skyfsm/p/8088158.html">9. 读研以来的一些感想：名校好在哪里？(13)</a></li><li><a href="https://www.cnblogs.com/skyfsm/p/7923015.html">10. 【OCR技术系列之一】字符识别技术总览(12)</a></li></ul></div>
+</div></div></div></div><script type="text/javascript">loadBlogSideColumn();</script>
+			</div>
+			
+		</div><!--end: sideBarMain -->
+	</div><!--end: sideBar 侧边栏容器 -->
+	<div class="clear"></div>
+	</div><!--end: main -->
+	<div class="clear"></div>
+	<div id="footer">
+		
+<!--done-->
+Copyright ©2019 Madcola
+	</div><!--end: footer -->
+</div><!--end: home 自定义的最大容器 -->
+
+
+
+</body></html>

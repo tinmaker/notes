@@ -1,0 +1,56 @@
+/* Prodcut Basic Sytle */
+
+#tabContent h1,#tabContent h2, #tabContent h3, #tabContent h4, #tabContent h5, #tabContent h6 ,#tabContent p, #tabContent ul ,#tabContent li {margin:0;padding:0;}
+#tabContent h2 {font-size:18px;font-weight:400;margin-bottom:5px;}
+#tabContent h3 {font-size:14px;font-weight:700;margin-bottom:10px;}
+		
+#tabContent h4,
+#tabContent p,#tabContent a,#tabContent li,#tabContent table {font-size:13px;}
+#tabContent p sup, #tabContent li sup {font-size:13px;font-weight:700;}
+#tabContent {background-color:#FDFDFD; margin-bottom:10px; padding-bottom:20px;}
+#tabContent {margin-left:0;}
+#tabContent p {color:#494949;padding:10px 10px 10px 0px;font: 13px/1.8 'Helvetica Neue', Arial, 'Liberation Sans', FreeSans, sans-serif;}
+	
+
+#tabContent h1 sup{font-size:18px;line-height:1;}
+#tabContent h2 sup{font-size:14px;}
+#tabContent p sup,
+#tabContent li sup,
+#tabContent h3 sup,
+#tabContent h4 sup
+{font-size:13px;}
+
+#tabContent h4.sub {font-size: 12px;font-weight:700;}
+#tabContent p.nowrap-top{padding-top:0;}
+#tabContent p.nowrap-bottom{padding-bottom:0;}
+#tabContent p.nowrap{padding-top:0;padding-bottom:0; margin-top:10px;}
+#tabContent a{text-decoration:underline; color: #000000;}
+#tabContent ul {margin:0;padding:0 0 20px 0px;}
+#tabContent li {color:#494949;padding:2px 0;margin-left:30px;line-height:1.8; list-style:disc;}
+
+
+
+#tabContent .price {width:680px;margin:0 10px 20px 10px;background-color:#FFF;}
+#tabContent .price th,
+#tabContent .price td{padding:10px;vertical-align:middle;}
+#tabContent .price th {text-align:left;font-weight:bold;	
+color: #000000;border-bottom:2px solid #000000;
+}
+#tabContent .price td {font-size:13px;font-weight:bold;color:#494949;}
+#tabContent .price td.tleft,
+#tabContent .price td.tright {border-right:1px solid #f5f5f5;border-bottom:1px solid #f5f5f5;}
+#tabContent .price td.tright{text-align:right;}
+#tabContent .price td.last{border-bottom:1px solid #f5f5f5;border-right:none;}
+#tabContent .btn2 {text-align:right; padding-right:10px;}
+#tabContent .btn2 a {width:140px;}
+#tabContent .left, #tabContent .right {
+	padding-left:10px;
+	width:320px;
+	float:left;
+}
+#tabContent .left strong ,#tabContent .right strong{color:#494949}
+#tabContent .left li, #tabContent .right li {margin-left:18px;}
+#tabContent .left {
+	padding-right:20px;
+	padding-left:20px;
+}

@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="zh-cn"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="origin">
+    <title>（原）python中matplotlib的颜色及线条控制 - darkknightzh - 博客园</title>
+<meta property="og:description" content="转载请注明出处： http://www.cnblogs.com/darkknightzh/p/6117528.html 参考网址： http://stackoverflow.com/questions">
+    <link type="text/css" rel="stylesheet" href="%EF%BC%88%E5%8E%9F%EF%BC%89python%E4%B8%ADmatplotlib%E7%9A%84%E9%A2%9C%E8%89%B2%E5%8F%8A%E7%BA%BF%E6%9D%A1%E6%8E%A7%E5%88%B6%20-%20darkknightzh%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/blog-common.css">
+<link id="MainCss" type="text/css" rel="stylesheet" href="%EF%BC%88%E5%8E%9F%EF%BC%89python%E4%B8%ADmatplotlib%E7%9A%84%E9%A2%9C%E8%89%B2%E5%8F%8A%E7%BA%BF%E6%9D%A1%E6%8E%A7%E5%88%B6%20-%20darkknightzh%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/bundle-AnotherEon001.css">
+<link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="%EF%BC%88%E5%8E%9F%EF%BC%89python%E4%B8%ADmatplotlib%E7%9A%84%E9%A2%9C%E8%89%B2%E5%8F%8A%E7%BA%BF%E6%9D%A1%E6%8E%A7%E5%88%B6%20-%20darkknightzh%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/bundle-AnotherEon001-mobile.css">
+    <link title="RSS" type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/darkknightzh/rss">
+    <link title="RSD" type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/darkknightzh/rsd.xml">
+<link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/darkknightzh/wlwmanifest.xml">
+    <script src="%EF%BC%88%E5%8E%9F%EF%BC%89python%E4%B8%ADmatplotlib%E7%9A%84%E9%A2%9C%E8%89%B2%E5%8F%8A%E7%BA%BF%E6%9D%A1%E6%8E%A7%E5%88%B6%20-%20darkknightzh%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/rum.js"></script><script src="%EF%BC%88%E5%8E%9F%EF%BC%89python%E4%B8%ADmatplotlib%E7%9A%84%E9%A2%9C%E8%89%B2%E5%8F%8A%E7%BA%BF%E6%9D%A1%E6%8E%A7%E5%88%B6%20-%20darkknightzh%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/amp4ads-host-v0.js"></script><script src="%EF%BC%88%E5%8E%9F%EF%BC%89python%E4%B8%ADmatplotlib%E7%9A%84%E9%A2%9C%E8%89%B2%E5%8F%8A%E7%BA%BF%E6%9D%A1%E6%8E%A7%E5%88%B6%20-%20darkknightzh%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/pubads_impl_rendering_2019050901.js"></script><script async="" src="%EF%BC%88%E5%8E%9F%EF%BC%89python%E4%B8%ADmatplotlib%E7%9A%84%E9%A2%9C%E8%89%B2%E5%8F%8A%E7%BA%BF%E6%9D%A1%E6%8E%A7%E5%88%B6%20-%20darkknightzh%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/analytics.js"></script><script type="text/javascript" src="%EF%BC%88%E5%8E%9F%EF%BC%89python%E4%B8%ADmatplotlib%E7%9A%84%E9%A2%9C%E8%89%B2%E5%8F%8A%E7%BA%BF%E6%9D%A1%E6%8E%A7%E5%88%B6%20-%20darkknightzh%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/encoder.js"></script><script src="%EF%BC%88%E5%8E%9F%EF%BC%89python%E4%B8%ADmatplotlib%E7%9A%84%E9%A2%9C%E8%89%B2%E5%8F%8A%E7%BA%BF%E6%9D%A1%E6%8E%A7%E5%88%B6%20-%20darkknightzh%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/jquery-2.js"></script>
+    <script>var currentBlogId=201467;var currentBlogApp='darkknightzh',cb_enable_mathjax=true;var isLogined=false;</script>
+    <script type="text/x-mathjax-config;executed=true">
+    MathJax.Hub.Config({
+        tex2jax: { inlineMath: [['$','$'], ['\\(','\\)']], processClass: 'math', processEscapes: true },
+        TeX: { 
+            equationNumbers: { autoNumber: ['AMS'], useLabelIds: true }, 
+            extensions: ['extpfeil.js'],
+            Macros: {bm: "\\boldsymbol"}
+        },
+        'HTML-CSS': { linebreaks: { automatic: true } },
+        SVG: { linebreaks: { automatic: true } }
+        });
+    </script><script src="%EF%BC%88%E5%8E%9F%EF%BC%89python%E4%B8%ADmatplotlib%E7%9A%84%E9%A2%9C%E8%89%B2%E5%8F%8A%E7%BA%BF%E6%9D%A1%E6%8E%A7%E5%88%B6%20-%20darkknightzh%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/MathJax.js"></script>
+<script src="%EF%BC%88%E5%8E%9F%EF%BC%89python%E4%B8%ADmatplotlib%E7%9A%84%E9%A2%9C%E8%89%B2%E5%8F%8A%E7%BA%BF%E6%9D%A1%E6%8E%A7%E5%88%B6%20-%20darkknightzh%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/blog-common.js" type="text/javascript"></script>
+<style type="text/css">.MathJax_Hover_Frame {border-radius: .25em; -webkit-border-radius: .25em; -moz-border-radius: .25em; -khtml-border-radius: .25em; box-shadow: 0px 0px 15px #83A; -webkit-box-shadow: 0px 0px 15px #83A; -moz-box-shadow: 0px 0px 15px #83A; -khtml-box-shadow: 0px 0px 15px #83A; border: 1px solid #A6D ! important; display: inline-block; position: absolute}
+.MathJax_Menu_Button .MathJax_Hover_Arrow {position: absolute; cursor: pointer; display: inline-block; border: 2px solid #AAA; border-radius: 4px; -webkit-border-radius: 4px; -moz-border-radius: 4px; -khtml-border-radius: 4px; font-family: 'Courier New',Courier; font-size: 9px; color: #F0F0F0}
+.MathJax_Menu_Button .MathJax_Hover_Arrow span {display: block; background-color: #AAA; border: 1px solid; border-radius: 3px; line-height: 0; padding: 4px}
+.MathJax_Hover_Arrow:hover {color: white!important; border: 2px solid #CCC!important}
+.MathJax_Hover_Arrow:hover span {background-color: #CCC!important}
+</style><style type="text/css">#MathJax_About {position: fixed; left: 50%; width: auto; text-align: center; border: 3px outset; padding: 1em 2em; background-color: #DDDDDD; color: black; cursor: default; font-family: message-box; font-size: 120%; font-style: normal; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; z-index: 201; border-radius: 15px; -webkit-border-radius: 15px; -moz-border-radius: 15px; -khtml-border-radius: 15px; box-shadow: 0px 10px 20px #808080; -webkit-box-shadow: 0px 10px 20px #808080; -moz-box-shadow: 0px 10px 20px #808080; -khtml-box-shadow: 0px 10px 20px #808080; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+#MathJax_About.MathJax_MousePost {outline: none}
+.MathJax_Menu {position: absolute; background-color: white; color: black; width: auto; padding: 5px 0px; border: 1px solid #CCCCCC; margin: 0; cursor: default; font: menu; text-align: left; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; z-index: 201; border-radius: 5px; -webkit-border-radius: 5px; -moz-border-radius: 5px; -khtml-border-radius: 5px; box-shadow: 0px 10px 20px #808080; -webkit-box-shadow: 0px 10px 20px #808080; -moz-box-shadow: 0px 10px 20px #808080; -khtml-box-shadow: 0px 10px 20px #808080; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+.MathJax_MenuItem {padding: 1px 2em; background: transparent}
+.MathJax_MenuArrow {position: absolute; right: .5em; padding-top: .25em; color: #666666; font-size: .75em}
+.MathJax_MenuActive .MathJax_MenuArrow {color: white}
+.MathJax_MenuArrow.RTL {left: .5em; right: auto}
+.MathJax_MenuCheck {position: absolute; left: .7em}
+.MathJax_MenuCheck.RTL {right: .7em; left: auto}
+.MathJax_MenuRadioCheck {position: absolute; left: .7em}
+.MathJax_MenuRadioCheck.RTL {right: .7em; left: auto}
+.MathJax_MenuLabel {padding: 1px 2em 3px 1.33em; font-style: italic}
+.MathJax_MenuRule {border-top: 1px solid #DDDDDD; margin: 4px 3px}
+.MathJax_MenuDisabled {color: GrayText}
+.MathJax_MenuActive {background-color: #606872; color: white}
+.MathJax_MenuDisabled:focus, .MathJax_MenuLabel:focus {background-color: #E8E8E8}
+.MathJax_ContextMenu:focus {outline: none}
+.MathJax_ContextMenu .MathJax_MenuItem:focus {outline: none}
+#MathJax_AboutClose {top: .2em; right: .2em}
+.MathJax_Menu .MathJax_MenuClose {top: -10px; left: -10px}
+.MathJax_MenuClose {position: absolute; cursor: pointer; display: inline-block; border: 2px solid #AAA; border-radius: 18px; -webkit-border-radius: 18px; -moz-border-radius: 18px; -khtml-border-radius: 18px; font-family: 'Courier New',Courier; font-size: 24px; color: #F0F0F0}
+.MathJax_MenuClose span {display: block; background-color: #AAA; border: 1.5px solid; border-radius: 18px; -webkit-border-radius: 18px; -moz-border-radius: 18px; -khtml-border-radius: 18px; line-height: 0; padding: 8px 0 6px}
+.MathJax_MenuClose:hover {color: white!important; border: 2px solid #CCC!important}
+.MathJax_MenuClose:hover span {background-color: #CCC!important}
+.MathJax_MenuClose:hover:focus {outline: none}
+</style><style type="text/css">.MathJax_Preview .MJXf-math {color: inherit!important}
+</style><style type="text/css">.MJX_Assistive_MathML {position: absolute!important; top: 0; left: 0; clip: rect(1px, 1px, 1px, 1px); padding: 1px 0 0 0!important; border: 0!important; height: 1px!important; width: 1px!important; overflow: hidden!important; display: block!important; -webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none}
+.MJX_Assistive_MathML.MJX_Assistive_MathML_Block {width: 100%!important}
+</style><style type="text/css">#MathJax_Zoom {position: absolute; background-color: #F0F0F0; overflow: auto; display: block; z-index: 301; padding: .5em; border: 1px solid black; margin: 0; font-weight: normal; font-style: normal; text-align: left; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; -webkit-box-sizing: content-box; -moz-box-sizing: content-box; box-sizing: content-box; box-shadow: 5px 5px 15px #AAAAAA; -webkit-box-shadow: 5px 5px 15px #AAAAAA; -moz-box-shadow: 5px 5px 15px #AAAAAA; -khtml-box-shadow: 5px 5px 15px #AAAAAA; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+#MathJax_ZoomOverlay {position: absolute; left: 0; top: 0; z-index: 300; display: inline-block; width: 100%; height: 100%; border: 0; padding: 0; margin: 0; background-color: white; opacity: 0; filter: alpha(opacity=0)}
+#MathJax_ZoomFrame {position: relative; display: inline-block; height: 0; width: 0}
+#MathJax_ZoomEventTrap {position: absolute; left: 0; top: 0; z-index: 302; display: inline-block; border: 0; padding: 0; margin: 0; background-color: white; opacity: 0; filter: alpha(opacity=0)}
+</style><style type="text/css">.MathJax_Preview {color: #888}
+#MathJax_Message {position: fixed; left: 1px; bottom: 2px; background-color: #E6E6E6; border: 1px solid #959595; margin: 0px; padding: 2px 8px; z-index: 102; color: black; font-size: 80%; width: auto; white-space: nowrap}
+#MathJax_MSIE_Frame {position: absolute; top: 0; left: 0; width: 0px; z-index: 101; border: 0px; margin: 0px; padding: 0px}
+.MathJax_Error {color: #CC0000; font-style: italic}
+</style><style type="text/css">.MJXp-script {font-size: .8em}
+.MJXp-right {-webkit-transform-origin: right; -moz-transform-origin: right; -ms-transform-origin: right; -o-transform-origin: right; transform-origin: right}
+.MJXp-bold {font-weight: bold}
+.MJXp-italic {font-style: italic}
+.MJXp-scr {font-family: MathJax_Script,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-frak {font-family: MathJax_Fraktur,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-sf {font-family: MathJax_SansSerif,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-cal {font-family: MathJax_Caligraphic,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-mono {font-family: MathJax_Typewriter,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-largeop {font-size: 150%}
+.MJXp-largeop.MJXp-int {vertical-align: -.2em}
+.MJXp-math {display: inline-block; line-height: 1.2; text-indent: 0; font-family: 'Times New Roman',Times,STIXGeneral,serif; white-space: nowrap; border-collapse: collapse}
+.MJXp-display {display: block; text-align: center; margin: 1em 0}
+.MJXp-math span {display: inline-block}
+.MJXp-box {display: block!important; text-align: center}
+.MJXp-box:after {content: " "}
+.MJXp-rule {display: block!important; margin-top: .1em}
+.MJXp-char {display: block!important}
+.MJXp-mo {margin: 0 .15em}
+.MJXp-mfrac {margin: 0 .125em; vertical-align: .25em}
+.MJXp-denom {display: inline-table!important; width: 100%}
+.MJXp-denom > * {display: table-row!important}
+.MJXp-surd {vertical-align: top}
+.MJXp-surd > * {display: block!important}
+.MJXp-script-box > *  {display: table!important; height: 50%}
+.MJXp-script-box > * > * {display: table-cell!important; vertical-align: top}
+.MJXp-script-box > *:last-child > * {vertical-align: bottom}
+.MJXp-script-box > * > * > * {display: block!important}
+.MJXp-mphantom {visibility: hidden}
+.MJXp-munderover {display: inline-table!important}
+.MJXp-over {display: inline-block!important; text-align: center}
+.MJXp-over > * {display: block!important}
+.MJXp-munderover > * {display: table-row!important}
+.MJXp-mtable {vertical-align: .25em; margin: 0 .125em}
+.MJXp-mtable > * {display: inline-table!important; vertical-align: middle}
+.MJXp-mtr {display: table-row!important}
+.MJXp-mtd {display: table-cell!important; text-align: center; padding: .5em 0 0 .5em}
+.MJXp-mtr > .MJXp-mtd:first-child {padding-left: 0}
+.MJXp-mtr:first-child > .MJXp-mtd {padding-top: 0}
+.MJXp-mlabeledtr {display: table-row!important}
+.MJXp-mlabeledtr > .MJXp-mtd:first-child {padding-left: 0}
+.MJXp-mlabeledtr:first-child > .MJXp-mtd {padding-top: 0}
+.MJXp-merror {background-color: #FFFF88; color: #CC0000; border: 1px solid #CC0000; padding: 1px 3px; font-style: normal; font-size: 90%}
+.MJXp-scale0 {-webkit-transform: scaleX(.0); -moz-transform: scaleX(.0); -ms-transform: scaleX(.0); -o-transform: scaleX(.0); transform: scaleX(.0)}
+.MJXp-scale1 {-webkit-transform: scaleX(.1); -moz-transform: scaleX(.1); -ms-transform: scaleX(.1); -o-transform: scaleX(.1); transform: scaleX(.1)}
+.MJXp-scale2 {-webkit-transform: scaleX(.2); -moz-transform: scaleX(.2); -ms-transform: scaleX(.2); -o-transform: scaleX(.2); transform: scaleX(.2)}
+.MJXp-scale3 {-webkit-transform: scaleX(.3); -moz-transform: scaleX(.3); -ms-transform: scaleX(.3); -o-transform: scaleX(.3); transform: scaleX(.3)}
+.MJXp-scale4 {-webkit-transform: scaleX(.4); -moz-transform: scaleX(.4); -ms-transform: scaleX(.4); -o-transform: scaleX(.4); transform: scaleX(.4)}
+.MJXp-scale5 {-webkit-transform: scaleX(.5); -moz-transform: scaleX(.5); -ms-transform: scaleX(.5); -o-transform: scaleX(.5); transform: scaleX(.5)}
+.MJXp-scale6 {-webkit-transform: scaleX(.6); -moz-transform: scaleX(.6); -ms-transform: scaleX(.6); -o-transform: scaleX(.6); transform: scaleX(.6)}
+.MJXp-scale7 {-webkit-transform: scaleX(.7); -moz-transform: scaleX(.7); -ms-transform: scaleX(.7); -o-transform: scaleX(.7); transform: scaleX(.7)}
+.MJXp-scale8 {-webkit-transform: scaleX(.8); -moz-transform: scaleX(.8); -ms-transform: scaleX(.8); -o-transform: scaleX(.8); transform: scaleX(.8)}
+.MJXp-scale9 {-webkit-transform: scaleX(.9); -moz-transform: scaleX(.9); -ms-transform: scaleX(.9); -o-transform: scaleX(.9); transform: scaleX(.9)}
+.MathJax_PHTML .noError {vertical-align: ; font-size: 90%; text-align: left; color: black; padding: 1px 3px; border: 1px solid}
+</style><link rel="preload" href="%EF%BC%88%E5%8E%9F%EF%BC%89python%E4%B8%ADmatplotlib%E7%9A%84%E9%A2%9C%E8%89%B2%E5%8F%8A%E7%BA%BF%E6%9D%A1%E6%8E%A7%E5%88%B6%20-%20darkknightzh%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/integrator.js" as="script"><script type="text/javascript" src="%EF%BC%88%E5%8E%9F%EF%BC%89python%E4%B8%ADmatplotlib%E7%9A%84%E9%A2%9C%E8%89%B2%E5%8F%8A%E7%BA%BF%E6%9D%A1%E6%8E%A7%E5%88%B6%20-%20darkknightzh%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/integrator.js"></script><script src="%EF%BC%88%E5%8E%9F%EF%BC%89python%E4%B8%ADmatplotlib%E7%9A%84%E9%A2%9C%E8%89%B2%E5%8F%8A%E7%BA%BF%E6%9D%A1%E6%8E%A7%E5%88%B6%20-%20darkknightzh%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/pubads_impl_2019050901.js" async=""></script></head>
+<body><div id="MathJax_Message" style="display: none;"></div>
+<a name="top"></a>
+
+
+<div id="wrapper">
+<div id="header">
+
+<div id="top">
+<h1><a id="Header1_HeaderTitle" class="headermaintitle" href="https://www.cnblogs.com/darkknightzh/">darkknightzh</a></h1>
+<div id="subtitle"></div>
+</div>
+<div id="sub"><div id="blog_stats">
+<div class="BlogStats">随笔 - 171, 文章 - 0, 评论 - 99, 引用 - 0</div>
+</div></div>
+
+
+
+</div>
+<div id="main_container">
+<div id="main_content">
+<div id="content">
+	
+        <div id="post_detail">
+	<div class="post">
+		<h2>
+			<a id="cb_post_title_url" href="https://www.cnblogs.com/darkknightzh/p/6117528.html">（原）python中matplotlib的颜色及线条控制</a>
+		</h2>
+		<div class="postbody">
+		<div id="cnblogs_post_body" class="blogpost-body"><p>转载请注明出处：</p>
+<p><a href="http://www.cnblogs.com/darkknightzh/p/6117528.html" target="_blank">http://www.cnblogs.com/darkknightzh/p/6117528.html</a></p>
+<p>参考网址：</p>
+<p><a href="http://stackoverflow.com/questions/22408237/named-colors-in-matplotlib" target="_blank">http://stackoverflow.com/questions/22408237/named-colors-in-matplotlib</a></p>
+<p><a href="http://stackoverflow.com/questions/8409095/matplotlib-set-markers-for-individual-points-on-a-line" target="_blank">http://stackoverflow.com/questions/8409095/matplotlib-set-markers-for-individual-points-on-a-line</a></p>
+<p>&nbsp;</p>
+<p>代码：</p>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="%EF%BC%88%E5%8E%9F%EF%BC%89python%E4%B8%ADmatplotlib%E7%9A%84%E9%A2%9C%E8%89%B2%E5%8F%8A%E7%BA%BF%E6%9D%A1%E6%8E%A7%E5%88%B6%20-%20darkknightzh%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/copycode.gif" alt="复制代码"></a></span></div>
+<pre>plt.subplots(1, 1<span style="color: #000000;">)
+x</span>= range(100<span style="color: #000000;">)
+y</span>= [i**2 <span style="color: #0000ff;">for</span> i <span style="color: #0000ff;">in</span><span style="color: #000000;"> x]
+
+plt.plot(x, y, linewidth </span>= <span style="color: #800000;">'</span><span style="color: #800000;">1</span><span style="color: #800000;">'</span>, label = <span style="color: #800000;">"</span><span style="color: #800000;">test</span><span style="color: #800000;">"</span>, color=<span style="color: #800000;">'</span><span style="color: #800000;"> coral </span><span style="color: #800000;">'</span>, linestyle=<span style="color: #800000;">'</span><span style="color: #800000;">:</span><span style="color: #800000;">'</span>, marker=<span style="color: #800000;">'</span><span style="color: #800000;">|</span><span style="color: #800000;">'</span><span style="color: #000000;">)
+plt.legend(loc</span>=<span style="color: #800000;">'</span><span style="color: #800000;">upper left</span><span style="color: #800000;">'</span><span style="color: #000000;">)
+plt.show()</span></pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="%EF%BC%88%E5%8E%9F%EF%BC%89python%E4%B8%ADmatplotlib%E7%9A%84%E9%A2%9C%E8%89%B2%E5%8F%8A%E7%BA%BF%E6%9D%A1%E6%8E%A7%E5%88%B6%20-%20darkknightzh%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/copycode.gif" alt="复制代码"></a></span></div></div>
+<p>结果：</p>
+<p><img src="%EF%BC%88%E5%8E%9F%EF%BC%89python%E4%B8%ADmatplotlib%E7%9A%84%E9%A2%9C%E8%89%B2%E5%8F%8A%E7%BA%BF%E6%9D%A1%E6%8E%A7%E5%88%B6%20-%20darkknightzh%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/682463-20161130135845740-366462927.png" alt=""></p>
+<p>说明：其实上面color=' coral '中，可以换成color=' #054E9F'，每两个十六进制数分别代表R、G、B分量：</p>
+<p><img src="%EF%BC%88%E5%8E%9F%EF%BC%89python%E4%B8%ADmatplotlib%E7%9A%84%E9%A2%9C%E8%89%B2%E5%8F%8A%E7%BA%BF%E6%9D%A1%E6%8E%A7%E5%88%B6%20-%20darkknightzh%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/682463-20161130135850802-1550140723.png" alt=""></p>
+<p>&nbsp;</p>
+<p>第二个参考网址给出了linestyle可选参数：</p>
+<div class="cnblogs_code">
+<pre>'-'       solid line style
+'--'      dashed line style
+'-.'      dash-dot line style
+':'       dotted line style</pre>
+</div>
+<p>第二个参考网址给出了marker可选参数：</p>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="%EF%BC%88%E5%8E%9F%EF%BC%89python%E4%B8%ADmatplotlib%E7%9A%84%E9%A2%9C%E8%89%B2%E5%8F%8A%E7%BA%BF%E6%9D%A1%E6%8E%A7%E5%88%B6%20-%20darkknightzh%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/copycode.gif" alt="复制代码"></a></span></div>
+<pre>'.'       point marker
+','       pixel marker
+'o'       circle marker
+'v'       triangle_down marker
+'^'       triangle_up marker
+'&lt;'       triangle_left marker
+'&gt;'       triangle_right marker
+'1'       tri_down marker
+'2'       tri_up marker
+'3'       tri_left marker
+'4'       tri_right marker
+'s'       square marker
+'p'       pentagon marker
+'*'       star marker
+'h'       hexagon1 marker
+'H'       hexagon2 marker
+'+'       plus marker
+'x'       x marker
+'D'       diamond marker
+'d'       thin_diamond marker
+'|'       vline marker
+'_'       hline marker</pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="%EF%BC%88%E5%8E%9F%EF%BC%89python%E4%B8%ADmatplotlib%E7%9A%84%E9%A2%9C%E8%89%B2%E5%8F%8A%E7%BA%BF%E6%9D%A1%E6%8E%A7%E5%88%B6%20-%20darkknightzh%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/copycode.gif" alt="复制代码"></a></span></div></div>
+<p>第一个参考网址给出了matplotlib中color可用的颜色：</p>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="%EF%BC%88%E5%8E%9F%EF%BC%89python%E4%B8%ADmatplotlib%E7%9A%84%E9%A2%9C%E8%89%B2%E5%8F%8A%E7%BA%BF%E6%9D%A1%E6%8E%A7%E5%88%B6%20-%20darkknightzh%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/copycode.gif" alt="复制代码"></a></span></div>
+<pre>cnames = {
+'aliceblue':            '#F0F8FF',
+'antiquewhite':         '#FAEBD7',
+'aqua':                 '#00FFFF',
+'aquamarine':           '#7FFFD4',
+'azure':                '#F0FFFF',
+'beige':                '#F5F5DC',
+'bisque':               '#FFE4C4',
+'black':                '#000000',
+'blanchedalmond':       '#FFEBCD',
+'blue':                 '#0000FF',
+'blueviolet':           '#8A2BE2',
+'brown':                '#A52A2A',
+'burlywood':            '#DEB887',
+'cadetblue':            '#5F9EA0',
+'chartreuse':           '#7FFF00',
+'chocolate':            '#D2691E',
+'coral':                '#FF7F50',
+'cornflowerblue':       '#6495ED',
+'cornsilk':             '#FFF8DC',
+'crimson':              '#DC143C',
+'cyan':                 '#00FFFF',
+'darkblue':             '#00008B',
+'darkcyan':             '#008B8B',
+'darkgoldenrod':        '#B8860B',
+'darkgray':             '#A9A9A9',
+'darkgreen':            '#006400',
+'darkkhaki':            '#BDB76B',
+'darkmagenta':          '#8B008B',
+'darkolivegreen':       '#556B2F',
+'darkorange':           '#FF8C00',
+'darkorchid':           '#9932CC',
+'darkred':              '#8B0000',
+'darksalmon':           '#E9967A',
+'darkseagreen':         '#8FBC8F',
+'darkslateblue':        '#483D8B',
+'darkslategray':        '#2F4F4F',
+'darkturquoise':        '#00CED1',
+'darkviolet':           '#9400D3',
+'deeppink':             '#FF1493',
+'deepskyblue':          '#00BFFF',
+'dimgray':              '#696969',
+'dodgerblue':           '#1E90FF',
+'firebrick':            '#B22222',
+'floralwhite':          '#FFFAF0',
+'forestgreen':          '#228B22',
+'fuchsia':              '#FF00FF',
+'gainsboro':            '#DCDCDC',
+'ghostwhite':           '#F8F8FF',
+'gold':                 '#FFD700',
+'goldenrod':            '#DAA520',
+'gray':                 '#808080',
+'green':                '#008000',
+'greenyellow':          '#ADFF2F',
+'honeydew':             '#F0FFF0',
+'hotpink':              '#FF69B4',
+'indianred':            '#CD5C5C',
+'indigo':               '#4B0082',
+'ivory':                '#FFFFF0',
+'khaki':                '#F0E68C',
+'lavender':             '#E6E6FA',
+'lavenderblush':        '#FFF0F5',
+'lawngreen':            '#7CFC00',
+'lemonchiffon':         '#FFFACD',
+'lightblue':            '#ADD8E6',
+'lightcoral':           '#F08080',
+'lightcyan':            '#E0FFFF',
+'lightgoldenrodyellow': '#FAFAD2',
+'lightgreen':           '#90EE90',
+'lightgray':            '#D3D3D3',
+'lightpink':            '#FFB6C1',
+'lightsalmon':          '#FFA07A',
+'lightseagreen':        '#20B2AA',
+'lightskyblue':         '#87CEFA',
+'lightslategray':       '#778899',
+'lightsteelblue':       '#B0C4DE',
+'lightyellow':          '#FFFFE0',
+'lime':                 '#00FF00',
+'limegreen':            '#32CD32',
+'linen':                '#FAF0E6',
+'magenta':              '#FF00FF',
+'maroon':               '#800000',
+'mediumaquamarine':     '#66CDAA',
+'mediumblue':           '#0000CD',
+'mediumorchid':         '#BA55D3',
+'mediumpurple':         '#9370DB',
+'mediumseagreen':       '#3CB371',
+'mediumslateblue':      '#7B68EE',
+'mediumspringgreen':    '#00FA9A',
+'mediumturquoise':      '#48D1CC',
+'mediumvioletred':      '#C71585',
+'midnightblue':         '#191970',
+'mintcream':            '#F5FFFA',
+'mistyrose':            '#FFE4E1',
+'moccasin':             '#FFE4B5',
+'navajowhite':          '#FFDEAD',
+'navy':                 '#000080',
+'oldlace':              '#FDF5E6',
+'olive':                '#808000',
+'olivedrab':            '#6B8E23',
+'orange':               '#FFA500',
+'orangered':            '#FF4500',
+'orchid':               '#DA70D6',
+'palegoldenrod':        '#EEE8AA',
+'palegreen':            '#98FB98',
+'paleturquoise':        '#AFEEEE',
+'palevioletred':        '#DB7093',
+'papayawhip':           '#FFEFD5',
+'peachpuff':            '#FFDAB9',
+'peru':                 '#CD853F',
+'pink':                 '#FFC0CB',
+'plum':                 '#DDA0DD',
+'powderblue':           '#B0E0E6',
+'purple':               '#800080',
+'red':                  '#FF0000',
+'rosybrown':            '#BC8F8F',
+'royalblue':            '#4169E1',
+'saddlebrown':          '#8B4513',
+'salmon':               '#FA8072',
+'sandybrown':           '#FAA460',
+'seagreen':             '#2E8B57',
+'seashell':             '#FFF5EE',
+'sienna':               '#A0522D',
+'silver':               '#C0C0C0',
+'skyblue':              '#87CEEB',
+'slateblue':            '#6A5ACD',
+'slategray':            '#708090',
+'snow':                 '#FFFAFA',
+'springgreen':          '#00FF7F',
+'steelblue':            '#4682B4',
+'tan':                  '#D2B48C',
+'teal':                 '#008080',
+'thistle':              '#D8BFD8',
+'tomato':               '#FF6347',
+'turquoise':            '#40E0D0',
+'violet':               '#EE82EE',
+'wheat':                '#F5DEB3',
+'white':                '#FFFFFF',
+'whitesmoke':           '#F5F5F5',
+'yellow':               '#FFFF00',
+'yellowgreen':          '#9ACD32'}</pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="%EF%BC%88%E5%8E%9F%EF%BC%89python%E4%B8%ADmatplotlib%E7%9A%84%E9%A2%9C%E8%89%B2%E5%8F%8A%E7%BA%BF%E6%9D%A1%E6%8E%A7%E5%88%B6%20-%20darkknightzh%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/copycode.gif" alt="复制代码"></a></span></div></div>
+<p>上面对应的颜色：</p>
+<p><img src="%EF%BC%88%E5%8E%9F%EF%BC%89python%E4%B8%ADmatplotlib%E7%9A%84%E9%A2%9C%E8%89%B2%E5%8F%8A%E7%BA%BF%E6%9D%A1%E6%8E%A7%E5%88%B6%20-%20darkknightzh%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/682463-20161130135947990-1277651618.png" alt=""></p>
+<p>另外的显示方式：</p>
+<p><img src="%EF%BC%88%E5%8E%9F%EF%BC%89python%E4%B8%ADmatplotlib%E7%9A%84%E9%A2%9C%E8%89%B2%E5%8F%8A%E7%BA%BF%E6%9D%A1%E6%8E%A7%E5%88%B6%20-%20darkknightzh%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/682463-20161130140039052-1274666212.png" alt=""></p>
+<p>装了seaborn扩展的话，在字典seaborn.xkcd_rgb中包含所有的xkcd crowdsourced color names。如下：</p>
+<div class="cnblogs_code">
+<pre>plt.plot([1,2], lw=4, c=seaborn.xkcd_rgb[<span style="color: #800000;">'</span><span style="color: #800000;">baby poop green</span><span style="color: #800000;">'</span>])</pre>
+</div>
+<p>所有颜色如下：</p>
+<p><img src="%EF%BC%88%E5%8E%9F%EF%BC%89python%E4%B8%ADmatplotlib%E7%9A%84%E9%A2%9C%E8%89%B2%E5%8F%8A%E7%BA%BF%E6%9D%A1%E6%8E%A7%E5%88%B6%20-%20darkknightzh%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/682463-20161130140141662-2030529727.jpg" alt=""></p>
+<p>&nbsp;</p></div><div id="MySignature"></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+<div id="BlogPostCategory"></div>
+<div id="EntryTag">标签: <a href="https://www.cnblogs.com/darkknightzh/tag/python/">python</a></div>
+<div id="blog_post_info"><div id="green_channel">
+        <a href="javascript:void(0);" id="green_channel_digg" onclick="DiggIt(6117528,cb_blogId,1);green_channel_success(this,'谢谢推荐！');">好文要顶</a>
+            <a id="green_channel_follow" onclick="follow('2ff23002-a055-e411-b908-9dcfd8948a71');" href="javascript:void(0);">关注我</a>
+    <a id="green_channel_favorite" onclick="AddToWz(cb_entryId);return false;" href="javascript:void(0);">收藏该文</a>
+    <a id="green_channel_weibo" href="javascript:void(0);" title="分享至新浪微博" onclick="ShareToTsina()"><img src="%EF%BC%88%E5%8E%9F%EF%BC%89python%E4%B8%ADmatplotlib%E7%9A%84%E9%A2%9C%E8%89%B2%E5%8F%8A%E7%BA%BF%E6%9D%A1%E6%8E%A7%E5%88%B6%20-%20darkknightzh%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/icon_weibo_24.png" alt=""></a>
+    <a id="green_channel_wechat" href="javascript:void(0);" title="分享至微信" onclick="shareOnWechat()"><img src="%EF%BC%88%E5%8E%9F%EF%BC%89python%E4%B8%ADmatplotlib%E7%9A%84%E9%A2%9C%E8%89%B2%E5%8F%8A%E7%BA%BF%E6%9D%A1%E6%8E%A7%E5%88%B6%20-%20darkknightzh%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/wechat.png" alt=""></a>
+</div>
+<div id="author_profile">
+    <div id="author_profile_info" class="author_profile_info">
+            <a href="http://home.cnblogs.com/u/darkknightzh/" target="_blank"><img src="%EF%BC%88%E5%8E%9F%EF%BC%89python%E4%B8%ADmatplotlib%E7%9A%84%E9%A2%9C%E8%89%B2%E5%8F%8A%E7%BA%BF%E6%9D%A1%E6%8E%A7%E5%88%B6%20-%20darkknightzh%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/20150419200911.png" class="author_avatar" alt=""></a>
+        <div id="author_profile_detail" class="author_profile_info">
+            <a href="http://home.cnblogs.com/u/darkknightzh/">darkknightzh</a><br>
+            <a href="http://home.cnblogs.com/u/darkknightzh/followees">关注 - 1</a><br>
+            <a href="http://home.cnblogs.com/u/darkknightzh/followers">粉丝 - 26</a>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div id="author_profile_honor"></div>
+    <div id="author_profile_follow">
+                <a href="javascript:void(0);" onclick="follow('2ff23002-a055-e411-b908-9dcfd8948a71');return false;">+加关注</a>
+    </div>
+</div>
+<div id="div_digg">
+    <div class="diggit" onclick="votePost(6117528,'Digg')">
+        <span class="diggnum" id="digg_count">12</span>
+    </div>
+    <div class="buryit" onclick="votePost(6117528,'Bury')">
+        <span class="burynum" id="bury_count">0</span>
+    </div>
+    <div class="clear"></div>
+    <div class="diggword" id="digg_tips">
+    </div>
+</div>
+<script type="text/javascript">
+    currentDiggType = 0;
+</script></div>
+<div class="clear"></div>
+<div id="post_next_prev"><a href="https://www.cnblogs.com/darkknightzh/p/6098132.html" class="p_n_p_prefix">« </a> 上一篇：<a href="https://www.cnblogs.com/darkknightzh/p/6098132.html" title="发布于2016-11-24 15:51">（原）ubuntu安装libtbb.so.2</a><br><a href="https://www.cnblogs.com/darkknightzh/p/6121663.html" class="p_n_p_prefix">» </a> 下一篇：<a href="https://www.cnblogs.com/darkknightzh/p/6121663.html" title="发布于2016-12-01 14:07">（原）ubuntu下使用ftp软件</a><br></div>
+</div>
+
+
+		</div>
+		<p class="postfoot">
+			posted on <span id="post-date">2016-11-30 14:04</span> <a href="https://www.cnblogs.com/darkknightzh/">darkknightzh</a> 阅读(<span id="post_view_count">165291</span>) 评论(<span id="post_comment_count">4</span>)  <a href="https://i.cnblogs.com/EditPosts.aspx?postid=6117528" rel="nofollow">编辑</a> <a href="#" onclick="AddToWz(6117528);return false;">收藏</a>
+		</p>
+	</div>
+	<script type="text/javascript">var allowComments=true,cb_blogId=201467,cb_entryId=6117528,cb_blogApp=currentBlogApp,cb_blogUserGuid='2ff23002-a055-e411-b908-9dcfd8948a71',cb_entryCreatedDate='2016/11/30 14:04:00';loadViewCount(cb_entryId);var cb_postType=1;var isMarkdown=false;</script>
+	
+	</div><a name="!comments"></a><div id="blog-comments-placeholder"><div id="comments_pager_top"></div>
+<a name="评论"></a>
+<div id="comments">
+<h3>评论</h3>
+	
+	
+			<div class="post">
+				<h2>
+					<a href="#3816747" class="layer">#1楼</a><a name="3816747" id="comment_anchor_3816747"></a>
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</h2>
+				<div id="comment_body_3816747" class="blog_comment_body">不错，感谢分享。</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3816747,'Digg',this)">支持(1)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3816747,'Bury',this)">反对(0)</a></div>
+				<div class="postfoot">
+					 <span class="comment_date">2017-10-20 15:49</span> | <a id="a_comment_author_3816747" href="https://www.cnblogs.com/lantingg/" target="_blank">蘭亭客</a> <a href="http://msg.cnblogs.com/send/%E8%98%AD%E4%BA%AD%E5%AE%A2" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+				</div>
+			</div>
+		
+			<div class="post">
+				<h2>
+					<a href="#3819150" class="layer">#2楼</a><a name="3819150" id="comment_anchor_3819150"></a>[<span class="louzhu">楼主</span>]
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</h2>
+				<div id="comment_body_3819150" class="blog_comment_body"><a href="#3816747" title="查看所回复的评论" onclick="commentManager.renderComments(0,50,3816747);">@</a>
+蘭亭客<br>主要是为了我自己方便查看（否则很多时候记不住）；如果同时能帮到其他人，那就更好了。</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3819150,'Digg',this)">支持(3)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3819150,'Bury',this)">反对(0)</a></div><span id="comment_3819150_avatar" style="display:none;">http://pic.cnblogs.com/face/682463/20150419200911.png</span>
+				<div class="postfoot">
+					 <span class="comment_date">2017-10-23 18:05</span> | <a id="a_comment_author_3819150" href="https://www.cnblogs.com/darkknightzh/" target="_blank">darkknightzh</a> <a href="http://msg.cnblogs.com/send/darkknightzh" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+				</div>
+			</div>
+		
+			<div class="post">
+				<h2>
+					<a href="#4151532" class="layer">#3楼</a><a name="4151532" id="comment_anchor_4151532"></a>
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</h2>
+				<div id="comment_body_4151532" class="blog_comment_body">有古仁人之心。</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4151532,'Digg',this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4151532,'Bury',this)">反对(0)</a></div>
+				<div class="postfoot">
+					 <span class="comment_date">2018-12-29 13:00</span> | <a id="a_comment_author_4151532" href="https://www.cnblogs.com/lantingg/" target="_blank">蘭亭客</a> <a href="http://msg.cnblogs.com/send/%E8%98%AD%E4%BA%AD%E5%AE%A2" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+				</div>
+			</div>
+		
+			<div class="post">
+				<h2>
+					<a href="#4152059" class="layer">#4楼</a><a name="4152059" id="comment_anchor_4152059"></a>[<span class="louzhu">楼主</span>]<span id="comment-maxId" style="display:none;">4152059</span><span id="comment-maxDate" style="display:none;">2018/12/29 20:44:41</span>
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</h2>
+				<div id="comment_body_4152059" class="blog_comment_body"><a href="#4151532" title="查看所回复的评论" onclick="commentManager.renderComments(0,50,4151532);">@</a>
+蘭亭客<br>^_^</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4152059,'Digg',this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4152059,'Bury',this)">反对(0)</a></div><span id="comment_4152059_avatar" style="display:none;">http://pic.cnblogs.com/face/682463/20150419200911.png</span>
+				<div class="postfoot">
+					 <span class="comment_date">2018-12-29 20:44</span> | <a id="a_comment_author_4152059" href="https://www.cnblogs.com/darkknightzh/" target="_blank">darkknightzh</a> <a href="http://msg.cnblogs.com/send/darkknightzh" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+				</div>
+			</div>
+		
+</div>
+<div id="comments_pager_bottom"></div></div><script type="text/javascript">var commentManager = new blogCommentManager();commentManager.renderComments(0);</script>
+<div id="comment_form" class="commentform">
+<a name="commentform"></a>
+<div id="divCommentShow"></div>
+<div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="#" onclick="return RefreshPage();">刷新页面</a><a href="#top">返回顶部</a></div>
+<div id="comment_form_container"><div class="login_tips">注册用户登录后才能发表评论，请 <a rel="nofollow" href="javascript:void(0);" class="underline" onclick="return login('commentform');">登录</a> 或 <a rel="nofollow" href="javascript:void(0);" class="underline" onclick="return register();">注册</a>，<a href="http://www.cnblogs.com/">访问</a>网站首页。</div></div>
+<div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+<div id="ad_t2"><a href="http://www.ucancode.com/index.htm" target="_blank" onclick="ga('send', 'event', 'Link', 'click', 'T2-工控')">【推荐】超50万C++/C#源码: 大型实时仿真组态图形源码</a><br><a href="https://www.bagevent.com/event/2195041?bag_track=13072958" target="_blank" onclick="ga('send', 'event', 'Link', 'click', 'T2-看雪')">【活动】看雪2019安全开发者峰会，共话安全领域焦点</a><br><a href="https://ke.qq.com/adActivity.html?name=xiangxueketang2" target="_blank" onclick="ga('send', 'event', 'Link', 'click', 'T2-享学')">【培训】Java程序员年薪40W，他1年走了别人5年的路</a><br></div>
+<div id="opt_under_post"></div>
+<script async="async" src="%EF%BC%88%E5%8E%9F%EF%BC%89python%E4%B8%ADmatplotlib%E7%9A%84%E9%A2%9C%E8%89%B2%E5%8F%8A%E7%BA%BF%E6%9D%A1%E6%8E%A7%E5%88%B6%20-%20darkknightzh%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/gpt.js"></script>
+<script>
+  var googletag = googletag || {};
+  googletag.cmd = googletag.cmd || [];
+</script>
+<script>
+  googletag.cmd.push(function() {
+        googletag.defineSlot('/1090369/C1', [300, 250], 'div-gpt-ad-1546353474406-0').addService(googletag.pubads());
+        googletag.defineSlot('/1090369/C2', [468, 60], 'div-gpt-ad-1539008685004-0').addService(googletag.pubads());
+        googletag.pubads().enableSingleRequest();
+        googletag.enableServices();
+  });
+</script>
+<div id="cnblogs_c1" class="c_ad_block">
+    <div id="div-gpt-ad-1546353474406-0" style="height:250px; width:300px;" data-google-query-id="CN7BgqOBneICFRofKgodY6kKvw"><div id="google_ads_iframe_/1090369/C1_0__container__" style="border: 0pt none;"><iframe id="google_ads_iframe_/1090369/C1_0" title="3rd party ad content" name="google_ads_iframe_/1090369/C1_0" scrolling="no" marginwidth="0" marginheight="0" style="border: 0px none; vertical-align: bottom;" srcdoc="" data-google-container-id="1" data-load-complete="true" width="300" height="250" frameborder="0"></iframe></div></div>
+</div>
+<div id="under_post_news" style="display: none;"></div>
+<div id="cnblogs_c2" class="c_ad_block">
+    <div id="div-gpt-ad-1539008685004-0" style="height:60px; width:468px;" data-google-query-id="CN_BgqOBneICFRofKgodY6kKvw"><div id="google_ads_iframe_/1090369/C2_0__container__" style="border: 0pt none;"><iframe id="google_ads_iframe_/1090369/C2_0" title="3rd party ad content" name="google_ads_iframe_/1090369/C2_0" scrolling="no" marginwidth="0" marginheight="0" style="border: 0px none; vertical-align: bottom;" srcdoc="" data-google-container-id="2" data-load-complete="true" width="468" height="60" frameborder="0"></iframe></div></div>
+</div>
+<div id="under_post_kb"><div class="itnews c_ad_block"><b>最新新闻</b>：<br> ·  <a href="https://news.cnblogs.com/n/625331/" target="_blank">深网|万达百货更名苏宁易购广场 改造店5月底亮相</a><br> ·  <a href="https://news.cnblogs.com/n/625330/" target="_blank">圈重点！腾讯全球数字生态大会带来不一样的智慧医疗</a><br> ·  <a href="https://news.cnblogs.com/n/625329/" target="_blank">3岁娃成“社交万人迷”？别再被天价“情商培训班”忽悠了</a><br> ·  <a href="https://news.cnblogs.com/n/625328/" target="_blank">国产手机十年厮杀过后，为何只剩下华为带着米OV?</a><br> ·  <a href="https://news.cnblogs.com/n/625327/" target="_blank">英国宣布5G将在7月3日上线，兼容四款5G手机</a><br>» <a href="http://news.cnblogs.com/" title="IT新闻" target="_blank">更多新闻...</a></div></div>
+<div id="HistoryToday" class="c_ad_block"></div>
+<script type="text/javascript">
+ if(enablePostBottom()) {
+    codeHighlight();
+    fixPostBody();
+    setTimeout(function () { incrementViewCount(cb_entryId); }, 50);
+    deliverT2();
+    deliverC1();
+    deliverC2();    
+    loadNewsAndKb();
+    loadBlogSignature();
+    LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+    GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+    loadOptUnderPost();
+    GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);  
+}
+</script>
+</div>
+
+    
+</div>
+</div>
+<div id="leftmenu">
+
+
+<h3>导航</h3>
+<ul>
+<li>
+<a id="blog_nav_sitehome" href="https://www.cnblogs.com/">博客园</a></li>
+<li>
+<a id="blog_nav_myhome" class="two_words" href="https://www.cnblogs.com/darkknightzh/">首页</a></li>
+<li>
+<a id="blog_nav_newpost" rel="nofollow" href="https://i.cnblogs.com/EditPosts.aspx?opt=1">新随笔</a></li>
+<li>
+<a id="blog_nav_contact" accesskey="9" class="two_words" rel="nofollow" href="https://msg.cnblogs.com/send/darkknightzh">联系</a></li>
+<li>
+<a id="blog_nav_rss" class="two_words" href="https://www.cnblogs.com/darkknightzh/rss">订阅</a>
+<a id="blog_nav_rss_image" href="https://www.cnblogs.com/darkknightzh/rss"><img src="%EF%BC%88%E5%8E%9F%EF%BC%89python%E4%B8%ADmatplotlib%E7%9A%84%E9%A2%9C%E8%89%B2%E5%8F%8A%E7%BA%BF%E6%9D%A1%E6%8E%A7%E5%88%B6%20-%20darkknightzh%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/xml.gif" alt="订阅"></a>
+</li>
+<li>
+<a id="blog_nav_admin" class="two_words" rel="nofollow" href="https://i.cnblogs.com/">管理</a></li>
+</ul>
+
+<div id="blog-calendar" style=""><table id="blogCalendar" class="Cal" title="Calendar" cellspacing="0" cellpadding="0">
+	<tbody><tr><td colspan="7"><table class="CalTitle" cellspacing="0">
+		<tbody><tr><td class="CalNextPrev"><a href="javascript:void(0);" onclick="loadBlogCalendar('2019/04/01');return false;">&lt;</a></td><td align="center">2019年5月</td><td class="CalNextPrev" align="right"><a href="javascript:void(0);" onclick="loadBlogCalendar('2019/06/01');return false;">&gt;</a></td></tr>
+	</tbody></table></td></tr><tr><th class="CalDayHeader" abbr="日" scope="col" align="center">日</th><th class="CalDayHeader" abbr="一" scope="col" align="center">一</th><th class="CalDayHeader" abbr="二" scope="col" align="center">二</th><th class="CalDayHeader" abbr="三" scope="col" align="center">三</th><th class="CalDayHeader" abbr="四" scope="col" align="center">四</th><th class="CalDayHeader" abbr="五" scope="col" align="center">五</th><th class="CalDayHeader" abbr="六" scope="col" align="center">六</th></tr><tr><td class="CalOtherMonthDay" align="center">28</td><td class="CalOtherMonthDay" align="center">29</td><td class="CalOtherMonthDay" align="center">30</td><td align="center">1</td><td align="center">2</td><td align="center">3</td><td class="CalWeekendDay" align="center">4</td></tr><tr><td class="CalWeekendDay" align="center">5</td><td align="center">6</td><td align="center">7</td><td align="center">8</td><td align="center">9</td><td align="center">10</td><td class="CalWeekendDay" align="center">11</td></tr><tr><td class="CalWeekendDay" align="center">12</td><td align="center">13</td><td align="center">14</td><td class="CalTodayDay" align="center">15</td><td align="center">16</td><td align="center">17</td><td class="CalWeekendDay" align="center">18</td></tr><tr><td class="CalWeekendDay" align="center">19</td><td align="center">20</td><td align="center">21</td><td align="center">22</td><td align="center">23</td><td align="center">24</td><td class="CalWeekendDay" align="center">25</td></tr><tr><td class="CalWeekendDay" align="center">26</td><td align="center">27</td><td align="center">28</td><td align="center">29</td><td align="center">30</td><td align="center">31</td><td class="CalOtherMonthDay" align="center">1</td></tr><tr><td class="CalOtherMonthDay" align="center">2</td><td class="CalOtherMonthDay" align="center">3</td><td class="CalOtherMonthDay" align="center">4</td><td class="CalOtherMonthDay" align="center">5</td><td class="CalOtherMonthDay" align="center">6</td><td class="CalOtherMonthDay" align="center">7</td><td class="CalOtherMonthDay" align="center">8</td></tr>
+</tbody></table></div><script type="text/javascript">loadBlogDefaultCalendar();</script>
+<meta name="vs_showGrid" content="False">
+
+<h3>公告</h3>
+<div id="blog-news"><a href="https://info.flagcounter.com/5jwM"><img src="%EF%BC%88%E5%8E%9F%EF%BC%89python%E4%B8%ADmatplotlib%E7%9A%84%E9%A2%9C%E8%89%B2%E5%8F%8A%E7%BA%BF%E6%9D%A1%E6%8E%A7%E5%88%B6%20-%20darkknightzh%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/a.png" alt="Flag Counter" border="0"></a><div id="profile_block">昵称：<a href="https://home.cnblogs.com/u/darkknightzh/">darkknightzh</a><br>园龄：<a href="https://home.cnblogs.com/u/darkknightzh/" title="入园时间：2014-10-17">4年6个月</a><br>粉丝：<a href="https://home.cnblogs.com/u/darkknightzh/followers/">26</a><br>关注：<a href="https://home.cnblogs.com/u/darkknightzh/followees/">1</a><div id="p_b_follow"><a href="javascript:void(0);" onclick="follow('2ff23002-a055-e411-b908-9dcfd8948a71')">+加关注</a></div><script>getFollowStatus('2ff23002-a055-e411-b908-9dcfd8948a71')</script></div></div><script type="text/javascript">loadBlogNews();</script>
+
+<div id="blog-sidecolumn"><div id="sidebar_search" class="sidebar-block">
+<div id="sidebar_search" class="mySearch">
+<h3 class="catListTitle">搜索</h3>
+<div id="sidebar_search_box">
+<div id="widget_my_zzk" class="div_my_zzk"><input id="q" onkeydown="return zzk_go_enter(event);" class="input_my_zzk" type="text">&nbsp;<input onclick="zzk_go()" value="找找看" id="btnZzk" class="btn_my_zzk" type="button"></div>
+<div id="widget_my_google" class="div_my_zzk"><input name="google_q" id="google_q" onkeydown="return google_go_enter(event)" class="input_my_zzk" type="text">&nbsp;<input onclick="google_go()" value="谷歌搜索" class="btn_my_zzk" type="button"></div>
+</div>
+</div>
+
+</div><div id="sidebar_shortcut" class="sidebar-block">
+<h3 class="catListTitle">常用链接</h3>
+<ul>
+<li><a href="https://www.cnblogs.com/darkknightzh/p/" title="我的博客的随笔列表">我的随笔</a></li><li><a href="https://www.cnblogs.com/darkknightzh/MyComments.html" title="我发表过的评论列表">我的评论</a></li><li><a href="https://www.cnblogs.com/darkknightzh/OtherPosts.html" title="我评论过的随笔列表">我的参与</a></li><li><a href="https://www.cnblogs.com/darkknightzh/RecentComments.html" title="我的博客的评论列表">最新评论</a></li><li><a href="https://www.cnblogs.com/darkknightzh/tag/" title="我的博客的标签列表">我的标签</a></li>
+</ul>
+<div id="itemListLin_con" style="display:none;">
+
+</div></div><div id="sidebar_toptags" class="sidebar-block">
+<h3 class="catListTitle">我的标签</h3>
+<div id="MyTag">
+<ul>
+<li><a href="https://www.cnblogs.com/darkknightzh/tag/linux/">linux</a>(52)</li><li><a href="https://www.cnblogs.com/darkknightzh/tag/C%2B%2B/">C++</a>(38)</li><li><a href="https://www.cnblogs.com/darkknightzh/tag/algorithm/">algorithm</a>(17)</li><li><a href="https://www.cnblogs.com/darkknightzh/tag/torch/">torch</a>(16)</li><li><a href="https://www.cnblogs.com/darkknightzh/tag/DeepLearning/">DeepLearning</a>(14)</li><li><a href="https://www.cnblogs.com/darkknightzh/tag/caffe/">caffe</a>(13)</li><li><a href="https://www.cnblogs.com/darkknightzh/tag/python/">python</a>(13)</li><li><a href="https://www.cnblogs.com/darkknightzh/tag/tensorflow/">tensorflow</a>(10)</li><li><a href="https://www.cnblogs.com/darkknightzh/tag/android/">android</a>(7)</li><li><a href="https://www.cnblogs.com/darkknightzh/tag/eclipse/">eclipse</a>(4)</li><li><a href="https://www.cnblogs.com/darkknightzh/tag/">更多</a></li>
+</ul>
+</div></div><div id="sidebar_categories">
+		<h3>随笔档案<span style="font-size:11px;font-weight:normal">(171)</span></h3>
+		
+				<ul>
+			
+				<li><a id="CatList_LinkList_0_Link_0" href="https://www.cnblogs.com/darkknightzh/archive/2019/03.html">2019年3月 (3)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_1" href="https://www.cnblogs.com/darkknightzh/archive/2018/12.html">2018年12月 (2)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_2" href="https://www.cnblogs.com/darkknightzh/archive/2018/11.html">2018年11月 (6)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_3" href="https://www.cnblogs.com/darkknightzh/archive/2018/10.html">2018年10月 (1)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_4" href="https://www.cnblogs.com/darkknightzh/archive/2018/08.html">2018年8月 (2)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_5" href="https://www.cnblogs.com/darkknightzh/archive/2018/07.html">2018年7月 (1)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_6" href="https://www.cnblogs.com/darkknightzh/archive/2018/06.html">2018年6月 (1)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_7" href="https://www.cnblogs.com/darkknightzh/archive/2018/05.html">2018年5月 (2)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_8" href="https://www.cnblogs.com/darkknightzh/archive/2018/04.html">2018年4月 (1)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_9" href="https://www.cnblogs.com/darkknightzh/archive/2018/03.html">2018年3月 (5)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_10" href="https://www.cnblogs.com/darkknightzh/archive/2018/01.html">2018年1月 (1)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_11" href="https://www.cnblogs.com/darkknightzh/archive/2017/12.html">2017年12月 (2)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_12" href="https://www.cnblogs.com/darkknightzh/archive/2017/11.html">2017年11月 (1)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_13" href="https://www.cnblogs.com/darkknightzh/archive/2017/09.html">2017年9月 (3)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_14" href="https://www.cnblogs.com/darkknightzh/archive/2017/08.html">2017年8月 (3)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_15" href="https://www.cnblogs.com/darkknightzh/archive/2017/07.html">2017年7月 (3)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_16" href="https://www.cnblogs.com/darkknightzh/archive/2017/06.html">2017年6月 (1)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_17" href="https://www.cnblogs.com/darkknightzh/archive/2017/05.html">2017年5月 (3)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_18" href="https://www.cnblogs.com/darkknightzh/archive/2017/04.html">2017年4月 (1)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_19" href="https://www.cnblogs.com/darkknightzh/archive/2017/03.html">2017年3月 (8)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_20" href="https://www.cnblogs.com/darkknightzh/archive/2017/02.html">2017年2月 (2)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_21" href="https://www.cnblogs.com/darkknightzh/archive/2017/01.html">2017年1月 (2)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_22" href="https://www.cnblogs.com/darkknightzh/archive/2016/12.html">2016年12月 (9)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_23" href="https://www.cnblogs.com/darkknightzh/archive/2016/11.html">2016年11月 (9)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_24" href="https://www.cnblogs.com/darkknightzh/archive/2016/10.html">2016年10月 (5)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_25" href="https://www.cnblogs.com/darkknightzh/archive/2016/09.html">2016年9月 (4)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_26" href="https://www.cnblogs.com/darkknightzh/archive/2016/08.html">2016年8月 (9)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_27" href="https://www.cnblogs.com/darkknightzh/archive/2016/07.html">2016年7月 (19)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_28" href="https://www.cnblogs.com/darkknightzh/archive/2016/06.html">2016年6月 (7)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_29" href="https://www.cnblogs.com/darkknightzh/archive/2016/05.html">2016年5月 (11)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_30" href="https://www.cnblogs.com/darkknightzh/archive/2016/04.html">2016年4月 (1)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_31" href="https://www.cnblogs.com/darkknightzh/archive/2016/01.html">2016年1月 (3)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_32" href="https://www.cnblogs.com/darkknightzh/archive/2015/12.html">2015年12月 (4)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_33" href="https://www.cnblogs.com/darkknightzh/archive/2015/11.html">2015年11月 (5)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_34" href="https://www.cnblogs.com/darkknightzh/archive/2015/10.html">2015年10月 (1)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_35" href="https://www.cnblogs.com/darkknightzh/archive/2015/09.html">2015年9月 (1)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_36" href="https://www.cnblogs.com/darkknightzh/archive/2015/08.html">2015年8月 (1)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_37" href="https://www.cnblogs.com/darkknightzh/archive/2015/04.html">2015年4月 (2)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_38" href="https://www.cnblogs.com/darkknightzh/archive/2015/03.html">2015年3月 (11)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_39" href="https://www.cnblogs.com/darkknightzh/archive/2015/02.html">2015年2月 (2)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_40" href="https://www.cnblogs.com/darkknightzh/archive/2015/01.html">2015年1月 (4)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_41" href="https://www.cnblogs.com/darkknightzh/archive/2014/12.html">2014年12月 (3)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_42" href="https://www.cnblogs.com/darkknightzh/archive/2014/11.html">2014年11月 (3)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_43" href="https://www.cnblogs.com/darkknightzh/archive/2014/10.html">2014年10月 (3)</a></li>
+			
+				</ul>
+			
+	</div><div id="sidebar_scorerank" class="sidebar-block">
+<h3>积分与排名</h3>
+<ul>
+	<li>
+		积分 -
+		286570
+	</li><li>
+		排名 -
+		976
+	</li>
+</ul>
+</div><div id="sidebar_recentcomments" class="sidebar-block"><div id="recent_comments_wrap">
+<h3 class="catListTitle">最新评论</h3>
+<div class="RecentComment" id="RecentComments">
+	<div id="RecentCommentsBlock"><ul>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/darkknightzh/p/10043864.html#4256172">1. Re:（原）faster rcnn的tensorflow代码的理解</a></li>
+        <li class="recent_comment_body">@xuchengggg您好。确实是去掉最后一列。已修正。谢谢您的指正。Thanks♪(･ω･)ﾉ...</li>
+        <li class="recent_comment_author">--darkknightzh</li>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/darkknightzh/p/10043864.html#4255936">2. Re:（原）faster rcnn的tensorflow代码的理解</a></li>
+        <li class="recent_comment_body">博主写的很好，很有帮助，不过在 1.7 _anchor_target_layer  136行那里gt去掉的是最后一列把？ 那一列应该是gt的label 吧？</li>
+        <li class="recent_comment_author">--xuchengggg</li>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/darkknightzh/p/9043395.html#4251888">3. Re:（原）IOU的计算</a></li>
+        <li class="recent_comment_body">@plllala您好。谢谢您的提醒，已更正。同时发现上面第二个黄色矩形写错了，应该是蓝色矩形，已更正。O(∩_∩)O谢谢...</li>
+        <li class="recent_comment_author">--darkknightzh</li>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/darkknightzh/p/10043864.html#4251881">4. Re:（原）faster rcnn的tensorflow代码的理解</a></li>
+        <li class="recent_comment_body">@Holly_U引用如果，我想修改anchor的数量和尺寸，除了修改generate_anchors.py文件和snippets.py文件，还需要修改其它文件吗，比如，欧文希望scale从元素个数不变......</li>
+        <li class="recent_comment_author">--darkknightzh</li>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/darkknightzh/p/9043395.html#4250513">5. Re:（原）IOU的计算</a></li>
+        <li class="recent_comment_body">您好，虽然您的博客写了很长时间，但是我发现了一个错误，还是要告诉您一下，希望你能更正，两个矩形交集（红色矩形）宽高应该是 W=W1+W2-(x22-x11)=x12-x21，H=H1+H2-(y22-......</li>
+        <li class="recent_comment_author">--plllala</li>
+</ul>
+</div>
+</div>
+</div></div><div id="sidebar_topviewedposts" class="sidebar-block"><div id="topview_posts_wrap">
+<h3 class="catListTitle">阅读排行榜</h3>
+<div class="RecentComment" id="TopViewPosts"> 
+	<div id="TopViewPostsBlock"><ul><li><a href="https://www.cnblogs.com/darkknightzh/p/6117528.html">1. （原）python中matplotlib的颜色及线条控制(165291)</a></li><li><a href="https://www.cnblogs.com/darkknightzh/p/6591923.html">2. （原）tensorflow中使用指定的GPU及GPU显存(53396)</a></li><li><a href="https://www.cnblogs.com/darkknightzh/p/6836568.html">3. （原）PyTorch中使用指定的GPU(45895)</a></li><li><a href="https://www.cnblogs.com/darkknightzh/p/5670821.html">4. （原+转）pycharm中传入命令行参数(28629)</a></li><li><a href="https://www.cnblogs.com/darkknightzh/p/5554551.html">5. （原）Matlab的svmtrain和svmclassify(24981)</a></li></ul></div>
+</div>
+</div></div><div id="sidebar_topcommentedposts" class="sidebar-block"><div id="topfeedback_posts_wrap">
+<h3 class="catListTitle">评论排行榜</h3>
+<div class="RecentComment" id="TopCommentsPosts">
+	<div id="TopFeedbackPostsBlock"><ul><li><a href="https://www.cnblogs.com/darkknightzh/p/5554551.html">1. （原）Matlab的svmtrain和svmclassify(16)</a></li><li><a href="https://www.cnblogs.com/darkknightzh/p/6015990.html">2. （原）torch和caffe中的BatchNorm层(9)</a></li><li><a href="https://www.cnblogs.com/darkknightzh/p/10043864.html">3. （原）faster rcnn的tensorflow代码的理解(8)</a></li><li><a href="https://www.cnblogs.com/darkknightzh/p/5864715.html">4. （原）编译caffe时提示未定义的引用（undefined reference to）(7)</a></li><li><a href="https://www.cnblogs.com/darkknightzh/p/6221664.html">5. （原）torch中微调某层参数(7)</a></li></ul></div>
+</div></div></div><div id="sidebar_topdiggedposts" class="sidebar-block"><div id="topdigg_posts_wrap">
+<h3 class="catListTitle">推荐排行榜</h3>
+<div class="RecentComment">
+	<div id="TopDiggPostsBlock"><ul><li><a href="https://www.cnblogs.com/darkknightzh/p/6117528.html">1. （原）python中matplotlib的颜色及线条控制(12)</a></li><li><a href="https://www.cnblogs.com/darkknightzh/p/5554551.html">2. （原）Matlab的svmtrain和svmclassify(2)</a></li><li><a href="https://www.cnblogs.com/darkknightzh/p/5553336.html">3. （原）mkl的cblas_sgemm和cblas_dgemm(1)</a></li><li><a href="https://www.cnblogs.com/darkknightzh/p/10043864.html">4. （原）faster rcnn的tensorflow代码的理解(1)</a></li><li><a href="https://www.cnblogs.com/darkknightzh/p/8524937.html">5. （原）SphereFace及其pytorch代码(1)</a></li></ul></div>
+</div></div></div></div><script type="text/javascript">loadBlogSideColumn();</script>
+
+</div>
+</div>
+<div class="clear"></div>
+<div id="footer">
+
+<p id="footer">
+	Powered by: 
+	<br>
+	
+	<a id="Footer1_Hyperlink3" name="Hyperlink1" href="https://www.cnblogs.com/" style="font-family:Verdana;font-size:12px;">博客园</a>
+	<br>
+	Copyright © darkknightzh
+</p>
+</div>
+</div>
+
+
+<!--PageEndHtml Block Begin-->
+<script language="javascript" type="text/javascript">
+ //生成目录索引列表
+ function GenerateContentList()
+ {
+     var jquery_h1_list = $('#cnblogs_post_body h1');
+     if (jquery_h1_list.length == 0) { return; }
+     if ($('#cnblogs_post_body').length == 0) { return; }
+ 
+     var content = '<a name="_labelTop"></a>';
+     content    += '<div id="navCategory">';
+     content    += '<p style="font-size:16px"><b><span style="color: #d2681e;">~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span></b></p>';
+     content    += '<p style="font-size:24px"><b><strong><span style="color: #d2681e;">本文目录</span></strong></b></p>';
+     // 一级目录 start
+     content += '<ul class="first_class_ul">';
+ 
+     for (var i = 0; i < jquery_h1_list.length; i++)
+     {
+         var go_to_top = '<div style="text-align: right"><a href="#_labelTop">回到顶部(go to top)</a><a name="_label' + i + '"></a></div>';
+         $(jquery_h1_list[i]).before(go_to_top);
+ 
+         // 一级目录的一条
+         var li_content = '<li><a href="#_label' + i + '">' + $(jquery_h1_list[i]).text() + '</a></li>';
+ 
+         var nextH1Index = i + 1;
+         if (nextH1Index == jquery_h1_list.length) { nextH1Index = 0; }
+         var jquery_h2_list = $(jquery_h1_list[i]).nextUntil(jquery_h1_list[nextH1Index], "h2");
+         // 二级目录 start
+         if (jquery_h2_list.length > 0)
+         {
+             //li_content +='<ul style="list-style-type:none; text-align: left; margin:2px 2px;">';
+             li_content += '<ul class="second_class_ul">';
+         }
+         for (var j = 0; j < jquery_h2_list.length; j++)
+         {
+             var go_to_top2 = '<div style="text-align: right"><a name="_lab2_'+ i + '_' + j + '"></a></div>';
+             $(jquery_h2_list[j]).before(go_to_top2);
+             // 二级目录的一条
+             li_content +='<li><a href="#_lab2_'+ i +'_' + j + '">' + $(jquery_h2_list[j]).text() + '</a></li>';
+ 
+             var nextH2Index = j + 1;
+             var next;
+             if (nextH2Index == jquery_h2_list.length) 
+             {
+                 if (i + 1 == jquery_h1_list.length)
+                 {
+                     next = jquery_h1_list[0];
+                 }
+                 else
+                 {
+                     next = jquery_h1_list[i + 1];
+                 }
+             }
+             else
+             {
+                 next = jquery_h2_list[nextH2Index];
+             }
+             var jquery_h3_list = $(jquery_h2_list[j]).nextUntil(next, "h3");
+             // 三级目录 start
+             if (jquery_h3_list.length > 0)
+             {
+                 li_content += '<ul class="third_class_ul">';
+             }
+             
+             for (var k = 0; k < jquery_h3_list.length; k++)
+             {
+                 var go_to_third_Content = '<div style="text-align: right"><a name="_label3_' + i + '_' + j + '_' + k + '"></a></div>';
+                 $(jquery_h3_list[k]).before(go_to_third_Content);
+                 // 三级目录的一条
+                 li_content += '<li><a href="#_label3_' + i + '_' + j + '_' + k + '">' + $(jquery_h3_list[k]).text() + '</a></li>';
+             }
+             
+             if (jquery_h3_list.length > 0)
+             {
+                 li_content += '</ul>';
+             }
+             li_content += '</li>';
+             // 三级目录 end
+         }
+         if (jquery_h2_list.length > 0)
+         {
+             li_content +='</ul>';
+         }
+         li_content +='</li>';
+         // 二级目录 end
+ 
+         content += li_content;
+     }
+     // 一级目录 end
+     content += '</ul>';
+     content += '</div>';
+     content += '<p style="font-size:16px"><b><span style="color: #d2681e;">~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span></b></p>';
+     
+ 
+     $($('#cnblogs_post_body')[0]).prepend(content);
+ }
+ 
+ GenerateContentList();
+ </script>
+<!--PageEndHtml Block End-->
+
+
+</body></html>
