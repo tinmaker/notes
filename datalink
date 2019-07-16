@@ -182,6 +182,14 @@ https://blog.csdn.net/u012763833/article/details/50650995
 64 姿态篇：一.初识姿态估计(包括磁罗盘，方向余弦，从机体到惯性，从惯性到机体)
 https://www.jianshu.com/p/efffeb1e20aa
 
+65 autoquad飞控 
+http://autoquad.org/software-downloads/
+
+66 starrypilot开源飞控
+https://github.com/JcZou
+
+
+
 
 
 <<<<<px4>>>>>
@@ -214,6 +222,20 @@ https://blog.csdn.net/xiaoshuai537/article/details/72888126
 
 10 pixhawk mc_pos_control.cpp源码解读
 https://blog.csdn.net/czyv587/article/details/51728079
+
+11 px4硬件github
+https://github.com/3drobotics/Pixhawk_OS_Hardware
+
+12 px4官方文档
+https://docs.px4.io/en/flight_controller/pixhawk.html
+
+13 PX4中添加自定义数据段到log文件中
+https://www.cnblogs.com/fly2mato/p/6723177.html
+
+14 FlightPlot日志分析
+https://blog.csdn.net/spurmoon/article/details/85305517
+
+
 
 
 
@@ -496,6 +518,19 @@ https://blog.csdn.net/loveuav/article/details/81747211
 10 origin pro科学用途数据绘图与数据分析处理工具
 http://www.xue51.com/soft/4335.html
 
+11 px4中国（论坛类）
+http://px4china.com/
+12 px4相关网站集合（无人机，地面站，组织，论坛等）
+http://px4china.com/plugin.php?id=tpgao_wapurlnav:wap
+
+13 国产实时操作系统（感觉很强，用于航空）SylixOS
+http://www.acoinfo.com/html/product.html
+
+14 深度解析红外测距技术  
+https://www.sohu.com/a/206815076_468626
+
+15  无人机自动避障技术盘点 
+https://mp.weixin.qq.com/s/9sLjd5dTl9EVRAoOpVGqyw
 
 
 
@@ -566,4 +601,44 @@ https://blog.csdn.net/ccfeng2008/article/details/8239658
 
 11 ubuntu14.04开启wifi热点（有报错处理）
 https://www.cnblogs.com/fah936861121/articles/7501619.html
+
+
+
+
+<<<<<<opencv>>>>>>
+1 cuda 和opencv使用
+https://blog.csdn.net/dumpdoctorwang/article/details/81032914
+
+2 opencv中自带跨平台的计时(时间)代码实现
+https://blog.csdn.net/lonelyrains/article/details/50456266
+
+3 并行计算之路——CUDA牵手OpenCV
+https://blog.csdn.net/xx116213/article/details/50704335
+
+4 nvidia官网（cuda安装包，文档等）
+http://www.nvidia.cn/Download/index.aspx?lang=cn
+
+5 ubuntu安装cuda库
+https://www.cnblogs.com/iloveblog/p/7683349.html
+
+
+
+<<<<<openmv>>>>>>
+1 github源码
+https://github.com/openmv/openmv
+
+2 中文文档
+http://book.openmv.cc/
+
+
+<<<<<<px4flow>>>>>>
+1 px4flow 中flow.c解读 
+https://blog.csdn.net/qq_42237381/article/details/88821175
+
+2 PX4-flow代码编译
+https://blog.csdn.net/hxudhdjuf/article/details/79654916
+
+3 在ArduPilot旋翼机上安装PX4Flow光流传感器
+https://blog.csdn.net/liberatetheus/article/details/77914246
+
 
