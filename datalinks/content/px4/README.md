@@ -40,4 +40,13 @@ https://docs.px4.io/en/flight_controller/pixhawk.html
 https://www.cnblogs.com/fly2mato/p/6723177.html
 
 14 FlightPlot日志分析  
-https://blog.csdn.net/spurmoon/article/details/85305517
+https://blog.csdn.net/spurmoon/article/details/85305517  
+
+15 pixhawk文档（接口等）
+http://ardupilot.org/copter/docs/common-pixhawk-overview.html
+
+16 pixhawk github
+https://github.com/pixhawk/Hardware  
+
+17 pixhawk硬件说明  
+https://blog.csdn.net/mou_it/article/details/80354373  
